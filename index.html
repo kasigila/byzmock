@@ -296,12 +296,18 @@ main{padding-top:var(--header-h)}
   overflow:hidden;
 }
 .hero-card-media{
+  position: relative;
   height: 240px;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.28)),
-    url("https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=80")
-    center/cover no-repeat;
+  overflow: hidden;
+  background: #000;
 }
+.hero-card-media video{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .hero-card-body{
   padding: 18px 18px 20px;
 }
@@ -2806,16 +2812,15 @@ body.bulkbar-active .social-dock{
         </div>
       </div>
 
-      <div class="hero-card reveal">
-        <div class="hero-card-media" aria-hidden="true"
-  style="background:
-    linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.28)),
-    url('assets/assets/events/carribean-groove.jpg') center/cover no-repeat;">
+      <div class="hero-card-media" aria-hidden="true">
+  <video src="pianogrooveshort.mp4" autoplay muted loop playsinline></video>
 </div>
+
         <div class="hero-card-body">
-          <h3>Carribean Groove Countdown</h3>
-          <p>Sunset into late night, pure rhythm, pure vibes.
-Reggae • Dancehall • Afro • Worldwide grooves — all in one place.</p>
+          <h3>Piano Groove Countdown</h3>
+<p>i have no idea what to put here but ygtv.
+Amapiano • Afro‑house • Late‑night groove culture.</p>
+
 
           <!-- Countdown -->
           <div class="countdown" aria-label="Countdown timer">
@@ -3637,12 +3642,8 @@ Reggae • Dancehall • Afro • Worldwide grooves — all in one place.</p>
 (function(){
   // ✅ CHANGE THIS to your next event datetime (Dar time or your preferred time).
   // Example set: 5 days from now at 8:00 PM
-  const nextEventISO = (function(){
-    const d = new Date();
-    d.setDate(d.getDate() + 3);
-    d.setHours(21,0,0,0);
-    return d.toISOString();
-  })();
+  const nextEventISO = "2026-01-09T21:00:00+03:00";
+
 
   const target = new Date(nextEventISO).getTime();
   const elD = document.getElementById("cdDays");
