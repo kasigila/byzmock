@@ -1842,10 +1842,14 @@ footer{
   .mobile-panel.open{opacity:1; pointer-events:auto; transform: translateY(0)}
 }
 @media (max-width: 560px){
-  .connect-grid{grid-template-columns:1fr}
+  .connect-grid{
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
   .hero{padding: 64px 0 52px}
   section{padding: 76px 0}
 }
+
   .footer-logo{
   width:120px;           /* make bigger/smaller */
   height:auto;
