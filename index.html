@@ -1782,18 +1782,25 @@ section{padding: 92px 0}
 .social-hint{
   display:inline-flex;
   align-items:center;
-  gap:.5em;
-  padding:6px 12px;
+  gap:.4em;
+  padding:5px 10px;
   border-radius:999px;
   border:1px solid color-mix(in srgb, var(--border) 70%, transparent);
   background: color-mix(in srgb, var(--bg-alt) 80%, transparent);
   color:var(--sub);
-  font-size:.9em;
+  font-size:.85em;
   font-weight:700;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
-@media (max-width: 600px){
-  .connect-panel{ margin: 0 10px; }
+@media (max-width: 560px){
+  .social-hint{
+    padding:4px 8px;
+    font-size:.78em;
+    gap:.35em;
+  }
 }
 
 
@@ -3331,28 +3338,28 @@ body.bulkbar-active .social-dock{
         <a class="social-card instagram" href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener">
           <div class="social-icon"><i class="fab fa-instagram"></i></div>
           <h3>Instagram</h3>
-          <p>Daily updates and behind-the-scenes moments</p>
+          <p> </p>
           <span class="social-hint">Visit Instagram <i class="fas fa-arrow-right"></i></span>
         </a>
 
         <a class="social-card tiktok" href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener">
           <div class="social-icon"><i class="fab fa-tiktok"></i></div>
           <h3>TikTok</h3>
-          <p>Viral moments and event highlights</p>
+          <p> </p>
           <span class="social-hint">Visit TikTok <i class="fas fa-arrow-right"></i></span>
         </a>
 
         <a class="social-card youtube" href="https://www.youtube.com/@byzinthehood" target="_blank" rel="noopener">
           <div class="social-icon"><i class="fab fa-youtube"></i></div>
           <h3>YouTube</h3>
-          <p>Full episodes and exclusive content series</p>
+          <p> </p>
           <span class="social-hint">Visit YouTube <i class="fas fa-arrow-right"></i></span>
         </a>
 
         <a class="social-card facebook" href="https://www.facebook.com/share/16ZE9bhJQf" target="_blank" rel="noopener">
           <div class="social-icon"><i class="fab fa-facebook"></i></div>
           <h3>Facebook</h3>
-          <p>Event announcements and community updates</p>
+          <p> </p>
           <span class="social-hint">Visit Facebook <i class="fas fa-arrow-right"></i></span>
         </a>
       </div>
