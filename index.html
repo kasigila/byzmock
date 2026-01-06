@@ -1787,12 +1787,14 @@ section{padding: 92px 0}
   pointer-events:none;
 }
 
-.social-card.instagram{ --tint: linear-gradient(135deg, rgba(225,48,108,.45), rgba(225,48,108,.12)); }
-.social-card.tiktok{ --tint: linear-gradient(135deg, rgba(0,242,234,.38), rgba(0,0,0,0)); }
-.social-card.youtube{ --tint: linear-gradient(135deg, rgba(255,0,0,.40), rgba(255,0,0,.12)); }
-.social-card.facebook{ --tint: linear-gradient(135deg, rgba(24,119,242,.38), rgba(24,119,242,.12)); }
+.social-card.instagram{ --tint: linear-gradient(135deg, rgba(225,48,108,.70), rgba(225,48,108,.22)); }
+.social-card.tiktok{ --tint: linear-gradient(135deg, rgba(0,242,234,.60), rgba(0,0,0,0)); }
+.social-card.youtube{ --tint: linear-gradient(135deg, rgba(255,0,0,.65), rgba(255,0,0,.22)); }
+.social-card.facebook{ --tint: linear-gradient(135deg, rgba(24,119,242,.60), rgba(24,119,242,.22)); }
 
-
+[data-theme="dark"] .social-card::before{
+  opacity:.45;
+}
 
 .social-hint{
   display:inline-flex;
