@@ -1737,6 +1737,102 @@ section{padding: 92px 0}
   font-size:12px;
 }
 .platform a:hover{box-shadow: var(--shadow-soft)}
+    /* ===================== CONNECT SECTION - NEON UPGRADE ===================== */
+.connect-neo{
+  position:relative;
+  background: linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%);
+}
+.connect-neo .connect-panel{
+  position:relative;
+  margin-top:8px;
+  padding:40px 22px 26px;
+  border-radius:28px;
+  background:
+    radial-gradient(600px 220px at 15% -10%, rgba(0,255,224,0.18), transparent 60%),
+    radial-gradient(600px 220px at 90% 10%, rgba(255,45,247,0.18), transparent 60%),
+    linear-gradient(135deg, #0b0b0c 0%, #16122a 100%);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.28);
+  overflow:hidden;
+  color:#f5f5f7;
+}
+.connect-neo .connect-panel::before{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background: radial-gradient(800px 360px at 50% 20%, rgba(255,255,255,0.08), transparent 60%);
+  pointer-events:none;
+}
+.connect-neo .section-title h2{
+  color:#ffffff;
+  text-shadow: 0 8px 24px rgba(0,0,0,0.45);
+}
+.connect-neo .section-title p{
+  color:rgba(255,255,255,0.72);
+}
+
+.connect-neo .connect-grid{ gap:14px; }
+
+.connect-neo .platform{
+  position:relative;
+  overflow:hidden;
+  border-radius:22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+  border:1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+}
+.connect-neo .platform::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%);
+  transform: translateX(-120%);
+  transition: transform .7s var(--ease);
+}
+.connect-neo .platform:hover::after{ transform: translateX(120%); }
+.connect-neo .platform h3{ color:#fff; }
+.connect-neo .platform p{ color:rgba(255,255,255,0.72); }
+.connect-neo .platform a{
+  color:#fff;
+  border-color: rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.08);
+}
+.connect-neo .platform a:hover{ background: rgba(255,255,255,0.16); }
+
+.platform-icon{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:12px;
+  border:1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+}
+.platform-icon i{ font-size:20px; }
+
+.connect-neo .platform.instagram .platform-icon{ color:#ff4fd8; }
+.connect-neo .platform.tiktok .platform-icon{ color:#00f2ea; }
+.connect-neo .platform.whatsapp .platform-icon{ color:#25d366; }
+.connect-neo .platform.youtube .platform-icon{ color:#ff2d2d; }
+
+.connect-neo .connect-cta{
+  margin-top:18px;
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:22px;
+  background: rgba(255,255,255,0.08);
+  padding:16px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+}
+.connect-neo .connect-cta-title{ font-weight:800; letter-spacing:-.3px; color:#fff; }
+.connect-neo .connect-cta-sub{ color:rgba(255,255,255,0.7); font-size:13px; }
+
 /* === CONNECT: TINTED GLASS CARDS === */
 .platform{
   position:relative;
@@ -3300,8 +3396,9 @@ body.bulkbar-active .social-dock{
 </section>
 
   <!-- CONNECT -->
-  <section id="connect">
-    <div class="container">
+  <section id="connect" class="connect-neo">
+  <div class="container connect-panel">
+
       <div class="section-title reveal">
         <h2>Connect With BYZ</h2>
         <p>Follow us on our socials.</p>
@@ -3314,23 +3411,34 @@ body.bulkbar-active .social-dock{
           <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener">Open Instagram</a>
         </div>
         <div class="platform tiktok">
-          <h3>TikTok</h3>
+  <div class="platform-icon"><i class="fa-brands fa-tiktok"></i></div>
+  <h3>TikTok</h3>
+          
           <p>Viral moments, highlights, and quick event recaps.</p>
           <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener">Open TikTok</a>
         </div>
         <div class="platform whatsapp">
-          <h3>WhatsApp Booking</h3>
+  <div class="platform-icon"><i class="fa-brands fa-whatsapp"></i></div>
+  <h3>WhatsApp Booking</h3>
+
           <p>Fastest way to reserve a table or ask a question.</p>
           <a href="https://wa.me/255768464367" target="_blank" rel="noopener">Chat on WhatsApp</a>
         </div>
         <div class="platform youtube">
-          <h3>YouTube</h3>
+  <div class="platform-icon"><i class="fa-brands fa-youtube"></i></div>
+  <h3>YouTube</h3>
+
           <p>Challenges, and exclusive content.</p>
           <a href="https://www.youtube.com/@byzinthehood" target="_blank" rel="noopener">Open YouTube</a>
         </div>
       </div>
 
-      <div class="reveal" style="margin-top:18px;border:1px solid var(--border);border-radius:22px;background:color-mix(in srgb, var(--bg-alt) 70%, transparent);padding:16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+      <div class="reveal connect-cta">
+  <div class="connect-cta-text">
+    <div class="connect-cta-title">Ready to book your experience?</div>
+    <div class="connect-cta-sub">Use our automated booking system or text us on WhatsApp.</div>
+  </div>
+
         <div>
           <div style="font-weight:800;letter-spacing:-.3px">Ready to book your experience?</div>
           <div style="color:var(--sub);font-size:13px;margin-top:4px">Use our automated booking system or text us on WhatsApp.</div>
