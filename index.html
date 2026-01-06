@@ -1704,152 +1704,119 @@ section{padding: 92px 0}
 }
   
 /* ===================== CONNECT SECTION ===================== */
-.connect-grid{
-  display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-.platform{
-  border-radius: var(--radius);
-  border:1px solid var(--border);
-  background: var(--bg-elev);
-  box-shadow: var(--shadow-soft);
-  padding: 18px;
-  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
-}
-.platform:hover{transform: translateY(-4px); box-shadow: var(--shadow)}
-.platform h3{
-  font-size:15px;letter-spacing:-.2px
-}
-.platform p{
-  margin-top:8px;color:var(--sub);font-size:13px
-}
-.platform a{
-  margin-top:12px;
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background: var(--bg-alt);
-  font-weight:700;
-  font-size:12px;
-}
-.platform a:hover{box-shadow: var(--shadow-soft)}
-   /* === CONNECT SECTION REFINEMENTS (Apple-like) === */
-#connect{
-  padding-left: 10px;
-  padding-right: 10px;
+.connect-wrapper .section-title{
+  text-align:center;
+  margin-bottom:18px;
 }
 
 .connect-panel{
-  margin: 0 8px; /* room to breathe on phone edges */
-  border-radius: 24px;
-  padding: 26px 18px 20px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
+  background:#101117;
+  border:1px solid #2a2c36;
+  border-radius:1.6em;
+  padding:1.6em;
+  box-shadow:0 8px 30px rgba(0,0,0,0.35);
 }
 
-.connect-panel .section-title h2,
-.connect-panel .section-title p{
-  text-align: left;
+.social-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:1.2em;
 }
-
-.connect-grid{
-  gap: 12px;
-}
-
-.platform{
-  border: 1px solid var(--border);
-  background: var(--bg-elev);
-  box-shadow: var(--shadow-soft);
-}
-
-.platform h3{ color: var(--text); }
-.platform p{ color: var(--sub); }
-
-.platform-link{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-top:12px;
-  padding:10px 12px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background: var(--bg-alt);
-  font-weight:700;
-  font-size:12px;
-  color: var(--text);
-  transition: transform .2s var(--ease), box-shadow .2s var(--ease);
-}
-
-.platform-link:hover{
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
-}
-
-.platform-cta{
-  color: var(--sub);
-  font-weight:600;
-  font-size:11px;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-}
-
-/* Make sure the section doesn't touch phone edges */
-@media (max-width: 560px){
-  .connect-panel{
-    margin: 0 12px;
-    padding: 22px 16px 18px;
-  }
-  .connect-grid{
-    grid-template-columns: repeat(2, 1fr); /* keeps quadrant */
+@media (min-width: 900px){
+  .social-grid{
+    grid-template-columns: repeat(4,1fr);
+    gap:1.4em;
   }
 }
 
-/* === CONNECT: TINTED GLASS CARDS === */
-.platform{
+.social-card{
+  display:block;
+  text-decoration:none;
+  color:inherit;
+  background:#14161d;
+  border-radius:1.2em;
+  padding:1.7em 1.2em;
+  text-align:center;
+  transition: box-shadow .2s, transform .15s;
+  border:1px solid #2a2c36;
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);
   position:relative;
   overflow:hidden;
 }
+.social-card:hover{
+  box-shadow:0 12px 28px rgba(0,0,0,0.35);
+  transform: translateY(-4px);
+}
 
-/* subtle glass glow */
-.platform::before{
+.social-icon{
+  width:64px;height:64px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;
+  margin:0 auto 1em auto;
+  border:1px solid #2a2c36;
+  background:#0f1117;
+  color:#fff;
+}
+
+.social-card.instagram .social-icon{ color:#E1306C; }
+.social-card.tiktok .social-icon{ color:#00f2ea; }
+.social-card.youtube .social-icon{ color:#ff0000; }
+.social-card.facebook .social-icon{ color:#1877f2; }
+
+.social-card h3{
+  font-weight:800;
+  margin-bottom:.4em;
+  font-size:1.08rem;
+  color:var(--text-heavy);
+  letter-spacing:.06em;
+}
+.social-card p{
+  color:var(--text-faint);
+  font-size:1.01em;
+  margin-bottom:.9em;
+}
+
+.social-hint{
+  display:inline-flex;
+  align-items:center;
+  gap:.5em;
+  color:var(--text-faint);
+  font-size:.95em;
+  font-weight:700;
+}
+
+/* gradient overlay per platform */
+.social-card::after{
   content:"";
   position:absolute;
   inset:-40%;
-  background: radial-gradient(600px 220px at 20% 20%, rgba(255,255,255,.45), transparent 60%);
-  opacity:.25;
+  opacity:.22;
+  filter: blur(24px);
+  z-index:0;
   pointer-events:none;
 }
+.social-card.instagram::after{
+  background: radial-gradient(380px 180px at 20% 10%, rgba(225,48,108,.45), transparent 60%);
+}
+.social-card.tiktok::after{
+  background: radial-gradient(380px 180px at 20% 10%, rgba(0,242,234,.45), transparent 60%),
+              radial-gradient(380px 180px at 80% 60%, rgba(254,44,85,.30), transparent 60%);
+}
+.social-card.youtube::after{
+  background: radial-gradient(380px 180px at 20% 10%, rgba(255,0,0,.45), transparent 60%);
+}
+.social-card.facebook::after{
+  background: radial-gradient(380px 180px at 20% 10%, rgba(24,119,242,.45), transparent 60%);
+}
+.social-card > *{
+  position: relative;
+  z-index:1;
+}
 
-/* per-platform tint */
-.platform.instagram{
-  background:
-    linear-gradient(180deg, rgba(225,48,108,.12), rgba(225,48,108,.04));
-}
-.platform.tiktok{
-  background:
-    linear-gradient(180deg, rgba(0,242,234,.12), rgba(0,242,234,.04));
-}
-.platform.whatsapp{
-  background:
-    linear-gradient(180deg, rgba(37,211,102,.12), rgba(37,211,102,.04));
-}
-.platform.youtube{
-  background:
-    linear-gradient(180deg, rgba(255,0,0,.12), rgba(255,0,0,.04));
+@media (max-width: 600px){
+  .connect-panel{ margin: 0 10px; }
 }
 
-/* clean Apple-like hover */
-.platform:hover{
-  box-shadow: var(--shadow);
-  transform: translateY(-4px);
-}
 
 /* ===================== FOOTER ===================== */
 footer{
@@ -3374,65 +3341,46 @@ body.bulkbar-active .social-dock{
 </section>
 
   <!-- CONNECT -->
-  <section id="connect" class="connect-neo">
-  <div class="container connect-panel">
-
-      <div class="section-title reveal">
-        <h2>Connect With BYZ</h2>
-        <p>Follow us on our socials.</p>
-      </div>
-
-      <div class="connect-grid stagger reveal">
-        <div class="platform instagram">
+  <section class="connect-wrapper" id="connect">
+  <div class="container">
+    <div class="section-title connect-title-outside">
+      <h2>CONNECT WITH BYZ</h2>
+      <p>Follow us on our socials.</p>
+    </div>
+    <div class="connect-panel">
+      <div class="social-grid">
+        <a class="social-card instagram" href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener">
+          <div class="social-icon"><i class="fab fa-instagram"></i></div>
           <h3>Instagram</h3>
-          <p>Daily updates and behind-the-scenes moments.</p>
-          
-          <a class="platform-link" href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" aria-label="Open Instagram">
-  <span>Open Instagram</span>
-  <span class="platform-cta">Tap to open <i class="fa-solid fa-arrow-right"></i></span>
-</a>
+          <p>Daily updates and behind-the-scenes moments</p>
+          <span class="social-hint">Visit Instagram <i class="fas fa-arrow-right"></i></span>
+        </a>
 
-        </div>
-        <div class="platform tiktok">
-  <div class="platform-icon"><i class="fa-brands fa-tiktok"></i></div>
-  <h3>TikTok</h3>
-          
-          <p>Viral moments, highlights, and quick event recaps.</p>
-          <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener">Open TikTok</a>
-        </div>
-        <div class="platform whatsapp">
-  <div class="platform-icon"><i class="fa-brands fa-whatsapp"></i></div>
-  <h3>WhatsApp Booking</h3>
+        <a class="social-card tiktok" href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener">
+          <div class="social-icon"><i class="fab fa-tiktok"></i></div>
+          <h3>TikTok</h3>
+          <p>Viral moments and event highlights</p>
+          <span class="social-hint">Visit TikTok <i class="fas fa-arrow-right"></i></span>
+        </a>
 
-          <p>Fastest way to reserve a table or ask a question.</p>
-          <a href="https://wa.me/255768464367" target="_blank" rel="noopener">Chat on WhatsApp</a>
-        </div>
-        <div class="platform youtube">
-  <div class="platform-icon"><i class="fa-brands fa-youtube"></i></div>
-  <h3>YouTube</h3>
+        <a class="social-card youtube" href="https://www.youtube.com/@byzinthehood" target="_blank" rel="noopener">
+          <div class="social-icon"><i class="fab fa-youtube"></i></div>
+          <h3>YouTube</h3>
+          <p>Full episodes and exclusive content series</p>
+          <span class="social-hint">Visit YouTube <i class="fas fa-arrow-right"></i></span>
+        </a>
 
-          <p>Challenges, and exclusive content.</p>
-          <a href="https://www.youtube.com/@byzinthehood" target="_blank" rel="noopener">Open YouTube</a>
-        </div>
-      </div>
-
-      <div class="reveal connect-cta">
-  <div class="connect-cta-text">
-    <div class="connect-cta-title">Ready to book your experience?</div>
-    <div class="connect-cta-sub">Use our automated booking system or text us on WhatsApp.</div>
-  </div>
-
-        <div>
-          <div style="font-weight:800;letter-spacing:-.3px">Ready to book your experience?</div>
-          <div style="color:var(--sub);font-size:13px;margin-top:4px">Use our automated booking system or text us on WhatsApp.</div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn primary" id="openBookingPicker2" type="button">Book Now</button>
-          <a class="btn" href="https://wa.me/255768464367" target="_blank" rel="noopener">WhatsApp</a>
-        </div>
+        <a class="social-card facebook" href="https://www.facebook.com/share/16ZE9bhJQf" target="_blank" rel="noopener">
+          <div class="social-icon"><i class="fab fa-facebook"></i></div>
+          <h3>Facebook</h3>
+          <p>Event announcements and community updates</p>
+          <span class="social-hint">Visit Facebook <i class="fas fa-arrow-right"></i></span>
+        </a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
 
   <!-- FOOTER -->
   <footer>
