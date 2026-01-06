@@ -1737,101 +1737,79 @@ section{padding: 92px 0}
   font-size:12px;
 }
 .platform a:hover{box-shadow: var(--shadow-soft)}
-    /* ===================== CONNECT SECTION - NEON UPGRADE ===================== */
-.connect-neo{
-  position:relative;
-  background: linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%);
-}
-.connect-neo .connect-panel{
-  position:relative;
-  margin-top:8px;
-  padding:40px 22px 26px;
-  border-radius:28px;
-  background:
-    radial-gradient(600px 220px at 15% -10%, rgba(0,255,224,0.18), transparent 60%),
-    radial-gradient(600px 220px at 90% 10%, rgba(255,45,247,0.18), transparent 60%),
-    linear-gradient(135deg, #0b0b0c 0%, #16122a 100%);
-  border:1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 30px 90px rgba(0,0,0,0.28);
-  overflow:hidden;
-  color:#f5f5f7;
-}
-.connect-neo .connect-panel::before{
-  content:"";
-  position:absolute;
-  inset:-40%;
-  background: radial-gradient(800px 360px at 50% 20%, rgba(255,255,255,0.08), transparent 60%);
-  pointer-events:none;
-}
-.connect-neo .section-title h2{
-  color:#ffffff;
-  text-shadow: 0 8px 24px rgba(0,0,0,0.45);
-}
-.connect-neo .section-title p{
-  color:rgba(255,255,255,0.72);
+   /* === CONNECT SECTION REFINEMENTS (Apple-like) === */
+#connect{
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
-.connect-neo .connect-grid{ gap:14px; }
-
-.connect-neo .platform{
-  position:relative;
-  overflow:hidden;
-  border-radius:22px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
-  border:1px solid rgba(255,255,255,0.16);
-  box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+.connect-panel{
+  margin: 0 8px; /* room to breathe on phone edges */
+  border-radius: 24px;
+  padding: 26px 18px 20px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
 }
-.connect-neo .platform::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%);
-  transform: translateX(-120%);
-  transition: transform .7s var(--ease);
-}
-.connect-neo .platform:hover::after{ transform: translateX(120%); }
-.connect-neo .platform h3{ color:#fff; }
-.connect-neo .platform p{ color:rgba(255,255,255,0.72); }
-.connect-neo .platform a{
-  color:#fff;
-  border-color: rgba(255,255,255,0.28);
-  background: rgba(255,255,255,0.08);
-}
-.connect-neo .platform a:hover{ background: rgba(255,255,255,0.16); }
 
-.platform-icon{
-  width:44px;
-  height:44px;
-  border-radius:14px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  margin-bottom:12px;
-  border:1px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.08);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+.connect-panel .section-title h2,
+.connect-panel .section-title p{
+  text-align: left;
 }
-.platform-icon i{ font-size:20px; }
 
-.connect-neo .platform.instagram .platform-icon{ color:#ff4fd8; }
-.connect-neo .platform.tiktok .platform-icon{ color:#00f2ea; }
-.connect-neo .platform.whatsapp .platform-icon{ color:#25d366; }
-.connect-neo .platform.youtube .platform-icon{ color:#ff2d2d; }
+.connect-grid{
+  gap: 12px;
+}
 
-.connect-neo .connect-cta{
-  margin-top:18px;
-  border:1px solid rgba(255,255,255,0.18);
-  border-radius:22px;
-  background: rgba(255,255,255,0.08);
-  padding:16px;
+.platform{
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-soft);
+}
+
+.platform h3{ color: var(--text); }
+.platform p{ color: var(--sub); }
+
+.platform-link{
   display:flex;
-  gap:12px;
   align-items:center;
   justify-content:space-between;
-  flex-wrap:wrap;
+  gap:10px;
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: var(--bg-alt);
+  font-weight:700;
+  font-size:12px;
+  color: var(--text);
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease);
 }
-.connect-neo .connect-cta-title{ font-weight:800; letter-spacing:-.3px; color:#fff; }
-.connect-neo .connect-cta-sub{ color:rgba(255,255,255,0.7); font-size:13px; }
+
+.platform-link:hover{
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.platform-cta{
+  color: var(--sub);
+  font-weight:600;
+  font-size:11px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+/* Make sure the section doesn't touch phone edges */
+@media (max-width: 560px){
+  .connect-panel{
+    margin: 0 12px;
+    padding: 22px 16px 18px;
+  }
+  .connect-grid{
+    grid-template-columns: repeat(2, 1fr); /* keeps quadrant */
+  }
+}
 
 /* === CONNECT: TINTED GLASS CARDS === */
 .platform{
@@ -3408,7 +3386,12 @@ body.bulkbar-active .social-dock{
         <div class="platform instagram">
           <h3>Instagram</h3>
           <p>Daily updates and behind-the-scenes moments.</p>
-          <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener">Open Instagram</a>
+          
+          <a class="platform-link" href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" aria-label="Open Instagram">
+  <span>Open Instagram</span>
+  <span class="platform-cta">Tap to open <i class="fa-solid fa-arrow-right"></i></span>
+</a>
+
         </div>
         <div class="platform tiktok">
   <div class="platform-icon"><i class="fa-brands fa-tiktok"></i></div>
