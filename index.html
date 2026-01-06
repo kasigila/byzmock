@@ -1785,33 +1785,7 @@ section{padding: 92px 0}
   font-weight:700;
 }
 
-/* gradient overlay per platform */
-.social-card::after{
-  content:"";
-  position:absolute;
-  inset:-40%;
-  opacity:.22;
-  filter: blur(24px);
-  z-index:0;
-  pointer-events:none;
-}
-.social-card.instagram::after{
-  background: radial-gradient(380px 180px at 20% 10%, rgba(225,48,108,.45), transparent 60%);
-}
-.social-card.tiktok::after{
-  background: radial-gradient(380px 180px at 20% 10%, rgba(0,242,234,.45), transparent 60%),
-              radial-gradient(380px 180px at 80% 60%, rgba(254,44,85,.30), transparent 60%);
-}
-.social-card.youtube::after{
-  background: radial-gradient(380px 180px at 20% 10%, rgba(255,0,0,.45), transparent 60%);
-}
-.social-card.facebook::after{
-  background: radial-gradient(380px 180px at 20% 10%, rgba(24,119,242,.45), transparent 60%);
-}
-.social-card > *{
-  position: relative;
-  z-index:1;
-}
+
 
 @media (max-width: 600px){
   .connect-panel{ margin: 0 10px; }
@@ -3344,7 +3318,7 @@ body.bulkbar-active .social-dock{
   <section class="connect-wrapper" id="connect">
   <div class="container">
     <div class="section-title connect-title-outside">
-      <h2>CONNECT WITH BYZ</h2>
+      <h2>Connect With BYZ</h2>
       <p>Follow us on our socials.</p>
     </div>
     <div class="connect-panel">
