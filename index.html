@@ -1778,6 +1778,20 @@ section{padding: 92px 0}
   font-size:1.01em;
   margin-bottom:.9em;
 }
+    .social-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: var(--tint, transparent);
+  opacity:.20;            /* subtle */
+  pointer-events:none;
+}
+
+.social-card.instagram{ --tint: linear-gradient(135deg, rgba(225,48,108,.28), rgba(225,48,108,.05)); }
+.social-card.tiktok{ --tint: linear-gradient(135deg, rgba(0,242,234,.22), rgba(0,0,0,0)); }
+.social-card.youtube{ --tint: linear-gradient(135deg, rgba(255,0,0,.22), rgba(255,0,0,.05)); }
+.social-card.facebook{ --tint: linear-gradient(135deg, rgba(24,119,242,.22), rgba(24,119,242,.05)); }
+
 
 .social-hint{
   display:inline-flex;
