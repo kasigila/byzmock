@@ -1710,11 +1710,12 @@ section{padding: 92px 0}
 }
 
 .connect-panel{
-  background:#101117;
-  border:1px solid #2a2c36;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border:1px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-radius:1.6em;
   padding:1.6em;
-  box-shadow:0 8px 30px rgba(0,0,0,0.35);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
 }
 
 .social-grid{
@@ -1733,15 +1734,16 @@ section{padding: 92px 0}
   display:block;
   text-decoration:none;
   color:inherit;
-  background:#14161d;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
   border-radius:1.2em;
   padding:1.7em 1.2em;
   text-align:center;
   transition: box-shadow .2s, transform .15s;
-  border:1px solid #2a2c36;
-  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  border:1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  box-shadow: var(--shadow-soft);
   position:relative;
   overflow:hidden;
+  backdrop-filter: blur(10px);
 }
 .social-card:hover{
   box-shadow:0 12px 28px rgba(0,0,0,0.35);
@@ -1753,9 +1755,9 @@ section{padding: 92px 0}
   display:flex;align-items:center;justify-content:center;
   font-size:2rem;
   margin:0 auto 1em auto;
-  border:1px solid #2a2c36;
-  background:#0f1117;
-  color:#fff;
+  border:1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--bg-alt) 80%, transparent);
+  color: var(--text);
 }
 
 .social-card.instagram .social-icon{ color:#E1306C; }
