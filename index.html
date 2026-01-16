@@ -2256,6 +2256,176 @@ footer{
   transform: translateY(-2px);
   box-shadow: var(--shadow-soft);
 }
+    /* ===================== ARTIST CONTACT MODAL STYLES ===================== */
+.contact-option {
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-soft);
+  padding: 14px;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.contact-option:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.contact-header {
+  margin-bottom: 10px;
+}
+
+.contact-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.contact-label {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--text);
+}
+
+.contact-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+[data-theme="dark"] .contact-badge {
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-elev));
+  color: var(--accent);
+}
+
+.contact-description {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--sub);
+  line-height: 1.4;
+}
+
+.contact-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+  min-height: 44px;
+}
+
+.contact-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+}
+
+.contact-button.primary {
+  background: color-mix(in srgb, #25D366 14%, var(--bg-elev) 86%);
+  border-color: color-mix(in srgb, #25D366 40%, var(--border) 60%);
+  color: var(--text);
+}
+
+.contact-button.primary i {
+  color: #25D366;
+}
+
+.contact-button.primary:hover {
+  background: color-mix(in srgb, #25D366 18%, var(--bg-elev) 82%);
+}
+
+/* Email button styling */
+#artistEmailModal .contact-button.primary {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+
+#artistEmailModal .contact-button.primary i {
+  color: var(--accent);
+}
+
+#artistEmailModal .contact-button.primary:hover {
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-elev));
+}
+
+/* Spotify Modal Styles */
+.spotify-modal {
+  width: min(600px, 100%);
+}
+
+.spotify-body {
+  padding: 20px;
+}
+
+.spotify-player-wrapper {
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #000;
+  min-height: 352px;
+}
+
+.spotify-player-wrapper iframe {
+  width: 100%;
+  min-height: 352px;
+  display: block;
+}
+
+/* Venues Modal Styles */
+.venues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.venue-item {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  box-shadow: var(--shadow-soft);
+}
+
+.venue-name {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--text);
+}
+
+/* Make portfolio button work like link */
+.portfolio-link button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  width: 100%;
+  text-align: left;
+}
+
+/* ===================== TEMPO SCHEDULE MODAL ===================== */
 /* ===================== TEMPO SCHEDULE MODAL ===================== */
 .tempo-modal-backdrop{
   position:fixed;
@@ -3249,7 +3419,8 @@ body.bulkbar-active .social-dock{
       </div>
     </div>
   </section>
-  <!-- BOOK OUR ARTISTS & DJS -->
+  
+    <!-- BOOK OUR ARTISTS & DJS -->
   <section id="artists">
     <div class="container">
       <div class="section-title reveal">
@@ -3281,28 +3452,24 @@ body.bulkbar-active .social-dock{
             <div class="artist-portfolio">
               <div class="portfolio-label">Portfolio</div>
               <div class="portfolio-links">
-                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDQxMjc3MjQ1MTg1ODM4?igsh=MTBtMWhjbXo3dm5jcQ==" target="_blank" rel="noopener" class="portfolio-link">
+                <a href="https://www.instagram.com/djsammyofficial_?igsh=MWJ2Y25oaWcyb3M2Zw==" target="_blank" rel="noopener" class="portfolio-link">
                   <i class="fa-brands fa-instagram"></i>
-                  <span>Highlights 1</span>
+                  <span>Instagram</span>
                 </a>
-                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE3ODYxOTMyODMwNDcxMTE4?igsh=MTRqZm8xcjhmZ3kyNw==" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-instagram"></i>
-                  <span>Highlights 2</span>
-                </a>
-                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDExNDEzNjI4NzgwNTg2?igsh=MTBzYWk0Z3pwOTBrbw==" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-instagram"></i>
-                  <span>Highlights 3</span>
-                </a>
+                <button class="portfolio-link" onclick="showVenuesModal('sammy')" type="button">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <span>Featured Venues</span>
+                </button>
               </div>
             </div>
 
             <div class="card-actions artist-actions">
-              <a class="btn primary" href="https://wa.me/255755790033?text=Hi%20BYZ%2C%20I%27m%20interested%20in%20booking%20DJ%20Sammy%20for%20an%20event.%20Could%20you%20please%20share%20availability%20and%20pricing%3F" target="_blank" rel="noopener">
+              <button class="btn primary" onclick="openContactModal('sammy', 'whatsapp')" type="button">
                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
-              </a>
-              <a class="btn" href="mailto:byzinthehoodz@gmail.com?subject=Booking%20Inquiry%20-%20DJ%20Sammy&body=Hi%20BYZ%2C%0A%0AI%27m%20interested%20in%20booking%20DJ%20Sammy%20for%20an%20event.%0A%0AEvent%20Details%3A%0A-%20Date%3A%20%0A-%20Venue%3A%20%0A-%20Event%20Type%3A%20%0A-%20Expected%20Guests%3A%20%0A-%20Duration%3A%20%0A%0ACould%20you%20please%20share%20availability%20and%20pricing%3F%0A%0AThank%20you%21" target="_blank" rel="noopener">
+              </button>
+              <button class="btn" onclick="openContactModal('sammy', 'email')" type="button">
                 <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -3333,28 +3500,24 @@ body.bulkbar-active .social-dock{
             <div class="artist-portfolio">
               <div class="portfolio-label">Portfolio</div>
               <div class="portfolio-links">
-                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDI5NzY2NDU4NjI3ODk5?igsh=dHUzZG5laHRyeHcy" target="_blank" rel="noopener" class="portfolio-link">
+                <button class="portfolio-link" onclick="showSpotifyModal('apuki')" type="button">
+                  <i class="fa-brands fa-spotify"></i>
+                  <span>Spotify</span>
+                </button>
+                <a href="https://www.instagram.com/apukiofficial?igsh=MWtodmFhZDJmODNxbQ==" target="_blank" rel="noopener" class="portfolio-link">
                   <i class="fa-brands fa-instagram"></i>
-                  <span>Highlights 1</span>
-                </a>
-                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MTQ0NTY1MTgwNDM0MzYx?igsh=MWpqNndjZmV6NTZodQ==" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-instagram"></i>
-                  <span>Highlights 2</span>
-                </a>
-                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDMyNDc3Nzg5NDYxNDAw?igsh=enE2c3hwaDd0c3Vh" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-instagram"></i>
-                  <span>Highlights 3</span>
+                  <span>Instagram</span>
                 </a>
               </div>
             </div>
 
             <div class="card-actions artist-actions">
-              <a class="btn primary" href="https://wa.me/255755790033?text=Hi%20BYZ%2C%20I%27m%20interested%20in%20booking%20Apuki%20for%20an%20event.%20Could%20you%20please%20share%20availability%20and%20pricing%3F" target="_blank" rel="noopener">
+              <button class="btn primary" onclick="openContactModal('apuki', 'whatsapp')" type="button">
                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
-              </a>
-              <a class="btn" href="mailto:Apuki.Bookings@gmail.com?subject=Booking%20Inquiry%20-%20Apuki&body=Hi%20BYZ%2C%0A%0AI%27m%20interested%20in%20booking%20Apuki%20for%20an%20event.%0A%0AEvent%20Details%3A%0A-%20Date%3A%20%0A-%20Venue%3A%20%0A-%20Event%20Type%3A%20%0A-%20Expected%20Guests%3A%20%0A-%20Duration%3A%20%0A-%20Location%3A%20%28Tanzania%2FAfrica%20or%20International%29%0A%0ACould%20you%20please%20share%20availability%20and%20pricing%3F%0A%0AThank%20you%21" target="_blank" rel="noopener">
+              </button>
+              <button class="btn" onclick="openContactModal('apuki', 'email')" type="button">
                 <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -3396,20 +3559,20 @@ body.bulkbar-active .social-dock{
                   <i class="fa-brands fa-youtube"></i>
                   <span>YouTube</span>
                 </a>
-                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MTAxMDk1MTI2NTk3NTk2?igsh=aGh4bXdvZ2M1dHF4" target="_blank" rel="noopener" class="portfolio-link">
+                <a href="https://www.instagram.com/renesw0rld777?igsh=MTEzaWVpaHlzOHl0Yw==" target="_blank" rel="noopener" class="portfolio-link">
                   <i class="fa-brands fa-instagram"></i>
-                  <span>Highlights</span>
+                  <span>Instagram</span>
                 </a>
               </div>
             </div>
 
             <div class="card-actions artist-actions">
-              <a class="btn primary" href="https://wa.me/255755790033?text=Hi%20BYZ%2C%20I%27m%20interested%20in%20booking%20Renee%20for%20an%20event.%20Could%20you%20please%20share%20availability%20and%20pricing%3F" target="_blank" rel="noopener">
+              <button class="btn primary" onclick="openContactModal('renee', 'whatsapp')" type="button">
                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
-              </a>
-              <a class="btn" href="mailto:byzinthehoodz@gmail.com?subject=Booking%20Inquiry%20-%20Renee&body=Hi%20BYZ%2C%0A%0AI%27m%20interested%20in%20booking%20Renee%20for%20an%20event.%0A%0AEvent%20Details%3A%0A-%20Date%3A%20%0A-%20Venue%3A%20%0A-%20Event%20Type%3A%20%0A-%20Expected%20Guests%3A%20%0A-%20Duration%3A%20%0A%0ACould%20you%20please%20share%20availability%20and%20pricing%3F%0A%0AThank%20you%21" target="_blank" rel="noopener">
+              </button>
+              <button class="btn" onclick="openContactModal('renee', 'email')" type="button">
                 <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -3582,7 +3745,7 @@ body.bulkbar-active .social-dock{
       </div>
     </div>
   </section>
-
+  
 
   <!-- GALLERY -->
 <section id="gallery">
@@ -3917,6 +4080,109 @@ body.bulkbar-active .social-dock{
   </div>
 </div>
 
+  <!-- Artist Contact Selection Modals -->
+  <!-- WhatsApp Modal -->
+  <div id="artistWhatsAppModal" class="byz-modal-backdrop byz-hidden" aria-hidden="true">
+    <div class="byz-modal" role="dialog" aria-modal="true" aria-labelledby="waModalTitle">
+      <div class="byz-modal-head">
+        <div>
+          <div id="waModalTitle" class="byz-modal-title">Contact via WhatsApp</div>
+          <div class="byz-modal-sub" id="waModalSub">Choose a contact number</div>
+        </div>
+        <button class="byz-modal-x" onclick="closeContactModal()" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="byz-modal-body">
+        <div id="waModalContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Modal -->
+  <div id="artistEmailModal" class="byz-modal-backdrop byz-hidden" aria-hidden="true">
+    <div class="byz-modal" role="dialog" aria-modal="true" aria-labelledby="emailModalTitle">
+      <div class="byz-modal-head">
+        <div>
+          <div id="emailModalTitle" class="byz-modal-title">Contact via Email</div>
+          <div class="byz-modal-sub" id="emailModalSub">Choose an email address</div>
+        </div>
+        <button class="byz-modal-x" onclick="closeContactModal()" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="byz-modal-body">
+        <div id="emailModalContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spotify Embed Modal (Apuki) -->
+  <div id="spotifyModal" class="byz-modal-backdrop byz-hidden" aria-hidden="true">
+    <div class="byz-modal spotify-modal" role="dialog" aria-modal="true" aria-labelledby="spotifyModalTitle">
+      <div class="byz-modal-head">
+        <div>
+          <div id="spotifyModalTitle" class="byz-modal-title">Apuki on Spotify</div>
+          <div class="byz-modal-sub">Listen to Apuki's music and productions</div>
+        </div>
+        <button class="byz-modal-x" onclick="closeSpotifyModal()" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="byz-modal-body spotify-body">
+        <div class="spotify-player-wrapper">
+          <iframe 
+            data-testid="embed-iframe" 
+            style="border-radius:12px; width:100%; min-height:352px;" 
+            src="https://open.spotify.com/embed/artist/3ZErvkG8aAZfFgxRPMrSwr?utm_source=generator" 
+            frameBorder="0" 
+            allowfullscreen="" 
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+            loading="lazy">
+          </iframe>
+        </div>
+        <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+          <a href="https://open.spotify.com/artist/3ZErvkG8aAZfFgxRPMrSwr?si=QGZvCh9DQtSde5XpcFw3NQ" target="_blank" rel="noopener" class="btn primary" style="text-decoration:none;">
+            <i class="fa-brands fa-spotify"></i> Open in Spotify
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Venues Modal (DJ Sammy) -->
+  <div id="venuesModal" class="byz-modal-backdrop byz-hidden" aria-hidden="true">
+    <div class="byz-modal" role="dialog" aria-modal="true" aria-labelledby="venuesModalTitle">
+      <div class="byz-modal-head">
+        <div>
+          <div id="venuesModalTitle" class="byz-modal-title">DJ Sammy - Featured Venues</div>
+          <div class="byz-modal-sub">Venues where DJ Sammy has performed</div>
+        </div>
+        <button class="byz-modal-x" onclick="closeVenuesModal()" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="byz-modal-body">
+        <div class="venues-list">
+          <div class="venue-item">
+            <div class="venue-name">Uncle's Lounge</div>
+          </div>
+          <div class="venue-item">
+            <div class="venue-name">Tips Coco</div>
+          </div>
+          <div class="venue-item">
+            <div class="venue-name">Squishy Life</div>
+          </div>
+          <div class="venue-item">
+            <div class="venue-name">iRoc Networks</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Booking Picker Modal -->
+  
 </main>
 
 <script>
@@ -4969,7 +5235,207 @@ boardGrid.innerHTML = boardItems.map(item => {
     if(e.key === "Escape" && !backdrop.classList.contains("byz-hidden")) closeModal();
   });
 })();
+/* =========================================================
+   ARTIST CONTACT MODAL SYSTEM
+========================================================= */
+const artistContacts = {
+  sammy: {
+    name: "DJ Sammy",
+    whatsapp: [
+      { number: "255755790033", label: "Frank (CEO of BYZ)", description: "Primary contact", type: "primary" },
+      { number: "255768464367", label: "BYZ Business Number", description: "Official business line", type: "business" }
+    ],
+    email: [
+      { address: "byzinthehoodz@gmail.com", label: "BYZ Business Email", description: "Official booking email", type: "business" }
+    ]
+  },
+  apuki: {
+    name: "Apuki",
+    whatsapp: [
+      { number: "255755790033", label: "Frank (CEO of BYZ)", description: "Primary contact", type: "primary" },
+      { number: "255768464367", label: "BYZ Business Number", description: "Official business line", type: "business" },
+      { number: "447350712051", label: "International Booking (Apuki)", description: "For international events", type: "international" },
+      { number: "255679470194", label: "Tanzania/Africa Booking (Apuki)", description: "Local booking line", type: "local" },
+      { number: "255656881144", label: "Tanzania/Africa Booking (Apuki)", description: "Alternative local line", type: "local" }
+    ],
+    email: [
+      { address: "Apuki.Bookings@gmail.com", label: "Apuki Bookings Email", description: "Direct booking email", type: "primary" },
+      { address: "byzinthehoodz@gmail.com", label: "BYZ Business Email", description: "Official business email", type: "business" }
+    ]
+  },
+  renee: {
+    name: "Renee",
+    whatsapp: [
+      { number: "255755790033", label: "Frank (CEO of BYZ)", description: "Primary contact", type: "primary" },
+      { number: "255768464367", label: "BYZ Business Number", description: "Official business line", type: "business" }
+    ],
+    email: [
+      { address: "byzinthehoodz@gmail.com", label: "BYZ Business Email", description: "Official booking email", type: "business" }
+    ]
+  }
+};
 
+function formatPhoneNumber(num) {
+  const str = String(num);
+  if (str.startsWith("255")) {
+    return `+${str.slice(0, 3)} ${str.slice(3, 6)} ${str.slice(6, 9)} ${str.slice(9)}`;
+  } else if (str.startsWith("44")) {
+    return `+${str.slice(0, 2)} ${str.slice(2, 6)} ${str.slice(6)}`;
+  }
+  return `+${str}`;
+}
+
+function openContactModal(artistId, type) {
+  const artist = artistContacts[artistId];
+  if (!artist) return;
+
+  const message = `Hi BYZ, I'm interested in booking ${artist.name} for an event. Could you please share availability and pricing?`;
+  const emailBody = `Hi BYZ,\n\nI'm interested in booking ${artist.name} for an event.\n\nEvent Details:\n- Date: \n- Venue: \n- Event Type: \n- Expected Guests: \n- Duration: \n\nCould you please share availability and pricing?\n\nThank you!`;
+
+  if (type === 'whatsapp') {
+    const modal = document.getElementById('artistWhatsAppModal');
+    const title = document.getElementById('waModalTitle');
+    const sub = document.getElementById('waModalSub');
+    const content = document.getElementById('waModalContent');
+
+    title.textContent = `Contact ${artist.name} via WhatsApp`;
+    sub.textContent = 'Choose a contact number';
+
+    let html = '';
+    artist.whatsapp.forEach((contact, index) => {
+      const waUrl = `https://wa.me/${contact.number}?text=${encodeURIComponent(message)}`;
+      const isBusiness = contact.type === 'business';
+      const formattedNumber = formatPhoneNumber(contact.number);
+      
+      html += `
+        <div class="contact-option" style="margin-top: ${index === 0 ? '0' : '12px'};">
+          <div class="contact-header">
+            <div class="contact-label-row">
+              <span class="contact-label">${contact.label}</span>
+              ${isBusiness ? '<span class="contact-badge">Recommended</span>' : ''}
+            </div>
+            <div class="contact-description">${contact.description}</div>
+          </div>
+          <a href="${waUrl}" target="_blank" rel="noopener" class="contact-button ${isBusiness ? 'primary' : ''}">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span>${formattedNumber}</span>
+          </a>
+        </div>
+      `;
+    });
+
+    content.innerHTML = html;
+    modal.classList.remove('byz-hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  } else if (type === 'email') {
+    const modal = document.getElementById('artistEmailModal');
+    const title = document.getElementById('emailModalTitle');
+    const sub = document.getElementById('emailModalSub');
+    const content = document.getElementById('emailModalContent');
+
+    title.textContent = `Contact ${artist.name} via Email`;
+    sub.textContent = 'Choose an email address';
+
+    let html = '';
+    artist.email.forEach((contact, index) => {
+      const emailUrl = `mailto:${contact.address}?subject=Booking Inquiry - ${artist.name}&body=${encodeURIComponent(emailBody)}`;
+      const isBusiness = contact.type === 'business';
+      
+      html += `
+        <div class="contact-option" style="margin-top: ${index === 0 ? '0' : '12px'};">
+          <div class="contact-header">
+            <div class="contact-label-row">
+              <span class="contact-label">${contact.label}</span>
+              ${isBusiness ? '<span class="contact-badge">Recommended</span>' : ''}
+            </div>
+            <div class="contact-description">${contact.description}</div>
+          </div>
+          <a href="${emailUrl}" target="_blank" rel="noopener" class="contact-button ${isBusiness ? 'primary' : ''}">
+            <i class="fa-solid fa-envelope"></i>
+            <span>${contact.address}</span>
+          </a>
+        </div>
+      `;
+    });
+
+    content.innerHTML = html;
+    modal.classList.remove('byz-hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeContactModal() {
+  const modals = ['artistWhatsAppModal', 'artistEmailModal'];
+  modals.forEach(id => {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.classList.add('byz-hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  });
+  document.body.style.overflow = '';
+}
+
+// Spotify Modal
+function showSpotifyModal(artistId) {
+  const modal = document.getElementById('spotifyModal');
+  if (!modal) return;
+  
+  modal.classList.remove('byz-hidden');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSpotifyModal() {
+  const modal = document.getElementById('spotifyModal');
+  if (!modal) return;
+  
+  modal.classList.add('byz-hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+// Venues Modal
+function showVenuesModal(artistId) {
+  const modal = document.getElementById('venuesModal');
+  if (!modal) return;
+  
+  modal.classList.remove('byz-hidden');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVenuesModal() {
+  const modal = document.getElementById('venuesModal');
+  if (!modal) return;
+  
+  modal.classList.add('byz-hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+// Close modals on backdrop click
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('byz-modal-backdrop')) {
+    closeContactModal();
+    closeSpotifyModal();
+    closeVenuesModal();
+  }
+});
+
+// Close modals on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modals = document.querySelectorAll('.byz-modal-backdrop:not(.byz-hidden)');
+    if (modals.length > 0) {
+      closeContactModal();
+      closeSpotifyModal();
+      closeVenuesModal();
+    }
+  }
+});
 </script>
 </body>
 </html>
