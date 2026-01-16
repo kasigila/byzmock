@@ -2256,6 +2256,64 @@ footer{
   transform: translateY(-2px);
   box-shadow: var(--shadow-soft);
 }
+    /* Spotify Interactive Hint */
+.portfolio-link-interactive {
+  position: relative;
+  overflow: visible;
+}
+
+.portfolio-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, #1DB954 14%, var(--bg-alt));
+  border: 1px solid color-mix(in srgb, #1DB954 30%, var(--border));
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #1DB954;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.portfolio-link-interactive:hover .portfolio-hint,
+.portfolio-link-interactive:focus .portfolio-hint {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.portfolio-hint i {
+  font-size: 9px;
+}
+
+/* Subtle pulse animation on Spotify link */
+@keyframes spotifyPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, #1DB954 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, #1DB954 12%, transparent);
+  }
+}
+
+.portfolio-link-interactive {
+  animation: spotifyPulse 2s ease-in-out infinite;
+}
+
+/* Mobile: Show hint always on small screens */
+@media (max-width: 560px) {
+  .portfolio-hint {
+    opacity: 1;
+    transform: translateX(0);
+    margin-left: 4px;
+  }
+}
     /* ===================== ARTIST CONTACT MODAL STYLES ===================== */
 .contact-option {
   border-radius: 18px;
@@ -2389,6 +2447,162 @@ footer{
   min-height: 352px;
   display: block;
 }
+    /* ===================== ARTIST CONTACT MODAL STYLES ===================== */
+/* Make modal body scrollable */
+.byz-modal-body {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.byz-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.byz-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.byz-modal-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.byz-modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--sub);
+}
+
+/* Keep header sticky when scrolling */
+.byz-modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+  padding-bottom: 16px;
+}
+
+.contact-option {
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-soft);
+  padding: 14px;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.contact-option:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.contact-header {
+  margin-bottom: 10px;
+}
+
+.contact-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.contact-label {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--text);
+}
+
+.contact-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+[data-theme="dark"] .contact-badge {
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-elev));
+  color: var(--accent);
+}
+
+.contact-description {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--sub);
+  line-height: 1.4;
+}
+
+.contact-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+  min-height: 44px;
+}
+
+.contact-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+}
+
+.contact-button.primary {
+  background: color-mix(in srgb, #25D366 14%, var(--bg-elev) 86%);
+  border-color: color-mix(in srgb, #25D366 40%, var(--border) 60%);
+  color: var(--text);
+}
+
+.contact-button.primary i {
+  color: #25D366;
+}
+
+.contact-button.primary:hover {
+  background: color-mix(in srgb, #25D366 18%, var(--bg-elev) 82%);
+}
+
+/* Combined numbers styling */
+.combined-numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Email button styling */
+#artistEmailModal .contact-button.primary {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+
+#artistEmailModal .contact-button.primary i {
+  color: var(--accent);
+}
+
+#artistEmailModal .contact-button.primary:hover {
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-elev));
+}
 
 /* Venues Modal Styles */
 .venues-list {
@@ -2425,7 +2639,6 @@ footer{
   text-align: left;
 }
 
-/* ===================== TEMPO SCHEDULE MODAL ===================== */
 /* ===================== TEMPO SCHEDULE MODAL ===================== */
 .tempo-modal-backdrop{
   position:fixed;
@@ -3503,6 +3716,10 @@ body.bulkbar-active .social-dock{
                 <button class="portfolio-link" onclick="showSpotifyModal('apuki')" type="button">
                   <i class="fa-brands fa-spotify"></i>
                   <span>Spotify</span>
+                  <span class="portfolio-hint">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Play</span>
+                  </span>
                 </button>
                 <a href="https://www.instagram.com/apukiofficial?igsh=MWtodmFhZDJmODNxbQ==" target="_blank" rel="noopener" class="portfolio-link">
                   <i class="fa-brands fa-instagram"></i>
@@ -5301,27 +5518,78 @@ function openContactModal(artistId, type) {
     title.textContent = `Contact ${artist.name} via WhatsApp`;
     sub.textContent = 'Choose a contact number';
 
+    // Group Tanzania/Africa numbers together for Apuki
+    let whatsappContacts = [];
+    let tanzaniaNumbers = [];
+    
+    artist.whatsapp.forEach((contact) => {
+      if (contact.type === 'local' && artistId === 'apuki') {
+        tanzaniaNumbers.push(contact);
+      } else {
+        whatsappContacts.push(contact);
+      }
+    });
+
+    // Add combined Tanzania option if we have multiple
+    if (tanzaniaNumbers.length > 0) {
+      whatsappContacts.push({
+        number: tanzaniaNumbers.map(c => c.number).join(','),
+        label: "Tanzania/Africa Booking (Apuki)",
+        description: `${tanzaniaNumbers.length} local booking lines available`,
+        type: "local",
+        isCombined: true,
+        numbers: tanzaniaNumbers
+      });
+    }
+
     let html = '';
-    artist.whatsapp.forEach((contact, index) => {
-      const waUrl = `https://wa.me/${contact.number}?text=${encodeURIComponent(message)}`;
+    whatsappContacts.forEach((contact, index) => {
       const isBusiness = contact.type === 'business';
-      const formattedNumber = formatPhoneNumber(contact.number);
       
-      html += `
-        <div class="contact-option" style="margin-top: ${index === 0 ? '0' : '12px'};">
-          <div class="contact-header">
-            <div class="contact-label-row">
-              <span class="contact-label">${contact.label}</span>
-              ${isBusiness ? '<span class="contact-badge">Recommended</span>' : ''}
+      // Handle combined Tanzania numbers
+      if (contact.isCombined && contact.numbers) {
+        html += `
+          <div class="contact-option" style="margin-top: ${index === 0 ? '0' : '12px'};">
+            <div class="contact-header">
+              <div class="contact-label-row">
+                <span class="contact-label">${contact.label}</span>
+              </div>
+              <div class="contact-description">${contact.description}</div>
             </div>
-            <div class="contact-description">${contact.description}</div>
+            <div class="combined-numbers">
+              ${contact.numbers.map((num, i) => {
+                const waUrl = `https://wa.me/${num.number}?text=${encodeURIComponent(message)}`;
+                const formatted = formatPhoneNumber(num.number);
+                return `
+                  <a href="${waUrl}" target="_blank" rel="noopener" class="contact-button">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <span>${formatted}</span>
+                  </a>
+                `;
+              }).join('')}
+            </div>
           </div>
-          <a href="${waUrl}" target="_blank" rel="noopener" class="contact-button ${isBusiness ? 'primary' : ''}">
-            <i class="fa-brands fa-whatsapp"></i>
-            <span>${formattedNumber}</span>
-          </a>
-        </div>
-      `;
+        `;
+      } else {
+        const waUrl = `https://wa.me/${contact.number}?text=${encodeURIComponent(message)}`;
+        const formattedNumber = formatPhoneNumber(contact.number);
+        
+        html += `
+          <div class="contact-option" style="margin-top: ${index === 0 ? '0' : '12px'};">
+            <div class="contact-header">
+              <div class="contact-label-row">
+                <span class="contact-label">${contact.label}</span>
+                ${isBusiness ? '<span class="contact-badge">Recommended</span>' : ''}
+              </div>
+              <div class="contact-description">${contact.description}</div>
+            </div>
+            <a href="${waUrl}" target="_blank" rel="noopener" class="contact-button ${isBusiness ? 'primary' : ''}">
+              <i class="fa-brands fa-whatsapp"></i>
+              <span>${formattedNumber}</span>
+            </a>
+          </div>
+        `;
+      }
     });
 
     content.innerHTML = html;
