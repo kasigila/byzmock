@@ -440,6 +440,204 @@ section{padding: 92px 0}
 .card-body p{margin-top:8px;color:var(--sub);font-size:14px}
 .card-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
 
+ /* ===================== ARTIST CARDS ===================== */
+.artist-card {
+  /* Inherits from .card */
+}
+
+.card-top.artist-photo {
+  height: 200px;
+  border-radius: 18px 18px 0 0;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  background-color: #000;
+}
+
+.card-top.artist-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.28));
+  border-radius: 18px 18px 0 0;
+  pointer-events: none;
+}
+
+/* Artist Header: Name + Social Links */
+.artist-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.artist-header h3 {
+  font-size: 18px;
+  letter-spacing: -0.3px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.artist-genres {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--sub);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+/* Inline Social Icons (Compact) */
+.artist-social-inline {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  align-items: flex-start;
+}
+
+.artist-social-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.artist-social-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+}
+
+.artist-social-icon:active {
+  transform: translateY(0);
+}
+
+.artist-bio {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--sub);
+  line-height: 1.5;
+}
+
+/* Portfolio Section (Compact, Mobile-Friendly) */
+.artist-portfolio {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.portfolio-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sub);
+  margin-bottom: 8px;
+}
+
+.portfolio-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.portfolio-links::-webkit-scrollbar {
+  display: none;
+}
+
+.portfolio-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+  min-height: 36px;
+  flex-shrink: 0;
+}
+
+.portfolio-link i {
+  font-size: 14px;
+}
+
+.portfolio-link:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+}
+
+.portfolio-link:active {
+  transform: translateY(0);
+}
+
+/* Artist Actions (Contact Buttons) */
+.artist-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.artist-actions .btn {
+  min-height: 44px;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 560px) {
+  .artist-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .artist-social-inline {
+    align-self: flex-start;
+  }
+
+  .portfolio-links {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 4px;
+  }
+
+  .portfolio-link {
+    flex-shrink: 0;
+  }
+
+  .card-top.artist-photo {
+    height: 180px;
+  }
+}
+
+@media (max-width: 980px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+    
   .events-strip{
   margin-top:18px;
   margin-left:16px;
@@ -3051,7 +3249,174 @@ body.bulkbar-active .social-dock{
       </div>
     </div>
   </section>
+  <!-- BOOK OUR ARTISTS & DJS -->
+  <section id="artists">
+    <div class="container">
+      <div class="section-title reveal">
+        <h2>Book Our Artists & DJs</h2>
+        <p>Available for events, performances, and collaborations. Connect with our talent roster.</p>
+      </div>
 
+      <div class="cards stagger reveal">
+        <!-- DJ Sammy -->
+        <div class="card artist-card">
+          <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
+            <div style="color: var(--sub); font-size: 14px; font-weight: 600;">Photo Coming Soon</div>
+          </div>
+          <div class="card-body">
+            <div class="artist-header">
+              <div>
+                <h3>DJ Sammy</h3>
+                <p class="artist-genres">Afrobeats • House • Hip-Hop • Dancehall • Amapiano • R&B</p>
+              </div>
+              <div class="artist-social-inline">
+                <a href="https://www.instagram.com/djsammyofficial_?igsh=MWJ2Y25oaWcyb3M2Zw==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="DJ Sammy Instagram">
+                  <i class="fa-brands fa-instagram"></i>
+                </a>
+              </div>
+            </div>
+
+            <p class="artist-bio">Professional DJ specializing in Afrobeats, House, and Hip-Hop. High-energy sets that keep the dancefloor moving all night.</p>
+
+            <div class="artist-portfolio">
+              <div class="portfolio-label">Portfolio</div>
+              <div class="portfolio-links">
+                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDQxMjc3MjQ1MTg1ODM4?igsh=MTBtMWhjbXo3dm5jcQ==" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>Highlights 1</span>
+                </a>
+                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE3ODYxOTMyODMwNDcxMTE4?igsh=MTRqZm8xcjhmZ3kyNw==" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>Highlights 2</span>
+                </a>
+                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDExNDEzNjI4NzgwNTg2?igsh=MTBzYWk0Z3pwOTBrbw==" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>Highlights 3</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="card-actions artist-actions">
+              <a class="btn primary" href="https://wa.me/255755790033?text=Hi%20BYZ%2C%20I%27m%20interested%20in%20booking%20DJ%20Sammy%20for%20an%20event.%20Could%20you%20please%20share%20availability%20and%20pricing%3F" target="_blank" rel="noopener">
+                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
+              </a>
+              <a class="btn" href="mailto:byzinthehoodz@gmail.com?subject=Booking%20Inquiry%20-%20DJ%20Sammy&body=Hi%20BYZ%2C%0A%0AI%27m%20interested%20in%20booking%20DJ%20Sammy%20for%20an%20event.%0A%0AEvent%20Details%3A%0A-%20Date%3A%20%0A-%20Venue%3A%20%0A-%20Event%20Type%3A%20%0A-%20Expected%20Guests%3A%20%0A-%20Duration%3A%20%0A%0ACould%20you%20please%20share%20availability%20and%20pricing%3F%0A%0AThank%20you%21" target="_blank" rel="noopener">
+                <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apuki -->
+        <div class="card artist-card">
+          <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
+            <div style="color: var(--sub); font-size: 14px; font-weight: 600;">Photo Coming Soon</div>
+          </div>
+          <div class="card-body">
+            <div class="artist-header">
+              <div>
+                <h3>Apuki</h3>
+                <p class="artist-genres">Afrobeats • House • Hip-Hop • Dancehall • Amapiano • R&B</p>
+              </div>
+              <div class="artist-social-inline">
+                <a href="https://www.instagram.com/apukiofficial?igsh=MWtodmFhZDJmODNxbQ==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Apuki Instagram">
+                  <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@apukioffical?_r=1&_t=ZM-93862Q3oAKh" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Apuki TikTok">
+                  <i class="fa-brands fa-tiktok"></i>
+                </a>
+              </div>
+            </div>
+
+            <p class="artist-bio">DJ and performer known for dynamic sets blending Afrobeats, Dancehall, and Hip-Hop. Available for local and international bookings.</p>
+
+            <div class="artist-portfolio">
+              <div class="portfolio-label">Portfolio</div>
+              <div class="portfolio-links">
+                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDI5NzY2NDU4NjI3ODk5?igsh=dHUzZG5laHRyeHcy" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>Highlights 1</span>
+                </a>
+                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MTQ0NTY1MTgwNDM0MzYx?igsh=MWpqNndjZmV6NTZodQ==" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>Highlights 2</span>
+                </a>
+                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDMyNDc3Nzg5NDYxNDAw?igsh=enE2c3hwaDd0c3Vh" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>Highlights 3</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="card-actions artist-actions">
+              <a class="btn primary" href="https://wa.me/255755790033?text=Hi%20BYZ%2C%20I%27m%20interested%20in%20booking%20Apuki%20for%20an%20event.%20Could%20you%20please%20share%20availability%20and%20pricing%3F" target="_blank" rel="noopener">
+                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
+              </a>
+              <a class="btn" href="mailto:Apuki.Bookings@gmail.com?subject=Booking%20Inquiry%20-%20Apuki&body=Hi%20BYZ%2C%0A%0AI%27m%20interested%20in%20booking%20Apuki%20for%20an%20event.%0A%0AEvent%20Details%3A%0A-%20Date%3A%20%0A-%20Venue%3A%20%0A-%20Event%20Type%3A%20%0A-%20Expected%20Guests%3A%20%0A-%20Duration%3A%20%0A-%20Location%3A%20%28Tanzania%2FAfrica%20or%20International%29%0A%0ACould%20you%20please%20share%20availability%20and%20pricing%3F%0A%0AThank%20you%21" target="_blank" rel="noopener">
+                <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Renee -->
+        <div class="card artist-card">
+          <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
+            <div style="color: var(--sub); font-size: 14px; font-weight: 600;">Photo Coming Soon</div>
+          </div>
+          <div class="card-body">
+            <div class="artist-header">
+              <div>
+                <h3>Renee</h3>
+                <p class="artist-genres">Hip-Hop • Rap • R&B</p>
+              </div>
+              <div class="artist-social-inline">
+                <a href="https://www.instagram.com/renesw0rld777?igsh=MTEzaWVpaHlzOHl0Yw==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee Instagram">
+                  <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@ren55974?_r=1&_t=ZM-9386Xu6xs6a" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee TikTok">
+                  <i class="fa-brands fa-tiktok"></i>
+                </a>
+                <a href="https://youtube.com/@renesa777?si=7JWf5rRCVnAhN-4l" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee YouTube">
+                  <i class="fa-brands fa-youtube"></i>
+                </a>
+              </div>
+            </div>
+
+            <p class="artist-bio">Artist specializing in Hip-Hop, Rap, and R&B. Available for performances, collaborations, and live shows.</p>
+
+            <div class="artist-portfolio">
+              <div class="portfolio-label">Portfolio</div>
+              <div class="portfolio-links">
+                <a href="https://on.soundcloud.com/o393kAbwy7qlFCsDVn" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-soundcloud"></i>
+                  <span>SoundCloud</span>
+                </a>
+                <a href="https://youtube.com/@renesa777?si=7JWf5rRCVnAhN-4l" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-youtube"></i>
+                  <span>YouTube</span>
+                </a>
+                <a href="https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MTAxMDk1MTI2NTk3NTk2?igsh=aGh4bXdvZ2M1dHF4" target="_blank" rel="noopener" class="portfolio-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>Highlights</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="card-actions artist-actions">
+              <a class="btn primary" href="https://wa.me/255755790033?text=Hi%20BYZ%2C%20I%27m%20interested%20in%20booking%20Renee%20for%20an%20event.%20Could%20you%20please%20share%20availability%20and%20pricing%3F" target="_blank" rel="noopener">
+                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
+              </a>
+              <a class="btn" href="mailto:byzinthehoodz@gmail.com?subject=Booking%20Inquiry%20-%20Renee&body=Hi%20BYZ%2C%0A%0AI%27m%20interested%20in%20booking%20Renee%20for%20an%20event.%0A%0AEvent%20Details%3A%0A-%20Date%3A%20%0A-%20Venue%3A%20%0A-%20Event%20Type%3A%20%0A-%20Expected%20Guests%3A%20%0A-%20Duration%3A%20%0A%0ACould%20you%20please%20share%20availability%20and%20pricing%3F%0A%0AThank%20you%21" target="_blank" rel="noopener">
+                <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
   <!-- YOUTUBE -->
   <section id="youtube">
     <div class="container">
