@@ -2087,6 +2087,7 @@ footer{
   .mobile-panel{display:block; opacity:0; pointer-events:none; transform: translateY(-6px); transition: opacity .2s var(--ease), transform .2s var(--ease); }
   .mobile-panel.open{opacity:1; pointer-events:auto; transform: translateY(0)}
 }
+    
 @media (max-width: 560px){
   .connect-grid{
     grid-template-columns: repeat(2, 1fr);
@@ -2094,6 +2095,18 @@ footer{
   }
   .hero{padding: 64px 0 52px}
   section{padding: 76px 0}
+
+  /*Fix artist section visibility*/
+  #artists {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  #artists .cards {
+    display: flex !important;
+    grid-template-columns: none !important;
+  }
+}
 
   /* ===================== DJ SECTION PREMIUM MOBILE ===================== */
   /* Center align title and subtitle on mobile */
@@ -2535,22 +2548,22 @@ footer{
   
   if (!headers.length) return;
 
-  // Parse time string (e.g., "22:00" or "01:00") to minutes
+  /*Parse time string (e.g., "22:00" or "01:00") to minutes*/
   function timeToMinutes(timeStr) {
     const [hours, mins] = timeStr.split(':').map(Number);
     return hours * 60 + mins;
   }
 
-  // Check if current time is within slot range
+  /*Check if current time is within slot range*/
   function isTimeInRange(currentMins, startMins, endMins) {
-    // Handle overnight slots (e.g., 23:30 - 01:00)
+    /*Handle overnight slots (e.g., 23:30 - 01:00)*/
     if (endMins < startMins) {
       return currentMins >= startMins || currentMins < endMins;
     }
     return currentMins >= startMins && currentMins < endMins;
   }
 
-  // Update LIVE indicator based on current time
+  /*Update LIVE indicator based on current time*/
   function updateLiveIndicator() {
     if (!grooveTimeline) return;
 
@@ -2569,41 +2582,41 @@ footer{
       const startMins = timeToMinutes(startStr);
       const endMins = timeToMinutes(endStr);
       
-      // Remove all classes
+      /*Remove all classes*/
       slot.classList.remove('live-now', 'past', 'next-up');
       
       if (isTimeInRange(currentMins, startMins, endMins)) {
-        // Current slot is LIVE
+        /*Current slot is LIVE*/
         slot.classList.add('live-now');
         foundLive = true;
         
-        // Mark previous as past
+        /*Mark previous as past*/
         for (let i = 0; i < index; i++) {
           slots[i].classList.add('past');
           slots[i].classList.remove('next-up');
         }
         
-        // Mark next as next-up
+        /*Mark next as next-up*/
         if (index + 1 < slots.length) {
           slots[index + 1].classList.add('next-up');
           slots[index + 1].classList.remove('past');
         }
       } else if (currentMins < startMins) {
-        // Future slot
+        /*Future slot*/
         if (!foundLive && index === 0) {
           slot.classList.add('next-up');
         }
       } else {
-        // Past slot
+        /*Past slot*/
         slot.classList.add('past');
       }
     });
 
-    // Update preview with live/next slot
+    /*Update preview with live/next slot*/
     updatePreview();
   }
 
-  // Update preview slot (shown when collapsed)
+  /*Update preview slot (shown when collapsed)*/
   function updatePreview() {
     const preview = document.getElementById('groovePreview');
     const expectPreview = document.getElementById('expectPreview');
@@ -2623,7 +2636,7 @@ footer{
       preview.appendChild(previewSlot);
     }
 
-    // Update "What to Expect" preview
+    /*Update "What to Expect" preview*/
     if (expectPreview) {
       const expectTimeline = document.querySelector('.timeline-expect');
       if (expectTimeline) {
@@ -2640,65 +2653,67 @@ footer{
     }
   }
 
-  // Accordion functionality (FIXED - no more cloning)
+  /*FIXED: Accordion functionality (simpler, more reliable)*/
   function initAccordion() {
     const isMobile = window.innerWidth <= 560;
     
-    headers.forEach(header => {
+    headers.forEach((header, index) => {
+      /*Remove all existing listeners by cloning and replacing*/
+      const newHeader = header.cloneNode(true);
+      header.parentNode.replaceChild(newHeader, header);
+      
+      /*Get the content that follows this header*/
+      const card = newHeader.closest('.dj-card-collapsible');
+      const content = card?.querySelector('.dj-card-content');
+      
       if (isMobile) {
-        // Mobile: Start collapsed
-        header.setAttribute('aria-expanded', 'false');
+        /*Mobile: Start collapsed*/
+        newHeader.setAttribute('aria-expanded', 'false');
         
-        // FIXED: Attach listener directly without cloning/replacing
-        // Remove any existing listeners first by cloning once, then attaching new listener
-        const currentHandler = header.getAttribute('data-accordion-handler');
-        if (currentHandler) {
-          header.removeEventListener('click', window[currentHandler]);
-        }
-        
-        const handlerName = `accordionHandler_${Array.from(headers).indexOf(header)}`;
-        window[handlerName] = function(e) {
+        /*Attach click handler*/
+        newHeader.addEventListener('click', function(e) {
           e.preventDefault();
+          e.stopPropagation();
+          
           const isExpanded = this.getAttribute('aria-expanded') === 'true';
           this.setAttribute('aria-expanded', !isExpanded);
-          // Reset idle timer when user interacts
+          
+          /*Reset idle timer when user interacts*/
           lastInteractionTime = Date.now();
           clearTimeout(previewTimeout);
-        };
-        
-        header.setAttribute('data-accordion-handler', handlerName);
-        header.addEventListener('click', window[handlerName]);
+        });
         
       } else {
-        // Desktop: Always expanded
-        header.setAttribute('aria-expanded', 'true');
+        /*Desktop: Always expanded*/
+        newHeader.setAttribute('aria-expanded', 'true');
       }
     });
   }
 
-  // Auto-preview animation (expand/collapse every 3 seconds if idle)
+  /*Auto-preview animation (expand/collapse every 3 seconds if idle)*/
   let previewTimeout;
   let lastInteractionTime = Date.now();
-  const PREVIEW_DELAY = 3000; // 3 seconds
+  const PREVIEW_DELAY = 3000; /*3 seconds*/
 
   function startAutoPreview() {
-    if (window.innerWidth > 560) return; // Desktop only
+    if (window.innerWidth > 560) return; /*Desktop only*/
     
     clearTimeout(previewTimeout);
     
     previewTimeout = setTimeout(() => {
       const timeSinceInteraction = Date.now() - lastInteractionTime;
       
-      // Only auto-preview if user hasn't interacted in 3+ seconds
+      /*Only auto-preview if user hasn't interacted in 3+ seconds*/
       if (timeSinceInteraction >= PREVIEW_DELAY) {
-        headers.forEach((header, index) => {
+        const allHeaders = document.querySelectorAll('.dj-card-header');
+        allHeaders.forEach((header, idx) => {
           const isExpanded = header.getAttribute('aria-expanded') === 'true';
           
-          // Expand first, then collapse after showing for 1.5 seconds
+          /*Expand first, then collapse after showing for 1.5 seconds*/
           if (!isExpanded) {
             header.setAttribute('aria-expanded', 'true');
             
-            // Collapse after showing for 1.5 seconds
+            /*Collapse after showing for 1.5 seconds*/
             setTimeout(() => {
               if (Date.now() - lastInteractionTime >= PREVIEW_DELAY) {
                 header.setAttribute('aria-expanded', 'false');
@@ -2708,25 +2723,26 @@ footer{
         });
       }
       
-      // Continue checking
+      /*Continue checking*/
       startAutoPreview();
     }, PREVIEW_DELAY);
   }
 
-  // Track user interactions
+  /*Track user interactions*/
   function trackInteraction() {
     lastInteractionTime = Date.now();
     clearTimeout(previewTimeout);
     startAutoPreview();
   }
 
-  // Track scroll in DJ section for idle detection
+  /*Track scroll in DJ section for idle detection*/
   const djSection = document.getElementById('dj');
   if (djSection) {
-    djSection.addEventListener('scroll', trackInteraction, { passive: true });
+    const observer = new MutationObserver(trackInteraction);
+    observer.observe(djSection, { childList: true, subtree: true, attributes: true });
   }
 
-  // Track window scroll when DJ section is visible
+  /*Track window scroll when DJ section is visible*/
   let scrollTimeout;
   window.addEventListener('scroll', () => {
     const sectionRect = djSection?.getBoundingClientRect();
@@ -2738,16 +2754,16 @@ footer{
     }
   }, { passive: true });
 
-  // Initialize
+  /*Initialize*/
   initAccordion();
   updateLiveIndicator();
   updatePreview();
-  startAutoPreview(); // Start auto-preview
+  startAutoPreview(); /*Start auto-preview*/
 
-  // Update every minute
+  /*Update every minute*/
   setInterval(updateLiveIndicator, 60000);
 
-  // Update on resize
+  /*Update on resize*/
   window.addEventListener('resize', () => {
     initAccordion();
     startAutoPreview();
