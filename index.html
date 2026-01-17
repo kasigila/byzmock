@@ -2101,13 +2101,22 @@ footer{
   height:auto;
 }
 
+@media (max-width: 560px){
+  .connect-grid{
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .hero{padding: 64px 0 52px}
+  section{padding: 76px 0}
+}
+
 /* ===================== ARTIST SECTION HORIZONTAL SCROLL (MOBILE) ===================== */
 @media (max-width: 560px) {
   /* Artist scroll wrapper with arrows */
   .artist-scroll-wrapper {
     position: relative;
     margin: 0 -12px;
-    padding: 0 48px;
+    padding: 0 56px;
   }
 
   /* Hide arrows on desktop */
@@ -2115,62 +2124,74 @@ footer{
     display: none;
   }
 
-  /* Show arrows on mobile */
-  @media (max-width: 560px) {
-    .artist-scroll-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: color-mix(in srgb, var(--bg) 92%, transparent);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
-      color: var(--text);
-      cursor: pointer;
-      z-index: 10;
-      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
-      opacity: 0.9;
-    }
-
-    .artist-scroll-btn:hover,
-    .artist-scroll-btn:active {
-      transform: translateY(-50%) scale(1.1);
-      box-shadow: var(--shadow-soft);
-      background: color-mix(in srgb, var(--bg-elev) 98%, transparent);
-      opacity: 1;
-    }
-
-    .artist-scroll-btn:active {
-      transform: translateY(-50%) scale(0.95);
-    }
-
-    .artist-scroll-btn i {
-      font-size: 14px;
-    }
-
-    .artist-scroll-left {
-      left: 4px;
-    }
-
-    .artist-scroll-right {
-      right: 4px;
-    }
-
-    /* Disable button when at start/end */
-    .artist-scroll-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
+  /* Show arrows on mobile - Apple-like refined styling */
+  .artist-scroll-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 
+                0 1px 3px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.95;
   }
 
-  /* Horizontal scroll for artist cards */
+  [data-theme="dark"] .artist-scroll-btn {
+    background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+    border-color: color-mix(in srgb, var(--border) 50%, transparent);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 
+                0 1px 3px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .artist-scroll-btn:hover {
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 
+                0 2px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    opacity: 1;
+    background: color-mix(in srgb, var(--bg-elev) 96%, transparent);
+  }
+
+  .artist-scroll-btn:active {
+    transform: translateY(-50%) scale(0.96);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1), 
+                0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .artist-scroll-btn i {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .artist-scroll-left {
+    left: 6px;
+  }
+
+  .artist-scroll-right {
+    right: 6px;
+  }
+
+  /* Disable button styling (for when not looping) */
+  .artist-scroll-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Horizontal scroll for artist cards - refined */
   #artists .cards {
     display: flex;
     overflow-x: auto;
@@ -2178,27 +2199,14 @@ footer{
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 16px;
-    padding: 0 8px 8px;
+    padding: 0 8px 12px;
     scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   #artists .cards::-webkit-scrollbar {
-    height: 4px;
-  }
-
-  #artists .cards::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  #artists .cards::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 2px;
-  }
-
-  #artists .cards::-webkit-scrollbar-thumb:hover {
-    background: var(--sub);
+    display: none;
   }
 
   #artists .cards > * {
@@ -2209,72 +2217,91 @@ footer{
     flex-basis: 260px;
   }
 
-  /* Compact artist cards on mobile */
+  /* Refined artist cards on mobile - more Apple-like */
   .artist-card {
     padding: 0;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06),
+                0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  [data-theme="dark"] .artist-card {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2),
+                0 1px 4px rgba(0, 0, 0, 0.1);
   }
 
   .artist-card .card-body {
-    padding: 14px 12px;
+    padding: 16px 14px;
   }
 
   .artist-card .card-top.artist-photo {
     height: 140px;
+    border-radius: 20px 20px 0 0;
   }
 
   .artist-header h3 {
     font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
   }
 
   .artist-genres {
     font-size: 10px;
-    margin-top: 3px;
+    margin-top: 4px;
+    letter-spacing: -0.01em;
   }
 
   .artist-bio {
     font-size: 12px;
-    line-height: 1.3;
-    margin: 10px 0;
+    line-height: 1.4;
+    margin: 12px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    color: color-mix(in srgb, var(--sub) 90%, var(--text));
   }
 
   .artist-portfolio {
-    margin: 10px 0;
+    margin: 12px 0;
   }
 
   .portfolio-label {
     font-size: 10px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    letter-spacing: 0.06em;
   }
 
   .portfolio-links {
-    gap: 6px;
+    gap: 8px;
   }
 
   .portfolio-link {
-    font-size: 10px;
-    padding: 5px 8px;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-weight: 600;
   }
 
   .portfolio-link i {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .artist-actions {
-    gap: 8px;
-    margin-top: 12px;
+    gap: 10px;
+    margin-top: 14px;
   }
 
   .artist-actions .btn {
-    padding: 10px 12px;
-    font-size: 11px;
+    padding: 11px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 12px;
+    border-width: 1px;
   }
 
   .artist-actions .btn i {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   /* Reduce section padding */
@@ -2283,19 +2310,21 @@ footer{
   }
 
   #artists .section-title {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   #artists .section-title p {
     font-size: 13px;
+    letter-spacing: -0.01em;
   }
 }
+
   .footer-logo{
   width:120px;           /* make bigger/smaller */
   height:auto;
   margin:0 0 10px 0;     /* spacing above the paragraph */
 }
-
+  
 .footer-logo-img{
   width:100%;
   height:auto;
@@ -5915,7 +5944,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
   /* =========================================================
-   ARTIST SECTION HORIZONTAL SCROLL ARROWS (MOBILE)
+   ARTIST SECTION HORIZONTAL SCROLL ARROWS (MOBILE) - INFINITE LOOP
 ========================================================= */
 (function() {
   const cardsContainer = document.getElementById('artistCardsContainer');
@@ -5924,37 +5953,85 @@ document.addEventListener('keydown', (e) => {
 
   if (!cardsContainer || !scrollLeftBtn || !scrollRightBtn) return;
 
-  function updateButtonStates() {
-    const isAtStart = cardsContainer.scrollLeft <= 10;
-    const isAtEnd = cardsContainer.scrollLeft >= cardsContainer.scrollWidth - cardsContainer.clientWidth - 10;
+  // Only enable loop on mobile
+  if (window.innerWidth > 560) return;
 
-    scrollLeftBtn.disabled = isAtStart;
-    scrollRightBtn.disabled = isAtEnd;
+  const cards = Array.from(cardsContainer.querySelectorAll('.artist-card'));
+  if (cards.length === 0) return;
+
+  const cardWidth = cards[0].offsetWidth;
+  const gap = 16;
+  const scrollAmount = cardWidth + gap;
+
+  // Clone cards for seamless loop
+  cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    cardsContainer.appendChild(clone);
+  });
+
+  // Clone again for smooth backward scrolling
+  cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    cardsContainer.insertBefore(clone, cardsContainer.firstChild);
+  });
+
+  let isScrolling = false;
+
+  // Scroll to middle (real cards) on load
+  setTimeout(() => {
+    cardsContainer.scrollLeft = cards.length * scrollAmount;
+  }, 100);
+
+  // Update button states
+  function updateButtonStates() {
+    // Always enabled for infinite scroll
+    scrollLeftBtn.disabled = false;
+    scrollRightBtn.disabled = false;
   }
+
+  // Handle loop jumping
+  cardsContainer.addEventListener('scroll', () => {
+    if (isScrolling) return;
+    
+    const scrollLeft = cardsContainer.scrollLeft;
+    const scrollWidth = cardsContainer.scrollWidth;
+    const clientWidth = cardsContainer.clientWidth;
+    const realCardsWidth = cards.length * scrollAmount;
+
+    // If scrolled past end (clone area), jump to beginning of real cards
+    if (scrollLeft >= scrollWidth - clientWidth - scrollAmount) {
+      isScrolling = true;
+      cardsContainer.scrollLeft = cardsContainer.scrollLeft - (cards.length * scrollAmount);
+      setTimeout(() => { isScrolling = false; }, 50);
+    }
+    
+    // If scrolled before start (clone area), jump to end of real cards
+    if (scrollLeft <= scrollAmount) {
+      isScrolling = true;
+      cardsContainer.scrollLeft = cardsContainer.scrollLeft + (cards.length * scrollAmount);
+      setTimeout(() => { isScrolling = false; }, 50);
+    }
+  });
 
   // Scroll functions
   scrollLeftBtn.addEventListener('click', () => {
-    const cardWidth = cardsContainer.querySelector('.artist-card')?.offsetWidth || 260;
-    const gap = 16;
-    const scrollAmount = cardWidth + gap;
     cardsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
   });
 
   scrollRightBtn.addEventListener('click', () => {
-    const cardWidth = cardsContainer.querySelector('.artist-card')?.offsetWidth || 260;
-    const gap = 16;
-    const scrollAmount = cardWidth + gap;
     cardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   });
-
-  // Update button states on scroll
-  cardsContainer.addEventListener('scroll', updateButtonStates);
 
   // Initial button state
   updateButtonStates();
 
   // Update on window resize
-  window.addEventListener('resize', updateButtonStates);
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 560) return;
+    updateButtonStates();
+  });
 })();
 
 </script>
