@@ -2096,6 +2096,33 @@ footer{
   section{padding: 76px 0}
 
   /* ===================== DJ SECTION PREMIUM MOBILE ===================== */
+  /* Center align title and subtitle on mobile */
+  #dj .section-title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  #dj .section-title h2 {
+    font-size: 28px;
+    letter-spacing: -0.7px;
+  }
+
+  #dj .section-title p {
+    font-size: 13px;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* Hide chevron icon in header button - keep only bouncing hint */
+  .dj-card-header .dj-card-icon {
+    display: none;
+  }
+
+  #dj {
+    padding: 52px 0 40px;
+  }
+}
+  /* ===================== DJ SECTION PREMIUM MOBILE ===================== */
   #dj {
     padding: 52px 0 40px;
   }
@@ -2613,7 +2640,7 @@ footer{
     }
   }
 
-  // Accordion functionality
+  // Accordion functionality (FIXED - no more cloning)
   function initAccordion() {
     const isMobile = window.innerWidth <= 560;
     
@@ -2622,15 +2649,26 @@ footer{
         // Mobile: Start collapsed
         header.setAttribute('aria-expanded', 'false');
         
-        // Remove existing listeners
-        const newHeader = header.cloneNode(true);
-        header.parentNode.replaceChild(newHeader, header);
+        // FIXED: Attach listener directly without cloning/replacing
+        // Remove any existing listeners first by cloning once, then attaching new listener
+        const currentHandler = header.getAttribute('data-accordion-handler');
+        if (currentHandler) {
+          header.removeEventListener('click', window[currentHandler]);
+        }
         
-        // Add click listener
-        newHeader.addEventListener('click', function() {
+        const handlerName = `accordionHandler_${Array.from(headers).indexOf(header)}`;
+        window[handlerName] = function(e) {
+          e.preventDefault();
           const isExpanded = this.getAttribute('aria-expanded') === 'true';
           this.setAttribute('aria-expanded', !isExpanded);
-        });
+          // Reset idle timer when user interacts
+          lastInteractionTime = Date.now();
+          clearTimeout(previewTimeout);
+        };
+        
+        header.setAttribute('data-accordion-handler', handlerName);
+        header.addEventListener('click', window[handlerName]);
+        
       } else {
         // Desktop: Always expanded
         header.setAttribute('aria-expanded', 'true');
@@ -2638,10 +2676,73 @@ footer{
     });
   }
 
+  // Auto-preview animation (expand/collapse every 3 seconds if idle)
+  let previewTimeout;
+  let lastInteractionTime = Date.now();
+  const PREVIEW_DELAY = 3000; // 3 seconds
+
+  function startAutoPreview() {
+    if (window.innerWidth > 560) return; // Desktop only
+    
+    clearTimeout(previewTimeout);
+    
+    previewTimeout = setTimeout(() => {
+      const timeSinceInteraction = Date.now() - lastInteractionTime;
+      
+      // Only auto-preview if user hasn't interacted in 3+ seconds
+      if (timeSinceInteraction >= PREVIEW_DELAY) {
+        headers.forEach((header, index) => {
+          const isExpanded = header.getAttribute('aria-expanded') === 'true';
+          
+          // Expand first, then collapse after showing for 1.5 seconds
+          if (!isExpanded) {
+            header.setAttribute('aria-expanded', 'true');
+            
+            // Collapse after showing for 1.5 seconds
+            setTimeout(() => {
+              if (Date.now() - lastInteractionTime >= PREVIEW_DELAY) {
+                header.setAttribute('aria-expanded', 'false');
+              }
+            }, 1500);
+          }
+        });
+      }
+      
+      // Continue checking
+      startAutoPreview();
+    }, PREVIEW_DELAY);
+  }
+
+  // Track user interactions
+  function trackInteraction() {
+    lastInteractionTime = Date.now();
+    clearTimeout(previewTimeout);
+    startAutoPreview();
+  }
+
+  // Track scroll in DJ section for idle detection
+  const djSection = document.getElementById('dj');
+  if (djSection) {
+    djSection.addEventListener('scroll', trackInteraction, { passive: true });
+  }
+
+  // Track window scroll when DJ section is visible
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    const sectionRect = djSection?.getBoundingClientRect();
+    const isVisible = sectionRect && sectionRect.top < window.innerHeight && sectionRect.bottom > 0;
+    
+    if (isVisible) {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(trackInteraction, 100);
+    }
+  }, { passive: true });
+
   // Initialize
   initAccordion();
   updateLiveIndicator();
   updatePreview();
+  startAutoPreview(); // Start auto-preview
 
   // Update every minute
   setInterval(updateLiveIndicator, 60000);
@@ -2649,6 +2750,7 @@ footer{
   // Update on resize
   window.addEventListener('resize', () => {
     initAccordion();
+    startAutoPreview();
   });
 })();
 
@@ -4326,7 +4428,7 @@ body.bulkbar-active .social-dock{
               <h3>Tonight's Groove Set Times</h3>
               <p>Plan your arrival and catch every moment</p>
             </div>
-            <i class="fa-solid fa-chevron-down dj-card-icon" aria-hidden="true"></i>
+             
           </button>
           <div class="dj-card-content">
             <div class="timeline-wrapper">
@@ -4401,7 +4503,7 @@ body.bulkbar-active .social-dock{
               <h3>What to Expect</h3>
               <p>Live performances, special guests, themes, and any important event details.</p>
             </div>
-            <i class="fa-solid fa-chevron-down dj-card-icon" aria-hidden="true"></i>
+             
           </button>
           <div class="dj-card-content">
             <div class="timeline-wrapper">
