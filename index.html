@@ -1059,6 +1059,35 @@ section{padding: 92px 0}
 .dj-card-header[aria-expanded="true"] .dj-card-icon {
   transform: rotate(180deg);
 }
+/*Collapse button (appears when expanded)*/
+.dj-card-collapse-btn {
+  display: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-alt) 80%, transparent);
+  color: var(--sub);
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dj-card-header[aria-expanded="true"] .dj-card-collapse-btn {
+  display: flex;
+}
+
+.dj-card-collapse-btn:hover {
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+  transform: scale(1.1);
+}
+
+.dj-card-collapse-btn:active {
+  transform: scale(0.95);
+}
 
 /*Collapsible Content*/
 .dj-card-content {
@@ -1101,6 +1130,12 @@ section{padding: 92px 0}
 
 .dj-card-header[aria-expanded="true"] ~ .dj-card-content .timeline-line {
   opacity: 0.6;
+}
+
+/*Hide timeline line when collapsed (doesn't make sense with stacked cards)*/
+.dj-card-header[aria-expanded="false"] + .dj-card-content .timeline-wrapper,
+.dj-card-header[aria-expanded="false"] + .dj-card-content .timeline-line {
+  display: none;
 }
 
 /*Premium Timeline Dot*/
@@ -1257,10 +1292,12 @@ section{padding: 92px 0}
   border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
 }
 
-/*Preview Slot (Shown when collapsed)*/
+/*Preview Slot - Stacked Cards Effect (peeking edges)*/
 .dj-card-preview {
   margin-top: 12px;
   padding: 0;
+  position: relative;
+  min-height: 44px;
   transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
 }
 
@@ -1270,27 +1307,73 @@ section{padding: 92px 0}
 
 .dj-card-preview .slot {
   margin: 0;
+  position: relative;
 }
 
-.dj-card-preview .slot-content {
+/*Top card (fully visible)*/
+.dj-card-preview .slot:first-child .slot-content {
   background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
   border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  position: relative;
+  z-index: 3;
 }
 
-/*Premium Expand Hint (Visual Only)*/
+/*Peeking edges - card 2 (offset right, smaller)*/
+.dj-card-preview::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 85%, transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/*Peeking edges - card 3 (offset more, smaller)*/
+.dj-card-preview::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  right: -16px;
+  bottom: -16px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 75%, transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+}
+    
+
+/*Premium Expand Hint with Text*/
 .dj-card-expand-hint {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  gap: 10px;
   padding: 8px 0;
-  opacity: 0.6;
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
-  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.3s var(--ease);
 }
 
 .dj-card-header[aria-expanded="true"] ~ .dj-card-expand-hint {
   display: none;
+}
+
+.expand-hint-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sub);
+  letter-spacing: -0.01em;
 }
 
 .expand-hint-icon {
@@ -1319,11 +1402,11 @@ section{padding: 92px 0}
 @keyframes bounceHint {
   0%, 100% {
     transform: translateY(0);
-    opacity: 0.6;
+    opacity: 0.7;
   }
   50% {
     transform: translateY(4px);
-    opacity: 0.8;
+    opacity: 0.9;
   }
 }
 
@@ -1332,6 +1415,7 @@ section{padding: 92px 0}
   color: var(--sub);
 }
 
+    
 /*What to Expect - No Buttons*/
 .timeline-expect .slot-content {
   padding: 12px 14px;
@@ -4105,13 +4189,17 @@ body.bulkbar-active .social-dock{
       </div>
       <div class="dj-grid stagger reveal">
         <div class="dj-card dj-card-collapsible">
-          <button class="dj-card-header" type="button" aria-expanded="false">
+          
+                    <button class="dj-card-header" type="button" aria-expanded="false">
             <div class="dj-card-header-text">
               <h3>Tonight's Groove Set Times</h3>
               <p>Plan your arrival and catch every moment</p>
             </div>
-             
+            <button class="dj-card-collapse-btn" type="button" aria-label="Collapse">
+              <i class="fa-solid fa-chevron-up"></i>
+            </button>
           </button>
+          
           <div class="dj-card-content">
             <div class="timeline-wrapper">
               <div class="timeline-line"></div>
@@ -4172,21 +4260,27 @@ body.bulkbar-active .social-dock{
           <div class="dj-card-preview" id="groovePreview">
             <!-- Preview slot will be inserted here by JS -->
           </div>
-          <div class="dj-card-expand-hint">
+                    <div class="dj-card-expand-hint">
+            <div class="expand-hint-text">Tap to see all times</div>
             <div class="expand-hint-icon">
               <i class="fa-solid fa-chevron-down"></i>
             </div>
           </div>
+          
         </div>
 
         <div class="dj-card dj-card-collapsible">
-          <button class="dj-card-header" type="button" aria-expanded="false">
+          
+                    <button class="dj-card-header" type="button" aria-expanded="false">
             <div class="dj-card-header-text">
               <h3>What to Expect</h3>
               <p>Live performances, special guests, themes, and any important event details.</p>
             </div>
-             
+            <button class="dj-card-collapse-btn" type="button" aria-label="Collapse">
+              <i class="fa-solid fa-chevron-up"></i>
+            </button>
           </button>
+          
           <div class="dj-card-content">
             <div class="timeline-wrapper">
               <div class="timeline-line"></div>
@@ -4227,11 +4321,14 @@ body.bulkbar-active .social-dock{
           <div class="dj-card-preview" id="expectPreview">
             <!-- Preview slot will be inserted here by JS -->
           </div>
-          <div class="dj-card-expand-hint">
+          
+                    <div class="dj-card-expand-hint">
+            <div class="expand-hint-text">Tap to see details</div>
             <div class="expand-hint-icon">
               <i class="fa-solid fa-chevron-down"></i>
             </div>
           </div>
+          
         </div>
       </div>
       
@@ -6543,34 +6640,50 @@ document.addEventListener('keydown', (e) => {
     });
   }
 
-     /*Use event delegation for click handlers - each card works independently*/
+      /*Use event delegation for click handlers - manual expand/collapse*/
   djSection.addEventListener('click', function(e) {
-    // Check if click is on header OR on the expand hint arrow
+    // Check if click is on header, hint icon, or collapse button
     const header = e.target.closest('.dj-card-header');
     const hintIcon = e.target.closest('.expand-hint-icon');
     const hintArea = e.target.closest('.dj-card-expand-hint');
+    const collapseBtn = e.target.closest('.dj-card-collapse-btn');
     
-    // If clicked on hint, find the associated header
+    const isMobile = window.innerWidth <= 560;
+    if (!isMobile) return; /*Only work on mobile*/
+    
+    // Find target header
     let targetHeader = header;
     if (!targetHeader && (hintIcon || hintArea)) {
-      // Find the header in the same card
       const card = (hintIcon || hintArea).closest('.dj-card-collapsible');
       if (card) {
         targetHeader = card.querySelector('.dj-card-header');
       }
     }
+    if (!targetHeader && collapseBtn) {
+      targetHeader = collapseBtn.closest('.dj-card-header');
+    }
     
     if (!targetHeader) return;
     
-    const isMobile = window.innerWidth <= 560;
-    if (!isMobile) return; /*Only work on mobile*/
+    // Prevent event bubbling if clicking collapse button
+    if (collapseBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      targetHeader.setAttribute('aria-expanded', 'false');
+      return;
+    }
     
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Toggle only the clicked card
-    const isExpanded = targetHeader.getAttribute('aria-expanded') === 'true';
-    targetHeader.setAttribute('aria-expanded', !isExpanded);
+    // Only expand if clicking hint or header (and not already expanded)
+    if (hintIcon || hintArea || (header && !header.closest('.dj-card-collapse-btn'))) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const isExpanded = targetHeader.getAttribute('aria-expanded') === 'true';
+      // Only allow expanding (not toggling)
+      if (!isExpanded) {
+        targetHeader.setAttribute('aria-expanded', 'true');
+      }
+    }
   });
 
   /*Auto-preview animation (expand/collapse every 3 seconds if idle)*/
