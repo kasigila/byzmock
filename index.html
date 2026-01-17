@@ -396,6 +396,7 @@ section{padding: 92px 0}
 }
 @media (max-width: 980px){
   .cards{ padding: 0 14px; }
+  .cards{grid-template-columns:1fr}
 }
 @media (max-width: 560px){
   .cards{ padding: 0 12px; }
@@ -992,6 +993,336 @@ section{padding: 92px 0}
   font-size:12px;
   color:var(--sub);
   background: var(--bg-elev);
+}
+
+/* ===================== DJ ACCORDION STYLES ===================== */
+/*Collapsible Card*/
+.dj-card-collapsible {
+  padding: 18px;
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+}
+
+/*Premium Header Button*/
+.dj-card-header {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  min-height: 44px;
+  transition: opacity 0.2s var(--ease);
+  position: relative;
+  z-index: 2;
+}
+
+.dj-card-header:active {
+  opacity: 0.7;
+}
+
+.dj-card-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.dj-card-header-text h3 {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.dj-card-header-text p {
+  margin: 8px 0 0 0;
+  color: var(--sub);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.dj-card-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--sub);
+  margin-top: 2px;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dj-card-header[aria-expanded="true"] .dj-card-icon {
+  transform: rotate(180deg);
+}
+
+/*Collapsible Content*/
+.dj-card-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.4s var(--ease),
+              margin-top 0.5s var(--ease);
+  opacity: 0;
+  margin-top: 0;
+}
+
+.dj-card-header[aria-expanded="true"] + .dj-card-content {
+  max-height: 3000px;
+  opacity: 1;
+  margin-top: 16px;
+}
+
+/*Premium Timeline with Visual Dots*/
+.timeline-wrapper {
+  position: relative;
+  padding-left: 24px;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 11px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--border) 60%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 40%, transparent) 50%,
+    color-mix(in srgb, var(--border) 60%, transparent) 100%
+  );
+  opacity: 0.4;
+  transition: opacity 0.3s var(--ease);
+}
+
+.dj-card-header[aria-expanded="true"] ~ .dj-card-content .timeline-line {
+  opacity: 0.6;
+}
+
+/*Premium Timeline Dot*/
+.timeline-dot {
+  position: absolute;
+  left: -24px;
+  top: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--border) 80%, var(--bg-elev));
+  border: 2px solid var(--bg-elev);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg) 100%, transparent),
+              0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 3;
+}
+
+/*Past slots - smaller, muted*/
+.slot.past .timeline-dot {
+  width: 8px;
+  height: 8px;
+  background: color-mix(in srgb, var(--sub) 30%, transparent);
+  border-color: var(--bg-elev);
+  box-shadow: 0 0 0 2px var(--bg-elev);
+  opacity: 0.5;
+}
+
+/*Current slot - LARGE, glowing, pulsing*/
+.slot.live-now .timeline-dot {
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-color: var(--bg-elev);
+  box-shadow: 0 0 0 3px var(--bg-elev),
+              0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent),
+              0 0 20px color-mix(in srgb, var(--accent) 40%, transparent),
+              0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 3px var(--bg-elev),
+                0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent),
+                0 0 20px color-mix(in srgb, var(--accent) 40%, transparent),
+                0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 3px var(--bg-elev),
+                0 0 0 8px color-mix(in srgb, var(--accent) 35%, transparent),
+                0 0 28px color-mix(in srgb, var(--accent) 55%, transparent),
+                0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/*Next slot - medium, highlighted*/
+.slot.next-up .timeline-dot {
+  width: 12px;
+  height: 12px;
+  background: color-mix(in srgb, var(--accent) 60%, var(--bg-elev));
+  border-color: var(--bg-elev);
+  box-shadow: 0 0 0 3px var(--bg-elev),
+              0 0 0 5px color-mix(in srgb, var(--accent) 15%, transparent),
+              0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/*Slot content styling*/
+.slot {
+  position: relative;
+  min-height: 44px;
+}
+
+.slot-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s var(--ease);
+  min-height: 44px;
+}
+
+/*Live Now Slot - Premium Highlight*/
+.slot.live-now .slot-content {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 15%, transparent),
+              0 2px 8px rgba(0, 0, 0, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.slot.live-now .slot-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent,
+    var(--accent),
+    transparent
+  );
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.slot.live-now .time {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.slot.live-now .left::after {
+  content: "LIVE NOW";
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  opacity: 0.9;
+  animation: fadePulse 2s ease-in-out infinite;
+}
+
+@keyframes fadePulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.6; }
+}
+
+/*Past slots - muted*/
+.slot.past .slot-content {
+  opacity: 0.5;
+}
+
+.slot.past .time,
+.slot.past .who {
+  color: var(--sub);
+}
+
+/*Next up slot - subtle highlight*/
+.slot.next-up .slot-content {
+  border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
+}
+
+/*Preview Slot (Shown when collapsed)*/
+.dj-card-preview {
+  margin-top: 12px;
+  padding: 0;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.dj-card-header[aria-expanded="true"] ~ .dj-card-preview {
+  display: none;
+}
+
+.dj-card-preview .slot {
+  margin: 0;
+}
+
+.dj-card-preview .slot-content {
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+/*Premium Expand Hint (Visual Only)*/
+.dj-card-expand-hint {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0;
+  opacity: 0.6;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.dj-card-header[aria-expanded="true"] ~ .dj-card-expand-hint {
+  display: none;
+}
+
+.expand-hint-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg-alt) 80%, transparent);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounceHint 2s ease-in-out infinite;
+}
+
+@keyframes bounceHint {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 0.8;
+  }
+}
+
+.expand-hint-icon i {
+  font-size: 11px;
+  color: var(--sub);
+}
+
+/*What to Expect - No Buttons*/
+.timeline-expect .slot-content {
+  padding: 12px 14px;
 }
 
 /* ===== TEAM SPLIT (GROUP PHOTO + ROTATING DETAILS) ===== */
@@ -2538,6 +2869,43 @@ footer{
   }
   .hero{padding: 64px 0 52px}
   section{padding: 76px 0}
+
+  /*Fix artist section visibility*/
+  #artists {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  #artists .cards {
+    display: flex !important;
+    grid-template-columns: none !important;
+  }
+
+  /*Center align DJ section title and subtitle on mobile*/
+  #dj .section-title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  #dj .section-title h2 {
+    font-size: 28px;
+    letter-spacing: -0.7px;
+  }
+
+  #dj .section-title p {
+    font-size: 13px;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /*Hide chevron icon in header button - keep only bouncing hint*/
+  .dj-card-header .dj-card-icon {
+    display: none;
+  }
+
+  #dj {
+    padding: 52px 0 40px;
+  }
 }
 /* =========================================================
    DJ SECTION PREMIUM ACCORDION + AUTO LIVE INDICATOR
@@ -6743,6 +7111,243 @@ document.addEventListener('keydown', (e) => {
   window.addEventListener('resize', () => {
     if (window.innerWidth > 560) return;
     updateButtonStates();
+    });
+})();
+/* =========================================================
+   DJ SECTION PREMIUM ACCORDION + AUTO LIVE INDICATOR
+========================================================= */
+(function() {
+  const grooveTimeline = document.querySelector('.timeline[data-timeline="groove"]');
+  const djSection = document.getElementById('dj');
+  
+  if (!djSection) return;
+
+  /*Parse time string (e.g., "22:00" or "01:00") to minutes*/
+  function timeToMinutes(timeStr) {
+    const [hours, mins] = timeStr.split(':').map(Number);
+    return hours * 60 + mins;
+  }
+
+  /*Check if current time is within slot range*/
+  function isTimeInRange(currentMins, startMins, endMins) {
+    /*Handle overnight slots (e.g., 23:30 - 01:00)*/
+    if (endMins < startMins) {
+      return currentMins >= startMins || currentMins < endMins;
+    }
+    return currentMins >= startMins && currentMins < endMins;
+  }
+
+  /*Update LIVE indicator based on current time*/
+  function updateLiveIndicator() {
+    if (!grooveTimeline) return;
+
+    const now = new Date();
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+    const slots = grooveTimeline.querySelectorAll('.slot[data-start][data-end]');
+    
+    let foundLive = false;
+
+    slots.forEach((slot, index) => {
+      const startStr = slot.getAttribute('data-start');
+      const endStr = slot.getAttribute('data-end');
+      
+      if (!startStr || !endStr) return;
+
+      const startMins = timeToMinutes(startStr);
+      const endMins = timeToMinutes(endStr);
+      
+      /*Remove all classes*/
+      slot.classList.remove('live-now', 'past', 'next-up');
+      
+      if (isTimeInRange(currentMins, startMins, endMins)) {
+        /*Current slot is LIVE*/
+        slot.classList.add('live-now');
+        foundLive = true;
+        
+        /*Mark previous as past*/
+        for (let i = 0; i < index; i++) {
+          slots[i].classList.add('past');
+          slots[i].classList.remove('next-up');
+        }
+        
+        /*Mark next as next-up*/
+        if (index + 1 < slots.length) {
+          slots[index + 1].classList.add('next-up');
+          slots[index + 1].classList.remove('past');
+        }
+      } else if (currentMins < startMins) {
+        /*Future slot*/
+        if (!foundLive && index === 0) {
+          slot.classList.add('next-up');
+        }
+      } else {
+        /*Past slot*/
+        slot.classList.add('past');
+      }
+    });
+
+    /*Update preview with live/next slot*/
+    updatePreview();
+  }
+
+  /*Update preview slot (shown when collapsed)*/
+  function updatePreview() {
+    const preview = document.getElementById('groovePreview');
+    const expectPreview = document.getElementById('expectPreview');
+    
+    if (!preview || !grooveTimeline) return;
+
+    const liveSlot = grooveTimeline.querySelector('.slot.live-now');
+    const nextSlot = grooveTimeline.querySelector('.slot.next-up');
+    const targetSlot = liveSlot || nextSlot || grooveTimeline.querySelector('.slot:first-child');
+    
+    if (targetSlot) {
+      const slotContent = targetSlot.querySelector('.slot-content').cloneNode(true);
+      preview.innerHTML = '';
+      const previewSlot = document.createElement('div');
+      previewSlot.className = 'slot';
+      previewSlot.appendChild(slotContent);
+      preview.appendChild(previewSlot);
+    }
+
+    /*Update "What to Expect" preview*/
+    if (expectPreview) {
+      const expectTimeline = document.querySelector('.timeline-expect');
+      if (expectTimeline) {
+        const firstSlot = expectTimeline.querySelector('.slot:first-child');
+        if (firstSlot) {
+          const slotContent = firstSlot.querySelector('.slot-content').cloneNode(true);
+          expectPreview.innerHTML = '';
+          const expectPreviewSlot = document.createElement('div');
+          expectPreviewSlot.className = 'slot';
+          expectPreviewSlot.appendChild(slotContent);
+          expectPreview.appendChild(expectPreviewSlot);
+        }
+      }
+    }
+  }
+
+  /*FIXED: Accordion functionality using event delegation*/
+  function initAccordion() {
+    const isMobile = window.innerWidth <= 560;
+    const headers = djSection.querySelectorAll('.dj-card-header');
+    
+    if (!headers.length) return;
+    
+    headers.forEach((header) => {
+      if (isMobile) {
+        /*Mobile: Start collapsed*/
+        header.setAttribute('aria-expanded', 'false');
+      } else {
+        /*Desktop: Always expanded*/
+        header.setAttribute('aria-expanded', 'true');
+      }
+    });
+  }
+
+  /*Use event delegation for click handlers*/
+  djSection.addEventListener('click', function(e) {
+    const header = e.target.closest('.dj-card-header');
+    if (!header) return;
+    
+    const isMobile = window.innerWidth <= 560;
+    if (!isMobile) return; /*Only work on mobile*/
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const isExpanded = header.getAttribute('aria-expanded') === 'true';
+    header.setAttribute('aria-expanded', !isExpanded);
+    
+    /*Reset idle timer when user interacts*/
+    lastInteractionTime = Date.now();
+    clearTimeout(previewTimeout);
+  });
+
+  /*Auto-preview animation (expand/collapse every 3 seconds if idle)*/
+  let previewTimeout;
+  let lastInteractionTime = Date.now();
+  const PREVIEW_DELAY = 3000; /*3 seconds*/
+
+  function startAutoPreview() {
+    if (window.innerWidth > 560) return; /*Desktop only*/
+    
+    clearTimeout(previewTimeout);
+    
+    previewTimeout = setTimeout(() => {
+      const timeSinceInteraction = Date.now() - lastInteractionTime;
+      
+      /*Only auto-preview if user hasn't interacted in 3+ seconds*/
+      if (timeSinceInteraction >= PREVIEW_DELAY) {
+        const allHeaders = djSection.querySelectorAll('.dj-card-header');
+        allHeaders.forEach((header) => {
+          const isExpanded = header.getAttribute('aria-expanded') === 'true';
+          
+          /*Expand first, then collapse after showing for 1.5 seconds*/
+          if (!isExpanded) {
+            header.setAttribute('aria-expanded', 'true');
+            
+            /*Collapse after showing for 1.5 seconds*/
+            setTimeout(() => {
+              if (Date.now() - lastInteractionTime >= PREVIEW_DELAY) {
+                header.setAttribute('aria-expanded', 'false');
+              }
+            }, 1500);
+          }
+        });
+      }
+      
+      /*Continue checking*/
+      startAutoPreview();
+    }, PREVIEW_DELAY);
+  }
+
+  /*Track user interactions*/
+  function trackInteraction() {
+    lastInteractionTime = Date.now();
+    clearTimeout(previewTimeout);
+    startAutoPreview();
+  }
+
+  /*Track scroll in DJ section for idle detection*/
+  if (djSection) {
+    const observer = new MutationObserver(trackInteraction);
+    observer.observe(djSection, { childList: true, subtree: true, attributes: true });
+  }
+
+  /*Track window scroll when DJ section is visible*/
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    const sectionRect = djSection?.getBoundingClientRect();
+    const isVisible = sectionRect && sectionRect.top < window.innerHeight && sectionRect.bottom > 0;
+    
+    if (isVisible) {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(trackInteraction, 100);
+    }
+  }, { passive: true });
+
+  /*Initialize when DOM is ready*/
+  function initialize() {
+    initAccordion();
+    updateLiveIndicator();
+    updatePreview();
+    startAutoPreview();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize);
+  } else {
+    initialize();
+  }
+
+  /*Update every minute*/
+  setInterval(updateLiveIndicator, 60000);
+
+  /*Update on resize*/
+  window.addEventListener('resize', () => {
+    initAccordion();
+    startAutoPreview();
   });
 })();
 
