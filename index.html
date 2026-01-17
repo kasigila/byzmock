@@ -1351,6 +1351,40 @@ section{padding: 92px 0}
   pointer-events: none;
   opacity: 0.5;
 }
+
+/*Peeking edges - card 2 (offset right, smaller)*/
+.dj-card-preview::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 85%, transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/*Peeking edges - card 3 (offset more, smaller)*/
+.dj-card-preview::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  right: -16px;
+  bottom: -16px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 75%, transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+}
     
 
 /*Premium Expand Hint with Text*/
@@ -1363,6 +1397,11 @@ section{padding: 92px 0}
   padding: 8px 0;
   opacity: 0.8;
   transition: opacity 0.3s var(--ease);
+  cursor: pointer;
+}
+
+.dj-card-expand-hint:hover {
+  opacity: 1;
 }
 
 .dj-card-header[aria-expanded="true"] ~ .dj-card-expand-hint {
@@ -1414,8 +1453,7 @@ section{padding: 92px 0}
   font-size: 11px;
   color: var(--sub);
 }
-
-    
+      
 /*What to Expect - No Buttons*/
 .timeline-expect .slot-content {
   padding: 12px 14px;
