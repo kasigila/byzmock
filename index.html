@@ -2094,6 +2094,396 @@ footer{
   }
   .hero{padding: 64px 0 52px}
   section{padding: 76px 0}
+
+  /* ===================== DJ SECTION PREMIUM MOBILE ===================== */
+  #dj {
+    padding: 52px 0 40px;
+  }
+
+  #dj .section-title {
+    margin-bottom: 20px;
+  }
+
+  #dj .section-title h2 {
+    font-size: 28px;
+    letter-spacing: -0.7px;
+  }
+
+  #dj .section-title p {
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  /* Collapsible Card */
+  .dj-card-collapsible {
+    padding: 14px;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Premium Header Button */
+  .dj-card-header {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    min-height: 44px;
+    transition: opacity 0.2s var(--ease);
+    position: relative;
+    z-index: 2;
+  }
+
+  .dj-card-header:active {
+    opacity: 0.7;
+  }
+
+  .dj-card-header-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dj-card-header-text h3 {
+    margin: 0;
+    font-size: 15px;
+    letter-spacing: -0.2px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .dj-card-header-text p {
+    margin: 6px 0 0 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--sub);
+  }
+
+  .dj-card-icon {
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--sub);
+    margin-top: 2px;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dj-card-header[aria-expanded="true"] .dj-card-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Collapsible Content */
+  .dj-card-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.4s var(--ease),
+                margin-top 0.5s var(--ease);
+    opacity: 0;
+    margin-top: 0;
+  }
+
+  .dj-card-header[aria-expanded="true"] + .dj-card-content {
+    max-height: 3000px;
+    opacity: 1;
+    margin-top: 16px;
+  }
+
+  /* Premium Timeline with Visual Dots */
+  .timeline-wrapper {
+    position: relative;
+    padding-left: 24px;
+  }
+
+  .timeline-line {
+    position: absolute;
+    left: 11px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--border) 60%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 40%, transparent) 50%,
+      color-mix(in srgb, var(--border) 60%, transparent) 100%
+    );
+    opacity: 0.4;
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .dj-card-header[aria-expanded="true"] ~ .dj-card-content .timeline-line {
+    opacity: 0.6;
+  }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+
+  .slot {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0;
+    min-height: 44px;
+  }
+
+  /* Premium Timeline Dot */
+  .timeline-dot {
+    position: absolute;
+    left: -24px;
+    top: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--border) 80%, var(--bg-elev));
+    border: 2px solid var(--bg-elev);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg) 100%, transparent),
+                0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3;
+  }
+
+  /* Past slots - smaller, muted */
+  .slot.past .timeline-dot {
+    width: 8px;
+    height: 8px;
+    background: color-mix(in srgb, var(--sub) 30%, transparent);
+    border-color: var(--bg-elev);
+    box-shadow: 0 0 0 2px var(--bg-elev);
+    opacity: 0.5;
+  }
+
+  /* Current slot - LARGE, glowing, pulsing */
+  .slot.live-now .timeline-dot {
+    width: 14px;
+    height: 14px;
+    background: var(--accent);
+    border-color: var(--bg-elev);
+    box-shadow: 0 0 0 3px var(--bg-elev),
+                0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent),
+                0 0 20px color-mix(in srgb, var(--accent) 40%, transparent),
+                0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 0 3px var(--bg-elev),
+                  0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent),
+                  0 0 20px color-mix(in srgb, var(--accent) 40%, transparent),
+                  0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+      box-shadow: 0 0 0 3px var(--bg-elev),
+                  0 0 0 8px color-mix(in srgb, var(--accent) 35%, transparent),
+                  0 0 28px color-mix(in srgb, var(--accent) 55%, transparent),
+                  0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  /* Next slot - medium, highlighted */
+  .slot.next-up .timeline-dot {
+    width: 12px;
+    height: 12px;
+    background: color-mix(in srgb, var(--accent) 60%, var(--bg-elev));
+    border-color: var(--bg-elev);
+    box-shadow: 0 0 0 3px var(--bg-elev),
+                0 0 0 5px color-mix(in srgb, var(--accent) 15%, transparent),
+                0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .slot-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s var(--ease);
+    min-height: 44px;
+  }
+
+  /* Live Now Slot - Premium Highlight */
+  .slot.live-now .slot-content {
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg-elev));
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 15%, transparent),
+                0 2px 8px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slot.live-now .slot-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent,
+      var(--accent),
+      transparent
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .slot.live-now .time {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .slot.live-now .left::after {
+    content: "LIVE NOW";
+    display: block;
+    margin-top: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    opacity: 0.9;
+    animation: fadePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes fadePulse {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 0.6; }
+  }
+
+  /* Past slots - muted */
+  .slot.past .slot-content {
+    opacity: 0.5;
+  }
+
+  .slot.past .time,
+  .slot.past .who {
+    color: var(--sub);
+  }
+
+  /* Next up slot - subtle highlight */
+  .slot.next-up .slot-content {
+    border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
+  }
+
+  .slot .left {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .slot .time {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.1px;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  .slot .who {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--sub);
+  }
+
+  .badge {
+    padding: 5px 10px;
+    font-size: 10px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  /* Preview Slot (Shown when collapsed) */
+  .dj-card-preview {
+    margin-top: 12px;
+    padding: 0;
+    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+
+  .dj-card-header[aria-expanded="true"] ~ .dj-card-preview {
+    display: none;
+  }
+
+  .dj-card-preview .slot {
+    margin: 0;
+  }
+
+  .dj-card-preview .slot-content {
+    background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+    border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  }
+
+  /* Premium Expand Hint (Visual Only) */
+  .dj-card-expand-hint {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    opacity: 0.6;
+    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+
+  .dj-card-header[aria-expanded="true"] ~ .dj-card-expand-hint {
+    display: none;
+  }
+
+  .expand-hint-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--bg-alt) 80%, transparent);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bounceHint 2s ease-in-out infinite;
+  }
+
+  @keyframes bounceHint {
+    0%, 100% {
+      transform: translateY(0);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translateY(4px);
+      opacity: 0.8;
+    }
+  }
+
+  .expand-hint-icon i {
+    font-size: 11px;
+    color: var(--sub);
+  }
+
+  /* What to Expect - No Buttons */
+  .timeline-expect .slot-content {
+    padding: 12px 14px;
+  }
 }
 
       .footer-logo{
@@ -2109,6 +2499,158 @@ footer{
   .hero{padding: 64px 0 52px}
   section{padding: 76px 0}
 }
+/* =========================================================
+   DJ SECTION PREMIUM ACCORDION + AUTO LIVE INDICATOR
+========================================================= */
+(function() {
+  const headers = document.querySelectorAll('.dj-card-header');
+  const grooveTimeline = document.querySelector('.timeline[data-timeline="groove"]');
+  
+  if (!headers.length) return;
+
+  // Parse time string (e.g., "22:00" or "01:00") to minutes
+  function timeToMinutes(timeStr) {
+    const [hours, mins] = timeStr.split(':').map(Number);
+    return hours * 60 + mins;
+  }
+
+  // Check if current time is within slot range
+  function isTimeInRange(currentMins, startMins, endMins) {
+    // Handle overnight slots (e.g., 23:30 - 01:00)
+    if (endMins < startMins) {
+      return currentMins >= startMins || currentMins < endMins;
+    }
+    return currentMins >= startMins && currentMins < endMins;
+  }
+
+  // Update LIVE indicator based on current time
+  function updateLiveIndicator() {
+    if (!grooveTimeline) return;
+
+    const now = new Date();
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+    const slots = grooveTimeline.querySelectorAll('.slot[data-start][data-end]');
+    
+    let foundLive = false;
+
+    slots.forEach((slot, index) => {
+      const startStr = slot.getAttribute('data-start');
+      const endStr = slot.getAttribute('data-end');
+      
+      if (!startStr || !endStr) return;
+
+      const startMins = timeToMinutes(startStr);
+      const endMins = timeToMinutes(endStr);
+      
+      // Remove all classes
+      slot.classList.remove('live-now', 'past', 'next-up');
+      
+      if (isTimeInRange(currentMins, startMins, endMins)) {
+        // Current slot is LIVE
+        slot.classList.add('live-now');
+        foundLive = true;
+        
+        // Mark previous as past
+        for (let i = 0; i < index; i++) {
+          slots[i].classList.add('past');
+          slots[i].classList.remove('next-up');
+        }
+        
+        // Mark next as next-up
+        if (index + 1 < slots.length) {
+          slots[index + 1].classList.add('next-up');
+          slots[index + 1].classList.remove('past');
+        }
+      } else if (currentMins < startMins) {
+        // Future slot
+        if (!foundLive && index === 0) {
+          slot.classList.add('next-up');
+        }
+      } else {
+        // Past slot
+        slot.classList.add('past');
+      }
+    });
+
+    // Update preview with live/next slot
+    updatePreview();
+  }
+
+  // Update preview slot (shown when collapsed)
+  function updatePreview() {
+    const preview = document.getElementById('groovePreview');
+    const expectPreview = document.getElementById('expectPreview');
+    
+    if (!preview || !grooveTimeline) return;
+
+    const liveSlot = grooveTimeline.querySelector('.slot.live-now');
+    const nextSlot = grooveTimeline.querySelector('.slot.next-up');
+    const targetSlot = liveSlot || nextSlot || grooveTimeline.querySelector('.slot:first-child');
+    
+    if (targetSlot) {
+      const slotContent = targetSlot.querySelector('.slot-content').cloneNode(true);
+      preview.innerHTML = '';
+      const previewSlot = document.createElement('div');
+      previewSlot.className = 'slot';
+      previewSlot.appendChild(slotContent);
+      preview.appendChild(previewSlot);
+    }
+
+    // Update "What to Expect" preview
+    if (expectPreview) {
+      const expectTimeline = document.querySelector('.timeline-expect');
+      if (expectTimeline) {
+        const firstSlot = expectTimeline.querySelector('.slot:first-child');
+        if (firstSlot) {
+          const slotContent = firstSlot.querySelector('.slot-content').cloneNode(true);
+          expectPreview.innerHTML = '';
+          const expectPreviewSlot = document.createElement('div');
+          expectPreviewSlot.className = 'slot';
+          expectPreviewSlot.appendChild(slotContent);
+          expectPreview.appendChild(expectPreviewSlot);
+        }
+      }
+    }
+  }
+
+  // Accordion functionality
+  function initAccordion() {
+    const isMobile = window.innerWidth <= 560;
+    
+    headers.forEach(header => {
+      if (isMobile) {
+        // Mobile: Start collapsed
+        header.setAttribute('aria-expanded', 'false');
+        
+        // Remove existing listeners
+        const newHeader = header.cloneNode(true);
+        header.parentNode.replaceChild(newHeader, header);
+        
+        // Add click listener
+        newHeader.addEventListener('click', function() {
+          const isExpanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', !isExpanded);
+        });
+      } else {
+        // Desktop: Always expanded
+        header.setAttribute('aria-expanded', 'true');
+      }
+    });
+  }
+
+  // Initialize
+  initAccordion();
+  updateLiveIndicator();
+  updatePreview();
+
+  // Update every minute
+  setInterval(updateLiveIndicator, 60000);
+
+  // Update on resize
+  window.addEventListener('resize', () => {
+    initAccordion();
+  });
+})();
 
 /* ===================== ARTIST SECTION HORIZONTAL SCROLL (MOBILE) ===================== */
 @media (max-width: 560px) {
@@ -3777,86 +4319,138 @@ body.bulkbar-active .social-dock{
         <h2>DJ Timings, Lineups & Announcements</h2>
         <p>A dedicated place for DJ sets, artist performances, and special updates.</p>
       </div>
-
       <div class="dj-grid stagger reveal">
-        <div class="dj-card">
-          <h3>Tonight’s Groove Set Times</h3>
-          <p>Plan your arrival and catch every moment</p>
-          <div class="timeline">
-            <div class="slot">
-              <div class="left">
-                <div class="time">10:00 PM – 11:30 PM</div>
-                <div class="who">DJ Mama • Warm-up</div>
-              </div>
-              <div class="badge">DJ SET</div>
+        <div class="dj-card dj-card-collapsible">
+          <button class="dj-card-header" type="button" aria-expanded="false">
+            <div class="dj-card-header-text">
+              <h3>Tonight's Groove Set Times</h3>
+              <p>Plan your arrival and catch every moment</p>
             </div>
-            <div class="slot">
-              <div class="left">
-                <div class="time">11:30 PM – 1:00 AM</div>
-                <div class="who">DJ Baba • Main Set</div>
+            <i class="fa-solid fa-chevron-down dj-card-icon" aria-hidden="true"></i>
+          </button>
+          <div class="dj-card-content">
+            <div class="timeline-wrapper">
+              <div class="timeline-line"></div>
+              <div class="timeline" data-timeline="groove">
+                <div class="slot" data-start="22:00" data-end="23:30">
+                  <div class="timeline-dot"></div>
+                  <div class="slot-content">
+                    <div class="left">
+                      <div class="time">10:00 PM – 11:30 PM</div>
+                      <div class="who">DJ Mama • Warm-up</div>
+                    </div>
+                    <div class="badge">DJ SET</div>
+                  </div>
+                </div>
+                <div class="slot" data-start="23:30" data-end="01:00">
+                  <div class="timeline-dot"></div>
+                  <div class="slot-content">
+                    <div class="left">
+                      <div class="time">11:30 PM – 1:00 AM</div>
+                      <div class="who">DJ Baba • Main Set</div>
+                    </div>
+                    <div class="badge">HEADLINE</div>
+                  </div>
+                </div>
+                <div class="slot" data-start="01:00" data-end="02:30">
+                  <div class="timeline-dot"></div>
+                  <div class="slot-content">
+                    <div class="left">
+                      <div class="time">1:00 AM – 2:30 AM</div>
+                      <div class="who">DJ Dada • Closing</div>
+                    </div>
+                    <div class="badge">CLOSER</div>
+                  </div>
+                </div>
+                <div class="slot" data-start="02:30" data-end="03:30">
+                  <div class="timeline-dot"></div>
+                  <div class="slot-content">
+                    <div class="left">
+                      <div class="time">2:30 AM – 3:30 AM</div>
+                      <div class="who">DJ ___ • Late Set</div>
+                    </div>
+                    <div class="badge">LATE</div>
+                  </div>
+                </div>
+                <div class="slot" data-start="03:30" data-end="04:30">
+                  <div class="timeline-dot"></div>
+                  <div class="slot-content">
+                    <div class="left">
+                      <div class="time">3:30 AM – 4:30 AM</div>
+                      <div class="who">DJ ___ • Sunrise</div>
+                    </div>
+                    <div class="badge">SUNRISE</div>
+                  </div>
+                </div>
               </div>
-              <div class="badge">HEADLINE</div>
             </div>
-            
-            <div class="slot">
-              <div class="left">
-                <div class="time">1:00 AM – 2:30 AM</div>
-                <div class="who">DJ Dada • Closing</div>
-              </div>
-              <div class="badge">CLOSER</div>
+          </div>
+          <div class="dj-card-preview" id="groovePreview">
+            <!-- Preview slot will be inserted here by JS -->
+          </div>
+          <div class="dj-card-expand-hint">
+            <div class="expand-hint-icon">
+              <i class="fa-solid fa-chevron-down"></i>
             </div>
-            <div class="slot">
-              
-  <div class="left">
-    <div class="time">2:30 AM – 3:30 AM</div>
-    <div class="who">DJ ___ • Late Set</div>
-  </div>
-  <div class="badge">LATE</div>
-</div>
-<div class="slot">
-  <div class="left">
-    <div class="time">3:30 AM – 4:30 AM</div>
-    <div class="who">DJ ___ • Sunrise</div>
-  </div>
-  <div class="badge">SUNRISE</div>
-</div>
           </div>
         </div>
 
-        <div class="dj-card">
-          <h3>What to Expect</h3>
-          <p>Live performances, special guests, themes, and any important event details.</p>
-
-          <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
-            <div class="slot">
-              <div class="left">
-                <div class="time">Special Guest</div>
-                <div class="who"> 10k Leeroy • Performance at 12:15 AM</div>
-              </div>
-              <div class="badge">LIVE</div>
+        <div class="dj-card dj-card-collapsible">
+          <button class="dj-card-header" type="button" aria-expanded="false">
+            <div class="dj-card-header-text">
+              <h3>What to Expect</h3>
+              <p>Live performances, special guests, themes, and any important event details.</p>
             </div>
-            <div class="slot">
-              <div class="left">
-                <div class="time">Theme</div>
-                <div class="who">All Black </div>
+            <i class="fa-solid fa-chevron-down dj-card-icon" aria-hidden="true"></i>
+          </button>
+          <div class="dj-card-content">
+            <div class="timeline-wrapper">
+              <div class="timeline-line"></div>
+              <div class="timeline timeline-expect">
+                <div class="slot">
+                  <div class="timeline-dot"></div>
+                  <div class="slot-content">
+                    <div class="left">
+                      <div class="time">Special Guest</div>
+                      <div class="who">10k Leeroy • Performance at 12:15 AM</div>
+                    </div>
+                    <div class="badge">LIVE</div>
+                  </div>
+                </div>
+                <div class="slot">
+                  <div class="timeline-dot"></div>
+                  <div class="slot-content">
+                    <div class="left">
+                      <div class="time">Theme</div>
+                      <div class="who">All Black</div>
+                    </div>
+                    <div class="badge">VIBE</div>
+                  </div>
+                </div>
+                <div class="slot">
+                  <div class="timeline-dot"></div>
+                  <div class="slot-content">
+                    <div class="left">
+                      <div class="time">Special Offer</div>
+                      <div class="who">first 50 guests get a free shot</div>
+                    </div>
+                    <div class="badge">DEAL</div>
+                  </div>
+                </div>
               </div>
-              <div class="badge">VIBE</div>
-            </div>
-            <div class="slot">
-              <div class="left">
-                <div class="time"> Special Offer </div>
-                <div class="who">first 50 guets get a free shot</div>
-              </div>
-              <div class="badge">DEAL</div>
             </div>
           </div>
-
-          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-            <a class="btn primary" href="https://kasigila.github.io/byzmock/booking.html">Reserve</a>
-            <a class="btn" href="https://wa.me/255768464367" target="_blank" rel="noopener">Ask on WhatsApp</a>
+          <div class="dj-card-preview" id="expectPreview">
+            <!-- Preview slot will be inserted here by JS -->
+          </div>
+          <div class="dj-card-expand-hint">
+            <div class="expand-hint-icon">
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
           </div>
         </div>
       </div>
+      
     </div>
   </section>
   
