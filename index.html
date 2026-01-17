@@ -1286,6 +1286,7 @@ section{padding: 92px 0}
   padding: 8px 0;
   opacity: 0.6;
   transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  cursor: pointer;
 }
 
 .dj-card-header[aria-expanded="true"] ~ .dj-card-expand-hint {
@@ -1302,6 +1303,17 @@ section{padding: 92px 0}
   align-items: center;
   justify-content: center;
   animation: bounceHint 2s ease-in-out infinite;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.expand-hint-icon:hover {
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+  transform: scale(1.1);
+}
+
+.expand-hint-icon:active {
+  transform: scale(0.95);
 }
 
 @keyframes bounceHint {
@@ -6531,10 +6543,24 @@ document.addEventListener('keydown', (e) => {
     });
   }
 
-   /*Use event delegation for click handlers - each card works independently*/
+     /*Use event delegation for click handlers - each card works independently*/
   djSection.addEventListener('click', function(e) {
+    // Check if click is on header OR on the expand hint arrow
     const header = e.target.closest('.dj-card-header');
-    if (!header) return;
+    const hintIcon = e.target.closest('.expand-hint-icon');
+    const hintArea = e.target.closest('.dj-card-expand-hint');
+    
+    // If clicked on hint, find the associated header
+    let targetHeader = header;
+    if (!targetHeader && (hintIcon || hintArea)) {
+      // Find the header in the same card
+      const card = (hintIcon || hintArea).closest('.dj-card-collapsible');
+      if (card) {
+        targetHeader = card.querySelector('.dj-card-header');
+      }
+    }
+    
+    if (!targetHeader) return;
     
     const isMobile = window.innerWidth <= 560;
     if (!isMobile) return; /*Only work on mobile*/
@@ -6543,8 +6569,8 @@ document.addEventListener('keydown', (e) => {
     e.stopPropagation();
     
     // Toggle only the clicked card
-    const isExpanded = header.getAttribute('aria-expanded') === 'true';
-    header.setAttribute('aria-expanded', !isExpanded);
+    const isExpanded = targetHeader.getAttribute('aria-expanded') === 'true';
+    targetHeader.setAttribute('aria-expanded', !isExpanded);
   });
 
   /*Auto-preview animation (expand/collapse every 3 seconds if idle)*/
