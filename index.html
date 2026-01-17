@@ -770,11 +770,11 @@ section{padding: 92px 0}
   color:var(--text);
 }
 
-/* ✅ WhatsApp original green */
-.soc.whatsapp i{ color:#25D366; }
-.soc.whatsapp:hover{
-  background: color-mix(in srgb, #25D366 14%, var(--bg) 86%);
-  border-color: color-mix(in srgb, #25D366 45%, var(--border) 55%);
+/* ✅ Facebook blue */
+.soc.facebook i{ color:#1877F2; }
+.soc.facebook:hover{
+  background: color-mix(in srgb, #1877F2 14%, var(--bg) 86%);
+  border-color: color-mix(in srgb, #1877F2 45%, var(--border) 55%);
 }
 
 /* Optional: subtle platform hover cues */
@@ -2096,6 +2096,200 @@ footer{
   section{padding: 76px 0}
 }
 
+      .footer-logo{
+  width:120px;           /* make bigger/smaller */
+  height:auto;
+}
+
+/* ===================== ARTIST SECTION HORIZONTAL SCROLL (MOBILE) ===================== */
+@media (max-width: 560px) {
+  /* Artist scroll wrapper with arrows */
+  .artist-scroll-wrapper {
+    position: relative;
+    margin: 0 -12px;
+    padding: 0 48px;
+  }
+
+  /* Hide arrows on desktop */
+  .artist-scroll-btn {
+    display: none;
+  }
+
+  /* Show arrows on mobile */
+  @media (max-width: 560px) {
+    .artist-scroll-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+      opacity: 0.9;
+    }
+
+    .artist-scroll-btn:hover,
+    .artist-scroll-btn:active {
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: var(--shadow-soft);
+      background: color-mix(in srgb, var(--bg-elev) 98%, transparent);
+      opacity: 1;
+    }
+
+    .artist-scroll-btn:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .artist-scroll-btn i {
+      font-size: 14px;
+    }
+
+    .artist-scroll-left {
+      left: 4px;
+    }
+
+    .artist-scroll-right {
+      right: 4px;
+    }
+
+    /* Disable button when at start/end */
+    .artist-scroll-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  /* Horizontal scroll for artist cards */
+  #artists .cards {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 16px;
+    padding: 0 8px 8px;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  #artists .cards::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  #artists .cards::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #artists .cards::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
+  }
+
+  #artists .cards::-webkit-scrollbar-thumb:hover {
+    background: var(--sub);
+  }
+
+  #artists .cards > * {
+    min-width: 260px;
+    max-width: 260px;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    flex-basis: 260px;
+  }
+
+  /* Compact artist cards on mobile */
+  .artist-card {
+    padding: 0;
+  }
+
+  .artist-card .card-body {
+    padding: 14px 12px;
+  }
+
+  .artist-card .card-top.artist-photo {
+    height: 140px;
+  }
+
+  .artist-header h3 {
+    font-size: 17px;
+  }
+
+  .artist-genres {
+    font-size: 10px;
+    margin-top: 3px;
+  }
+
+  .artist-bio {
+    font-size: 12px;
+    line-height: 1.3;
+    margin: 10px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .artist-portfolio {
+    margin: 10px 0;
+  }
+
+  .portfolio-label {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .portfolio-links {
+    gap: 6px;
+  }
+
+  .portfolio-link {
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+
+  .portfolio-link i {
+    font-size: 12px;
+  }
+
+  .artist-actions {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .artist-actions .btn {
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+
+  .artist-actions .btn i {
+    font-size: 12px;
+  }
+
+  /* Reduce section padding */
+  #artists {
+    padding: 52px 0 40px;
+  }
+
+  #artists .section-title {
+    margin-bottom: 20px;
+  }
+
+  #artists .section-title p {
+    font-size: 13px;
+  }
+}
   .footer-logo{
   width:120px;           /* make bigger/smaller */
   height:auto;
@@ -3428,8 +3622,8 @@ body.bulkbar-active .social-dock{
     <i class="fa-brands fa-tiktok"></i>
   </a>
 
-  <a class="soc whatsapp" href="https://wa.me/255768464367" target="_blank" rel="noopener" aria-label="WhatsApp">
-    <i class="fa-brands fa-whatsapp"></i>
+    <a class="soc facebook" href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" aria-label="Facebook">
+    <i class="fa-brands fa-facebook"></i>
   </a>
 
   <!-- Admin lock -->
@@ -3638,168 +3832,180 @@ body.bulkbar-active .social-dock{
   </section>
   
     <!-- BOOK OUR ARTISTS & DJS -->
-  <section id="artists">
-    <div class="container">
-      <div class="section-title reveal">
-        <h2>Book Our Artists & DJs</h2>
-        <p>Available for events, performances, and collaborations. Connect with our talent roster.</p>
-      </div>
-
-      <div class="cards stagger reveal">
-        <!-- DJ Sammy -->
-        <div class="card artist-card">
-          <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
-            <div style="color: var(--sub); font-size: 14px; font-weight: 600;">photo coming soon wewe</div>
-          </div>
-          <div class="card-body">
-            <div class="artist-header">
-              <div>
-                <h3>DJ Sammy</h3>
-                <p class="artist-genres">Afrobeats • House • Hip-Hop • Dancehall • Amapiano • R&B</p>
-              </div>
-              <div class="artist-social-inline">
-                <a href="https://www.instagram.com/djsammyofficial_?igsh=MWJ2Y25oaWcyb3M2Zw==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="DJ Sammy Instagram">
-                  <i class="fa-brands fa-instagram"></i>
-                </a>
-              </div>
-            </div>
-
-            <p class="artist-bio">Professional DJ specializing in Afrobeats, House, and Hip-Hop. High-energy sets that keep the dancefloor moving all night.</p>
-
-            <div class="artist-portfolio">
-              <div class="portfolio-label">Portfolio</div>
-              <div class="portfolio-links">
-                <a href="https://www.instagram.com/djsammyofficial_?igsh=MWJ2Y25oaWcyb3M2Zw==" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-instagram"></i>
-                  <span>Instagram</span>
-                </a>
-                <button class="portfolio-link" onclick="showVenuesModal('sammy')" type="button">
-                  <i class="fa-solid fa-location-dot"></i>
-                  <span>Featured Venues</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="card-actions artist-actions">
-              <button class="btn primary" onclick="openContactModal('sammy', 'whatsapp')" type="button">
-                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
-              </button>
-              <button class="btn" onclick="openContactModal('sammy', 'email')" type="button">
-                <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Apuki -->
-        <div class="card artist-card">
-          <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
-            <div style="color: var(--sub); font-size: 14px; font-weight: 600;">photo coming soon wewe</div>
-          </div>
-          <div class="card-body">
-            <div class="artist-header">
-              <div>
-                <h3>Apuki</h3>
-                <p class="artist-genres">Afrobeats • House • Hip-Hop • Dancehall • Amapiano • R&B</p>
-              </div>
-              <div class="artist-social-inline">
-                <a href="https://www.instagram.com/apukiofficial?igsh=MWtodmFhZDJmODNxbQ==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Apuki Instagram">
-                  <i class="fa-brands fa-instagram"></i>
-                </a>
-                <a href="https://www.tiktok.com/@apukioffical?_r=1&_t=ZM-93862Q3oAKh" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Apuki TikTok">
-                  <i class="fa-brands fa-tiktok"></i>
-                </a>
-              </div>
-            </div>
-
-            <p class="artist-bio">DJ and performer known for dynamic sets blending Afrobeats, Dancehall, and Hip-Hop. Available for local and international bookings.</p>
-
-            <div class="artist-portfolio">
-              <div class="portfolio-label">Portfolio</div>
-              <div class="portfolio-links">
-                <button class="portfolio-link" onclick="showSpotifyModal('apuki')" type="button">
-                  <i class="fa-brands fa-spotify"></i>
-                  <span>Spotify</span>
-                  <span class="portfolio-hint">
-                    <i class="fa-solid fa-play"></i>
-                    <span>Play</span>
-                  </span>
-                </button>
-                <a href="https://www.instagram.com/apukiofficial?igsh=MWtodmFhZDJmODNxbQ==" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-instagram"></i>
-                  <span>Instagram</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="card-actions artist-actions">
-              <button class="btn primary" onclick="openContactModal('apuki', 'whatsapp')" type="button">
-                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
-              </button>
-              <button class="btn" onclick="openContactModal('apuki', 'email')" type="button">
-                <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Renee -->
-        <div class="card artist-card">
-          <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
-            <div style="color: var(--sub); font-size: 14px; font-weight: 600;">photo coming soon wewe</div>
-          </div>
-          <div class="card-body">
-            <div class="artist-header">
-              <div>
-                <h3>Renee</h3>
-                <p class="artist-genres">Hip-Hop • Rap • R&B</p>
-              </div>
-              <div class="artist-social-inline">
-                <a href="https://www.instagram.com/renesw0rld777?igsh=MTEzaWVpaHlzOHl0Yw==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee Instagram">
-                  <i class="fa-brands fa-instagram"></i>
-                </a>
-                <a href="https://www.tiktok.com/@ren55974?_r=1&_t=ZM-9386Xu6xs6a" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee TikTok">
-                  <i class="fa-brands fa-tiktok"></i>
-                </a>
-                <a href="https://youtube.com/@renesa777?si=7JWf5rRCVnAhN-4l" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee YouTube">
-                  <i class="fa-brands fa-youtube"></i>
-                </a>
-              </div>
-            </div>
-
-            <p class="artist-bio">Artist specializing in Hip-Hop, Rap, and R&B. Available for performances, collaborations, and live shows.</p>
-
-            <div class="artist-portfolio">
-              <div class="portfolio-label">Portfolio</div>
-              <div class="portfolio-links">
-                <a href="https://on.soundcloud.com/o393kAbwy7qlFCsDVn" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-soundcloud"></i>
-                  <span>SoundCloud</span>
-                </a>
-                <a href="https://youtube.com/@renesa777?si=7JWf5rRCVnAhN-4l" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-youtube"></i>
-                  <span>YouTube</span>
-                </a>
-                <a href="https://www.instagram.com/renesw0rld777?igsh=MTEzaWVpaHlzOHl0Yw==" target="_blank" rel="noopener" class="portfolio-link">
-                  <i class="fa-brands fa-instagram"></i>
-                  <span>Instagram</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="card-actions artist-actions">
-              <button class="btn primary" onclick="openContactModal('renee', 'whatsapp')" type="button">
-                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
-              </button>
-              <button class="btn" onclick="openContactModal('renee', 'email')" type="button">
-                <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+<section id="artists">
+  <div class="container">
+    <div class="section-title reveal">
+      <h2>Book Our Artists & DJs</h2>
+      <p>Available for events, performances, and collaborations. Connect with our talent roster.</p>
     </div>
-  </section>
+
+    <div class="artist-scroll-wrapper">
+      <button class="artist-scroll-btn artist-scroll-left" type="button" aria-label="Scroll left">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      
+      <div class="cards stagger reveal" id="artistCardsContainer">
+      
+      <!-- DJ Sammy -->
+      <div class="card artist-card">
+        <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
+          <div style="color: var(--sub); font-size: 14px; font-weight: 600;">photo coming soon wewe</div>
+        </div>
+        <div class="card-body">
+          <div class="artist-header">
+            <div>
+              <h3>DJ Sammy</h3>
+              <p class="artist-genres">Afrobeats • House • Hip-Hop • Dancehall • Amapiano • R&B</p>
+            </div>
+            <div class="artist-social-inline">
+              <a href="https://www.instagram.com/djsammyofficial_?igsh=MWJ2Y25oaWcyb3M2Zw==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="DJ Sammy Instagram">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+            </div>
+          </div>
+
+          <p class="artist-bio">Professional DJ specializing in Afrobeats, House, and Hip-Hop. High-energy sets that keep the dancefloor moving all night.</p>
+
+          <div class="artist-portfolio">
+            <div class="portfolio-label">Portfolio</div>
+            <div class="portfolio-links">
+              <a href="https://www.instagram.com/djsammyofficial_?igsh=MWJ2Y25oaWcyb3M2Zw==" target="_blank" rel="noopener" class="portfolio-link">
+                <i class="fa-brands fa-instagram"></i>
+                <span>Instagram</span>
+              </a>
+              <button class="portfolio-link" onclick="showVenuesModal('sammy')" type="button">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Featured Venues</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-actions artist-actions">
+            <button class="btn primary" onclick="openContactModal('sammy', 'whatsapp')" type="button">
+              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
+            </button>
+            <button class="btn" onclick="openContactModal('sammy', 'email')" type="button">
+              <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Apuki -->
+      <div class="card artist-card">
+        <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
+          <div style="color: var(--sub); font-size: 14px; font-weight: 600;">photo coming soon wewe</div>
+        </div>
+        <div class="card-body">
+          <div class="artist-header">
+            <div>
+              <h3>Apuki</h3>
+              <p class="artist-genres">Afrobeats • House • Hip-Hop • Dancehall • Amapiano • R&B</p>
+            </div>
+            <div class="artist-social-inline">
+              <a href="https://www.instagram.com/apukiofficial?igsh=MWtodmFhZDJmODNxbQ==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Apuki Instagram">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <a href="https://www.tiktok.com/@apukioffical?_r=1&_t=ZM-93862Q3oAKh" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Apuki TikTok">
+                <i class="fa-brands fa-tiktok"></i>
+              </a>
+            </div>
+          </div>
+
+          <p class="artist-bio">DJ and performer known for dynamic sets blending Afrobeats, Dancehall, and Hip-Hop. Available for local and international bookings.</p>
+
+          <div class="artist-portfolio">
+            <div class="portfolio-label">Portfolio</div>
+            <div class="portfolio-links">
+              <button class="portfolio-link portfolio-link-interactive" onclick="showSpotifyModal('apuki')" type="button">
+                <i class="fa-brands fa-spotify"></i>
+                <span>Spotify</span>
+                <span class="portfolio-hint">
+                  <i class="fa-solid fa-play"></i>
+                  <span>Play</span>
+                </span>
+              </button>
+              <a href="https://www.instagram.com/apukiofficial?igsh=MWtodmFhZDJmODNxbQ==" target="_blank" rel="noopener" class="portfolio-link">
+                <i class="fa-brands fa-instagram"></i>
+                <span>Instagram</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="card-actions artist-actions">
+            <button class="btn primary" onclick="openContactModal('apuki', 'whatsapp')" type="button">
+              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
+            </button>
+            <button class="btn" onclick="openContactModal('apuki', 'email')" type="button">
+              <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Renee -->
+      <div class="card artist-card">
+        <div class="card-top artist-photo" style="background: #000; display: flex; align-items: center; justify-content: center;">
+          <div style="color: var(--sub); font-size: 14px; font-weight: 600;">photo coming soon wewe</div>
+        </div>
+        <div class="card-body">
+          <div class="artist-header">
+            <div>
+              <h3>Renee</h3>
+              <p class="artist-genres">Hip-Hop • Rap • R&B</p>
+            </div>
+            <div class="artist-social-inline">
+              <a href="https://www.instagram.com/renesw0rld777?igsh=MTEzaWVpaHlzOHl0Yw==" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee Instagram">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <a href="https://www.tiktok.com/@ren55974?_r=1&_t=ZM-9386Xu6xs6a" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee TikTok">
+                <i class="fa-brands fa-tiktok"></i>
+              </a>
+              <a href="https://youtube.com/@renesa777?si=7JWf5rRCVnAhN-4l" target="_blank" rel="noopener" class="artist-social-icon" aria-label="Renee YouTube">
+                <i class="fa-brands fa-youtube"></i>
+              </a>
+            </div>
+          </div>
+
+          <p class="artist-bio">Artist specializing in Hip-Hop, Rap, and R&B. Available for performances, collaborations, and live shows.</p>
+
+          <div class="artist-portfolio">
+            <div class="portfolio-label">Portfolio</div>
+            <div class="portfolio-links">
+              <a href="https://on.soundcloud.com/o393kAbwy7qlFCsDVn" target="_blank" rel="noopener" class="portfolio-link">
+                <i class="fa-brands fa-soundcloud"></i>
+                <span>SoundCloud</span>
+              </a>
+              <a href="https://youtube.com/@renesa777?si=7JWf5rRCVnAhN-4l" target="_blank" rel="noopener" class="portfolio-link">
+                <i class="fa-brands fa-youtube"></i>
+                <span>YouTube</span>
+              </a>
+              <a href="https://www.instagram.com/renesw0rld777?igsh=MTEzaWVpaHlzOHl0Yw==" target="_blank" rel="noopener" class="portfolio-link">
+                <i class="fa-brands fa-instagram"></i>
+                <span>Instagram</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="card-actions artist-actions">
+            <button class="btn primary" onclick="openContactModal('renee', 'whatsapp')" type="button">
+              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Quick Inquiry
+            </button>
+            <button class="btn" onclick="openContactModal('renee', 'email')" type="button">
+              <i class="fa-solid fa-envelope" aria-hidden="true"></i> Formal Booking
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      </div>
+
+      <button class="artist-scroll-btn artist-scroll-right" type="button" aria-label="Scroll right">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
   
   <!-- YOUTUBE -->
   <section id="youtube">
@@ -5708,6 +5914,49 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+  /* =========================================================
+   ARTIST SECTION HORIZONTAL SCROLL ARROWS (MOBILE)
+========================================================= */
+(function() {
+  const cardsContainer = document.getElementById('artistCardsContainer');
+  const scrollLeftBtn = document.querySelector('.artist-scroll-left');
+  const scrollRightBtn = document.querySelector('.artist-scroll-right');
+
+  if (!cardsContainer || !scrollLeftBtn || !scrollRightBtn) return;
+
+  function updateButtonStates() {
+    const isAtStart = cardsContainer.scrollLeft <= 10;
+    const isAtEnd = cardsContainer.scrollLeft >= cardsContainer.scrollWidth - cardsContainer.clientWidth - 10;
+
+    scrollLeftBtn.disabled = isAtStart;
+    scrollRightBtn.disabled = isAtEnd;
+  }
+
+  // Scroll functions
+  scrollLeftBtn.addEventListener('click', () => {
+    const cardWidth = cardsContainer.querySelector('.artist-card')?.offsetWidth || 260;
+    const gap = 16;
+    const scrollAmount = cardWidth + gap;
+    cardsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  });
+
+  scrollRightBtn.addEventListener('click', () => {
+    const cardWidth = cardsContainer.querySelector('.artist-card')?.offsetWidth || 260;
+    const gap = 16;
+    const scrollAmount = cardWidth + gap;
+    cardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  });
+
+  // Update button states on scroll
+  cardsContainer.addEventListener('scroll', updateButtonStates);
+
+  // Initial button state
+  updateButtonStates();
+
+  // Update on window resize
+  window.addEventListener('resize', updateButtonStates);
+})();
+
 </script>
 </body>
 </html>
