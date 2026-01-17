@@ -6531,7 +6531,7 @@ document.addEventListener('keydown', (e) => {
     });
   }
 
-  /*Use event delegation for click handlers*/
+   /*Use event delegation for click handlers - each card works independently*/
   djSection.addEventListener('click', function(e) {
     const header = e.target.closest('.dj-card-header');
     if (!header) return;
@@ -6542,12 +6542,9 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     e.stopPropagation();
     
+    // Toggle only the clicked card
     const isExpanded = header.getAttribute('aria-expanded') === 'true';
     header.setAttribute('aria-expanded', !isExpanded);
-    
-    /*Reset idle timer when user interacts*/
-    lastInteractionTime = Date.now();
-    clearTimeout(previewTimeout);
   });
 
   /*Auto-preview animation (expand/collapse every 3 seconds if idle)*/
@@ -6555,72 +6552,16 @@ document.addEventListener('keydown', (e) => {
   let lastInteractionTime = Date.now();
   const PREVIEW_DELAY = 3000; /*3 seconds*/
 
-  function startAutoPreview() {
-    if (window.innerWidth > 560) return; /*Desktop only*/
-    
-    clearTimeout(previewTimeout);
-    
-    previewTimeout = setTimeout(() => {
-      const timeSinceInteraction = Date.now() - lastInteractionTime;
-      
-      /*Only auto-preview if user hasn't interacted in 3+ seconds*/
-      if (timeSinceInteraction >= PREVIEW_DELAY) {
-        const allHeaders = djSection.querySelectorAll('.dj-card-header');
-        allHeaders.forEach((header) => {
-          const isExpanded = header.getAttribute('aria-expanded') === 'true';
-          
-          /*Expand first, then collapse after showing for 1.5 seconds*/
-          if (!isExpanded) {
-            header.setAttribute('aria-expanded', 'true');
-            
-            /*Collapse after showing for 1.5 seconds*/
-            setTimeout(() => {
-              if (Date.now() - lastInteractionTime >= PREVIEW_DELAY) {
-                header.setAttribute('aria-expanded', 'false');
-              }
-            }, 1500);
-          }
-        });
-      }
-      
-      /*Continue checking*/
-      startAutoPreview();
-    }, PREVIEW_DELAY);
-  }
+    // Auto-preview removed - cards only expand on click
 
-  /*Track user interactions*/
-  function trackInteraction() {
-    lastInteractionTime = Date.now();
-    clearTimeout(previewTimeout);
-    startAutoPreview();
-  }
-
-  /*Track scroll in DJ section for idle detection*/
-  if (djSection) {
-    const observer = new MutationObserver(trackInteraction);
-    observer.observe(djSection, { childList: true, subtree: true, attributes: true });
-  }
-
-  /*Track window scroll when DJ section is visible*/
-  let scrollTimeout;
-  window.addEventListener('scroll', () => {
-    const sectionRect = djSection?.getBoundingClientRect();
-    const isVisible = sectionRect && sectionRect.top < window.innerHeight && sectionRect.bottom > 0;
-    
-    if (isVisible) {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(trackInteraction, 100);
-    }
-  }, { passive: true });
-
-  /*Initialize when DOM is ready*/
+    /*Initialize when DOM is ready*/
   function initialize() {
     initAccordion();
     updateLiveIndicator();
     updatePreview();
-    startAutoPreview();
+    // startAutoPreview(); // REMOVED - no auto-expansion
   }
-
+  
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initialize);
   } else {
@@ -6630,11 +6571,12 @@ document.addEventListener('keydown', (e) => {
   /*Update every minute*/
   setInterval(updateLiveIndicator, 60000);
 
-  /*Update on resize*/
+    /*Update on resize*/
   window.addEventListener('resize', () => {
     initAccordion();
-    startAutoPreview();
+    // startAutoPreview(); // REMOVED - no auto-expansion
   });
+  
 })();
 
 </script>
