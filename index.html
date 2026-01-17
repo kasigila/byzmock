@@ -4664,8 +4664,8 @@ body.bulkbar-active .social-dock{
   if (stored) {
     applyTheme(stored);
   } else {
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(prefersDark ? "dark" : "light");
+    // Default to dark mode instead of system preference
+    applyTheme("dark");
   }
 
   if (toggle) {
