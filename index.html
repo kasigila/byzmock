@@ -156,6 +156,11 @@ nav a:hover{color:var(--text)}
 .btn.ghost{
   background: transparent;
 }
+    /* WhatsApp icon styling in buttons */
+.btn i.fa-whatsapp,
+.btn i.fa-brands.fa-whatsapp {
+  color: #25D366;
+}
 .cta{
   padding:10px 14px;
   border-radius:999px;
@@ -4124,7 +4129,9 @@ body.bulkbar-active .social-dock{
                 <div class="hero-actions">
           <a href="#events" class="btn primary">View Upcoming Events</a>
           <button class="btn" id="openBookingPicker" type="button">Reserve a Table</button>
-          <a href="https://wa.me/255768464367" target="_blank" rel="noopener" class="btn">Message Us</a>
+                    <a href="https://wa.me/255768464367" target="_blank" rel="noopener" class="btn">
+            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Message Us
+          </a>
         </div>
 
         <div class="hero-metrics">
