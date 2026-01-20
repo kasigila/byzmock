@@ -2598,30 +2598,19 @@ footer{
     font-weight: 600;
   }
 
-        .artist-scroll-left {
-    left: -12px;
-    z-index: 20;
-  }
-
-  .artist-scroll-right {
-    right: -12px;
-    z-index: 20;
-  }
-
-  /* Horizontal scroll for artist cards */
-    /* Artist scroll wrapper with arrows */
-    .artist-scroll-wrapper {
+  /* Artist scroll wrapper - fixed positioning for arrows */
+  .artist-scroll-wrapper {
     position: relative;
-    margin: 0 -12px;
-    padding: 0;
+    margin: 0;
+    padding: 0 56px; /* Space for arrows on sides */
   }
 
-  /* Show arrows on mobile */
+  /* Fixed position arrows - always stay in same spot */
   .artist-scroll-btn {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    position: absolute;
+    position: fixed; /* Changed from absolute to fixed */
     top: 50%;
     transform: translateY(-50%);
     width: 44px;
@@ -2635,7 +2624,7 @@ footer{
                 inset 0 1px 0 rgba(255, 255, 255, 0.05);
     color: var(--text);
     cursor: pointer;
-    z-index: 20;
+    z-index: 100; /* Higher z-index so arrows stay on top */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0.95;
   }
@@ -2667,29 +2656,21 @@ footer{
     font-size: 15px;
     font-weight: 600;
   }
-
-    .artist-scroll-left {
-    left: 4px;
-  }
-
-  .artist-scroll-right {
-    right: 4px;
-  }
   
-  /* Horizontal scroll for artist cards */
-        #artists .cards {
+  /* Horizontal scroll for artist cards - centered */
+  #artists .cards {
     display: flex !important;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 16px;
-    padding: 0 0 12px;
+    padding: 0;
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
     grid-template-columns: none !important;
-    justify-content: center;
+    justify-content: flex-start; /* Changed from center to flex-start for proper scrolling */
     align-items: center;
   }
 
@@ -2697,16 +2678,12 @@ footer{
     display: none;
   }
 
-    #artists .cards > * {
+  #artists .cards > * {
     min-width: 320px;
     max-width: 320px;
-    scroll-snap-align: start;
+    scroll-snap-align: center; /* Changed from start to center for better centering */
     flex-shrink: 0;
     flex-basis: 320px;
-  }
-
-  #artists .cards::-webkit-scrollbar {
-    display: none;
   }
 
   /*Center align DJ section title and subtitle on mobile*/
@@ -6472,9 +6449,18 @@ document.addEventListener('keydown', (e) => {
 
   let isScrolling = false;
 
-  // Scroll to middle (real cards) on load
+    // Center first card on load
   setTimeout(() => {
-    cardsContainer.scrollLeft = cards.length * scrollAmount;
+    const firstCard = cardsContainer.querySelector('.artist-card:not([aria-hidden])');
+    if (firstCard) {
+      const cardRect = firstCard.getBoundingClientRect();
+      const containerRect = cardsContainer.getBoundingClientRect();
+      const scrollLeft = firstCard.offsetLeft - (containerRect.width / 2) + (cardRect.width / 2);
+      cardsContainer.scrollLeft = scrollLeft;
+    } else {
+      // Fallback to infinite scroll positioning
+      cardsContainer.scrollLeft = cards.length * scrollAmount;
+    }
   }, 100);
 
   // Update button states
