@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
@@ -602,33 +602,18 @@
 ========================================================= */
 (function() {
   const root = document.documentElement;
-  const toggle = document.getElementById("themeToggle");
-  const stored = localStorage.getItem("theme");
+const toggle = document.getElementById("themeToggle");
 
-  function applyTheme(theme) {
-    if (theme === "dark") root.setAttribute("data-theme","dark");
-    else root.setAttribute("data-theme","light");
-    if (toggle){
-      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-      toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
-    }
-  }
+// Always force dark mode
+root.setAttribute("data-theme", "dark");
 
-  if (stored) {
-    applyTheme(stored);
-  } else {
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(prefersDark ? "dark" : "light");
-  }
+// Hide/disable toggle button
+if (toggle) {
+  toggle.style.display = "none";
+}
 
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      const isDark = root.getAttribute("data-theme") === "dark";
-      const next = isDark ? "light" : "dark";
-      applyTheme(next);
-      localStorage.setItem("theme", next);
-    });
-  }
+// Clear any stored theme preference
+localStorage.removeItem("theme");
 })();
 </script>
 <div id="aptModalBackdrop" class="apt-modal-backdrop hidden" aria-hidden="true">
