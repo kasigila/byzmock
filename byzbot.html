@@ -580,7 +580,7 @@
     // Using Google Gemini API (FREE - No credit card required!)
     // Get your free API key at: https://aistudio.google.com/app/apikey
     let API_KEY = localStorage.getItem('byzbot-api-key') || '';
-    const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
     // BYZ Context for the AI
     const BYZ_CONTEXT = `You are ByzBot, a helpful and friendly AI assistant for BYZ in the Hood, an entertainment company that creates unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam, Tanzania.
@@ -802,6 +802,12 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
         }
 
         const data = await response.json();
+        
+        // Handle Gemini API response format
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+          throw new Error('Invalid response from Gemini API');
+        }
+        
         const aiMessage = data.candidates[0].content.parts[0].text;
 
         // Add AI response to history
