@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -495,32 +495,18 @@
 <script>
 (function(){
   const root = document.documentElement;
-  const toggle = document.getElementById("themeToggle");
-  const stored = localStorage.getItem("theme");
+const toggle = document.getElementById("themeToggle");
 
-  function applyTheme(theme) {
-    if (theme === "dark") root.setAttribute("data-theme","dark");
-    else root.setAttribute("data-theme","light");
-    if (toggle){
-      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-      toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
-    }
-  }
+// Always force dark mode
+root.setAttribute("data-theme", "dark");
 
-  if (stored) applyTheme(stored);
-  else {
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(prefersDark ? "dark" : "light");
-  }
+// Hide/disable toggle button
+if (toggle) {
+  toggle.style.display = "none";
+}
 
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      const isDark = root.getAttribute("data-theme") === "dark";
-      const next = isDark ? "light" : "dark";
-      applyTheme(next);
-      localStorage.setItem("theme", next);
-    });
-  }
+// Clear any stored theme preference
+localStorage.removeItem("theme");
 })();
 
 (function(){
