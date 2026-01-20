@@ -816,6 +816,19 @@ section{padding: 92px 0}
   aspect-ratio: 16/9;
   background:#000;
 }
+    .video-frame {
+  width:100%;
+  aspect-ratio: 16/9;
+  background:#000;
+  transition: opacity 0.3s var(--ease);
+}
+
+.video-frame iframe {
+  width:100%;
+  height:100%;
+  border:0;
+  transition: opacity 0.3s var(--ease);
+}
 .video-frame iframe{
   width:100%;height:100%;
   border:0;
@@ -887,10 +900,84 @@ section{padding: 92px 0}
   border-bottom:1px solid transparent;
 }
 .channel-link:hover{border-bottom-color:var(--sub)}
+    
 .video-list{
   display:flex;
-  flex-direction:column;
-  gap:12px;
+  flex-direction:row;
+  overflow-x:auto;
+  overflow-y:hidden;
+  gap:16px;
+  padding:12px 0;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+
+.video-list::-webkit-scrollbar{
+  height:4px;
+}
+
+.video-list::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+.video-list::-webkit-scrollbar-thumb{
+  background:var(--border);
+  border-radius:2px;
+}
+
+.thumb{
+  flex-shrink:0;
+  scroll-snap-align:start;
+  min-width:200px;
+  max-width:200px;
+}
+
+/* Active video indicator */
+.thumb.active{
+  border-color:color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow:0 4px 16px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* Mobile optimizations */
+@media (max-width: 560px) {
+  .video-list {
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .thumb {
+    min-width: 180px;
+    max-width: 180px;
+  }
+
+  .thumb-img {
+    height: 100px;
+  }
+
+  .thumb-meta {
+    padding: 8px 10px 10px 10px;
+  }
+
+  .thumb-meta strong {
+    font-size: 12px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .thumb-meta span {
+    font-size: 11px;
+  }
+
+  .play-badge {
+    font-size: 10px;
+    padding: 4px 6px;
+    inset: auto auto 6px 6px;
+  }
 }
 .thumb{
   display:flex;
@@ -5143,24 +5230,260 @@ body.bulkbar-active .social-dock{
 
 /* =========================================================
    YOUTUBE SECTION:
-   - Click a thumbnail -> updates featured video + title/desc
+   - Random video on load (auto-plays)
+   - Auto-scrolling horizontal row (infinite loop)
+   - Pauses on user interaction, resumes after delay
+   - Auto-play previews on thumbnails
 ========================================================= */
 (function(){
   const featured = document.getElementById("featuredPlayer");
   const title = document.getElementById("featuredTitle");
   const desc = document.getElementById("featuredDesc");
-  if (!featured) return;
+  const videoList = document.querySelector(".video-list");
+  
+  if (!featured || !videoList) return;
 
-  document.querySelectorAll(".thumb").forEach(item => {
+  const thumbs = Array.from(document.querySelectorAll(".thumb"));
+  if (thumbs.length === 0) return;
+
+  // ===== RANDOM VIDEO ON LOAD =====
+  function setRandomFeatured() {
+    const randomThumb = thumbs[Math.floor(Math.random() * thumbs.length)];
+    const id = randomThumb.getAttribute("data-id");
+    const t = randomThumb.getAttribute("data-title") || "BYZ Video";
+    const d = randomThumb.getAttribute("data-desc") || "Watch the latest BYZ content.";
+
+    // Add autoplay to URL
+    featured.src = "https://www.youtube.com/embed/" + id + "?autoplay=1&mute=1";
+    if (title) title.textContent = t;
+    if (desc) desc.textContent = d;
+
+    // Mark as active
+    thumbs.forEach(t => t.classList.remove("active"));
+    randomThumb.classList.add("active");
+  }
+
+  // Set random video on load
+  setRandomFeatured();
+
+  // ===== CLICK THUMBNAIL TO SWAP VIDEO =====
+  thumbs.forEach(item => {
     item.addEventListener("click", () => {
       const id = item.getAttribute("data-id");
       const t = item.getAttribute("data-title") || "BYZ Video";
       const d = item.getAttribute("data-desc") || "Watch the latest BYZ content.";
 
-      featured.src = "https://www.youtube.com/embed/" + id;
-      if (title) title.textContent = t;
-      if (desc) desc.textContent = d;
+      // Smooth fade transition
+      featured.style.opacity = "0";
+      setTimeout(() => {
+        featured.src = "https://www.youtube.com/embed/" + id + "?autoplay=1&mute=1";
+        if (title) title.textContent = t;
+        if (desc) desc.textContent = d;
+        featured.style.opacity = "1";
+      }, 200);
+
+      // Update active state
+      thumbs.forEach(t => t.classList.remove("active"));
+      item.classList.add("active");
     });
+  });
+
+  // ===== AUTO-SCROLL WITH INFINITE LOOP =====
+  let autoScrollInterval = null;
+  let isUserInteracting = false;
+  let resumeTimeout = null;
+  const SCROLL_SPEED = 0.5; // pixels per frame (slower = smoother)
+  const RESUME_DELAY = 2000; // 2 seconds
+
+  // Clone videos for infinite loop
+  function setupInfiniteLoop() {
+    const originalThumbs = Array.from(videoList.querySelectorAll(".thumb"));
+    if (originalThumbs.length === 0) return;
+
+    // Clone all thumbs and append
+    originalThumbs.forEach(thumb => {
+      const clone = thumb.cloneNode(true);
+      clone.setAttribute("aria-hidden", "true");
+      videoList.appendChild(clone);
+    });
+
+    // Clone again at the start for backward scrolling
+    originalThumbs.forEach(thumb => {
+      const clone = thumb.cloneNode(true);
+      clone.setAttribute("aria-hidden", "true");
+      videoList.insertBefore(clone, videoList.firstChild);
+    });
+
+    // Set initial scroll position to start of real content
+    setTimeout(() => {
+      const firstReal = videoList.querySelector(".thumb:not([aria-hidden])");
+      if (firstReal) {
+        videoList.scrollLeft = firstReal.offsetLeft - videoList.offsetLeft;
+      }
+    }, 100);
+  }
+
+  // Auto-scroll function
+  function startAutoScroll() {
+    if (autoScrollInterval) return;
+
+    autoScrollInterval = setInterval(() => {
+      if (isUserInteracting) return;
+
+      const scrollLeft = videoList.scrollLeft;
+      const scrollWidth = videoList.scrollWidth;
+      const clientWidth = videoList.clientWidth;
+      const realContentWidth = scrollWidth / 3; // Since we have 3 sets (original + 2 clones)
+
+      // If scrolled past end, jump to start of real content
+      if (scrollLeft >= realContentWidth * 2 - clientWidth) {
+        videoList.scrollLeft = scrollLeft - realContentWidth;
+      }
+      // If scrolled before start, jump to end of real content
+      else if (scrollLeft <= 0) {
+        videoList.scrollLeft = scrollLeft + realContentWidth;
+      }
+      // Otherwise, continue scrolling
+      else {
+        videoList.scrollLeft += SCROLL_SPEED;
+      }
+    }, 16); // ~60fps
+  }
+
+  // Pause auto-scroll
+  function pauseAutoScroll() {
+    if (autoScrollInterval) {
+      clearInterval(autoScrollInterval);
+      autoScrollInterval = null;
+    }
+  }
+
+  // Resume auto-scroll after delay
+  function scheduleResume() {
+    if (resumeTimeout) clearTimeout(resumeTimeout);
+    
+    resumeTimeout = setTimeout(() => {
+      isUserInteracting = false;
+      startAutoScroll();
+    }, RESUME_DELAY);
+  }
+
+  // Detect user interaction
+  let isScrolling = false;
+  videoList.addEventListener("touchstart", () => {
+    isUserInteracting = true;
+    pauseAutoScroll();
+  });
+
+  videoList.addEventListener("touchmove", () => {
+    isUserInteracting = true;
+    pauseAutoScroll();
+  });
+
+  videoList.addEventListener("touchend", () => {
+    scheduleResume();
+  });
+
+  videoList.addEventListener("mousedown", () => {
+    isUserInteracting = true;
+    pauseAutoScroll();
+  });
+
+  videoList.addEventListener("mousemove", (e) => {
+    if (e.buttons === 1) { // Only if mouse is pressed
+      isUserInteracting = true;
+      pauseAutoScroll();
+    }
+  });
+
+  videoList.addEventListener("mouseup", () => {
+    scheduleResume();
+  });
+
+  videoList.addEventListener("scroll", () => {
+    if (!isScrolling) {
+      isUserInteracting = true;
+      pauseAutoScroll();
+      isScrolling = true;
+    }
+    
+    clearTimeout(resumeTimeout);
+    resumeTimeout = setTimeout(() => {
+      isScrolling = false;
+      scheduleResume();
+    }, 150);
+  });
+
+  // Pause when tab is hidden
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pauseAutoScroll();
+    } else {
+      if (!isUserInteracting) {
+        startAutoScroll();
+      }
+    }
+  });
+
+  // Respect reduced motion preference
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!prefersReducedMotion) {
+    setupInfiniteLoop();
+    startAutoScroll();
+  }
+
+  // ===== AUTO-PLAY PREVIEWS ON THUMBNAILS =====
+  let currentPreview = null;
+  const previewObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+        // Only play one preview at a time
+        if (currentPreview && currentPreview !== entry.target) {
+          const prevIframe = currentPreview.querySelector("iframe");
+          if (prevIframe) {
+            prevIframe.src = prevIframe.src.replace("&autoplay=1", "");
+          }
+        }
+
+        const thumb = entry.target;
+        const thumbImg = thumb.querySelector(".thumb-img");
+        const dataId = thumb.getAttribute("data-id");
+        
+        if (dataId && thumbImg && !thumb.querySelector("iframe")) {
+          // Create preview iframe
+          const previewIframe = document.createElement("iframe");
+          previewIframe.src = `https://www.youtube.com/embed/${dataId}?autoplay=1&mute=1&loop=1&playlist=${dataId}&controls=0&modestbranding=1&rel=0&start=1`;
+          previewIframe.style.cssText = "position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity 0.3s;pointer-events:none;";
+          previewIframe.allow = "autoplay; encrypted-media";
+          
+          thumbImg.style.position = "relative";
+          thumbImg.appendChild(previewIframe);
+          
+          setTimeout(() => {
+            previewIframe.style.opacity = "0.3"; // Subtle preview
+          }, 100);
+          
+          currentPreview = thumb;
+        }
+      } else {
+        // Pause preview when not visible
+        const iframe = entry.target.querySelector("iframe");
+        if (iframe) {
+          iframe.src = iframe.src.replace("&autoplay=1", "");
+        }
+        if (currentPreview === entry.target) {
+          currentPreview = null;
+        }
+      }
+    });
+  }, {
+    threshold: [0, 0.5, 1],
+    rootMargin: "0px"
+  });
+
+  // Observe all thumbs for auto-play previews
+  thumbs.forEach(thumb => {
+    previewObserver.observe(thumb);
   });
 })();
 
