@@ -2569,12 +2569,12 @@ footer{
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0.95;
   }
-    .artist-scroll-left {
-    left: 0;
+      .artist-scroll-left {
+    left: 8px; /* Slightly inset so arrows are visible and not cut off */
   }
 
   .artist-scroll-right {
-    right: 0;
+    right: 8px; /* Slightly inset so arrows are visible and not cut off */
   }
   
   /* Horizontal scroll for artist cards - centered */
@@ -2585,7 +2585,7 @@ footer{
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 16px;
-    padding: 0;
+    padding: 12px 12px 12px; /* Padding to show rounded corners */
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -6402,11 +6402,12 @@ document.addEventListener('keydown', (e) => {
     // Center first card on load
   setTimeout(() => {
     const firstCard = cardsContainer.querySelector('.artist-card:not([aria-hidden])');
-    if (firstCard) {
-      const cardRect = firstCard.getBoundingClientRect();
-      const containerRect = cardsContainer.getBoundingClientRect();
-      const scrollLeft = firstCard.offsetLeft - (containerRect.width / 2) + (cardRect.width / 2);
-      cardsContainer.scrollLeft = scrollLeft;
+        if (firstCard) {
+      const containerWidth = cardsContainer.clientWidth;
+      const cardWidth = firstCard.offsetWidth;
+      // Center the first real card (accounting for 12px padding on left)
+      const scrollLeft = firstCard.offsetLeft - (containerWidth / 2) + (cardWidth / 2) - 12;
+      cardsContainer.scrollLeft = Math.max(0, scrollLeft);
     } else {
       // Fallback to infinite scroll positioning
       cardsContainer.scrollLeft = cards.length * scrollAmount;
