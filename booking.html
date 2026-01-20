@@ -531,7 +531,7 @@
   </style>
 </head>
 
-<body data-theme="light">
+<body data-theme="dark">
   <header>
     <div class="container header-inner">
       <a class="brand" href="./index.html" aria-label="BYZ Home">
@@ -723,15 +723,15 @@
     let grooveType = "rnb";
 
     (function initTheme(){
-      const saved = localStorage.getItem("byz_theme");
-      if(saved === "dark"){ document.body.setAttribute("data-theme","dark"); }
-    })();
+      // Always force dark mode
+document.body.setAttribute("data-theme", "dark");
+localStorage.removeItem("byz_theme");
+})();
 
-    function toggleTheme(){
-      const isDark = document.body.getAttribute("data-theme") === "dark";
-      document.body.setAttribute("data-theme", isDark ? "light" : "dark");
-      localStorage.setItem("byz_theme", isDark ? "light" : "dark");
-    }
+function toggleTheme(){
+  // Disabled - always dark mode
+  return;
+}
 
     function setProgress(pct){
       const bar = document.getElementById("progressBar");
