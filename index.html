@@ -1441,64 +1441,6 @@ section{padding: 92px 0}
   overflow: visible;
 }
 
-/* Animated border that circles around the card */
-.slot.live-now .slot-content::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: 18px;
-  padding: 2px;
-  background: linear-gradient(90deg, 
-    var(--accent) 0%,
-    transparent 25%,
-    transparent 75%,
-    var(--accent) 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: borderRotate 3s linear infinite;
-  z-index: -1;
-}
-
-@keyframes borderRotate {
-  0% {
-    background: linear-gradient(90deg, 
-      var(--accent) 0%,
-      transparent 25%,
-      transparent 75%,
-      var(--accent) 100%);
-  }
-  25% {
-    background: linear-gradient(180deg, 
-      var(--accent) 0%,
-      transparent 25%,
-      transparent 75%,
-      var(--accent) 100%);
-  }
-  50% {
-    background: linear-gradient(270deg, 
-      var(--accent) 0%,
-      transparent 25%,
-      transparent 75%,
-      var(--accent) 100%);
-  }
-  75% {
-    background: linear-gradient(360deg, 
-      var(--accent) 0%,
-      transparent 25%,
-      transparent 75%,
-      var(--accent) 100%);
-  }
-  100% {
-    background: linear-gradient(90deg, 
-      var(--accent) 0%,
-      transparent 25%,
-      transparent 75%,
-      var(--accent) 100%);
-  }
-}
-
 .slot.live-now .slot-content::after {
   content: "LIVE NOW";
   position: absolute;
@@ -1569,26 +1511,48 @@ section{padding: 92px 0}
 .slot.live-now .slot-content::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, 
-    transparent,
-    var(--accent),
-    transparent);
-  animation: techShimmer 2s ease-in-out infinite;
-  box-shadow: 0 0 20px var(--accent);
+  inset: -2px;
+  border-radius: 18px;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 240deg,
+    var(--accent) 270deg,
+    var(--accent) 300deg,
+    transparent 330deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderShimmer 2s linear infinite;
+  z-index: -1;
+  filter: blur(1px);
 }
 
-@keyframes techShimmer {
-  0%, 100% { 
-    opacity: 0.6;
-    transform: translateX(-100%);
+@keyframes borderShimmer {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      transparent 240deg,
+      var(--accent) 270deg,
+      var(--accent) 300deg,
+      transparent 330deg,
+      transparent 360deg
+    );
   }
-  50% { 
-    opacity: 1;
-    transform: translateX(100%);
+  100% {
+    background: conic-gradient(
+      from 360deg,
+      transparent 0deg,
+      transparent 240deg,
+      var(--accent) 270deg,
+      var(--accent) 300deg,
+      transparent 330deg,
+      transparent 360deg
+    );
   }
 }
 
@@ -1714,6 +1678,21 @@ section{padding: 92px 0}
     text-shadow: 0 0 30px color-mix(in srgb, var(--accent) 50%, transparent),
                  0 0 40px color-mix(in srgb, var(--accent) 30%, transparent);
   }
+}
+    /* Reduce glow when parent card is expanded */
+.dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg-elev));
+}
+
+.dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content::before {
+  opacity: 0.5;
+  filter: blur(2px);
+}
+
+.dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content::after {
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent),
+              0 0 0 2px var(--bg-elev);
 }
 /* Single Preview Card */
 .dj-card-preview {
