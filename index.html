@@ -1583,9 +1583,9 @@ section{padding: 92px 0}
 .team-split{
   display:grid;
   grid-template-columns: 1.2fr .8fr;
-  gap:16px;
-  padding: 14px 18px 18px;
-  align-items:stretch;
+  gap:24px;
+  padding: 0;
+  align-items:center;
 }
 
 /* =========================================================
@@ -2248,7 +2248,16 @@ section{padding: 92px 0}
   box-shadow: var(--shadow-soft);
   position:relative;
 }
+/* Hide empty team-head content */
+.team-head > div:first-child {
+  display: none;
+}
 
+/* Hide empty photo overlay */
+.team-photo-overlay:empty,
+.team-photo-caption:empty {
+  display: none;
+}
 .team-photo-card::after{
   content:"";
   position:absolute;
@@ -2365,126 +2374,103 @@ section{padding: 92px 0}
 }
 .team-chip strong{ color: var(--text); }
 
+
+/* ===================== MINIMAL PILL ROTATOR ===================== */
 .team-rotator{
-  border-radius: 26px;
-  border:1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-alt) 65%, transparent);
-  box-shadow: var(--shadow-soft);
-  padding: 14px;
   display:flex;
   flex-direction:column;
-  gap:12px;
-}
-
-.rotator-kicker{
-  display:inline-flex;
-  width:fit-content;
-  padding:10px 14px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background: var(--bg-elev);
-  color: var(--sub);
-  font-weight:800;
-  letter-spacing:.18em;
-  font-size: 12px;
-  text-transform:uppercase;
-}
-
-.rotator-card{
-  flex:1;
-  border-radius: 22px;
-  border:1px solid var(--border);
-  background: var(--bg-elev);
-  box-shadow: var(--shadow-soft);
-  padding: 18px;
-  display:flex;
-  flex-direction:column;
+  align-items:center;
   justify-content:center;
-  gap:10px;
-  position:relative;
-  overflow:hidden;
+  gap:16px;
 }
 
-.rotator-card::before{
-  content:"";
-  position:absolute;
-  inset:-40%;
-  background: conic-gradient(
-    from 180deg,
-    transparent,
-    color-mix(in srgb, var(--accent) 18%, transparent),
-    transparent
-  );
-  opacity:.25;
-  filter: blur(20px);
-  animation: spinGlow 8s linear infinite;
-}
-
-@keyframes spinGlow{
-  to{ transform: rotate(360deg); }
-}
-
-.rotator-name,
-.rotator-role,
-.rotator-ig,
-.rotator-dots{
-  position:relative; /* above the glow */
-  z-index:1;
-}
-
-.rotator-name{
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: -.6px;
-  line-height:1.1;
-}
-
-.rotator-role{
-  color: var(--sub);
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.rotator-ig{
-  margin-top: 8px;
+.rotator-pill{
   display:inline-flex;
   align-items:center;
   gap:10px;
-  width:fit-content;
-  padding:10px 14px;
+  padding:14px 20px;
   border-radius:999px;
   border:1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
-  font-weight: 900;
-  font-size: 13px;
-  transition: transform .2s var(--ease), box-shadow .2s var(--ease);
-}
-.rotator-ig:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
-
-  .rotator-ig i{
-  font-size:18px;
-  line-height:1;
+  background:var(--bg-elev);
+  box-shadow:var(--shadow-soft);
+  text-decoration:none;
   color:var(--text);
-} 
-  
-.rotator-dots{
-  margin-top: 14px;
-  display:flex;
-  gap:8px;
-}
-
-.rotator-dot{
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  border:1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
-  opacity:.7;
-}
-.rotator-dot.active{
-  background: var(--accent);
+  transition:transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), opacity .3s var(--ease);
+  font-weight:600;
+  font-size:15px;
+  letter-spacing:-.2px;
+  min-width:200px;
+  justify-content:center;
   opacity:1;
 }
+.rotator-pill:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow);
+  background:color-mix(in srgb, var(--bg-elev) 95%, transparent);
+}
+
+.rotator-pill:active{
+  transform:translateY(0);
+}
+
+.rotator-role{
+  color:var(--text);
+  font-weight:700;
+}
+
+.rotator-separator{
+  color:var(--sub);
+  opacity:0.5;
+  font-weight:400;
+}
+
+.rotator-ig{
+  color:var(--sub);
+  font-weight:600;
+}
+
+.rotator-pill i{
+  font-size:16px;
+  color:var(--sub);
+  opacity:0.8;
+  transition:opacity .2s var(--ease), transform .2s var(--ease);
+}
+
+.rotator-pill:hover i{
+  opacity:1;
+  transform:scale(1.1);
+}
+
+/* BYZ Instagram prompt - minimal text below pill */
+.team-byz-prompt{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  color:var(--sub);
+  opacity:0.7;
+  transition:opacity .2s var(--ease);
+}
+
+.team-byz-prompt:hover{
+  opacity:1;
+}
+
+.byz-prompt-text{
+  font-weight:500;
+}
+
+.byz-prompt-link{
+  color:var(--accent);
+  font-weight:700;
+  text-decoration:none;
+  transition:opacity .2s var(--ease);
+}
+
+.byz-prompt-link:hover{
+  opacity:0.8;
+  text-decoration:underline;
+}  
   
 /* ===================== CONNECT SECTION ===================== */
 .connect-wrapper .section-title{
@@ -4722,51 +4708,31 @@ body.bulkbar-active .social-dock{
       </div>
 
       <div class="team-wrap reveal team-spotlight">
-
-        <div class="team-head">
-          <div>
-            <div style="font-weight:800;letter-spacing:-.3px"> </div>
-            <p> </p>
-          </div>
-          <a class="btn primary" href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener">Follow BYZ</a>
-        </div>
-
         <div class="team-split">
-  <!-- Fixed group photo -->
-  <div class="team-photo-card">
-  <img src="assets/assets/team-photo/team-photo.jpg" alt="BYZ Team" />
-  <div class="team-photo-overlay">
-    <div class="team-photo-caption">
-    
-    </div>
-    
-  </div>
-</div>
+          <!-- Fixed group photo -->
+          <div class="team-photo-card">
+            <img src="assets/assets/team-photo/team-photo.jpg" alt="BYZ Team" />
+          </div>
 
-
-  <!-- Rotating name/title/IG -->
-  <div class="team-rotator" aria-label="Team details carousel">
-    <div class="rotator-kicker">BYZ TEAM ON INSTAGRAM</div>
-
-    <div class="rotator-card">
-      <span class="rotator-name" id="teamName">—</span>
-      <span class="rotator-role" id="teamRole">—</span>
-
-      <a class="rotator-ig" id="teamIg" href="#" target="_blank" rel="noopener">
-        
-        <i class="fa-brands fa-instagram" aria-hidden="true"></i>
-        
-        <span id="teamHandle">@byzinthehood</span>
-      </a>
-
-      <div class="rotator-dots" id="teamDots" aria-label="Carousel position"></div>
-    </div>
-  </div>
-
-</div>
-
-        
+          <!-- Minimal pill rotator -->
+          <div class="team-rotator" aria-label="Team details carousel">
+            <a class="rotator-pill" id="teamPill" href="#" target="_blank" rel="noopener">
+              <span class="rotator-role" id="teamRole">—</span>
+              <span class="rotator-separator">•</span>
+              <span class="rotator-ig" id="teamHandle">@byzinthehood</span>
+              <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+            </a>
+            
+            <!-- BYZ Instagram prompt -->
+            <div class="team-byz-prompt">
+              <span class="byz-prompt-text">Follow</span>
+              <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" class="byz-prompt-link">@byzinthehood</a>
+            </div>
+          </div>
+        </div>
       </div>
+
+      
     </div>
   </section>
   
@@ -5568,26 +5534,18 @@ body.bulkbar-active .social-dock{
    TEAM ROTATOR (GROUP PHOTO FIXED + DETAILS ROTATE)
 ========================================================= */
 (function(){
-  const nameEl   = document.getElementById("teamName");
-  const roleEl   = document.getElementById("teamRole");
-  const igEl     = document.getElementById("teamIg");
+  const pillEl = document.getElementById("teamPill");
+  const roleEl = document.getElementById("teamRole");
   const handleEl = document.getElementById("teamHandle");
-  const dotsEl   = document.getElementById("teamDots");
 
-  if(!nameEl || !roleEl || !igEl || !handleEl || !dotsEl) return;
+  if(!pillEl || !roleEl || !handleEl) return;
 
   const TEAM = [
     { name:"Frank", role:"Founder & CEO", ig:"@jrmgoyo", url:"https://www.instagram.com/jrmgoyo" },
-    { name:"Kayla", role:"Marketing & Social Media", ig:"@kayllaa.tx", url:"https://www.instagram.com/kayllaa.tx" },
     { name:"Sameera", role:"Brand Partnerships & Creative Lead", ig:"@sams__cam", url:"https://www.instagram.com/sams__cam" },
     { name:"Edson", role:"Finance & Payments Lead", ig:"@edsont.11", url:"https://www.instagram.com/edsont.11" },
-    { name:"Tuari", role:"Logistics & Venue Management", ig:"@tuariotk", url:"https://www.instagram.com/tuariotk" },
-    { name:"Julius", role:"Brand Partnerships", ig:"@jayraww_", url:"https://www.instagram.com/jayraww_" }
+    { name:"Tuari", role:"Logistics & Venue Management", ig:"@tuariotk", url:"https://www.instagram.com/tuariotk" }
   ];
-
-  // build dots
-  dotsEl.innerHTML = TEAM.map((_,i)=>`<span class="rotator-dot" data-dot="${i}"></span>`).join("");
-  const dotNodes = Array.from(dotsEl.querySelectorAll(".rotator-dot"));
 
   let idx = 0;
 
@@ -5595,23 +5553,29 @@ body.bulkbar-active .social-dock{
     idx = i;
     const t = TEAM[idx];
 
-    nameEl.textContent = t.name;
+    // Update pill content
     roleEl.textContent = t.role;
-
     handleEl.textContent = t.ig;
-    igEl.href = t.url;
-
-    dotNodes.forEach(d => d.classList.remove("active"));
-    if(dotNodes[idx]) dotNodes[idx].classList.add("active");
+    
+    // Update pill link to personal Instagram
+    pillEl.href = t.url;
+    pillEl.setAttribute("aria-label", `Visit ${t.name}'s Instagram`);
   }
 
-  // initial
+  // Initial
   set(0);
 
-  // rotate
+  // Rotate every 3 seconds with smooth fade
   setInterval(() => {
-    set((idx + 1) % TEAM.length);
-  }, 2000);
+    // Fade out
+    pillEl.style.opacity = "0";
+    
+    setTimeout(() => {
+      set((idx + 1) % TEAM.length);
+      // Fade in
+      pillEl.style.opacity = "1";
+    }, 300);
+  }, 3000);
 })();
 /* =========================================================
    COUNTDOWN TIMER
