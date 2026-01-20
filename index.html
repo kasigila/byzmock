@@ -926,21 +926,119 @@ section{padding: 92px 0}
   background:var(--border);
   border-radius:2px;
 }
-
+/* ===================== VIDEO THUMBNAIL CARDS (Vertical Card Style) ===================== */
 .thumb{
+  display:flex;
+  flex-direction:column;
   flex-shrink:0;
   scroll-snap-align:start;
-  min-width:200px;
-  max-width:200px;
+  min-width:220px;
+  max-width:220px;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  background:var(--bg-elev);
+  box-shadow:var(--shadow-soft);
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .25s var(--ease), box-shadow .25s var(--ease);
+  position:relative;
+}
+
+.thumb:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--shadow);
 }
 
 /* Active video indicator */
 .thumb.active{
   border-color:color-mix(in srgb, var(--accent) 40%, var(--border));
-  box-shadow:0 4px 16px color-mix(in srgb, var(--accent) 15%, transparent);
+  box-shadow:0 4px 16px color-mix(in srgb, var(--accent) 15%, transparent),
+             var(--shadow-soft);
 }
 
-/* Mobile optimizations */
+.thumb-img{
+  width:100%;
+  height:124px;
+  aspect-ratio:16/9;
+  background:#000;
+  position:relative;
+  overflow:hidden;
+}
+
+.thumb-img::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.28));
+  pointer-events:none;
+  z-index:1;
+}
+
+.thumb-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .3s var(--ease);
+}
+
+.thumb:hover .thumb-img img{
+  transform:scale(1.05);
+}
+
+.play-badge{
+  position:absolute;
+  inset:auto auto 10px 10px;
+  background:rgba(0,0,0,.65);
+  color:#fff;
+  font-size:11px;
+  padding:6px 8px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  backdrop-filter:blur(10px);
+  z-index:2;
+  transition:opacity .2s var(--ease), transform .2s var(--ease);
+}
+
+.thumb:hover .play-badge{
+  opacity:0.9;
+  transform:scale(1.05);
+}
+
+.play-badge svg{
+  width:14px;
+  height:14px;
+  fill:#fff;
+}
+
+.thumb-meta{
+  padding:14px 14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  flex:1;
+}
+
+.thumb-meta strong{
+  font-size:14px;
+  letter-spacing:-.2px;
+  font-weight:700;
+  line-height:1.3;
+  color:var(--text);
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.thumb-meta span{
+  font-size:12px;
+  color:var(--sub);
+  line-height:1.4;
+}
+    
 @media (max-width: 560px) {
   .video-list {
     gap: 12px;
@@ -948,25 +1046,22 @@ section{padding: 92px 0}
   }
 
   .thumb {
-    min-width: 180px;
-    max-width: 180px;
+    min-width: 200px;
+    max-width: 200px;
   }
 
   .thumb-img {
-    height: 100px;
+    height: 112px;
   }
 
   .thumb-meta {
-    padding: 8px 10px 10px 10px;
+    padding: 12px 12px 14px;
+    gap: 4px;
   }
 
   .thumb-meta strong {
-    font-size: 12px;
-    line-height: 1.3;
-    display: -webkit-box;
+    font-size: 13px;
     -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
   .thumb-meta span {
@@ -976,55 +1071,13 @@ section{padding: 92px 0}
   .play-badge {
     font-size: 10px;
     padding: 4px 6px;
-    inset: auto auto 6px 6px;
+    inset: auto auto 8px 8px;
   }
-}
-.thumb{
-  display:flex;
-  gap:12px;
-  border-radius: 18px;
-  border:1px solid var(--border);
-  background: var(--bg-elev);
-  overflow:hidden;
-  cursor:pointer;
-  transition: transform .2s var(--ease), box-shadow .2s var(--ease);
-}
-.thumb:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
-.thumb-img{
-  width: 44%;
-  aspect-ratio: 16/9;
-  background:#111;
-  position:relative;
-}
-.thumb-img img{
-  width:100%;height:100%;object-fit:cover;display:block;
-}
-.play-badge{
-  position:absolute;
-  inset:auto auto 10px 10px;
-  background: rgba(0,0,0,.65);
-  color:#fff;
-  font-size:11px;
-  padding:6px 8px;
-  border-radius:999px;
-  display:flex;align-items:center;gap:6px;
-  backdrop-filter: blur(10px);
-}
-.play-badge svg{width:14px;height:14px;fill:#fff}
-.thumb-meta{
-  padding:10px 10px 10px 0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:6px;
-}
-.thumb-meta strong{
-  font-size:13px;
-  letter-spacing:-.2px;
-}
-.thumb-meta span{
-  font-size:12px;
-  color:var(--sub);
+
+  .play-badge svg {
+    width: 12px;
+    height: 12px;
+  }
 }
 
 /* ===================== DJ / ARTIST ANNOUNCEMENTS SECTION ===================== */
