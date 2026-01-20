@@ -5348,10 +5348,15 @@ body.bulkbar-active .social-dock{
   const SCROLL_SPEED = 0.5; // pixels per frame (slower = smoother)
   const RESUME_DELAY = 2000; // 2 seconds
 
-  // Clone videos for infinite loop
+    // Clone videos for infinite loop
   function setupInfiniteLoop() {
     const originalThumbs = Array.from(videoList.querySelectorAll(".thumb"));
     if (originalThumbs.length === 0) return;
+
+    // Mark original thumbs (so we can identify them later)
+    originalThumbs.forEach((thumb, index) => {
+      thumb.setAttribute("data-original-index", index);
+    });
 
     // Clone all thumbs and append
     originalThumbs.forEach(thumb => {
@@ -5369,11 +5374,15 @@ body.bulkbar-active .social-dock{
 
     // Set initial scroll position to start of real content
     setTimeout(() => {
-      const firstReal = videoList.querySelector(".thumb:not([aria-hidden])");
+      const firstReal = videoList.querySelector(".thumb[data-original-index]");
       if (firstReal) {
+        const containerLeft = videoList.getBoundingClientRect().left;
+        const firstRealLeft = firstReal.getBoundingClientRect().left;
         videoList.scrollLeft = firstReal.offsetLeft - videoList.offsetLeft;
+        // Update ignore time to prevent scroll event from pausing
+        ignoreScrollUntil = Date.now() + 400;
       }
-    }, 100);
+    }, 200);
   }
 
   // Auto-scroll function
@@ -5452,8 +5461,14 @@ body.bulkbar-active .social-dock{
   videoList.addEventListener("mouseup", () => {
     scheduleResume();
   });
+  // Flag to ignore initial scroll events (from setup)
+  let isInitializing = true;
+  let ignoreScrollUntil = Date.now() + 500; // Ignore scrolls for 500ms after init
 
   videoList.addEventListener("scroll", () => {
+    // Ignore scroll events during initialization
+    if (Date.now() < ignoreScrollUntil) return;
+    
     if (!isScrolling) {
       isUserInteracting = true;
       pauseAutoScroll();
@@ -5478,11 +5493,16 @@ body.bulkbar-active .social-dock{
     }
   });
 
-  // Respect reduced motion preference
+    // Respect reduced motion preference
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!prefersReducedMotion) {
     setupInfiniteLoop();
-    startAutoScroll();
+    // Delay auto-scroll start to ensure setup is complete
+    setTimeout(() => {
+      isInitializing = false;
+      ignoreScrollUntil = Date.now() + 300;
+      startAutoScroll();
+    }, 600);
   }
 
   // ===== AUTO-PLAY PREVIEWS ON THUMBNAILS =====
