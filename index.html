@@ -455,7 +455,7 @@ section{padding: 92px 0}
   height: 140px;
   border-radius: 18px 18px 0 0;
   background-size: cover;
-  background-position: top center;
+  background-position: center 30%;
   position: relative;
   background-color: #000;
 }
@@ -1434,30 +1434,69 @@ section{padding: 92px 0}
 
 /* Premium LIVE NOW indicator */
 .slot.live-now .slot-content {
-  background: color-mix(in srgb, var(--accent) 10%, var(--bg-elev));
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 20%, transparent),
-              var(--shadow);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   position: relative;
+  overflow: visible;
 }
 
+/* Animated border that circles around the card */
 .slot.live-now .slot-content::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
+  inset: -2px;
+  border-radius: 18px;
+  padding: 2px;
   background: linear-gradient(90deg, 
-    transparent,
-    var(--accent),
-    transparent);
-  animation: shimmer 2s ease-in-out infinite;
+    var(--accent) 0%,
+    transparent 25%,
+    transparent 75%,
+    var(--accent) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderRotate 3s linear infinite;
+  z-index: -1;
 }
 
-@keyframes shimmer {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+@keyframes borderRotate {
+  0% {
+    background: linear-gradient(90deg, 
+      var(--accent) 0%,
+      transparent 25%,
+      transparent 75%,
+      var(--accent) 100%);
+  }
+  25% {
+    background: linear-gradient(180deg, 
+      var(--accent) 0%,
+      transparent 25%,
+      transparent 75%,
+      var(--accent) 100%);
+  }
+  50% {
+    background: linear-gradient(270deg, 
+      var(--accent) 0%,
+      transparent 25%,
+      transparent 75%,
+      var(--accent) 100%);
+  }
+  75% {
+    background: linear-gradient(360deg, 
+      var(--accent) 0%,
+      transparent 25%,
+      transparent 75%,
+      var(--accent) 100%);
+  }
+  100% {
+    background: linear-gradient(90deg, 
+      var(--accent) 0%,
+      transparent 25%,
+      transparent 75%,
+      var(--accent) 100%);
+  }
 }
 
 .slot.live-now .slot-content::after {
