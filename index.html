@@ -1094,21 +1094,23 @@ section{padding: 92px 0}
   transform: scale(0.95);
 }
 
-/*Collapsible Content*/
+/*Collapsible Content - Smooth slide-out animation*/
 .dj-card-content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-              opacity 0.4s var(--ease),
-              margin-top 0.5s var(--ease);
+  transition: max-height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              margin-top 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   opacity: 0;
   margin-top: 0;
+  transform: translateY(-8px);
 }
 
 .dj-card-header[aria-expanded="true"] ~ .dj-card-content {
   max-height: 3000px;
   opacity: 1;
   margin-top: 16px;
+  transform: translateY(0);
 }
 
 /*Premium Timeline with Visual Dots*/
@@ -1323,13 +1325,13 @@ section{padding: 92px 0}
   z-index: 3;
 }
 
-/*Peeking edges - card 2 (offset right, smaller)*/
+/*Peeking edges - card 2 (stacked vertically, perfectly centered)*/
 .dj-card-preview::before {
   content: "";
   position: absolute;
   top: 8px;
-  left: 12px;
-  right: -8px;
+  left: 0;
+  right: 0;
   bottom: -8px;
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
@@ -1340,47 +1342,13 @@ section{padding: 92px 0}
   opacity: 0.7;
 }
 
-/*Peeking edges - card 3 (offset more, smaller)*/
+/*Peeking edges - card 3 (stacked vertically, perfectly centered)*/
 .dj-card-preview::after {
   content: "";
   position: absolute;
   top: 16px;
-  left: 20px;
-  right: -16px;
-  bottom: -16px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-  background: color-mix(in srgb, var(--bg-elev) 75%, transparent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-/*Peeking edges - card 2 (offset right, smaller)*/
-.dj-card-preview::before {
-  content: "";
-  position: absolute;
-  top: 8px;
-  left: 12px;
-  right: -8px;
-  bottom: -8px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-  background: color-mix(in srgb, var(--bg-elev) 85%, transparent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-/*Peeking edges - card 3 (offset more, smaller)*/
-.dj-card-preview::after {
-  content: "";
-  position: absolute;
-  top: 16px;
-  left: 20px;
-  right: -16px;
+  left: 0;
+  right: 0;
   bottom: -16px;
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
@@ -1391,7 +1359,6 @@ section{padding: 92px 0}
   opacity: 0.5;
 }
     
-
 /*Premium Expand Hint with Text*/
 .dj-card-expand-hint {
   margin-top: 12px;
@@ -2631,13 +2598,13 @@ footer{
     font-weight: 600;
   }
 
-      .artist-scroll-left {
-    left: 8px;
+        .artist-scroll-left {
+    left: -12px;
     z-index: 20;
   }
 
   .artist-scroll-right {
-    right: 8px;
+    right: -12px;
     z-index: 20;
   }
 
@@ -2710,7 +2677,7 @@ footer{
   }
   
   /* Horizontal scroll for artist cards */
-      #artists .cards {
+        #artists .cards {
     display: flex !important;
     overflow-x: auto;
     overflow-y: hidden;
@@ -2722,6 +2689,8 @@ footer{
     scrollbar-width: none;
     -ms-overflow-style: none;
     grid-template-columns: none !important;
+    justify-content: center;
+    align-items: center;
   }
 
   #artists .cards::-webkit-scrollbar {
@@ -6689,7 +6658,7 @@ document.addEventListener('keydown', (e) => {
     });
   }
 
-            /*Use event delegation for click handlers - toggle expand/collapse*/
+      /*Use event delegation for click handlers - manual toggle expand/collapse*/
   djSection.addEventListener('click', function(e) {
     // Check if click is on header, hint icon, or collapse button
     const header = e.target.closest('.dj-card-header');
@@ -6732,7 +6701,7 @@ document.addEventListener('keydown', (e) => {
       targetHeader.setAttribute('aria-expanded', !isExpanded);
     }
   });
-
+  
   /*Auto-preview animation (expand/collapse every 3 seconds if idle)*/
   let previewTimeout;
   let lastInteractionTime = Date.now();
