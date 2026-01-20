@@ -111,54 +111,6 @@
 
     main{padding-top: 26px; padding-bottom: 90px;}
 
-    /* Main Tab Navigation */
-    .main-tabs{
-      display:flex;
-      gap:8px;
-      margin-bottom:24px;
-      border-bottom:1px solid var(--border);
-      padding-bottom:0;
-    }
-    .main-tab-btn{
-      padding:12px 20px;
-      font-size:15px;
-      font-weight:600;
-      color:var(--sub);
-      background:transparent;
-      border:none;
-      border-bottom:2px solid transparent;
-      cursor:pointer;
-      transition: all .2s var(--ease);
-      position:relative;
-      margin-bottom:-1px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .main-tab-btn i{
-      font-size:14px;
-    }
-    .main-tab-btn:hover{
-      color:var(--text);
-    }
-    .main-tab-btn.active{
-      color:var(--accent);
-      border-bottom-color:var(--accent);
-    }
-    
-    /* View Containers */
-    .view-container{
-      display:none;
-    }
-    .view-container.active{
-      display:block;
-      animation:fadeIn .3s var(--ease);
-    }
-    @keyframes fadeIn{
-      from{opacity:0;}
-      to{opacity:1;}
-    }
-
     .card{
       border-radius: var(--radius-lg);
       border:1px solid var(--border);
@@ -268,15 +220,10 @@
       border:1px solid var(--border);
       background: color-mix(in srgb, var(--bg) 92%, transparent);
       box-shadow: var(--shadow-soft);
-      padding: 18px;
-      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+      padding: 14px;
     }
-    .stat:hover{
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-    .stat .k{color:var(--sub);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
-    .stat .v{font-size:28px;font-weight:900;letter-spacing:-1px;margin-top:8px}
+    .stat .k{color:var(--sub);font-size:12px}
+    .stat .v{font-size:26px;font-weight:900;letter-spacing:-1px;margin-top:6px}
 
     .tabs{
       display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;
@@ -285,15 +232,9 @@
       padding:10px 14px;border-radius:999px;border:1px solid var(--border);
       background: color-mix(in srgb, var(--bg) 92%, transparent);
       font-weight:800;font-size:13px;cursor:pointer;
-      transition: all .2s var(--ease);
-    }
-    .tab-btn:hover{
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-soft);
     }
     .tab-btn.active{
       background: var(--accent);color: var(--bg);border-color: transparent;
-      box-shadow: var(--shadow-soft);
     }
 
     .toolbar{
@@ -322,29 +263,11 @@
       padding: 14px;text-align:left;
     }
     tbody td{
-      padding: 16px 14px;border-bottom:1px solid var(--border);
-      font-size: 14px;vertical-align: middle;
-      transition: background .15s var(--ease);
-    }
-    tbody tr{
-      transition: background .15s var(--ease);
+      padding: 14px;border-bottom:1px solid var(--border);
+      font-size: 14px;vertical-align: top;
     }
     tbody tr:hover{background: color-mix(in srgb, var(--bg-alt) 60%, transparent);}
     .scroll{overflow:auto;-webkit-overflow-scrolling: touch;}
-    .scroll::-webkit-scrollbar{
-      width:8px;
-      height:8px;
-    }
-    .scroll::-webkit-scrollbar-track{
-      background:var(--bg-alt);
-    }
-    .scroll::-webkit-scrollbar-thumb{
-      background:var(--border);
-      border-radius:4px;
-    }
-    .scroll::-webkit-scrollbar-thumb:hover{
-      background:var(--sub);
-    }
 
     .status{font-weight:900;letter-spacing:-.3px;}
     .PENDING{color: var(--warn)}
@@ -425,22 +348,12 @@
 
     <!-- DASHBOARD -->
     <div id="dashboard" class="dash-grid hidden">
-      <!-- Main Tab Navigation -->
-      <div class="main-tabs">
-        <button class="main-tab-btn active" onclick="switchView('dashboard-view')">
-          <i class="fa-solid fa-table-cells-large"></i> Dashboard
-        </button>
-        <button class="main-tab-btn" onclick="switchView('scan-view')">
-          <i class="fa-solid fa-qrcode"></i> Scan Mode
-        </button>
-      </div>
+        
 
-      <!-- Dashboard View -->
-      <div id="dashboard-view" class="view-container active">
-        <section class="card">
-          <div class="card-head">
-            <h1>BYZ Admin Control Center</h1>
-            <p>Approvals, check‑ins, and live activity by event.</p>
+      <section class="card">
+        <div class="card-head">
+          <h1>BYZ Admin Control Center</h1>
+          <p>Approvals, check‑ins, and live activity by event.</p>
 
           <div class="stats">
             <div class="stat"><div class="k">Total</div><div class="v" id="statTotal">—</div></div>
@@ -476,8 +389,14 @@
                 <i class="fa-solid fa-file-csv"></i>
                 Export CSV
               </button>
+              <button onclick="openScan()" class="primary">
+                <i class="fa-solid fa-qrcode"></i>
+                Scan Mode
+              </button>
             </div>
           </div>
+
+          <div id="scanPanel" class="scan hidden">
             <div class="scan-top">
               <div class="scan-title">
                 <div class="scan-badge"><i class="fa-solid fa-sparkles"></i> Door Check‑in</div>
@@ -496,6 +415,9 @@
                 </button>
                 <button onclick="stopScan()">
                   <i class="fa-solid fa-circle-stop"></i> Stop
+                </button>
+                <button onclick="closeScan()">
+                  <i class="fa-solid fa-xmark"></i> Close
                 </button>
               </div>
             </div>
@@ -534,44 +456,32 @@
               </div>
             </div>
           </div>
-        </section>
-      </div>
-    </div>
+        </div>
 
-          <div class="card-body">
-            <div class="table-wrap">
-              <div class="scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Event</th>
-                      <th>Booking ID</th>
-                      <th>Type</th>
-                      <th>Description</th>
-                      <th>Name</th>
-                      <th>Phone</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="rows"></tbody>
-                </table>
-              </div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <div class="scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Booking ID</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+              </table>
             </div>
           </div>
-        </section>
-      </div>
-
-      <!-- Scan Mode View -->
-      <div id="scan-view" class="view-container">
-        <section class="card">
-          <div class="card-head">
-            <h1>Scan Mode</h1>
-            <p>Door check‑in with QR code scanning.</p>
-          </div>
-          <div class="card-body">
-            <div id="scanPanel" class="scan">
+        </div>
+      </section>
+    </div>
   </main>
 
   <script>
@@ -582,32 +492,15 @@
     let currentEvent = "";
 
     (function initTheme(){
-      const saved = localStorage.getItem("byz_theme");
-      if(saved === "dark"){ document.body.setAttribute("data-theme","dark"); }
-      else { document.body.setAttribute("data-theme","dark"); } // Default to dark
-    })();
+      // Always force dark mode
+document.body.setAttribute("data-theme", "dark");
+localStorage.removeItem("byz_theme");
+})();
 
-    function toggleTheme(){
-      const isDark = document.body.getAttribute("data-theme") === "dark";
-      document.body.setAttribute("data-theme", isDark ? "light" : "dark");
-      localStorage.setItem("byz_theme", isDark ? "light" : "dark");
-    }
-
-    function switchView(viewId){
-      // Hide all views
-      document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-      // Show selected view
-      document.getElementById(viewId).classList.add('active');
-      // Update tab buttons
-      document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
-      const clickedBtn = event ? event.target.closest('.main-tab-btn') : document.querySelector(`[onclick*="${viewId}"]`);
-      if(clickedBtn) clickedBtn.classList.add('active');
-      
-      // If switching to scan view, ensure scan panel is visible
-      if(viewId === 'scan-view'){
-        document.getElementById('scanPanel').classList.remove('hidden');
-      }
-    }
+function toggleTheme(){
+  // Disabled - always dark mode
+  return;
+}
 
     function login(){
   if(password.value === ADMIN_PASSWORD){
@@ -789,12 +682,12 @@
     let currentScanEvent = "groove";
 
     function openScan(){
-      switchView('scan-view');
+      document.getElementById("scanPanel").classList.remove("hidden");
       scanOpen = true;
     }
     function closeScan(){
       stopScan();
-      switchView('dashboard-view');
+      document.getElementById("scanPanel").classList.add("hidden");
       scanOpen = false;
     }
     function startScan(){
