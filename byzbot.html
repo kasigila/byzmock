@@ -438,6 +438,65 @@
       line-height: 1.6;
     }
 
+    .api-key-setup {
+      background: color-mix(in srgb, var(--accent) 8%, var(--bg-alt));
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px;
+      text-align: center;
+    }
+
+    .api-key-setup h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .api-key-setup p {
+      font-size: 13px;
+      color: var(--sub);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .api-key-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg-elev);
+      color: var(--text);
+      font-size: 13px;
+      font-family: 'SF Mono', Monaco, monospace;
+      margin-bottom: 12px;
+      outline: none;
+      transition: all 0.2s var(--ease);
+    }
+
+    .api-key-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    .api-key-btn {
+      padding: 10px 20px;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+
+    .api-key-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
     @media (max-width: 480px) {
       body {
         padding: 0;
@@ -469,6 +528,9 @@
         <button class="icon-btn" id="clearBtn" title="Clear chat">
           <i class="fas fa-trash-alt"></i>
         </button>
+        <button class="icon-btn" id="settingsBtn" title="Settings / Change API Key">
+          <i class="fas fa-cog"></i>
+        </button>
         <button class="icon-btn" id="themeBtn" title="Toggle theme">
           <i class="fas fa-moon"></i>
         </button>
@@ -476,13 +538,29 @@
     </div>
 
     <div class="chatbot-messages" id="messages">
-      <div class="welcome-message">
+      <div id="apiKeySetup" class="api-key-setup">
+        <h4>🔑 Setup Required</h4>
+        <p>To use ByzBot, you need an OpenAI API key. Don't worry, it's free to get started!</p>
+        <input 
+          type="password" 
+          id="apiKeyInput" 
+          class="api-key-input" 
+          placeholder="Enter your OpenAI API key (sk-...)"
+        >
+        <button class="api-key-btn" id="saveApiKey">Save & Start Chatting</button>
+        <p style="margin-top: 12px; font-size: 12px;">
+          <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--accent); text-decoration: underline;">
+            Get your API key here →
+          </a>
+        </p>
+      </div>
+      <div class="welcome-message" id="welcomeMessage" style="display: none;">
         <h3>👋 Welcome to ByzBot!</h3>
         <p>I'm your AI assistant for BYZ. Ask me anything about events, bookings, locations, galleries, or anything else!</p>
       </div>
     </div>
 
-    <div class="chatbot-input">
+    <div class="chatbot-input" id="chatInput" style="display: none;">
       <div class="input-wrapper">
         <input 
           type="text" 
@@ -499,13 +577,11 @@
 
   <script>
     // ==================== CONFIGURATION ====================
-    // IMPORTANT: Replace with your OpenAI API key
-    // Get one at: https://platform.openai.com/api-keys
-    const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
+    let OPENAI_API_KEY = localStorage.getItem('byzbot-api-key') || '';
     const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
     // BYZ Context for the AI
-    const BYZ_CONTEXT = `You are ByzBot, a helpful and friendly AI assistant for BYZ, an entertainment company that creates unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam, Tanzania.
+    const BYZ_CONTEXT = `You are ByzBot, a helpful and friendly AI assistant for BYZ in the Hood, an entertainment company that creates unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam, Tanzania.
 
 Key Information:
 - BYZ hosts two main event series: Groove and Tempo
@@ -525,7 +601,57 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
     const clearBtn = document.getElementById('clearBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
     const themeBtn = document.getElementById('themeBtn');
+    const apiKeySetup = document.getElementById('apiKeySetup');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    const chatInput = document.getElementById('chatInput');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const saveApiKeyBtn = document.getElementById('saveApiKey');
+
+    // ==================== INITIALIZE ====================
+    function init() {
+      if (OPENAI_API_KEY) {
+        showChatInterface();
+      } else {
+        showApiKeySetup();
+      }
+    }
+
+    function showApiKeySetup() {
+      apiKeySetup.style.display = 'block';
+      welcomeMessage.style.display = 'none';
+      chatInput.style.display = 'none';
+    }
+
+    function showChatInterface() {
+      apiKeySetup.style.display = 'none';
+      welcomeMessage.style.display = 'block';
+      chatInput.style.display = 'block';
+      userInput.focus();
+    }
+
+    // ==================== API KEY SETUP ====================
+    saveApiKeyBtn.addEventListener('click', () => {
+      const key = apiKeyInput.value.trim();
+      if (!key) {
+        alert('Please enter your API key');
+        return;
+      }
+      if (!key.startsWith('sk-')) {
+        alert('API key should start with "sk-"');
+        return;
+      }
+      OPENAI_API_KEY = key;
+      localStorage.setItem('byzbot-api-key', key);
+      showChatInterface();
+    });
+
+    apiKeyInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        saveApiKeyBtn.click();
+      }
+    });
 
     // ==================== THEME MANAGEMENT ====================
     function initTheme() {
@@ -572,9 +698,8 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
       messagesContainer.appendChild(messageDiv);
       
       // Remove welcome message if it exists
-      const welcomeMsg = messagesContainer.querySelector('.welcome-message');
-      if (welcomeMsg) {
-        welcomeMsg.remove();
+      if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+        welcomeMessage.style.display = 'none';
       }
       
       scrollToBottom();
@@ -626,8 +751,8 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
 
     // ==================== OPENAI API CALL ====================
     async function getAIResponse(userMessage) {
-      if (!OPENAI_API_KEY || OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY_HERE') {
-        throw new Error('OpenAI API key not configured. Please add your API key in the script.');
+      if (!OPENAI_API_KEY) {
+        throw new Error('OpenAI API key not configured. Please add your API key.');
       }
 
       // Add user message to history
@@ -710,7 +835,7 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
         addMessage(aiResponse, false);
       } catch (error) {
         removeTypingIndicator();
-        showError(`Sorry, I encountered an error: ${error.message}. Please try again.`);
+        showError(`Sorry, I encountered an error: ${error.message}. Please check your API key and try again.`);
         console.error('Error:', error);
       } finally {
         userInput.disabled = false;
@@ -744,13 +869,24 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
       }
     });
 
+    // Settings button - reset API key
+    settingsBtn.addEventListener('click', () => {
+      if (confirm('Reset API key? You\'ll need to enter it again.')) {
+        localStorage.removeItem('byzbot-api-key');
+        OPENAI_API_KEY = '';
+        conversationHistory = [];
+        showApiKeySetup();
+      }
+    });
+
     // ==================== UTILITIES ====================
     function scrollToBottom() {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    // Focus input on load
-    userInput.focus();
+    // Initialize
+    init();
   </script>
 </body>
 </html>
+
