@@ -2573,10 +2573,10 @@ footer{
   }
 
   /* Artist scroll wrapper with arrows */
-    .artist-scroll-wrapper {
+      .artist-scroll-wrapper {
     position: relative;
     margin: 0 -12px;
-    padding: 0 48px;
+    padding: 0;
   }
 
   /* Show arrows on mobile */
@@ -2631,20 +2631,22 @@ footer{
     font-weight: 600;
   }
 
-    .artist-scroll-left {
-    left: 0;
+      .artist-scroll-left {
+    left: 8px;
+    z-index: 20;
   }
 
   .artist-scroll-right {
-    right: 0;
+    right: 8px;
+    z-index: 20;
   }
 
   /* Horizontal scroll for artist cards */
     /* Artist scroll wrapper with arrows */
-  .artist-scroll-wrapper {
+    .artist-scroll-wrapper {
     position: relative;
     margin: 0 -12px;
-    padding: 0 56px;
+    padding: 0;
   }
 
   /* Show arrows on mobile */
@@ -2666,7 +2668,7 @@ footer{
                 inset 0 1px 0 rgba(255, 255, 255, 0.05);
     color: var(--text);
     cursor: pointer;
-    z-index: 10;
+    z-index: 20;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0.95;
   }
@@ -2708,14 +2710,14 @@ footer{
   }
   
   /* Horizontal scroll for artist cards */
-    #artists .cards {
+      #artists .cards {
     display: flex !important;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 16px;
-    padding: 0 4px 12px;
+    padding: 0 0 12px;
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -6687,7 +6689,7 @@ document.addEventListener('keydown', (e) => {
     });
   }
 
-      /*Use event delegation for click handlers - manual expand/collapse*/
+            /*Use event delegation for click handlers - toggle expand/collapse*/
   djSection.addEventListener('click', function(e) {
     // Check if click is on header, hint icon, or collapse button
     const header = e.target.closest('.dj-card-header');
@@ -6720,16 +6722,14 @@ document.addEventListener('keydown', (e) => {
       return;
     }
     
-    // Only expand if clicking hint or header (and not already expanded)
+    // Toggle if clicking hint or header (allow both expand and collapse)
     if (hintIcon || hintArea || (header && !header.closest('.dj-card-collapse-btn'))) {
       e.preventDefault();
       e.stopPropagation();
       
       const isExpanded = targetHeader.getAttribute('aria-expanded') === 'true';
-      // Only allow expanding (not toggling)
-      if (!isExpanded) {
-        targetHeader.setAttribute('aria-expanded', 'true');
-      }
+      // Toggle: expand if collapsed, collapse if expanded
+      targetHeader.setAttribute('aria-expanded', !isExpanded);
     }
   });
 
