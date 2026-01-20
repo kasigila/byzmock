@@ -624,6 +624,10 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
       apiKeySetup.style.display = 'block';
       welcomeMessage.style.display = 'none';
       chatInput.style.display = 'none';
+      // Focus on the input field
+      setTimeout(() => {
+        apiKeyInput.focus();
+      }, 100);
     }
 
     function showChatInterface() {
@@ -876,13 +880,13 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
       }
     });
 
-    // Settings button - reset API key
+    // Settings button - show API key setup
     settingsBtn.addEventListener('click', () => {
-      if (confirm('Reset API key? You\'ll need to enter it again.')) {
-        localStorage.removeItem('byzbot-api-key');
-        API_KEY = '';
-        conversationHistory = [];
-        showApiKeySetup();
+      // Always show the setup screen when clicking settings
+      showApiKeySetup();
+      // Pre-fill if there's an existing key
+      if (API_KEY) {
+        apiKeyInput.value = API_KEY;
       }
     });
 
