@@ -6640,39 +6640,30 @@ document.addEventListener('keydown', (e) => {
     
     if (!targetHeader) return;
     
-        // Prevent event bubbling if clicking collapse button
+            // Prevent event bubbling if clicking collapse button
     if (collapseBtn) {
       e.preventDefault();
       e.stopPropagation();
       targetHeader.setAttribute('aria-expanded', 'false');
       
-      // Update hint text and icon when collapsing via collapse button
+      // Update icon to DOWN arrow when collapsing
       const card = targetHeader.closest('.dj-card-collapsible');
       if (card) {
-        const hintText = card.querySelector('.expand-hint-text');
         const hintIconEl = card.querySelector('.expand-hint-icon i');
+        const hintText = card.querySelector('.expand-hint-text');
         
-        if (hintText && hintIconEl) {
-          // Now collapsed - show down arrow
-          const collapsedText = hintText.getAttribute('data-collapsed');
-          if (collapsedText) {
-            hintText.textContent = collapsedText;
-          } else {
-            // Fallback text based on current content
-            if (hintText.textContent.includes('times')) {
-              hintText.textContent = 'Tap to see all times';
-            } else {
-              hintText.textContent = 'Tap to see details';
-            }
-          }
+        if (hintIconEl) {
           hintIconEl.className = 'fa-solid fa-chevron-down';
+          if (hintText) {
+            hintText.textContent = hintText.getAttribute('data-collapsed') || 'Tap to see all times';
+          }
         }
       }
       
       return;
     }
     
-          // Toggle if clicking hint or header (allow both expand and collapse)
+            // Toggle if clicking hint or header (allow both expand and collapse)
     if (hintIcon || hintArea || (header && !header.closest('.dj-card-collapse-btn'))) {
       e.preventDefault();
       e.stopPropagation();
@@ -6683,36 +6674,25 @@ document.addEventListener('keydown', (e) => {
       // Toggle: expand if collapsed, collapse if expanded
       targetHeader.setAttribute('aria-expanded', newState);
       
-      // Update hint text and icon based on NEW state (after toggle)
+      // Update icon immediately after toggle
       const card = targetHeader.closest('.dj-card-collapsible');
       if (card) {
-        const hintText = card.querySelector('.expand-hint-text');
         const hintIconEl = card.querySelector('.expand-hint-icon i');
+        const hintText = card.querySelector('.expand-hint-text');
         
-        if (hintText && hintIconEl) {
+        if (hintIconEl) {
           if (newState) {
-            // Now expanded - show up arrow
-            const expandedText = hintText.getAttribute('data-expanded');
-            if (expandedText) {
-              hintText.textContent = expandedText;
-            } else {
-              hintText.textContent = 'Tap to collapse';
-            }
+            // Now expanded - change to UP arrow
             hintIconEl.className = 'fa-solid fa-chevron-up';
-          } else {
-            // Now collapsed - show down arrow
-            const collapsedText = hintText.getAttribute('data-collapsed');
-            if (collapsedText) {
-              hintText.textContent = collapsedText;
-            } else {
-              // Fallback based on original text
-              if (hintText.textContent.includes('times') || hintText.getAttribute('data-collapsed')?.includes('times')) {
-                hintText.textContent = 'Tap to see all times';
-              } else {
-                hintText.textContent = 'Tap to see details';
-              }
+            if (hintText) {
+              hintText.textContent = hintText.getAttribute('data-expanded') || 'Tap to collapse';
             }
+          } else {
+            // Now collapsed - change to DOWN arrow
             hintIconEl.className = 'fa-solid fa-chevron-down';
+            if (hintText) {
+              hintText.textContent = hintText.getAttribute('data-collapsed') || 'Tap to see all times';
+            }
           }
         }
       }
