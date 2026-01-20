@@ -2539,13 +2539,13 @@ footer{
     visibility: visible !important;
   }
 
-    /* Artist scroll wrapper with arrows */
+        /* Artist scroll wrapper with arrows */
   .artist-scroll-wrapper {
     position: relative;
     margin: 0;
-    padding: 0 56px; /* Space for arrows on sides */
+    padding: 0; /* No padding - let cards extend fully */
+    overflow: visible; /* Allow rounded corners to show */
   }
-
   /* Arrows positioned absolutely within wrapper - stay fixed relative to section */
   .artist-scroll-btn {
     display: flex !important;
@@ -2577,7 +2577,7 @@ footer{
     right: 8px; /* Slightly inset so arrows are visible and not cut off */
   }
   
-  /* Horizontal scroll for artist cards - centered */
+    /* Horizontal scroll for artist cards - centered */
   #artists .cards {
     display: flex !important;
     overflow-x: auto;
