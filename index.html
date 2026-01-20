@@ -455,7 +455,7 @@ section{padding: 92px 0}
   height: 140px;
   border-radius: 18px 18px 0 0;
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   position: relative;
   background-color: #000;
 }
@@ -1145,14 +1145,59 @@ section{padding: 92px 0}
 }
 
 /* ===================== DJ ACCORDION STYLES ===================== */
-/*Collapsible Card*/
 .dj-card-collapsible {
-  padding: 18px;
+  padding: 20px;
   border-radius: var(--radius);
   position: relative;
   overflow: hidden;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
 }
 
+/* High-tech animated border glow */
+.dj-card-collapsible::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--accent) 0%, transparent),
+    color-mix(in srgb, var(--accent) 15%, transparent),
+    color-mix(in srgb, var(--accent) 0%, transparent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+  pointer-events: none;
+}
+
+.dj-card-collapsible:hover::before {
+  opacity: 0.6;
+}
+
+/* Subtle inner glow */
+.dj-card-collapsible::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--radius);
+  background: radial-gradient(circle at 30% 20%, 
+    color-mix(in srgb, var(--accent) 8%, transparent) 0%,
+    transparent 50%);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dj-card-collapsible:hover::after {
+  opacity: 1;
+}
 /*Premium Header Button*/
 .dj-card-header {
   width: 100%;
@@ -1163,13 +1208,16 @@ section{padding: 92px 0}
   padding: 0;
   margin: 0;
   border: none;
-  background: none;
-  text-align: left;
+  background: transparent;
   cursor: pointer;
-  min-height: 44px;
-  transition: opacity 0.2s var(--ease);
+  transition: all 0.3s var(--ease);
+  text-align: left;
   position: relative;
-  z-index: 2;
+  z-index: 1;
+}
+
+.dj-card-header:hover {
+  transform: translateX(2px);
 }
 
 .dj-card-header:active {
@@ -1297,15 +1345,19 @@ section{padding: 92px 0}
   transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease), background 0.25s var(--ease);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--bg-elev) 98%, transparent);
 }
 
+/* High-tech hover effect */
 .slot-content::before {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, 
     color-mix(in srgb, var(--accent) 0%, transparent) 0%,
-    color-mix(in srgb, var(--accent) 2%, transparent) 100%);
+    color-mix(in srgb, var(--accent) 3%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 0%, transparent) 100%);
   opacity: 0;
   transition: opacity 0.3s var(--ease);
   pointer-events: none;
@@ -1313,12 +1365,34 @@ section{padding: 92px 0}
 
 .slot-content:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow);
-  border-color: color-mix(in srgb, var(--border) 140%, transparent);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 8%, transparent),
+              var(--shadow);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
 .slot-content:hover::before {
   opacity: 1;
+}
+
+/* Tech-style border glow on hover */
+.slot-content::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--accent) 0%, transparent),
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    color-mix(in srgb, var(--accent) 0%, transparent));
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.slot-content:hover::after {
+  opacity: 0.4;
+}
 }
 
 .slot .left {
@@ -1429,7 +1503,91 @@ section{padding: 92px 0}
   color: var(--accent);
   font-weight: 800;
 }
+/* Premium LIVE NOW - High-tech version */
+.slot.live-now .slot-content {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 20%, transparent),
+              0 0 40px color-mix(in srgb, var(--accent) 15%, transparent),
+              var(--shadow);
+  position: relative;
+  animation: techPulse 3s ease-in-out infinite;
+}
 
+@keyframes techPulse {
+  0%, 100% {
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 20%, transparent),
+                0 0 40px color-mix(in srgb, var(--accent) 15%, transparent),
+                var(--shadow);
+  }
+  50% {
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 30%, transparent),
+                0 0 60px color-mix(in srgb, var(--accent) 25%, transparent),
+                var(--shadow);
+  }
+}
+
+.slot.live-now .slot-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent,
+    var(--accent),
+    transparent);
+  animation: techShimmer 2s ease-in-out infinite;
+  box-shadow: 0 0 20px var(--accent);
+}
+
+@keyframes techShimmer {
+  0%, 100% { 
+    opacity: 0.6;
+    transform: translateX(-100%);
+  }
+  50% { 
+    opacity: 1;
+    transform: translateX(100%);
+  }
+}
+
+.slot.live-now .slot-content::after {
+  content: "LIVE NOW";
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 80%, transparent));
+  color: var(--bg);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 50%, transparent),
+              0 0 0 2px var(--bg-elev),
+              0 0 20px color-mix(in srgb, var(--accent) 40%, transparent);
+  animation: liveTechPulse 2s ease-in-out infinite;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes liveTechPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 50%, transparent),
+                0 0 0 2px var(--bg-elev),
+                0 0 20px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 70%, transparent),
+                0 0 0 2px var(--bg-elev),
+                0 0 30px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+}
 /* Next up - subtle highlight */
 .slot.next-up .slot-content {
   background: color-mix(in srgb, var(--accent) 5%, var(--bg-elev));
@@ -1492,7 +1650,32 @@ section{padding: 92px 0}
 .slot.next-up .slot-content {
   border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
 }
+.slot .time {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: var(--text);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
 
+.slot.live-now .time {
+  color: var(--accent);
+  font-weight: 800;
+  text-shadow: 0 0 20px color-mix(in srgb, var(--accent) 30%, transparent);
+  animation: textGlow 2s ease-in-out infinite;
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    text-shadow: 0 0 20px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  50% {
+    text-shadow: 0 0 30px color-mix(in srgb, var(--accent) 50%, transparent),
+                 0 0 40px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+}
 /* Single Preview Card */
 .dj-card-preview {
   margin-top: 12px;
