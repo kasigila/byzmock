@@ -133,7 +133,7 @@
   </style>
 </head>
 
-<body data-theme="light">
+<body data-theme="dark">
   <div class="container">
     <div class="card">
       <div class="head">
@@ -211,13 +211,14 @@
 
   (function initTheme(){
     const saved = localStorage.getItem("byz_theme");
-    if(saved === "dark"){ document.body.setAttribute("data-theme","dark"); }
-  })();
-  function toggleTheme(){
-    const isDark = document.body.getAttribute("data-theme") === "dark";
-    document.body.setAttribute("data-theme", isDark ? "light" : "dark");
-    localStorage.setItem("byz_theme", isDark ? "light" : "dark");
-  }
+   // Always force dark mode
+document.body.setAttribute("data-theme", "dark");
+localStorage.removeItem("byz_theme");
+})();
+function toggleTheme(){
+  // Disabled - always dark mode
+  return;
+}
 
   let stream = null;
   let scanning = false;
