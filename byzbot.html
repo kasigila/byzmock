@@ -540,17 +540,17 @@
     <div class="chatbot-messages" id="messages">
       <div id="apiKeySetup" class="api-key-setup">
         <h4>🔑 Setup Required</h4>
-        <p>To use ByzBot, you need an OpenAI API key. Don't worry, it's free to get started!</p>
+        <p>To use ByzBot, you need a Google Gemini API key. <strong>It's completely FREE!</strong> No credit card required!</p>
         <input 
           type="password" 
           id="apiKeyInput" 
           class="api-key-input" 
-          placeholder="Enter your OpenAI API key (sk-...)"
+          placeholder="Enter your Google Gemini API key"
         >
         <button class="api-key-btn" id="saveApiKey">Save & Start Chatting</button>
         <p style="margin-top: 12px; font-size: 12px;">
-          <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--accent); text-decoration: underline;">
-            Get your API key here →
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--accent); text-decoration: underline;">
+            Get your FREE API key here →
           </a>
         </p>
       </div>
@@ -577,8 +577,10 @@
 
   <script>
     // ==================== CONFIGURATION ====================
-    let OPENAI_API_KEY = localStorage.getItem('byzbot-api-key') || '';
-    const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+    // Using Google Gemini API (FREE - No credit card required!)
+    // Get your free API key at: https://aistudio.google.com/app/apikey
+    let API_KEY = localStorage.getItem('byzbot-api-key') || '';
+    const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
     // BYZ Context for the AI
     const BYZ_CONTEXT = `You are ByzBot, a helpful and friendly AI assistant for BYZ in the Hood, an entertainment company that creates unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam, Tanzania.
@@ -611,7 +613,7 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
 
     // ==================== INITIALIZE ====================
     function init() {
-      if (OPENAI_API_KEY) {
+      if (API_KEY) {
         showChatInterface();
       } else {
         showApiKeySetup();
@@ -638,11 +640,7 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
         alert('Please enter your API key');
         return;
       }
-      if (!key.startsWith('sk-')) {
-        alert('API key should start with "sk-"');
-        return;
-      }
-      OPENAI_API_KEY = key;
+      API_KEY = key;
       localStorage.setItem('byzbot-api-key', key);
       showChatInterface();
     });
@@ -749,10 +747,10 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
       scrollToBottom();
     }
 
-    // ==================== OPENAI API CALL ====================
+    // ==================== GOOGLE GEMINI API CALL ====================
     async function getAIResponse(userMessage) {
-      if (!OPENAI_API_KEY) {
-        throw new Error('OpenAI API key not configured. Please add your API key.');
+      if (!API_KEY) {
+        throw new Error('API key not configured. Please add your Google Gemini API key.');
       }
 
       // Add user message to history
@@ -761,27 +759,36 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
         content: userMessage
       });
 
-      // Prepare messages for API
-      const messages = [
-        {
-          role: 'system',
-          content: BYZ_CONTEXT
-        },
-        ...conversationHistory.slice(-10) // Keep last 10 messages for context
-      ];
+      // Build conversation context for Gemini
+      let conversationText = BYZ_CONTEXT + '\n\n';
+      
+      // Add recent conversation history
+      conversationHistory.slice(-10).forEach(msg => {
+        if (msg.role === 'user') {
+          conversationText += `User: ${msg.content}\n`;
+        } else {
+          conversationText += `Assistant: ${msg.content}\n`;
+        }
+      });
+      
+      conversationText += `User: ${userMessage}\nAssistant:`;
 
       try {
-        const response = await fetch(OPENAI_API_URL, {
+        const response = await fetch(`${API_URL}?key=${API_KEY}`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${OPENAI_API_KEY}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: messages,
-            temperature: 0.7,
-            max_tokens: 500
+            contents: [{
+              parts: [{
+                text: conversationText
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 500
+            }
           })
         });
 
@@ -791,7 +798,7 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
         }
 
         const data = await response.json();
-        const aiMessage = data.choices[0].message.content;
+        const aiMessage = data.candidates[0].content.parts[0].text;
 
         // Add AI response to history
         conversationHistory.push({
@@ -835,7 +842,7 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
         addMessage(aiResponse, false);
       } catch (error) {
         removeTypingIndicator();
-        showError(`Sorry, I encountered an error: ${error.message}. Please check your API key and try again.`);
+        showError(`Sorry, I encountered an error: ${error.message}. Please check your Google Gemini API key and try again.`);
         console.error('Error:', error);
       } finally {
         userInput.disabled = false;
@@ -873,7 +880,7 @@ Be conversational, helpful, and enthusiastic about BYZ events. If asked about so
     settingsBtn.addEventListener('click', () => {
       if (confirm('Reset API key? You\'ll need to enter it again.')) {
         localStorage.removeItem('byzbot-api-key');
-        OPENAI_API_KEY = '';
+        API_KEY = '';
         conversationHistory = [];
         showApiKeySetup();
       }
