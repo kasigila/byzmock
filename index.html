@@ -1362,37 +1362,19 @@ section{padding: 92px 0}
   transition: opacity 0.3s var(--ease);
   pointer-events: none;
 }
-
 .slot-content:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 8%, transparent),
-              var(--shadow);
+  box-shadow: var(--shadow);
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
 .slot-content:hover::before {
-  opacity: 1;
-}
-
-/* Tech-style border glow on hover */
-.slot-content::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, 
-    color-mix(in srgb, var(--accent) 0%, transparent),
-    color-mix(in srgb, var(--accent) 20%, transparent),
-    color-mix(in srgb, var(--accent) 0%, transparent));
   opacity: 0;
-  transition: opacity 0.3s var(--ease);
-  z-index: -1;
-  filter: blur(8px);
 }
 
-.slot-content:hover::after {
-  opacity: 0.4;
-}
+/* Remove tech-style border glow on hover */
+.slot-content::after {
+  display: none;
 }
 
 .slot .left {
