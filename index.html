@@ -1257,103 +1257,201 @@ section{padding: 92px 0}
   transform: translateY(0);
 }
 
-/*Premium Timeline with Visual Dots*/
+/* ===================== CLEAN APPLE-STYLE DJ CARDS ===================== */
 .timeline-wrapper {
-  position: relative;
-  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
 }
 
-.timeline-line {
-  position: absolute;
-  left: 11px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--border) 60%, transparent) 0%,
-    color-mix(in srgb, var(--accent) 40%, transparent) 50%,
-    color-mix(in srgb, var(--border) 60%, transparent) 100%
-  );
-  opacity: 0.4;
-  transition: opacity 0.3s var(--ease);
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.dj-card-header[aria-expanded="true"] ~ .dj-card-content .timeline-line {
-  opacity: 0.6;
-}
-
-/*Hide timeline line when collapsed (doesn't make sense with stacked cards)*/
-.dj-card-header[aria-expanded="false"] + .dj-card-content .timeline-wrapper,
-.dj-card-header[aria-expanded="false"] + .dj-card-content .timeline-line {
+/* Remove timeline dots completely */
+.timeline-dot {
   display: none;
 }
 
-/*Premium Timeline Dot*/
-.timeline-dot {
+/* Clean slot cards - Apple style */
+.slot {
+  position: relative;
+  min-height: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.slot-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease), background 0.25s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.slot-content::before {
+  content: "";
   position: absolute;
-  left: -24px;
-  top: 8px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--border) 80%, var(--bg-elev));
-  border: 2px solid var(--bg-elev);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg) 100%, transparent),
-              0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 3;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--accent) 0%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 2%, transparent) 100%);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+  pointer-events: none;
 }
 
-/*Past slots - smaller, muted*/
-.slot.past .timeline-dot {
-  width: 8px;
-  height: 8px;
-  background: color-mix(in srgb, var(--sub) 30%, transparent);
-  border-color: var(--bg-elev);
-  box-shadow: 0 0 0 2px var(--bg-elev);
-  opacity: 0.5;
+.slot-content:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: color-mix(in srgb, var(--border) 140%, transparent);
 }
 
-/*Current slot - LARGE, glowing, pulsing*/
-.slot.live-now .timeline-dot {
-  width: 14px;
-  height: 14px;
+.slot-content:hover::before {
+  opacity: 1;
+}
+
+.slot .left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slot .time {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.slot .who {
+  font-size: 14px;
+  color: var(--sub);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.slot .badge {
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--bg-alt) 80%, transparent);
+  border: 1px solid var(--border);
+  color: var(--sub);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Premium LIVE NOW indicator */
+.slot.live-now .slot-content {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 20%, transparent),
+              var(--shadow);
+  position: relative;
+}
+
+.slot.live-now .slot-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent,
+    var(--accent),
+    transparent);
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.slot.live-now .slot-content::after {
+  content: "LIVE NOW";
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  padding: 5px 12px;
+  border-radius: 8px;
   background: var(--accent);
-  border-color: var(--bg-elev);
-  box-shadow: 0 0 0 3px var(--bg-elev),
-              0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent),
-              0 0 20px color-mix(in srgb, var(--accent) 40%, transparent),
-              0 4px 12px rgba(0, 0, 0, 0.15);
-  animation: pulseGlow 2s ease-in-out infinite;
+  color: var(--bg);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 50%, transparent),
+              0 0 0 2px var(--bg-elev);
+  animation: livePulse 2s ease-in-out infinite;
+  z-index: 2;
 }
 
-@keyframes pulseGlow {
+@keyframes livePulse {
   0%, 100% {
-    box-shadow: 0 0 0 3px var(--bg-elev),
-                0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent),
-                0 0 20px color-mix(in srgb, var(--accent) 40%, transparent),
-                0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1);
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 50%, transparent),
+                0 0 0 2px var(--bg-elev);
   }
   50% {
-    box-shadow: 0 0 0 3px var(--bg-elev),
-                0 0 0 8px color-mix(in srgb, var(--accent) 35%, transparent),
-                0 0 28px color-mix(in srgb, var(--accent) 55%, transparent),
-                0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 70%, transparent),
+                0 0 0 2px var(--bg-elev);
   }
 }
 
-/*Next slot - medium, highlighted*/
-.slot.next-up .timeline-dot {
-  width: 12px;
-  height: 12px;
-  background: color-mix(in srgb, var(--accent) 60%, var(--bg-elev));
-  border-color: var(--bg-elev);
-  box-shadow: 0 0 0 3px var(--bg-elev),
-              0 0 0 5px color-mix(in srgb, var(--accent) 15%, transparent),
-              0 2px 8px rgba(0, 0, 0, 0.1);
+.slot.live-now .time {
+  color: var(--accent);
+  font-weight: 800;
 }
 
+.slot.live-now .badge {
+  background: color-mix(in srgb, var(--accent) 25%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  color: var(--accent);
+  font-weight: 800;
+}
+
+/* Next up - subtle highlight */
+.slot.next-up .slot-content {
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+}
+
+.slot.next-up .badge {
+  background: color-mix(in srgb, var(--accent) 15%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+  color: var(--accent);
+}
+
+/* Past slots - muted */
+.slot.past .slot-content {
+  opacity: 0.55;
+  background: color-mix(in srgb, var(--bg-alt) 40%, transparent);
+}
+
+.slot.past .time,
+.slot.past .who {
+  color: var(--sub);
+}
 /*Slot content styling*/
 .slot {
   position: relative;
@@ -1373,54 +1471,6 @@ section{padding: 92px 0}
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.3s var(--ease);
   min-height: 44px;
-}
-
-/*Live Now Slot - Premium Highlight*/
-.slot.live-now .slot-content {
-  background: color-mix(in srgb, var(--accent) 8%, var(--bg-elev));
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 15%, transparent),
-              0 2px 8px rgba(0, 0, 0, 0.08),
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.slot.live-now .slot-content::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent,
-    var(--accent),
-    transparent
-  );
-  animation: shimmer 3s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-.slot.live-now .time {
-  color: var(--accent);
-  font-weight: 800;
-}
-
-.slot.live-now .left::after {
-  content: "LIVE NOW";
-  display: block;
-  margin-top: 4px;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  opacity: 0.9;
-  animation: fadePulse 2s ease-in-out infinite;
 }
 
 @keyframes fadePulse {
@@ -1443,13 +1493,11 @@ section{padding: 92px 0}
   border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
 }
 
-/*Preview Slot - Stacked Cards Effect (peeking edges)*/
+/* Single Preview Card */
 .dj-card-preview {
   margin-top: 12px;
   padding: 0;
-  position: relative;
-  min-height: 44px;
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  transition: opacity 0.3s var(--ease);
 }
 
 .dj-card-header[aria-expanded="true"] ~ .dj-card-preview {
@@ -1458,49 +1506,11 @@ section{padding: 92px 0}
 
 .dj-card-preview .slot {
   margin: 0;
-  position: relative;
 }
 
-/*Top card (fully visible)*/
-.dj-card-preview .slot:first-child .slot-content {
-  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
-  border-color: color-mix(in srgb, var(--border) 80%, transparent);
-  position: relative;
-  z-index: 3;
-}
-
-/*Peeking edges - card 2 (stacked vertically, perfectly centered)*/
-.dj-card-preview::before {
-  content: "";
-  position: absolute;
-  top: 8px;
-  left: 0;
-  right: 0;
-  bottom: -8px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-  background: color-mix(in srgb, var(--bg-elev) 85%, transparent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-/*Peeking edges - card 3 (stacked vertically, perfectly centered)*/
-.dj-card-preview::after {
-  content: "";
-  position: absolute;
-  top: 16px;
-  left: 0;
-  right: 0;
-  bottom: -16px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-  background: color-mix(in srgb, var(--bg-elev) 75%, transparent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.5;
+.dj-card-preview .slot-content {
+  background: color-mix(in srgb, var(--bg-elev) 98%, transparent);
+  border-color: color-mix(in srgb, var(--border) 90%, transparent);
 }
     
 /*Premium Expand Hint with Text*/
@@ -4257,7 +4267,7 @@ body.bulkbar-active .social-dock{
               <div class="timeline-line"></div>
               <div class="timeline" data-timeline="groove">
                 <div class="slot" data-start="22:00" data-end="23:30">
-                  <div class="timeline-dot"></div>
+                  
                   <div class="slot-content">
                     <div class="left">
                       <div class="time">10:00 PM – 11:30 PM</div>
@@ -4267,7 +4277,7 @@ body.bulkbar-active .social-dock{
                   </div>
                 </div>
                 <div class="slot" data-start="23:30" data-end="01:00">
-                  <div class="timeline-dot"></div>
+                  
                   <div class="slot-content">
                     <div class="left">
                       <div class="time">11:30 PM – 1:00 AM</div>
@@ -4277,7 +4287,7 @@ body.bulkbar-active .social-dock{
                   </div>
                 </div>
                 <div class="slot" data-start="01:00" data-end="02:30">
-                  <div class="timeline-dot"></div>
+                  
                   <div class="slot-content">
                     <div class="left">
                       <div class="time">1:00 AM – 2:30 AM</div>
@@ -4287,7 +4297,7 @@ body.bulkbar-active .social-dock{
                   </div>
                 </div>
                 <div class="slot" data-start="02:30" data-end="03:30">
-                  <div class="timeline-dot"></div>
+                  
                   <div class="slot-content">
                     <div class="left">
                       <div class="time">2:30 AM – 3:30 AM</div>
@@ -4297,7 +4307,7 @@ body.bulkbar-active .social-dock{
                   </div>
                 </div>
                 <div class="slot" data-start="03:30" data-end="04:30">
-                  <div class="timeline-dot"></div>
+                  
                   <div class="slot-content">
                     <div class="left">
                       <div class="time">3:30 AM – 4:30 AM</div>
@@ -4338,7 +4348,7 @@ body.bulkbar-active .social-dock{
               <div class="timeline-line"></div>
               <div class="timeline timeline-expect">
                 <div class="slot">
-                  <div class="timeline-dot"></div>
+                  
                   <div class="slot-content">
                     <div class="left">
                       <div class="time">Special Guest</div>
@@ -4348,7 +4358,7 @@ body.bulkbar-active .social-dock{
                   </div>
                 </div>
                 <div class="slot">
-                  <div class="timeline-dot"></div>
+                  
                   <div class="slot-content">
                     <div class="left">
                       <div class="time">Theme</div>
@@ -4358,7 +4368,7 @@ body.bulkbar-active .social-dock{
                   </div>
                 </div>
                 <div class="slot">
-                  <div class="timeline-dot"></div>
+                  
                   <div class="slot-content">
                     <div class="left">
                       <div class="time">Special Offer</div>
