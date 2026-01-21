@@ -36,6 +36,23 @@
   </script>
   
   <script src="gallery-manifest.js"></script>
+  <script>
+    // Verify gallery-manifest.js loaded
+    window.addEventListener('load', function() {
+      if(!window.BYZ_GALLERY) {
+        console.error("❌ CRITICAL: gallery-manifest.js did not load!");
+        console.error("Please check that gallery-manifest.js exists and is accessible.");
+      } else {
+        console.log("✅ gallery-manifest.js loaded successfully");
+        console.log("✅ BYZ_GALLERY structure:", {
+          hasROOTS: !!window.BYZ_GALLERY.ROOTS,
+          hasBOARDS: !!window.BYZ_GALLERY.BOARDS,
+          ROOTS: window.BYZ_GALLERY.ROOTS,
+          BOARDS_keys: window.BYZ_GALLERY.BOARDS ? Object.keys(window.BYZ_GALLERY.BOARDS) : "none"
+        });
+      }
+    });
+  </script>
 
   <style>
 /* ===================== DESIGN TOKENS ===================== */
@@ -1729,6 +1746,9 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   console.log("✅ All elements found, BYZ_GALLERY:", window.BYZ_GALLERY);
   console.log("✅ PHOTOS:", PHOTOS);
   console.log("✅ BASE:", BASE);
+  console.log("✅ PHOTOS.groove:", PHOTOS?.groove);
+  console.log("✅ PHOTOS.tempo:", PHOTOS?.tempo);
+  console.log("✅ Keys in PHOTOS:", PHOTOS ? Object.keys(PHOTOS) : "PHOTOS is undefined!");
 
   /* ===================== STATE ===================== */
   let currentEvent = "groove";
@@ -1835,13 +1855,17 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   }
 
   function getAlbums(evt){
+    console.log("🔍 getAlbums called with event:", evt);
+    console.log("🔍 PHOTOS exists?", !!PHOTOS);
+    console.log("🔍 PHOTOS[evt] exists?", !!PHOTOS?.[evt]);
     if(!PHOTOS || !PHOTOS[evt]) {
-      console.warn("No photos for event:", evt, "PHOTOS:", PHOTOS);
+      console.warn("❌ No photos for event:", evt, "PHOTOS:", PHOTOS, "Available keys:", PHOTOS ? Object.keys(PHOTOS) : "none");
       return [];
     }
     const keys = Object.keys(PHOTOS[evt]);
+    console.log("🔍 Raw keys from PHOTOS[" + evt + "]:", keys);
     keys.sort((a,b) => parseAlbumKey(b) - parseAlbumKey(a));
-    console.log("getAlbums for", evt, "found", keys.length, "albums:", keys);
+    console.log("✅ getAlbums for", evt, "found", keys.length, "albums:", keys);
     return keys;
   }
 
@@ -1855,13 +1879,22 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 
   function updateMetaBoards(){
     try {
+      console.log("📊 updateMetaBoards() called with currentEvent:", currentEvent);
       const albums = getAlbums(currentEvent);
       const photoCount = countPhotos(currentEvent);
-      console.log("📊 Updating meta: albums=", albums.length, "photos=", photoCount);
-      if(albumCountEl) albumCountEl.textContent = String(albums.length);
-      if(countEl) countEl.textContent = String(photoCount);
+      console.log("📊 updateMetaBoards() results: albums=", albums.length, "photos=", photoCount);
+      console.log("📊 albumCountEl exists?", !!albumCountEl, "countEl exists?", !!countEl);
+      if(albumCountEl) {
+        albumCountEl.textContent = String(albums.length);
+        console.log("✅ Set albumCountEl to:", albums.length);
+      }
+      if(countEl) {
+        countEl.textContent = String(photoCount);
+        console.log("✅ Set countEl to:", photoCount);
+      }
     } catch(error) {
-      console.error("Error updating meta:", error);
+      console.error("❌ Error updating meta:", error);
+      console.error("❌ Error stack:", error.stack);
     }
   }
 
@@ -2824,15 +2857,29 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   }
 
   /* ===================== INITIALIZE ON PAGE LOAD - CRITICAL! ===================== */
+  console.log("🚀 Initializing gallery...");
+  console.log("🚀 currentEvent:", currentEvent);
+  console.log("🚀 PHOTOS check:", PHOTOS);
+  console.log("🚀 PHOTOS[currentEvent]:", PHOTOS?.[currentEvent]);
+  
   parseURL();
+  
+  // Force update meta first to test
+  console.log("🧪 Testing updateMetaBoards() directly...");
+  updateMetaBoards();
+  
+  console.log("🧪 Testing getAlbums('groove') directly...");
+  const testAlbums = getAlbums("groove");
+  console.log("🧪 Test result:", testAlbums);
+  
   buildBoards();
   bindMasonryEvents();
   trackPerformance();
   updateRecentActivity();
   
   console.log("✅ Gallery loaded successfully");
-  console.log("Albums found:", getAlbums(currentEvent));
-  console.log("Photo count:", countPhotos(currentEvent));
+  console.log("✅ Final check - Albums found:", getAlbums(currentEvent));
+  console.log("✅ Final check - Photo count:", countPhotos(currentEvent));
 })();
 
 /* ===================== GLOBAL FUNCTIONS FOR ONCLICK HANDLERS ===================== */
