@@ -730,7 +730,13 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 }
 .pin:hover{ transform: translateY(-3px); box-shadow: var(--shadow); }
 .pin picture{ display:block; width:100%; }
-.pin img{ width:100%; height:auto; display:block; }
+.pin img{ 
+  width:100%; 
+  height:auto; 
+  display:block; 
+  background: transparent;
+  min-height: 100px;
+}
 
 /* ===================== HD BADGE (47) ===================== */
 .pin-hd-badge{
@@ -2467,15 +2473,17 @@ console.log("✅ Script file loaded!");
     if(albumSubEl) albumSubEl.textContent = sub;
 
     const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
-    masonry.innerHTML = sorted.map((x) => {
+    masonry.innerHTML = sorted.map((x, idx) => {
       const label = (albumKey === "all") ? titleizeAlbum(x.album) : titleizeAlbum(albumKey);
       const isLiked = photoLikes[x.src] === true;
+      // Load first 12 images eagerly to prevent black boxes on laptop
+      const loadingAttr = idx < 12 ? "eager" : "lazy";
       return `
         <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
           <div class="pin-check"><i class="fa-solid fa-check"></i></div>
           <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
           <div class="pin-liked"><i class="fa-solid fa-heart"></i></div>
-          <img src="${x.src}" alt="${currentEvent} photo" loading="lazy" decoding="async" />
+          <img src="${x.src}" alt="${currentEvent} photo" loading="${loadingAttr}" decoding="async" />
           <div class="pin-overlay">
             <div class="pin-label">${label}</div>
             <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
