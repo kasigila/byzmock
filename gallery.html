@@ -723,7 +723,53 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   transition: transform .25s var(--ease), box-shadow .25s var(--ease);
 }
 .pin:hover{ transform: translateY(-3px); box-shadow: var(--shadow); }
+.pin picture{ display:block; width:100%; }
 .pin img{ width:100%; height:auto; display:block; }
+
+/* ===================== HD BADGE (47) ===================== */
+.pin-hd-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.3);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.05em;
+  padding:4px 8px;
+  border-radius:6px;
+  opacity:0;
+  transform:translateY(-4px);
+  transition:all .2s var(--ease);
+  z-index:4;
+}
+.pin:hover .pin-hd-badge{opacity:1;transform:translateY(0)}
+.pin[data-hd="true"] .pin-hd-badge{display:block}
+
+/* ===================== RIPPLE EFFECT (15) ===================== */
+.btn, .board, .pin{
+  position:relative;
+  overflow:hidden;
+}
+.btn::after, .pin::after{
+  content:"";
+  position:absolute;
+  width:100px;
+  height:100px;
+  background:rgba(255,255,255,.3);
+  border-radius:50%;
+  transform:scale(0);
+  opacity:0;
+  pointer-events:none;
+  transition:transform .4s var(--ease), opacity .4s var(--ease);
+}
+.btn:active::after, .pin:active::after{
+  transform:scale(4);
+  opacity:1;
+  transition:transform .2s var(--ease), opacity .2s var(--ease);
+}
 
 .pin .pin-overlay{
   position:absolute;
@@ -784,6 +830,61 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 .pin.selected .pin-check{
   background: rgba(37,211,102,.22);
   border-color: rgba(37,211,102,.45);
+}
+
+/* ===================== INSTAGRAM-STYLE DOUBLE-TAP HEART (18) ===================== */
+.pin-heart{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0);
+  width:80px;
+  height:80px;
+  pointer-events:none;
+  z-index:10;
+  opacity:0;
+  transition:opacity .3s var(--ease);
+}
+.pin-heart.show{
+  opacity:1;
+  animation:heartPop .6s var(--ease);
+}
+@keyframes heartPop{
+  0%{transform:translate(-50%,-50%) scale(0);}
+  50%{transform:translate(-50%,-50%) scale(1.2);}
+  100%{transform:translate(-50%,-50%) scale(1);}
+}
+.pin-heart i{
+  font-size:80px;
+  color:#fff;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.pin-liked{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:rgba(255,0,0,.85);
+  backdrop-filter:blur(10px);
+  border:2px solid rgba(255,255,255,.9);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transform:scale(0);
+  transition:all .3s var(--ease);
+  z-index:5;
+}
+.pin[data-liked="true"] .pin-liked{
+  opacity:1;
+  transform:scale(1);
+}
+.pin-liked i{
+  color:#fff;
+  font-size:16px;
 }
 
 .gallery-note{ margin-top: 10px; color: var(--sub); font-size: 13px; font-weight: 400; }
@@ -911,6 +1012,51 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   object-fit: contain;
   display:block;
 }
+
+/* ===================== PHOTO METADATA DISPLAY (44) ===================== */
+.lb-metadata{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  background:linear-gradient(to top, rgba(0,0,0,.85), transparent);
+  padding:20px;
+  color:#fff;
+  font-size:13px;
+}
+.lb-metadata.byz-hidden{display:none}
+.metadata-item{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:8px;
+}
+.metadata-item:last-child{margin-bottom:0}
+.metadata-label{
+  opacity:.7;
+  font-weight:500;
+}
+.metadata-value{
+  font-weight:600;
+  text-align:right;
+}
+
+.lb-info{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  font-weight:600;
+  font-size:13px;
+  cursor:pointer;
+  transition:background .2s var(--ease);
+}
+.lb-info:hover{background:rgba(255,255,255,.16)}
 
 /* ===================== SLIDESHOW CONTROLS (28) ===================== */
 .slideshow-controls{
@@ -1280,7 +1426,7 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 .byz-hidden{display:none !important}
   </style>
 </head>
-<body data-theme="light">
+<body data-theme="dark">
 <!-- Skip Link for Accessibility (23) -->
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
@@ -1396,6 +1542,13 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 
           <div class="gallery-meta" aria-live="polite">
             <span id="albumCount">0</span> albums • <span id="photoCount">0</span> photos
+            <span id="socialProof" class="social-proof-text"></span>
+          </div>
+          
+          <!-- Engagement CTA -->
+          <div class="engagement-cta byz-hidden" id="engagementCTA">
+            <i class="fa-solid fa-download"></i>
+            Download your memories from BYZ events
           </div>
         </div>
 
@@ -1503,12 +1656,33 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 
             <div class="lb-media">
               <img id="lbImg" alt="Preview" loading="lazy" />
+              <div class="lb-metadata byz-hidden" id="lbMetadata">
+                <div class="metadata-item">
+                  <span class="metadata-label">Event:</span>
+                  <span class="metadata-value" id="metaEvent">—</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">Album:</span>
+                  <span class="metadata-value" id="metaAlbum">—</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">Photo:</span>
+                  <span class="metadata-value" id="metaPhotoNum">—</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">Filename:</span>
+                  <span class="metadata-value" id="metaFilename">—</span>
+                </div>
+              </div>
             </div>
 
             <div class="lb-footer">
               <div class="lb-filename" id="lbName">—</div>
 
               <div class="lb-actions">
+                <button class="lb-info" id="lbInfo" type="button" aria-label="Show photo info">
+                  <i class="fa-solid fa-info-circle" aria-hidden="true"></i> Info
+                </button>
                 <a class="lb-download" id="lbDownload" href="#" download>
                   <i class="fa-solid fa-download" aria-hidden="true"></i> Download
                 </a>
@@ -1630,11 +1804,9 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
     }
   }
 
+  // Default to dark mode always
   if (stored) applyTheme(stored);
-  else {
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(prefersDark ? "dark" : "light");
-  }
+  else applyTheme("dark"); // Always start with dark mode
 
   if (toggle) {
     toggle.addEventListener("click", () => {
@@ -2203,12 +2375,23 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
     if(albumTitleEl) albumTitleEl.textContent = title;
     if(albumSubEl) albumSubEl.textContent = sub;
 
+    const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
     masonry.innerHTML = sorted.map((x) => {
       const label = (albumKey === "all") ? titleizeAlbum(x.album) : titleizeAlbum(albumKey);
+      const isLiked = photoLikes[x.src] === true;
       return `
-        <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" tabindex="0" role="button" aria-label="Open photo preview">
+        <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
           <div class="pin-check"><i class="fa-solid fa-check"></i></div>
-          <img src="${x.src}" alt="${currentEvent} photo" loading="lazy" decoding="async" />
+          <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
+          <div class="pin-liked"><i class="fa-solid fa-heart"></i></div>
+          <picture>
+            <source srcset="${x.src.replace(/\.jpg$/i, '.webp')}" type="image/webp" />
+            <img src="${x.src}" 
+                 srcset="${x.src} 1x, ${x.src.replace(/\.jpg$/i, '@2x.jpg')} 2x" 
+                 alt="${currentEvent} photo" 
+                 loading="lazy" 
+                 decoding="async" />
+          </picture>
           <div class="pin-overlay">
             <div class="pin-label">${label}</div>
             <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
@@ -2287,10 +2470,86 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
       lbName.textContent = `${currentAlbumLabel} • ${lightboxIndex + 1}/${currentList.length}`;
     }
 
+    // Update metadata
+    updateMetadata(src);
+
     lightbox.classList.add("show");
     lightbox.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
     trackEvent("photo_viewed", lightboxIndex);
+    
+    // Add swipe gesture support in lightbox
+    setupLightboxSwipe();
+  }
+
+  /* ===================== PHOTO METADATA DISPLAY (44) ===================== */
+  function updateMetadata(src){
+    const metadata = document.getElementById("lbMetadata");
+    if(!metadata) return;
+    
+    const filename = src.split("/").pop();
+    const eventName = currentEvent.toUpperCase();
+    const albumName = currentAlbum ? titleizeAlbum(currentAlbum) : "All Photos";
+    
+    document.getElementById("metaEvent").textContent = eventName;
+    document.getElementById("metaAlbum").textContent = albumName;
+    document.getElementById("metaPhotoNum").textContent = `${lightboxIndex + 1} of ${currentList.length}`;
+    document.getElementById("metaFilename").textContent = filename;
+  }
+  
+  const lbInfo = document.getElementById("lbInfo");
+  if(lbInfo){
+    lbInfo.addEventListener("click", () => {
+      const metadata = document.getElementById("lbMetadata");
+      if(metadata){
+        metadata.classList.toggle("byz-hidden");
+        lbInfo.setAttribute("aria-expanded", !metadata.classList.contains("byz-hidden"));
+      }
+    });
+  }
+
+  /* ===================== SWIPE GESTURES FOR LIGHTBOX (19) ===================== */
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  function setupLightboxSwipe(){
+    if(!lightbox) return;
+    
+    lightbox.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    }, {passive: true});
+    
+    lightbox.addEventListener("touchend", (e) => {
+      if(!touchStartX || !touchStartY) return;
+      
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
+      const timeDiff = Date.now() - touchStartTime;
+      
+      // Swipe down to close (vertical swipe > 80px in < 300ms)
+      if(Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 80 && timeDiff < 300 && diffY < 0){
+        closeLightbox();
+        touchStartX = 0;
+        touchStartY = 0;
+        return;
+      }
+      
+      // Swipe left = next, swipe right = prev
+      if(Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50){
+        if(diffX > 0){
+          next(); // Swipe left
+        }else{
+          prev(); // Swipe right
+        }
+      }
+      
+      touchStartX = 0;
+      touchStartY = 0;
+    }, {passive: true});
   }
 
   function closeLightbox(){
@@ -2304,8 +2563,34 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   function next(){ openLightboxByIndex(lightboxIndex + 1); }
   function prev(){ openLightboxByIndex(lightboxIndex - 1); }
 
+  /* ===================== INSTAGRAM-STYLE DOUBLE-TAP TO LIKE (18) ===================== */
+  function handleDoubleTap(pin, src){
+    const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+    const isLiked = photoLikes[src] === true;
+    
+    if(isLiked){
+      delete photoLikes[src];
+      pin.dataset.liked = "false";
+      showToast("Unliked");
+    }else{
+      photoLikes[src] = true;
+      pin.dataset.liked = "true";
+      const heart = pin.querySelector(".pin-heart");
+      if(heart){
+        heart.classList.add("show");
+        setTimeout(() => heart.classList.remove("show"), 600);
+      }
+      showToast("Liked ❤️");
+    }
+    localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
+    trackEvent("photo_liked", isLiked ? "unliked" : "liked");
+  }
+
   /* ===================== BIND MASONRY EVENTS ===================== */
   function bindMasonryEvents(){
+    let lastTap = 0;
+    let tapTimeout;
+    
     masonry.addEventListener("click", (e) => {
       const pin = e.target.closest(".pin");
       if(!pin) return;
@@ -2327,8 +2612,41 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
         return;
       }
 
-      const idx = currentList.indexOf(src);
-      openLightboxByIndex(idx >= 0 ? idx : 0);
+      // Double-tap detection for Instagram-style like
+      const now = Date.now();
+      const timeDiff = now - lastTap;
+      if(timeDiff < 300 && timeDiff > 0){
+        clearTimeout(tapTimeout);
+        handleDoubleTap(pin, src);
+        lastTap = 0;
+        return;
+      }else{
+        lastTap = now;
+        tapTimeout = setTimeout(() => {
+          const idx = currentList.indexOf(src);
+          openLightboxByIndex(idx >= 0 ? idx : 0);
+        }, 300);
+      }
+    });
+
+    // Touch double-tap for mobile
+    masonry.addEventListener("touchend", (e) => {
+      const pin = e.target.closest(".pin");
+      if(!pin) return;
+      
+      const src = pin.dataset.src;
+      if(!src || selectMode) return;
+      
+      const now = Date.now();
+      const timeDiff = now - lastTap;
+      if(timeDiff < 300 && timeDiff > 0){
+        e.preventDefault();
+        clearTimeout(tapTimeout);
+        handleDoubleTap(pin, src);
+        lastTap = 0;
+      }else{
+        lastTap = now;
+      }
     });
 
     masonry.addEventListener("keydown", (e) => {
