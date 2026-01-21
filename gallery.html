@@ -18,7 +18,7 @@
   <meta property="twitter:description" content="Browse all photo albums from BYZ events." />
   
   <!-- PWA Manifest (21) -->
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   
@@ -35,70 +35,6 @@
   }
   </script>
   
-  <!-- Load gallery data - inline for guaranteed availability -->
-  <script>
-    // Inline gallery data - ALWAYS set to ensure it's available
-    console.log("📦 Setting gallery data...");
-    window.BYZ_GALLERY = {
-        ROOTS: {
-          groove: "groove-memory-gallery/",
-          tempo: "tempo-memory-gallery/",
-        },
-        BOARDS: {
-          groove: {
-            "december-26-2025": [
-              "FYRM0007.jpg","FYRM0021.jpg","FYRM0056.jpg","FYRM0071.jpg","FYRM0079.jpg",
-              "FYRM0084.jpg","FYRM0091.jpg","FYRM0135.jpg","FYRM0174.jpg","FYRM0240.jpg",
-              "FYRM0253.jpg","FYRM0292.jpg","FYRM9580.jpg","FYRM9599.jpg","FYRM9622.jpg",
-              "FYRM9658.jpg","FYRM9683.jpg","FYRM9686.jpg","FYRM9693.jpg","FYRM9717.jpg",
-              "FYRM9772.jpg","FYRM9855.jpg","FYRM9909.jpg","FYRM9957.jpg","FYRM9994.jpg"
-            ],
-            "december-6-2025": [
-              "FYRM8087.jpg","FYRM8089.jpg","FYRM8095.jpg","FYRM8101.jpg","FYRM8107.jpg",
-              "FYRM8140.jpg","FYRM8143.jpg","FYRM8182.jpg","FYRM8211.jpg","FYRM8230.jpg",
-              "FYRM8266.jpg","FYRM8320.jpg","FYRM8356.jpg","FYRM8366.jpg","FYRM8395.jpg",
-              "FYRM8413.jpg","FYRM8466.jpg","FYRM8506.jpg"
-            ],
-            "may-24-2025": [
-              "692A0026.jpg","692A0037.jpg","692A0048.jpg","692A0461.jpg","692A0512.jpg",
-              "692A0560.jpg","692A9142.jpg","692A9161.jpg","692A9194.jpg","692A9209.jpg",
-              "692A9272.jpg","692A9372.jpg","692A9920.jpg","692A9923.jpg","692A9958.jpg",
-              "692A9971.jpg","692A9996.jpg","FYRM1284.jpg","FYRM1318.jpg"
-            ]
-          },
-          tempo: {
-            "april-4-2025": [
-              "692A0582.jpg","692A0817.jpg","692A1059.jpg"
-            ],
-            "july-11-2025": [
-              "FYRM0874.jpg","FYRM0884.jpg","FYRM0903.jpg","FYRM0940.jpg","FYRM0998.jpg",
-              "FYRM1023.jpg","FYRM1051.jpg","FYRM1054.jpg","FYRM1131.jpg","FYRM1153.jpg",
-              "FYRM1221.jpg","FYRM1227.jpg"
-            ],
-            "june-27-2025": [
-              "692A9382.jpg","692A9391.jpg","692A9396.jpg","692A9425.jpg","692A9454.jpg",
-              "692A9494.jpg","692A9508.jpg","692A9522.jpg","692A9582.jpg","692A9614.jpg",
-              "692A9622.jpg","692A9632.jpg","692A9660.jpg","692A9691.jpg","692A9755.jpg",
-              "692A9781.jpg","692A9805.jpg","692A9836.jpg","692A9843.jpg","692A9856.jpg"
-            ],
-            "may-16-2025": [
-              "692A9492.jpg","692A9516.jpg","692A9523.jpg","692A9570.jpg","692A9577.jpg",
-              "692A9591.jpg","692A9592.jpg","692A9622.jpg","692A9627.jpg","692A9642.jpg",
-              "692A9663.jpg","692A9677.jpg","692A9682.jpg","692A9690.jpg","692A9698.jpg"
-            ],
-            "may-30-2025": [
-              "692A0187.jpg","692A0212.jpg","692A0236.jpg","692A0266.jpg","692A0308.jpg",
-              "692A0322.jpg","692A0369.jpg","692A0383.jpg"
-            ]
-          }
-        }
-      };
-    console.log("✅ Gallery data set! BYZ_GALLERY:", window.BYZ_GALLERY);
-    console.log("✅ ROOTS:", window.BYZ_GALLERY.ROOTS);
-    console.log("✅ BOARDS keys:", Object.keys(window.BYZ_GALLERY.BOARDS));
-    console.log("✅ Groove albums:", Object.keys(window.BYZ_GALLERY.BOARDS.groove || {}));
-    console.log("✅ Tempo albums:", Object.keys(window.BYZ_GALLERY.BOARDS.tempo || {}));
-  </script>
 
   <style>
 /* ===================== DESIGN TOKENS ===================== */
@@ -1711,41 +1647,58 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 })();
 
 /* ===================== MAIN GALLERY FUNCTIONALITY ===================== */
-(function initGallery() {
-  // Wait for DOM to be ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGallery);
-    return;
-  }
+(() => {
+  // Define data directly like index.html does
+  const BASE = {
+    groove: "groove-memory-gallery/",
+    tempo:  "tempo-memory-gallery/",
+  };
 
-  // Wait for BYZ_GALLERY to load with retry
-  if(!window.BYZ_GALLERY || !window.BYZ_GALLERY.BOARDS) {
-    console.warn("Waiting for gallery-manifest.js to load... (attempt " + (window._galleryRetries || 0) + ")");
-    window._galleryRetries = (window._galleryRetries || 0) + 1;
-    if(window._galleryRetries < 50) { // Max 5 seconds
-      setTimeout(initGallery, 100);
-    } else {
-      console.error("❌ gallery-manifest.js failed to load after 5 seconds");
-      const errorEl = document.createElement("div");
-      errorEl.className = "error-state";
-      errorEl.innerHTML = `
-        <div class="error-state-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <h3>Error Loading Gallery</h3>
-        <p>Gallery data not loaded. Please check that gallery-manifest.js exists and refresh the page.</p>
-        <button class="btn primary error-retry" onclick="location.reload()">Retry</button>
-      `;
-      const boardGrid = document.getElementById("boardGrid");
-      if(boardGrid && boardGrid.parentNode) {
-        boardGrid.parentNode.insertBefore(errorEl, boardGrid);
-      }
+  // ✅ Your real albums + filenames (same as index.html)
+  const PHOTOS = {
+    groove: {
+      "december-26-2025": [
+        "FYRM0007.jpg","FYRM0021.jpg","FYRM0056.jpg","FYRM0071.jpg","FYRM0079.jpg","FYRM0084.jpg",
+        "FYRM0091.jpg","FYRM0135.jpg","FYRM0174.jpg","FYRM0240.jpg","FYRM0253.jpg","FYRM0292.jpg",
+        "FYRM9580.jpg","FYRM9599.jpg","FYRM9622.jpg","FYRM9658.jpg","FYRM9683.jpg","FYRM9686.jpg",
+        "FYRM9693.jpg","FYRM9717.jpg","FYRM9772.jpg","FYRM9855.jpg","FYRM9909.jpg","FYRM9957.jpg",
+        "FYRM9994.jpg"
+      ],
+      "december-6-2025": [
+        "FYRM8087.jpg","FYRM8089.jpg","FYRM8095.jpg","FYRM8101.jpg","FYRM8107.jpg","FYRM8140.jpg",
+        "FYRM8143.jpg","FYRM8182.jpg","FYRM8211.jpg","FYRM8230.jpg","FYRM8266.jpg","FYRM8320.jpg",
+        "FYRM8356.jpg","FYRM8366.jpg","FYRM8395.jpg","FYRM8413.jpg","FYRM8466.jpg","FYRM8506.jpg"
+      ],
+      "may-24-2025": [
+        "692A0026.jpg","692A0037.jpg","692A0048.jpg","692A0461.jpg","692A0512.jpg","692A0560.jpg",
+        "692A9142.jpg","692A9161.jpg","692A9194.jpg","692A9209.jpg","692A9272.jpg","692A9372.jpg",
+        "692A9920.jpg","692A9923.jpg","692A9958.jpg","692A9971.jpg","692A9996.jpg",
+        "FYRM1284.jpg","FYRM1318.jpg"
+      ]
+    },
+    tempo: {
+      "april-4-2025": ["692A0582.jpg","692A0817.jpg","692A1059.jpg"],
+      "july-11-2025": [
+        "FYRM0874.jpg","FYRM0884.jpg","FYRM0903.jpg","FYRM0940.jpg","FYRM0998.jpg","FYRM1023.jpg",
+        "FYRM1051.jpg","FYRM1054.jpg","FYRM1131.jpg","FYRM1153.jpg","FYRM1221.jpg","FYRM1227.jpg"
+      ],
+      "june-27-2025": [
+        "692A9382.jpg","692A9391.jpg","692A9396.jpg","692A9425.jpg","692A9454.jpg","692A9494.jpg",
+        "692A9508.jpg","692A9522.jpg","692A9582.jpg","692A9614.jpg","692A9622.jpg","692A9632.jpg",
+        "692A9660.jpg","692A9691.jpg","692A9755.jpg","692A9781.jpg","692A9805.jpg","692A9836.jpg",
+        "692A9843.jpg","692A9856.jpg"
+      ],
+      "may-16-2025": [
+        "692A9492.jpg","692A9516.jpg","692A9523.jpg","692A9570.jpg","692A9577.jpg","692A9591.jpg",
+        "692A9592.jpg","692A9622.jpg","692A9627.jpg","692A9642.jpg","692A9663.jpg","692A9677.jpg",
+        "692A9682.jpg","692A9690.jpg","692A9698.jpg"
+      ],
+      "may-30-2025": [
+        "692A0187.jpg","692A0212.jpg","692A0236.jpg","692A0266.jpg","692A0308.jpg","692A0322.jpg",
+        "692A0369.jpg","692A0383.jpg"
+      ]
     }
-    return;
-  }
-  
-  console.log("✅ BYZ_GALLERY loaded:", window.BYZ_GALLERY);
-
-  const BASE = window.BYZ_GALLERY.ROOTS;
-  const PHOTOS = window.BYZ_GALLERY.BOARDS;
+  };
 
   /* ===================== ELEMENTS ===================== */
   const boardGrid = document.getElementById("boardGrid");
@@ -1779,22 +1732,7 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   const quickPreview = document.getElementById("quickPreview");
   const recentActivity = document.getElementById("recentActivity");
 
-  if(!boardGrid || !albumView || !masonry || !eventTabs.length) {
-    console.error("Missing required elements:", {
-      boardGrid: !!boardGrid,
-      albumView: !!albumView,
-      masonry: !!masonry,
-      eventTabs: eventTabs.length
-    });
-    return;
-  }
-
-  console.log("✅ All elements found, BYZ_GALLERY:", window.BYZ_GALLERY);
-  console.log("✅ PHOTOS:", PHOTOS);
-  console.log("✅ BASE:", BASE);
-  console.log("✅ PHOTOS.groove:", PHOTOS?.groove);
-  console.log("✅ PHOTOS.tempo:", PHOTOS?.tempo);
-  console.log("✅ Keys in PHOTOS:", PHOTOS ? Object.keys(PHOTOS) : "PHOTOS is undefined!");
+  if(!boardGrid || !albumView || !masonry || !eventTabs.length) return;
 
   /* ===================== STATE ===================== */
   let currentEvent = "groove";
@@ -1901,47 +1839,21 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   }
 
   function getAlbums(evt){
-    console.log("🔍 getAlbums called with event:", evt);
-    console.log("🔍 PHOTOS exists?", !!PHOTOS);
-    console.log("🔍 PHOTOS[evt] exists?", !!PHOTOS?.[evt]);
-    if(!PHOTOS || !PHOTOS[evt]) {
-      console.warn("❌ No photos for event:", evt, "PHOTOS:", PHOTOS, "Available keys:", PHOTOS ? Object.keys(PHOTOS) : "none");
-      return [];
-    }
-    const keys = Object.keys(PHOTOS[evt]);
-    console.log("🔍 Raw keys from PHOTOS[" + evt + "]:", keys);
+    const keys = Object.keys(PHOTOS[evt] || {});
+    // ✅ always newest first
     keys.sort((a,b) => parseAlbumKey(b) - parseAlbumKey(a));
-    console.log("✅ getAlbums for", evt, "found", keys.length, "albums:", keys);
     return keys;
   }
 
   function countPhotos(evt){
-    if(!PHOTOS || !PHOTOS[evt]) return 0;
     const albums = getAlbums(evt);
-    const count = albums.reduce((sum,a)=> sum + ((PHOTOS[evt][a] || []).length), 0);
-    console.log("countPhotos for", evt, "=", count);
-    return count;
+    return albums.reduce((sum,a)=> sum + ((PHOTOS[evt][a] || []).length), 0);
   }
 
   function updateMetaBoards(){
-    try {
-      console.log("📊 updateMetaBoards() called with currentEvent:", currentEvent);
-      const albums = getAlbums(currentEvent);
-      const photoCount = countPhotos(currentEvent);
-      console.log("📊 updateMetaBoards() results: albums=", albums.length, "photos=", photoCount);
-      console.log("📊 albumCountEl exists?", !!albumCountEl, "countEl exists?", !!countEl);
-      if(albumCountEl) {
-        albumCountEl.textContent = String(albums.length);
-        console.log("✅ Set albumCountEl to:", albums.length);
-      }
-      if(countEl) {
-        countEl.textContent = String(photoCount);
-        console.log("✅ Set countEl to:", photoCount);
-      }
-    } catch(error) {
-      console.error("❌ Error updating meta:", error);
-      console.error("❌ Error stack:", error.stack);
-    }
+    const albums = getAlbums(currentEvent);
+    albumCountEl.textContent = String(albums.length);
+    countEl.textContent = String(countPhotos(currentEvent));
   }
 
   function updateMetaAlbum(total){
@@ -2126,20 +2038,18 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 
   /* ===================== BUILD BOARDS ===================== */
   function buildBoards(){
-    try {
-      console.log("🔨 buildBoards() called for event:", currentEvent);
-      currentAlbum = null;
-      selectMode = false;
-      selected.clear();
-      updateBulkUI();
+    currentAlbum = null;
+    selectMode = false;
+    selected.clear();
+    updateBulkUI();
 
-      albumView.classList.add("byz-hidden");
-      albumView.setAttribute("aria-hidden","true");
-      boardGrid.classList.remove("byz-hidden");
-      boardGrid.setAttribute("aria-hidden","false");
-      emptyState.classList.add("byz-hidden");
+    albumView.classList.add("byz-hidden");
+    albumView.setAttribute("aria-hidden","true");
+    boardGrid.classList.remove("byz-hidden");
+    boardGrid.setAttribute("aria-hidden","false");
+    emptyState.classList.add("byz-hidden");
 
-      updateMetaBoards();
+    updateMetaBoards();
 
       let albums = getAlbums(currentEvent);
       console.log("📂 Albums found:", albums.length, albums);
@@ -2237,13 +2147,8 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
       }
     });
 
-      initBoardPreviews();
-      updateBreadcrumb();
-      console.log("✅ buildBoards() completed successfully");
-    } catch(error) {
-      console.error("❌ Error in buildBoards():", error);
-      showToast("Error loading albums: " + error.message);
-    }
+    initBoardPreviews();
+    updateBreadcrumb();
   }
 
   /* ===================== BREADCRUMB UPDATE (8) ===================== */
@@ -2903,29 +2808,11 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   }
 
   /* ===================== INITIALIZE ON PAGE LOAD - CRITICAL! ===================== */
-  console.log("🚀 Initializing gallery...");
-  console.log("🚀 currentEvent:", currentEvent);
-  console.log("🚀 PHOTOS check:", PHOTOS);
-  console.log("🚀 PHOTOS[currentEvent]:", PHOTOS?.[currentEvent]);
-  
   parseURL();
-  
-  // Force update meta first to test
-  console.log("🧪 Testing updateMetaBoards() directly...");
-  updateMetaBoards();
-  
-  console.log("🧪 Testing getAlbums('groove') directly...");
-  const testAlbums = getAlbums("groove");
-  console.log("🧪 Test result:", testAlbums);
-  
   buildBoards();
   bindMasonryEvents();
   trackPerformance();
   updateRecentActivity();
-  
-  console.log("✅ Gallery loaded successfully");
-  console.log("✅ Final check - Albums found:", getAlbums(currentEvent));
-  console.log("✅ Final check - Photo count:", countPhotos(currentEvent));
 })();
 
 /* ===================== GLOBAL FUNCTIONS FOR ONCLICK HANDLERS ===================== */
