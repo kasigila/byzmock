@@ -451,18 +451,24 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   height:100%;
   object-fit:cover;
   opacity:0;
-  transition: opacity 420ms ease;
+  transition: opacity 420ms ease, filter 420ms ease, transform 420ms ease;
   will-change: opacity;
   border-radius: 0;
   z-index: 0;
   filter:blur(10px);
   transform:scale(1.1);
+  background: var(--bg-alt);
+}
+/* Show active images immediately (even if not loaded) */
+.board-preview .preview-img.active{
+  opacity:0.4;
 }
 .board-preview .preview-img.loaded{
   filter:blur(0);
   transform:scale(1);
 }
-.board-preview .preview-img.active{
+/* Fully show when both active and loaded */
+.board-preview .preview-img.active.loaded{
   opacity:1;
 }
 
@@ -2355,8 +2361,11 @@ console.log("✅ Script file loaded!");
 
     boardGrid.innerHTML = boardItems.map((item, idx) => {
       const sources = pickPreviewSources(currentEvent, item.key);
+      console.log(`🖼️ Album ${item.key} preview sources:`, sources);
       const imgs = sources.map((src, i) => {
-        return `<img src="${src}" loading="lazy" decoding="async" alt="" class="preview-img ${i === 0 ? "active" : ""}" onload="this.classList.add('loaded')">`;
+        const isFirst = i === 0;
+        const loadingAttr = isFirst ? "eager" : "lazy";
+        return `<img src="${src}" loading="${loadingAttr}" decoding="async" alt="" class="preview-img ${isFirst ? "active" : ""}" onload="this.classList.add('loaded')" onerror="console.error('❌ Failed to load preview:', this.src); if(this.classList.contains('active')){this.style.opacity='0.1'; this.style.filter='blur(20px)';}else{this.style.display='none';}">`;
       }).join("");
 
       const dateLabel = item.key === "all"
