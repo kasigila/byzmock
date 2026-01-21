@@ -35,13 +35,11 @@
   }
   </script>
   
-  <!-- Load gallery data - try external file first, fallback to inline -->
-  <script src="gallery-manifest.js" onerror="console.warn('gallery-manifest.js not found, using inline data')"></script>
+  <!-- Load gallery data - inline for guaranteed availability -->
   <script>
-    // Inline gallery data as backup (same as gallery-manifest.js)
-    if(!window.BYZ_GALLERY) {
-      console.log("Loading inline gallery data...");
-      window.BYZ_GALLERY = {
+    // Inline gallery data - ALWAYS set to ensure it's available
+    console.log("📦 Setting gallery data...");
+    window.BYZ_GALLERY = {
         ROOTS: {
           groove: "groove-memory-gallery/",
           tempo: "tempo-memory-gallery/",
@@ -95,16 +93,11 @@
           }
         }
       };
-      console.log("✅ Inline gallery data loaded");
-    } else {
-      console.log("✅ gallery-manifest.js loaded successfully");
-    }
-    console.log("✅ BYZ_GALLERY structure:", {
-      hasROOTS: !!window.BYZ_GALLERY.ROOTS,
-      hasBOARDS: !!window.BYZ_GALLERY.BOARDS,
-      ROOTS: window.BYZ_GALLERY.ROOTS,
-      BOARDS_keys: window.BYZ_GALLERY.BOARDS ? Object.keys(window.BYZ_GALLERY.BOARDS) : "none"
-    });
+    console.log("✅ Gallery data set! BYZ_GALLERY:", window.BYZ_GALLERY);
+    console.log("✅ ROOTS:", window.BYZ_GALLERY.ROOTS);
+    console.log("✅ BOARDS keys:", Object.keys(window.BYZ_GALLERY.BOARDS));
+    console.log("✅ Groove albums:", Object.keys(window.BYZ_GALLERY.BOARDS.groove || {}));
+    console.log("✅ Tempo albums:", Object.keys(window.BYZ_GALLERY.BOARDS.tempo || {}));
   </script>
 
   <style>
