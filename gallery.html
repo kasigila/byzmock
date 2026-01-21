@@ -1648,20 +1648,38 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 })();
 
 /* ===================== MAIN GALLERY FUNCTIONALITY ===================== */
-(() => {
-  if(!window.BYZ_GALLERY) {
-    console.error("gallery-manifest.js not loaded");
-    const errorEl = document.createElement("div");
-    errorEl.className = "error-state";
-    errorEl.innerHTML = `
-      <div class="error-state-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h3>Error Loading Gallery</h3>
-      <p>Gallery data not loaded. Please refresh the page.</p>
-      <button class="btn primary error-retry" onclick="location.reload()">Retry</button>
-    `;
-    document.getElementById("boardGrid").parentNode.insertBefore(errorEl, document.getElementById("boardGrid"));
+(function initGallery() {
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGallery);
     return;
   }
+
+  // Wait for BYZ_GALLERY to load with retry
+  if(!window.BYZ_GALLERY || !window.BYZ_GALLERY.BOARDS) {
+    console.warn("Waiting for gallery-manifest.js to load... (attempt " + (window._galleryRetries || 0) + ")");
+    window._galleryRetries = (window._galleryRetries || 0) + 1;
+    if(window._galleryRetries < 50) { // Max 5 seconds
+      setTimeout(initGallery, 100);
+    } else {
+      console.error("❌ gallery-manifest.js failed to load after 5 seconds");
+      const errorEl = document.createElement("div");
+      errorEl.className = "error-state";
+      errorEl.innerHTML = `
+        <div class="error-state-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <h3>Error Loading Gallery</h3>
+        <p>Gallery data not loaded. Please check that gallery-manifest.js exists and refresh the page.</p>
+        <button class="btn primary error-retry" onclick="location.reload()">Retry</button>
+      `;
+      const boardGrid = document.getElementById("boardGrid");
+      if(boardGrid && boardGrid.parentNode) {
+        boardGrid.parentNode.insertBefore(errorEl, boardGrid);
+      }
+    }
+    return;
+  }
+  
+  console.log("✅ BYZ_GALLERY loaded:", window.BYZ_GALLERY);
 
   const BASE = window.BYZ_GALLERY.ROOTS;
   const PHOTOS = window.BYZ_GALLERY.BOARDS;
@@ -1698,7 +1716,19 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   const quickPreview = document.getElementById("quickPreview");
   const recentActivity = document.getElementById("recentActivity");
 
-  if(!boardGrid || !albumView || !masonry || !eventTabs.length) return;
+  if(!boardGrid || !albumView || !masonry || !eventTabs.length) {
+    console.error("Missing required elements:", {
+      boardGrid: !!boardGrid,
+      albumView: !!albumView,
+      masonry: !!masonry,
+      eventTabs: eventTabs.length
+    });
+    return;
+  }
+
+  console.log("✅ All elements found, BYZ_GALLERY:", window.BYZ_GALLERY);
+  console.log("✅ PHOTOS:", PHOTOS);
+  console.log("✅ BASE:", BASE);
 
   /* ===================== STATE ===================== */
   let currentEvent = "groove";
@@ -1787,6 +1817,9 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
       toast.setAttribute("aria-hidden","true");
     }, 2000);
   }
+  
+  // Expose showToast globally
+  window.showToast = showToast;
 
   function titleizeAlbum(key){
     const [m, d, y] = key.split("-");
@@ -1802,20 +1835,34 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   }
 
   function getAlbums(evt){
-    const keys = Object.keys(PHOTOS[evt] || {});
+    if(!PHOTOS || !PHOTOS[evt]) {
+      console.warn("No photos for event:", evt, "PHOTOS:", PHOTOS);
+      return [];
+    }
+    const keys = Object.keys(PHOTOS[evt]);
     keys.sort((a,b) => parseAlbumKey(b) - parseAlbumKey(a));
+    console.log("getAlbums for", evt, "found", keys.length, "albums:", keys);
     return keys;
   }
 
   function countPhotos(evt){
+    if(!PHOTOS || !PHOTOS[evt]) return 0;
     const albums = getAlbums(evt);
-    return albums.reduce((sum,a)=> sum + ((PHOTOS[evt][a] || []).length), 0);
+    const count = albums.reduce((sum,a)=> sum + ((PHOTOS[evt][a] || []).length), 0);
+    console.log("countPhotos for", evt, "=", count);
+    return count;
   }
 
   function updateMetaBoards(){
-    const albums = getAlbums(currentEvent);
-    albumCountEl.textContent = String(albums.length);
-    countEl.textContent = String(countPhotos(currentEvent));
+    try {
+      const albums = getAlbums(currentEvent);
+      const photoCount = countPhotos(currentEvent);
+      console.log("📊 Updating meta: albums=", albums.length, "photos=", photoCount);
+      if(albumCountEl) albumCountEl.textContent = String(albums.length);
+      if(countEl) countEl.textContent = String(photoCount);
+    } catch(error) {
+      console.error("Error updating meta:", error);
+    }
   }
 
   function updateMetaAlbum(total){
@@ -2000,21 +2047,24 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 
   /* ===================== BUILD BOARDS ===================== */
   function buildBoards(){
-    currentAlbum = null;
-    selectMode = false;
-    selected.clear();
-    updateBulkUI();
+    try {
+      console.log("🔨 buildBoards() called for event:", currentEvent);
+      currentAlbum = null;
+      selectMode = false;
+      selected.clear();
+      updateBulkUI();
 
-    albumView.classList.add("byz-hidden");
-    albumView.setAttribute("aria-hidden","true");
-    boardGrid.classList.remove("byz-hidden");
-    boardGrid.setAttribute("aria-hidden","false");
-    emptyState.classList.add("byz-hidden");
+      albumView.classList.add("byz-hidden");
+      albumView.setAttribute("aria-hidden","true");
+      boardGrid.classList.remove("byz-hidden");
+      boardGrid.setAttribute("aria-hidden","false");
+      emptyState.classList.add("byz-hidden");
 
-    updateMetaBoards();
+      updateMetaBoards();
 
-    let albums = getAlbums(currentEvent);
-    albums = sortAlbums(albums);
+      let albums = getAlbums(currentEvent);
+      console.log("📂 Albums found:", albums.length, albums);
+      albums = sortAlbums(albums);
 
     /* ===================== SEARCH FILTER (4) ===================== */
     if(searchQuery){
@@ -2108,8 +2158,13 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
       }
     });
 
-    initBoardPreviews();
-    updateBreadcrumb();
+      initBoardPreviews();
+      updateBreadcrumb();
+      console.log("✅ buildBoards() completed successfully");
+    } catch(error) {
+      console.error("❌ Error in buildBoards():", error);
+      showToast("Error loading albums: " + error.message);
+    }
   }
 
   /* ===================== BREADCRUMB UPDATE (8) ===================== */
@@ -2349,7 +2404,7 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
       btn.classList.add("active");
       btn.setAttribute("aria-selected","true");
       layoutMode = btn.dataset.layout;
-            localStorage.setItem("byz_layout", layoutMode);
+      localStorage.setItem("byz_layout", layoutMode);
       buildBoards();
     });
   });
@@ -2776,6 +2831,8 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   updateRecentActivity();
   
   console.log("✅ Gallery loaded successfully");
+  console.log("Albums found:", getAlbums(currentEvent));
+  console.log("Photo count:", countPhotos(currentEvent));
 })();
 
 /* ===================== GLOBAL FUNCTIONS FOR ONCLICK HANDLERS ===================== */
@@ -2810,13 +2867,12 @@ window.toggleFavoriteAlbum = function(albumKey){
   const favorites = new Set(JSON.parse(localStorage.getItem("byz_favorites") || "[]"));
   if(favorites.has(albumKey)){
     favorites.delete(albumKey);
-    showToast("Removed from favorites");
   }else{
     favorites.add(albumKey);
-    showToast("Added to favorites");
   }
   localStorage.setItem("byz_favorites", JSON.stringify(Array.from(favorites)));
-  location.reload();
+  // Reload to update the UI
+  if(window.location) location.reload();
 };
 
 window.clearSearch = function(){
