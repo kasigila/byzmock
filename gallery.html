@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Gallery - All Albums | BYZ Entertainment</title>
+  <meta name="description" content="Browse all photo albums from BYZ events. Download your memories from Groove, Tempo, and more." />
+  
+  <script src="gallery-manifest.js"></script>
+
+  <style>
+/* ===================== APPLE-LIKE DESIGN TOKENS ===================== */
+:root{
+  --bg:#ffffff;
+  --bg-alt:#f5f5f7;
+  --bg-elev:#ffffff;
+  --text:#1d1d1f;
+  --sub:#6e6e73;
+  --border:#d2d2d7;
+  --accent:#000000;
+  --radius: 22px;
+  --radius-lg: 28px;
+  --shadow: 0 18px 60px rgba(0,0,0,.08);
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.08);
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --max: 1100px;
+  --header-h: 64px;
+}
+[data-theme="dark"]{
+  --bg:#000000;
+  --bg-alt:#1c1c1e;
+  --bg-elev:#0b0b0c;
+  --text:#f5f5f7;
+  --sub:#a1a1a6;
+  --border:#2c2c2e;
+  --accent:#ffffff;
+  --shadow: 0 18px 60px rgba(0,0,0,.35);
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.55;
+  transition: background .35s var(--ease), color .35s var(--ease);
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+.container{max-width:var(--max);margin:0 auto;padding:0 24px}
+
+/* ===================== HEADER ===================== */
+header{
+  position:fixed;top:0;left:0;right:0;
+  height:var(--header-h);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(18px);
+  border-bottom:1px solid var(--border);
+  z-index:999;
+}
+.header-inner{
+  height:var(--header-h);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-weight:700;letter-spacing:-.4px;
+}
+.brand-logo-wrap{
+  width:52px;height:52px;border-radius:14px;
+  overflow:hidden;display:grid;place-items:center;
+}
+.brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+.logo-dark{display:none;}
+[data-theme="dark"] .logo-light{display:none;}
+[data-theme="dark"] .logo-dark{display:block;}
+
+.header-actions{display:flex;align-items:center;gap:12px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:10px;padding:12px 18px;border-radius:999px;
+  font-size:14px;font-weight:600;
+  border:1px solid var(--border);
+  background:var(--bg-elev);
+  color:var(--text);
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+  cursor:pointer;
+  text-decoration:none;
+}
+.btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+.btn.primary{background:var(--accent);border-color:transparent;color:var(--bg)}
+.btn.ghost{background: transparent}
+
+.theme-btn{
+  width:44px;height:44px;border-radius:999px;
+  border:1px solid var(--border);
+  background: var(--bg-elev);
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow: var(--shadow-soft);
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+  color: var(--text);
+}
+.theme-btn:hover{transform: translateY(-1px); box-shadow: var(--shadow)}
+.theme-glyph{width:20px;height:20px;display:block}
+
+main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
+
+/* ===================== HERO SECTION ===================== */
+.gallery-hero{
+  padding: 32px 0 40px;
+  text-align: center;
+}
+.gallery-hero h1{
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  letter-spacing:-1px;
+  line-height:1.08;
+}
+.gallery-hero p{
+  margin-top:14px;
+  max-width: 60ch;
+  margin-left: auto;
+  margin-right: auto;
+  color:var(--sub);
+  font-size: 17px;
+}
+
+/* ===================== GALLERY STYLES (from index.html) ===================== */
+.gallery-shell{
+  margin-top: 24px;
+}
+
+.gallery-tabs{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom: 14px;
+  border:1px solid var(--border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  padding: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+.tab{
+  padding:10px 14px;
+  border-radius: 999px;
+  border:1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -.2px;
+  cursor:pointer;
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+  color: var(--text);
+}
+.tab:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+.tab.active{
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  font-weight: 600;
+}
+[data-theme="dark"] .tab.active{
+  background: var(--accent);
+  color: var(--bg);
+  border-color: transparent;
+}
+
+.gallery-meta{
+  margin-left:auto;
+  color: var(--sub);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.board-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 980px){ .board-grid{ grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px){ 
+  .board-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } 
+}
+
+.board{
+  border-radius: var(--radius-lg);
+  border:none;
+  background: none;
+  box-shadow: none;
+  overflow:visible;
+  cursor:pointer;
+  text-align:left;
+  padding:0;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.board:hover{ transform: translateY(-4px); }
+
+.board-preview{
+  position:relative;
+  width:100%;
+  aspect-ratio: 4 / 5;
+  overflow:hidden;
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+@media (max-width: 560px){
+  .board-preview{ aspect-ratio: 1 / 1; }
+}
+
+.board-preview::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 52%, rgba(0,0,0,.58) 100%);
+  pointer-events:none;
+  z-index:1;
+}
+
+.board-preview .preview-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition: opacity 420ms ease;
+  will-change: opacity;
+  border-radius: 0;
+  z-index: 0;
+}
+.board-preview .preview-img.active{
+  opacity:1;
+}
+
+.board-info{
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: #fff;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.35);
+  box-shadow: 0 8px 22px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+  text-align: center;
+  white-space: nowrap;
+  min-height: 30px;
+  line-height: 1;
+  max-width: calc(100% - 24px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease), border-color .18s var(--ease);
+}
+@media (max-width: 560px){
+  .board-info{
+    min-height: 28px;
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine){
+  .board:hover .board-info{
+    transform: translateX(-50%) translateY(-2px);
+    background: rgba(0,0,0,.70);
+    border-color: rgba(255,255,255,.6);
+    box-shadow: 0 12px 26px rgba(0,0,0,.45);
+  }
+}
+
+.board:focus-visible .board-info{
+  outline: 2px solid rgba(255,255,255,.7);
+  outline-offset: 2px;
+}
+
+@media (hover: none) and (pointer: coarse){
+  .board:active .board-info{
+    transform: translateX(-50%) scale(0.98);
+    background: rgba(0,0,0,.78);
+    border-color: rgba(255,255,255,.8);
+    box-shadow: 0 6px 18px rgba(0,0,0,.4);
+  }
+}
+
+.board-badge{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,.9);
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(0,0,0,.4);
+  z-index: 3;
+  display: block;
+}
+
+.board-badge::after{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  background: conic-gradient(from 180deg, rgba(255,255,255,.65), rgba(0,255,224,.45), rgba(255,45,247,.45), rgba(255,255,255,.65));
+  filter: blur(6px);
+  z-index:-1;
+}
+
+.album-view{ margin-top: 14px; }
+
+.album-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  border:1px solid var(--border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  padding: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+.album-title-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width: 220px;
+}
+.album-title{
+  font-weight: 600;
+  letter-spacing:-.5px;
+  font-size: 16px;
+}
+.album-sub{
+  color: var(--sub);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.album-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.select{
+  padding:10px 14px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  font-size:14px;
+  outline:none;
+  cursor:pointer;
+}
+
+.masonry{ column-count: 4; column-gap: 16px; margin-top: 14px; }
+@media (max-width: 1100px){ .masonry{ column-count: 3; } }
+@media (max-width: 820px){ .masonry{ column-count: 2; } }
+@media (max-width: 520px){ .masonry{ column-count: 1; } }
+
+.pin{
+  break-inside: avoid;
+  margin: 0 0 16px;
+  border-radius: var(--radius-lg);
+  overflow:hidden;
+  border:1px solid var(--border);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-soft);
+  cursor:pointer;
+  position:relative;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.pin:hover{ transform: translateY(-3px); box-shadow: var(--shadow); }
+.pin img{ width:100%; height:auto; display:block; }
+
+.pin .pin-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  padding:12px;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.72));
+  opacity:0;
+  transition: opacity .2s var(--ease);
+}
+.pin:hover .pin-overlay{ opacity:1; }
+
+.pin .pin-label{
+  color:#fff;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: -.2px;
+  text-transform: none;
+}
+
+.pin .pin-download{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:8px 10px;
+  border-radius: 999px;
+  border:1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.12);
+  color:#fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration:none;
+}
+
+.pin .pin-check{
+  position:absolute;
+  top:10px;
+  left:10px;
+  width:40px;height:40px;
+  border-radius: 16px;
+  border:1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.30);
+  backdrop-filter: blur(10px);
+  display:grid;
+  place-items:center;
+  opacity:0;
+  transform: translateY(-6px);
+  transition: opacity .2s var(--ease), transform .2s var(--ease);
+}
+.pin.selectable .pin-check{ opacity:1; transform: translateY(0); }
+.pin.selected{
+  outline: 3px solid color-mix(in srgb, #25D366 55%, transparent);
+  box-shadow: 0 18px 60px rgba(0,0,0,.12);
+}
+.pin.selected .pin-check{
+  background: rgba(37,211,102,.22);
+  border-color: rgba(37,211,102,.45);
+}
+
+.gallery-note{ margin-top: 10px; color: var(--sub); font-size: 13px; font-weight: 400; }
+
+.bulkbar{
+  position: sticky;
+  bottom: 14px;
+  margin-top: 14px;
+  border-radius: 22px;
+  border:1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  z-index: 950;
+}
+.bulk-left{ display:flex; flex-direction:column; gap:2px; }
+.bulk-count{ font-weight: 600; letter-spacing:-.3px; }
+.bulk-sub{ color: var(--sub); font-size: 13px; font-weight: 400; }
+#bulkbar[aria-hidden="true"]{ display:none; }
+
+.bulk-actions{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.bulk-actions .btn{
+  padding: 12px 18px;
+}
+@media (max-width: 520px) {
+  .bulk-actions {
+    flex-direction: column;
+  }
+  .bulk-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .bulkbar {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+.lightbox{ position: fixed; inset: 0; z-index: 2000; display:none; }
+.lightbox.show{ display:block; }
+.lb-backdrop{ position:absolute; inset:0; background: rgba(0,0,0,.72); backdrop-filter: blur(6px); }
+
+.lb-panel{
+  position: relative;
+  width: min(980px, calc(100% - 26px));
+  margin: 40px auto;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: color-mix(in srgb, #0b0b0c 80%, transparent);
+  box-shadow: 0 22px 80px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+.lb-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-weight: 950;
+  cursor:pointer;
+  z-index: 5;
+}
+
+.lb-nav{
+  position:absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.08);
+  color:#fff;
+  font-weight: 950;
+  font-size: 28px;
+  cursor:pointer;
+  z-index: 5;
+}
+.lb-nav.prev{ left: 12px; }
+.lb-nav.next{ right: 12px; }
+
+.lb-media{ background:#000; }
+.lb-media img{
+  width:100%;
+  height:auto;
+  max-height: 72vh;
+  object-fit: contain;
+  display:block;
+}
+
+.lb-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding: 14px;
+  background: rgba(255,255,255,.04);
+  flex-wrap:wrap;
+}
+
+.lb-filename{
+  color: rgba(255,255,255,.88);
+  font-weight: 950;
+  font-size: 13px;
+  letter-spacing:-.2px;
+  opacity:.95;
+}
+
+.lb-actions{ display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
+
+.lb-download, .lb-copy{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.10);
+  color:#fff;
+  font-weight: 950;
+  font-size: 13px;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:12px 20px;
+  border-radius:999px;
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  font-size:14px;
+  font-weight: 600;
+  z-index:10000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s var(--ease);
+}
+.toast.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+#selectModeBtn[aria-pressed="true"]{
+  background: color-mix(in srgb, #25D366 18%, var(--bg-elev));
+  border-color: color-mix(in srgb, #25D366 45%, var(--border));
+  box-shadow: var(--shadow-soft);
+}
+#selectModeBtn[aria-pressed="true"] i{
+  color:#25D366;
+}
+#selectModeBtn[aria-pressed="true"]::after{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:inline-block;
+  margin-left:6px;
+  background:#25D366;
+  box-shadow: 0 0 0 3px rgba(37,211,102,.18);
+}
+
+.byz-hidden{display:none !important}
+  </style>
+</head>
+<body data-theme="light">
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark"  src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <div class="header-actions">
+      <button class="theme-btn" id="themeToggle" type="button" aria-label="Toggle theme" aria-pressed="false" title="Switch to dark mode">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-glyph">
+          <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2" />
+          <circle cx="12" cy="12" r="6" fill="currentColor" />
+          <defs>
+            <clipPath id="themeHalfClip">
+              <circle cx="12" cy="12" r="6" />
+            </clipPath>
+          </defs>
+          <g clip-path="url(#themeHalfClip)">
+            <rect x="12" y="6" width="6" height="12" style="fill: var(--bg-elev);" />
+          </g>
+        </svg>
+      </button>
+      <a class="btn ghost" href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="gallery-hero">
+    <div class="container">
+      <h1>Memory Gallery</h1>
+      <p>All photo albums from past events. Browse, preview, and download your favorite memories.</p>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <div class="container">
+      <div class="gallery-shell">
+        <!-- Event tabs -->
+        <div class="gallery-tabs" role="tablist" aria-label="Choose event gallery">
+          <button class="tab active" type="button" role="tab" aria-selected="true" data-event="groove">
+            Groove
+          </button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-event="tempo">
+            Tempo
+          </button>
+
+          <div class="gallery-meta" aria-live="polite">
+            <span id="albumCount">0</span> albums • <span id="photoCount">0</span> photos
+          </div>
+        </div>
+
+        <!-- Pinterest-style boards live here -->
+        <div class="board-grid" id="boardGrid" aria-label="Albums"></div>
+
+        <!-- Album view (hidden until you tap a board) -->
+        <div class="album-view byz-hidden" id="albumView" aria-hidden="true">
+          <div class="album-top">
+            <button class="btn ghost" id="backToBoards" type="button">
+              <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+              Albums
+            </button>
+
+            <div class="album-title-wrap">
+              <div class="album-title" id="albumTitle">—</div>
+              <div class="album-sub" id="albumSub">—</div>
+            </div>
+
+            <div class="album-actions">
+              <select id="gallerySort" class="select" aria-label="Sort photos">
+                <option value="new">Newest first</option>
+                <option value="old">Oldest first</option>
+                <option value="rand">Shuffle</option>
+              </select>
+
+              <button class="btn ghost" id="selectModeBtn" type="button" aria-pressed="false">
+                <i class="fa-regular fa-circle-check" aria-hidden="true"></i>
+                Select
+              </button>
+            </div>
+          </div>
+
+          <!-- Photos -->
+          <div class="masonry" id="masonry" aria-label="Photos"></div>
+
+          <p class="gallery-note">
+            Tap a photo to preview. Hover to download. Use <b>Select</b> to download multiple.
+          </p>
+
+          <!-- Bulk bar -->
+          <div class="bulkbar" id="bulkbar" aria-hidden="true">
+            <div class="bulk-left">
+              <span class="bulk-count"><span id="selectedCount">0</span> selected</span>
+              <span class="bulk-sub" id="selectedHint">Tap photos to select</span>
+            </div>
+
+            <div class="bulk-actions">
+              <button class="btn" id="bulkClear" type="button">Clear</button>
+              <button class="btn" id="bulkCopy" type="button">
+                <i class="fa-regular fa-copy" aria-hidden="true"></i> Copy links
+              </button>
+              <button class="btn primary" id="bulkDownload" type="button">
+                <i class="fa-solid fa-download" aria-hidden="true"></i> Download selected
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lightbox / Preview Modal -->
+        <div class="lightbox" id="lightbox" aria-hidden="true">
+          <div class="lb-backdrop" data-lb-close></div>
+
+          <div class="lb-panel" role="dialog" aria-modal="true" aria-label="Photo preview">
+            <button class="lb-close" type="button" aria-label="Close" data-lb-close>✕</button>
+
+            <button class="lb-nav prev" id="lbPrev" type="button" aria-label="Previous photo">‹</button>
+            <button class="lb-nav next" id="lbNext" type="button" aria-label="Next photo">›</button>
+
+            <div class="lb-media">
+              <img id="lbImg" alt="Preview" />
+            </div>
+
+            <div class="lb-footer">
+              <div class="lb-filename" id="lbName">—</div>
+
+              <div class="lb-actions">
+                <a class="lb-download" id="lbDownload" href="#" download>
+                  <i class="fa-solid fa-download" aria-hidden="true"></i> Download
+                </a>
+                <button class="lb-copy" id="lbCopy" type="button">
+                  <i class="fa-regular fa-copy" aria-hidden="true"></i> Copy link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* =========================================================
+   THEME TOGGLE
+========================================================= */
+(function() {
+  const root = document.documentElement;
+  const toggle = document.getElementById("themeToggle");
+  const stored = localStorage.getItem("theme");
+
+  function applyTheme(theme) {
+    if (theme === "dark") root.setAttribute("data-theme","dark");
+    else root.setAttribute("data-theme","light");
+    if (toggle){
+      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+      toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+    }
+  }
+
+  if (stored) applyTheme(stored);
+  else {
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(prefersDark ? "dark" : "light");
+  }
+
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      const next = isDark ? "light" : "dark";
+      applyTheme(next);
+      localStorage.setItem("theme", next);
+    });
+  }
+})();
+
+/* =========================================================
+   MEMORY GALLERY FUNCTIONALITY
+========================================================= */
+(() => {
+  if(!window.BYZ_GALLERY) {
+    console.error("gallery-manifest.js not loaded");
+    return;
+  }
+
+  const BASE = window.BYZ_GALLERY.ROOTS;
+  const PHOTOS = window.BYZ_GALLERY.BOARDS;
+
+  // Elements
+  const boardGrid = document.getElementById("boardGrid");
+  const albumView = document.getElementById("albumView");
+  const backBtn = document.getElementById("backToBoards");
+  const masonry = document.getElementById("masonry");
+  const eventTabs = document.querySelectorAll(".gallery-tabs .tab");
+  const countEl = document.getElementById("photoCount");
+  const albumCountEl = document.getElementById("albumCount");
+  const sortEl = document.getElementById("gallerySort");
+  const selectModeBtn = document.getElementById("selectModeBtn");
+  const bulkbar = document.getElementById("bulkbar");
+  const selectedCountEl = document.getElementById("selectedCount");
+  const bulkClear = document.getElementById("bulkClear");
+  const bulkCopy = document.getElementById("bulkCopy");
+  const bulkDownload = document.getElementById("bulkDownload");
+  const lightbox = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lbImg");
+  const lbDownload = document.getElementById("lbDownload");
+  const lbCopy = document.getElementById("lbCopy");
+  const lbPrev = document.getElementById("lbPrev");
+  const lbNext = document.getElementById("lbNext");
+  const lbName = document.getElementById("lbName");
+  const albumTitleEl = document.getElementById("albumTitle");
+  const albumSubEl = document.getElementById("albumSub");
+  const toast = document.getElementById("toast");
+
+  if(!boardGrid || !albumView || !masonry || !eventTabs.length) return;
+
+  // State
+  let currentEvent = "groove";
+  let currentAlbum = null;
+  let currentList = [];
+  let currentAlbumLabel = "";
+  let lightboxIndex = 0;
+  let selectMode = false;
+  const selected = new Set();
+
+  const monthIndex = {
+    january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11
+  };
+  const monthShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  function formatAlbumDateShort(key){
+    const [m, d, y] = key.split("-");
+    const mi = monthIndex[m?.toLowerCase()];
+    if(mi === undefined) return "—";
+    return `${monthShort[mi]} ${Number(d)} ${y}`;
+  }
+
+  function showToast(msg){
+    if(!toast) return;
+    toast.textContent = msg;
+    toast.classList.add("show");
+    toast.setAttribute("aria-hidden","false");
+    setTimeout(() => {
+      toast.classList.remove("show");
+      toast.setAttribute("aria-hidden","true");
+    }, 900);
+  }
+
+  function titleizeAlbum(key){
+    const [m, d, y] = key.split("-");
+    const month = m.charAt(0).toUpperCase() + m.slice(1);
+    return `${month} ${Number(d)}, ${y}`;
+  }
+
+  function parseAlbumKey(key){
+    const [m, d, y] = key.split("-");
+    const mi = monthIndex[m.toLowerCase()];
+    if(mi === undefined) return new Date(0);
+    return new Date(Number(y), mi, Number(d));
+  }
+
+  function getAlbums(evt){
+    const keys = Object.keys(PHOTOS[evt] || {});
+    keys.sort((a,b) => parseAlbumKey(b) - parseAlbumKey(a));
+    return keys;
+  }
+
+  function countPhotos(evt){
+    const albums = getAlbums(evt);
+    return albums.reduce((sum,a)=> sum + ((PHOTOS[evt][a] || []).length), 0);
+  }
+
+  function updateMetaBoards(){
+    const albums = getAlbums(currentEvent);
+    albumCountEl.textContent = String(albums.length);
+    countEl.textContent = String(countPhotos(currentEvent));
+  }
+
+  function updateMetaAlbum(total){
+    countEl.textContent = String(total);
+  }
+
+  function applySort(list){
+    const mode = sortEl ? sortEl.value : "new";
+    if(mode === "rand"){
+      const a = [...list];
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random() * (i+1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    if(mode === "old") return [...list].reverse();
+    return list;
+  }
+
+  function updateBulkUI(){
+    if(!bulkbar || !selectedCountEl) return;
+    selectedCountEl.textContent = String(selected.size);
+    bulkbar.setAttribute("aria-hidden", (!selectMode ? "true" : "false"));
+  }
+
+  function fullSrc(evt, albumKey, file){
+    return `${(BASE[evt] || "")}${albumKey}/${file}`;
+  }
+
+  function pickPreviewSources(evt, albumKey){
+    const albums = getAlbums(evt);
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for(let i = a.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function pickN(arr, n){
+      const shuffled = shuffle(arr);
+      if(shuffled.length >= n) return shuffled.slice(0, n);
+      const picks = shuffled.slice();
+      while(picks.length < n && shuffled.length){
+        picks.push(shuffled[picks.length % shuffled.length]);
+      }
+      return picks;
+    }
+
+    const N = 5;
+
+    if(albumKey === "all"){
+      const all = [];
+      albums.forEach(a => {
+        (PHOTOS[evt][a] || []).forEach(f => {
+          all.push(fullSrc(evt, a, f));
+        });
+      });
+      return pickN(all, N);
+    }
+
+    const sources = (PHOTOS[evt][albumKey] || []).map(f => fullSrc(evt, albumKey, f));
+    return pickN(sources, N);
+  }
+
+  function initBoardPreviews(){
+    const INTERVAL = 1000;
+
+    function start(board){
+      if(board.dataset.previewStarted === "1") return;
+      const imgs = board.querySelectorAll(".board-preview .preview-img");
+      if(imgs.length <= 1) return;
+      board.dataset.previewStarted = "1";
+      let i = 0;
+      imgs[i].classList.add("active");
+      setInterval(() => {
+        imgs[i].classList.remove("active");
+        i = (i + 1) % imgs.length;
+        imgs[i].classList.add("active");
+      }, INTERVAL);
+    }
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          start(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll(".board").forEach(b => obs.observe(b));
+  }
+
+  function buildBoards(){
+    currentAlbum = null;
+    selectMode = false;
+    selected.clear();
+    updateBulkUI();
+
+    albumView.classList.add("byz-hidden");
+    albumView.setAttribute("aria-hidden","true");
+    boardGrid.classList.remove("byz-hidden");
+    boardGrid.setAttribute("aria-hidden","false");
+
+    updateMetaBoards();
+
+    const albums = getAlbums(currentEvent);
+    const total = countPhotos(currentEvent);
+
+    const boardItems = [
+      { key:"all", title:"All Photos", count: total },
+      ...albums.map(a => ({ key:a, title:titleizeAlbum(a), count:(PHOTOS[currentEvent][a] || []).length }))
+    ];
+
+    const badgeSrc = currentEvent === "tempo"
+      ? "assets/assets/events/tempo.JPG"
+      : "assets/assets/events/groove.jpg";
+
+    boardGrid.innerHTML = boardItems.map(item => {
+      const sources = pickPreviewSources(currentEvent, item.key);
+      const imgs = sources.map((src, i) =>
+        `<img src="${src}" loading="lazy" decoding="async" alt="" class="preview-img ${i === 0 ? "active" : ""}">`
+      ).join("");
+
+      const dateLabel = item.key === "all"
+        ? "All Photos"
+        : formatAlbumDateShort(item.key);
+
+      return `
+        <button class="board" type="button" data-album="${item.key}" aria-label="Open album ${item.title}">
+          <div class="board-preview">
+            ${imgs}
+            <div class="board-info">${dateLabel} • ${item.count} photos</div>
+            <img class="board-badge" src="${badgeSrc}" alt="" aria-hidden="true" loading="lazy">
+          </div>
+        </button>
+      `;
+    }).join("");
+
+    boardGrid.querySelectorAll(".board").forEach(btn => {
+      btn.addEventListener("click", () => openAlbum(btn.dataset.album));
+    });
+
+    initBoardPreviews();
+  }
+
+  function flattenPhotos(evt, albumKey){
+    const albums = getAlbums(evt);
+    let files = [];
+
+    if(albumKey === "all"){
+      albums.forEach(a => {
+        (PHOTOS[evt][a] || []).forEach(f => files.push({ album:a, file:f }));
+      });
+      currentAlbumLabel = `${evt.toUpperCase()} • All Photos`;
+    } else {
+      (PHOTOS[evt][albumKey] || []).forEach(f => files.push({ album: albumKey, file:f }));
+      currentAlbumLabel = `${evt.toUpperCase()} • ${titleizeAlbum(albumKey)}`;
+    }
+
+    return files.map(x => ({
+      src: fullSrc(evt, x.album, x.file),
+      album: x.album
+    }));
+  }
+
+  function renderAlbum(albumKey){
+    selected.clear();
+    updateBulkUI();
+
+    const raw = flattenPhotos(currentEvent, albumKey);
+    const sorted = applySort(raw);
+
+    currentList = sorted.map(x => x.src);
+    updateMetaAlbum(currentList.length);
+
+    const title = (albumKey === "all") ? `${currentEvent.toUpperCase()} — All Photos` : `${currentEvent.toUpperCase()} — ${titleizeAlbum(albumKey)}`;
+    const sub = `${currentList.length} photos`;
+
+    if(albumTitleEl) albumTitleEl.textContent = title;
+    if(albumSubEl) albumSubEl.textContent = sub;
+
+    masonry.innerHTML = sorted.map((x) => {
+      const label = (albumKey === "all") ? titleizeAlbum(x.album) : titleizeAlbum(albumKey);
+      return `
+        <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" tabindex="0" role="button" aria-label="Open photo preview">
+          <div class="pin-check"><i class="fa-solid fa-check"></i></div>
+          <img src="${x.src}" alt="${currentEvent} photo" loading="lazy" decoding="async" />
+          <div class="pin-overlay">
+            <div class="pin-label">${label}</div>
+            <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
+              <i class="fa-solid fa-download"></i> Download
+            </a>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function openAlbum(albumKey){
+    currentAlbum = albumKey;
+
+    boardGrid.classList.add("byz-hidden");
+    boardGrid.setAttribute("aria-hidden","true");
+    albumView.classList.remove("byz-hidden");
+    albumView.setAttribute("aria-hidden","false");
+
+    renderAlbum(albumKey);
+
+    document.getElementById("gallery")?.scrollIntoView({ behavior:"smooth", block:"start" });
+    showToast("Album opened");
+  }
+
+  function backToBoards(){
+    currentAlbum = null;
+    selectMode = false;
+    selected.clear();
+    updateBulkUI();
+
+    albumView.classList.add("byz-hidden");
+    albumView.setAttribute("aria-hidden","true");
+    boardGrid.classList.remove("byz-hidden");
+    boardGrid.setAttribute("aria-hidden","false");
+
+    masonry.innerHTML = "";
+    updateMetaBoards();
+    showToast("Back to albums");
+  }
+
+  function openLightboxByIndex(i){
+    lightboxIndex = Math.max(0, Math.min(i, currentList.length - 1));
+    const src = currentList[lightboxIndex];
+    if(!src) return;
+
+    if(lbImg) lbImg.src = src;
+    if(lbDownload) lbDownload.href = src;
+    if(lbDownload) lbDownload.setAttribute("download", "");
+
+    if(lbName){
+      lbName.textContent = `${currentAlbumLabel} • ${lightboxIndex + 1}/${currentList.length}`;
+    }
+
+    lightbox.classList.add("show");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox(){
+    lightbox.classList.remove("show");
+    lightbox.setAttribute("aria-hidden", "true");
+    if(lbImg) lbImg.src = "";
+    document.body.style.overflow = "";
+  }
+
+  function next(){ openLightboxByIndex(lightboxIndex + 1); }
+  function prev(){ openLightboxByIndex(lightboxIndex - 1); }
+
+  function bindMasonryEvents(){
+    masonry.addEventListener("click", (e) => {
+      const pin = e.target.closest(".pin");
+      if(!pin) return;
+
+      const src = pin.dataset.src;
+      if(!src) return;
+
+      if(selectMode){
+        if(selected.has(src)){
+          selected.delete(src);
+          pin.classList.remove("selected");
+          showToast("Removed");
+        }else{
+          selected.add(src);
+          pin.classList.add("selected");
+          showToast("Selected");
+        }
+        updateBulkUI();
+        return;
+      }
+
+      const idx = currentList.indexOf(src);
+      openLightboxByIndex(idx >= 0 ? idx : 0);
+    });
+
+    masonry.addEventListener("keydown", (e) => {
+      if(e.key !== "Enter") return;
+      const pin = e.target.closest(".pin");
+      if(!pin) return;
+
+      const src = pin.dataset.src;
+      if(!src) return;
+
+      if(selectMode){
+        if(selected.has(src)){
+          selected.delete(src);
+          pin.classList.remove("selected");
+          showToast("Removed");
+        }else{
+          selected.add(src);
+          pin.classList.add("selected");
+          showToast("Selected");
+        }
+        updateBulkUI();
+        return;
+      }
+
+      const idx = currentList.indexOf(src);
+      openLightboxByIndex(idx >= 0 ? idx : 0);
+    });
+  }
+
+  if(bulkClear){
+    bulkClear.addEventListener("click", () => {
+      selected.clear();
+      masonry.querySelectorAll(".pin.selected").forEach(p => p.classList.remove("selected"));
+      updateBulkUI();
+      showToast("Cleared");
+    });
+  }
+
+  if(bulkCopy){
+    bulkCopy.addEventListener("click", async () => {
+      try{
+        const text = Array.from(selected).join("\n");
+        await navigator.clipboard.writeText(text);
+        showToast("Copied links");
+      }catch{
+        showToast("Copy failed");
+      }
+    });
+  }
+
+  if(bulkDownload){
+    bulkDownload.addEventListener("click", async () => {
+      const items = Array.from(selected);
+      if(!items.length){
+        showToast("No photos selected");
+        return;
+      }
+
+      showToast(`Downloading ${items.length}…`);
+
+      for(let i=0;i<items.length;i++){
+        const a = document.createElement("a");
+        a.href = items[i];
+        a.download = "";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        await new Promise(r => setTimeout(r, 250));
+      }
+    });
+  }
+
+  lightbox?.addEventListener("click", (e) => {
+    if(e.target.matches("[data-lb-close]")) closeLightbox();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if(lightbox?.classList.contains("show")){
+      if(e.key === "Escape") closeLightbox();
+      if(e.key === "ArrowRight") next();
+      if(e.key === "ArrowLeft") prev();
+    }
+  });
+
+  lbPrev?.addEventListener("click", prev);
+  lbNext?.addEventListener("click", next);
+
+  if(lbCopy){
+    lbCopy.addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(lbDownload.href);
+        showToast("Copied link");
+      }catch{
+        showToast("Copy failed");
+      }
+    });
+  }
+
+  eventTabs.forEach(btn => {
+    btn.addEventListener("click", () => {
+      eventTabs.forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected","true");
+
+      currentEvent = btn.dataset.event;
+      currentAlbum = null;
+      buildBoards();
+      showToast(`${currentEvent.toUpperCase()} albums`);
+    });
+  });
+
+  if(sortEl){
+    sortEl.addEventListener("change", () => {
+      if(currentAlbum) renderAlbum(currentAlbum);
+    });
+  }
+
+  if(selectModeBtn){
+    selectModeBtn.addEventListener("click", () => {
+      selectMode = !selectMode;
+      selectModeBtn.setAttribute("aria-pressed", selectMode ? "true":"false");
+      selected.clear();
+      updateBulkUI();
+      if(currentAlbum) renderAlbum(currentAlbum);
+      showToast(selectMode ? "Select mode on" : "Select mode off");
+    });
+  }
+
+  backBtn?.addEventListener("click", backToBoards);
+
+  // Initialize on page load
+  buildBoards();
+  bindMasonryEvents();
+})();
+</script>
+</body>
+</html>
