@@ -2349,4 +2349,511 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
       btn.classList.add("active");
       btn.setAttribute("aria-selected","true");
       layoutMode = btn.dataset.layout;
-      localStorage.setItem("byz_lay
+            localStorage.setItem("byz_layout", layoutMode);
+      buildBoards();
+    });
+  });
+
+  /* ===================== LOAD SAVED LAYOUT ===================== */
+  const savedLayout = localStorage.getItem("byz_layout") || "grid";
+  layoutMode = savedLayout;
+  const savedLayoutBtn = document.querySelector(`[data-layout="${savedLayout}"]`);
+  if(savedLayoutBtn){
+    document.querySelectorAll(".layout-btn").forEach(b => {
+      b.classList.remove("active");
+      b.setAttribute("aria-selected","false");
+    });
+    savedLayoutBtn.classList.add("active");
+    savedLayoutBtn.setAttribute("aria-selected","true");
+  }
+
+  /* ===================== SORT ALBUMS (6) ===================== */
+  const albumSortEl = document.getElementById("albumSort");
+  if(albumSortEl){
+    albumSortEl.addEventListener("change", () => {
+      buildBoards();
+    });
+  }
+
+  /* ===================== TAG FILTER (27) ===================== */
+  const tagFilterEl = document.getElementById("tagFilter");
+  if(tagFilterEl){
+    tagFilterEl.addEventListener("change", () => {
+      buildBoards();
+    });
+  }
+
+  /* ===================== BULK ACTIONS ===================== */
+  if(bulkClear){
+    bulkClear.addEventListener("click", () => {
+      selected.clear();
+      masonry.querySelectorAll(".pin.selected").forEach(p => p.classList.remove("selected"));
+      updateBulkUI();
+      showToast("Cleared");
+    });
+  }
+
+  if(bulkCopy){
+    bulkCopy.addEventListener("click", async () => {
+      try{
+        const text = Array.from(selected).join("\n");
+        await navigator.clipboard.writeText(text);
+        showToast("Copied links");
+      }catch{
+        showToast("Copy failed");
+      }
+    });
+  }
+
+  if(bulkDownload){
+    bulkDownload.addEventListener("click", async () => {
+      const items = Array.from(selected);
+      if(!items.length){
+        showToast("No photos selected");
+        return;
+      }
+
+      showToast(`Downloading ${items.length}…`);
+
+      for(let i=0;i<items.length;i++){
+        const a = document.createElement("a");
+        a.href = items[i];
+        a.download = "";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        await new Promise(r => setTimeout(r, 250));
+      }
+      
+      showConfetti();
+      showToast("Download complete!");
+    });
+  }
+
+  /* ===================== LIGHTBOX CONTROLS ===================== */
+  lightbox?.addEventListener("click", (e) => {
+    if(e.target.matches("[data-lb-close]")) closeLightbox();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    /* ===================== KEYBOARD SHORTCUTS (7) ===================== */
+    if(e.key === "/" && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA"){
+      e.preventDefault();
+      searchInput?.focus();
+      return;
+    }
+    
+    if(e.key === "?"){
+      e.preventDefault();
+      shortcutsHelp.classList.toggle("show");
+      shortcutsHelp.setAttribute("aria-hidden", shortcutsHelp.classList.contains("show") ? "false" : "true");
+      return;
+    }
+
+    if(e.key === "g" || e.key === "G"){
+      if(e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA"){
+        const grooveTab = document.querySelector('[data-event="groove"]');
+        if(grooveTab) grooveTab.click();
+        return;
+      }
+    }
+
+    if(e.key === "t" || e.key === "T"){
+      if(e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA"){
+        const tempoTab = document.querySelector('[data-event="tempo"]');
+        if(tempoTab) tempoTab.click();
+        return;
+      }
+    }
+
+    if(e.key === "s" || e.key === "S"){
+      if(e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA" && currentAlbum){
+        e.preventDefault();
+        selectModeBtn?.click();
+        return;
+      }
+    }
+
+    if(lightbox?.classList.contains("show")){
+      if(e.key === "Escape") closeLightbox();
+      if(e.key === "ArrowRight") next();
+      if(e.key === "ArrowLeft") prev();
+    }
+  });
+
+  lbPrev?.addEventListener("click", prev);
+  lbNext?.addEventListener("click", next);
+
+  if(lbCopy){
+    lbCopy.addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(lbDownload.href);
+        showToast("Copied link");
+      }catch{
+        showToast("Copy failed");
+      }
+    });
+  }
+
+  /* ===================== SHARE PHOTO (16) ===================== */
+  if(lbShare){
+    lbShare.addEventListener("click", async () => {
+      const url = lbDownload.href;
+      const text = `Check out this photo from ${currentAlbumLabel}!`;
+      if(navigator.share){
+        try{
+          await navigator.share({text, url});
+        }catch{
+          copyShareLink(url, text);
+        }
+      }else{
+        copyShareLink(url, text);
+      }
+    });
+  }
+
+  function copyShareLink(url, text){
+    const shareText = `${text} ${url}`;
+    navigator.clipboard.writeText(shareText).then(() => {
+      showToast("Share link copied!");
+    });
+  }
+
+  /* ===================== SLIDESHOW (28) ===================== */
+  function startSlideshow(){
+    if(!currentAlbum || currentList.length === 0) return;
+    const speed = parseInt(document.getElementById("slideshowSpeed")?.value || 2000);
+    document.getElementById("slideshowControls")?.classList.remove("byz-hidden");
+    slideshowInterval = setInterval(() => {
+      next();
+    }, speed);
+    document.getElementById("slideshowToggle").innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    showToast("Slideshow started");
+  }
+
+  function stopSlideshow(){
+    if(slideshowInterval){
+      clearInterval(slideshowInterval);
+      slideshowInterval = null;
+    }
+    document.getElementById("slideshowControls")?.classList.add("byz-hidden");
+  }
+
+  document.getElementById("slideshowBtn")?.addEventListener("click", () => {
+    if(currentAlbum){
+      if(slideshowInterval){
+        stopSlideshow();
+        showToast("Slideshow paused");
+      }else{
+        if(!lightbox.classList.contains("show")){
+          openLightboxByIndex(0);
+        }
+        startSlideshow();
+      }
+    }
+  });
+
+  document.getElementById("slideshowToggle")?.addEventListener("click", () => {
+    if(slideshowInterval){
+      stopSlideshow();
+      document.getElementById("slideshowToggle").innerHTML = '<i class="fa-solid fa-play"></i> Play';
+    }else{
+      startSlideshow();
+    }
+  });
+
+  /* ===================== DOWNLOAD ALL ZIP (30) ===================== */
+  async function downloadAllZip(){
+    if(!currentAlbum || currentList.length === 0) return;
+    
+    showToast("Preparing ZIP download...");
+    const progressBar = document.getElementById("downloadProgressBar");
+    const progressContainer = document.getElementById("downloadProgress");
+    progressContainer.classList.remove("byz-hidden");
+
+    for(let i = 0; i < currentList.length; i++){
+      const a = document.createElement("a");
+      a.href = currentList[i];
+      a.download = "";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      
+      const progress = ((i + 1) / currentList.length) * 100;
+      if(progressBar) progressBar.style.width = progress + "%";
+      
+      await new Promise(r => setTimeout(r, 200));
+    }
+    
+    progressContainer.classList.add("byz-hidden");
+    showConfetti();
+    showToast(`Downloaded ${currentList.length} photos!`);
+    trackEvent("zip_downloaded", currentList.length);
+  }
+
+  document.getElementById("downloadAllAlbumZip")?.addEventListener("click", downloadAllZip);
+
+  /* ===================== CONFETTI ANIMATION (15) ===================== */
+  function showConfetti(){
+    const confetti = document.getElementById("confetti");
+    confetti.innerHTML = "";
+    for(let i = 0; i < 50; i++){
+      const piece = document.createElement("div");
+      piece.className = "confetti-piece";
+      piece.style.left = Math.random() * 100 + "%";
+      piece.style.animationDelay = Math.random() * 3 + "s";
+      piece.style.background = ["#25D366","#ff6b6b","#4ecdc4","#ffe66d","#ffa500"][Math.floor(Math.random() * 5)];
+      confetti.appendChild(piece);
+    }
+    setTimeout(() => confetti.innerHTML = "", 3000);
+  }
+
+  /* ===================== RECENT ACTIVITY (32) ===================== */
+  function addToRecent(albumKey){
+    const recent = JSON.parse(localStorage.getItem("byz_recent") || "[]");
+    const item = {
+      album: albumKey,
+      event: currentEvent,
+      title: albumKey === "all" ? "All Photos" : titleizeAlbum(albumKey),
+      thumb: pickPreviewSources(currentEvent, albumKey)[0],
+      time: Date.now()
+    };
+    const filtered = recent.filter(r => !(r.album === albumKey && r.event === currentEvent));
+    filtered.unshift(item);
+    const updated = filtered.slice(0, 10);
+    localStorage.setItem("byz_recent", JSON.stringify(updated));
+    updateRecentActivity();
+  }
+
+  function updateRecentActivity(){
+    const items = JSON.parse(localStorage.getItem("byz_recent") || "[]");
+    const container = document.getElementById("recentItems");
+    if(!container) return;
+
+    if(items.length === 0){
+      container.innerHTML = "<div style='color:var(--sub);font-size:13px;padding:12px 0;'>No recent activity</div>";
+      return;
+    }
+
+    container.innerHTML = items.map(item => {
+      const timeAgo = formatTimeAgo(item.time);
+      return `
+        <div class="recent-item" onclick="openRecentAlbum('${item.event}','${item.album}')">
+          <div class="recent-item-img">
+            <img src="${item.thumb}" alt="" loading="lazy" />
+          </div>
+          <div class="recent-item-info">
+            <div class="recent-item-title">${item.title}</div>
+            <div class="recent-item-time">${item.event.toUpperCase()} • ${timeAgo}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function formatTimeAgo(timestamp){
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if(seconds < 60) return "Just now";
+    const minutes = Math.floor(seconds / 60);
+    if(minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if(hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
+
+  function openRecentAlbum(event, album){
+    if(event !== currentEvent){
+      document.querySelector(`[data-event="${event}"]`)?.click();
+    }
+    setTimeout(() => {
+      const btn = boardGrid.querySelector(`[data-album="${album}"]`);
+      if(btn) btn.click();
+    }, 300);
+    recentActivity.classList.remove("show");
+  }
+
+  function clearRecentActivity(){
+    localStorage.removeItem("byz_recent");
+    updateRecentActivity();
+    showToast("Recent activity cleared");
+  }
+
+  /* ===================== RECENT ACTIVITY TOGGLE ===================== */
+  document.getElementById("recentActivityBtn")?.addEventListener("click", () => {
+    recentActivity.classList.toggle("show");
+    updateRecentActivity();
+  });
+
+  /* ===================== SHORTCUTS HELP ===================== */
+  document.getElementById("shortcutsBtn")?.addEventListener("click", () => {
+    shortcutsHelp.classList.toggle("show");
+    shortcutsHelp.setAttribute("aria-hidden", shortcutsHelp.classList.contains("show") ? "false" : "true");
+  });
+
+  function closeShortcutsHelp(){
+    shortcutsHelp.classList.remove("show");
+    shortcutsHelp.setAttribute("aria-hidden","true");
+  }
+
+  const shortcutsHelp = document.getElementById("shortcutsHelp");
+  shortcutsHelp?.addEventListener("click", (e) => {
+    if(e.target === shortcutsHelp) closeShortcutsHelp();
+  });
+
+  /* ===================== EVENT TABS ===================== */
+  eventTabs.forEach(btn => {
+    btn.addEventListener("click", () => {
+      eventTabs.forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected","true");
+
+      currentEvent = btn.dataset.event;
+      currentAlbum = null;
+      buildBoards();
+      showToast(`${currentEvent.toUpperCase()} albums`);
+      trackEvent("event_switched", currentEvent);
+      updateBreadcrumb();
+      
+      /* ===================== UPDATE URL (36) ===================== */
+      const url = new URL(window.location);
+      url.searchParams.set("event", currentEvent);
+      url.searchParams.delete("album");
+      window.history.pushState({}, "", url);
+    });
+  });
+
+  /* ===================== SORT / SELECT ===================== */
+  if(sortEl){
+    sortEl.addEventListener("change", () => {
+      if(currentAlbum) renderAlbum(currentAlbum);
+    });
+  }
+
+  if(selectModeBtn){
+    selectModeBtn.addEventListener("click", () => {
+      selectMode = !selectMode;
+      selectModeBtn.setAttribute("aria-pressed", selectMode ? "true":"false");
+      selected.clear();
+      updateBulkUI();
+      if(currentAlbum) renderAlbum(currentAlbum);
+      showToast(selectMode ? "Select mode on" : "Select mode off");
+    });
+  }
+
+  /* ===================== BACK BUTTON ===================== */
+  backBtn?.addEventListener("click", backToBoards);
+
+  /* ===================== PWA INSTALL (21) ===================== */
+  let deferredPrompt;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById("pwaInstallPrompt")?.classList.add("show");
+  });
+
+  document.getElementById("pwaInstallBtn")?.addEventListener("click", async () => {
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      const {outcome} = await deferredPrompt.userChoice;
+      if(outcome === "accepted"){
+        showToast("App installed!");
+      }
+      deferredPrompt = null;
+      closePWAInstall();
+    }
+  });
+
+  function closePWAInstall(){
+    document.getElementById("pwaInstallPrompt")?.classList.remove("show");
+  }
+
+  /* ===================== INITIALIZE ON PAGE LOAD - CRITICAL! ===================== */
+  parseURL();
+  buildBoards();
+  bindMasonryEvents();
+  trackPerformance();
+  updateRecentActivity();
+  
+  console.log("✅ Gallery loaded successfully");
+})();
+
+/* ===================== GLOBAL FUNCTIONS FOR ONCLICK HANDLERS ===================== */
+window.shareAlbum = function(albumKey){
+  const url = `${window.location.origin}${window.location.pathname}?event=${window.currentEvent || 'groove'}&album=${albumKey}`;
+  const text = `Check out ${albumKey === "all" ? "all photos" : albumKey} from BYZ!`;
+  
+  if(navigator.share){
+    navigator.share({text, url}).catch(() => {
+      navigator.clipboard.writeText(`${text} ${url}`).then(() => {
+        const toast = document.getElementById("toast");
+        if(toast){
+          toast.textContent = "Share link copied!";
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2000);
+        }
+      });
+    });
+  }else{
+    navigator.clipboard.writeText(`${text} ${url}`).then(() => {
+      const toast = document.getElementById("toast");
+      if(toast){
+        toast.textContent = "Share link copied!";
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+      }
+    });
+  }
+};
+
+window.toggleFavoriteAlbum = function(albumKey){
+  const favorites = new Set(JSON.parse(localStorage.getItem("byz_favorites") || "[]"));
+  if(favorites.has(albumKey)){
+    favorites.delete(albumKey);
+    showToast("Removed from favorites");
+  }else{
+    favorites.add(albumKey);
+    showToast("Added to favorites");
+  }
+  localStorage.setItem("byz_favorites", JSON.stringify(Array.from(favorites)));
+  location.reload();
+};
+
+window.clearSearch = function(){
+  const input = document.getElementById("searchInput");
+  if(input){
+    input.value = "";
+    document.getElementById("searchClear")?.classList.remove("show");
+    input.dispatchEvent(new Event("input"));
+  }
+};
+
+window.clearRecentActivity = function(){
+  localStorage.removeItem("byz_recent");
+  const container = document.getElementById("recentItems");
+  if(container){
+    container.innerHTML = "<div style='color:var(--sub);font-size:13px;padding:12px 0;'>No recent activity</div>";
+  }
+};
+
+window.closeShortcutsHelp = function(){
+  const help = document.getElementById("shortcutsHelp");
+  if(help){
+    help.classList.remove("show");
+    help.setAttribute("aria-hidden","true");
+  }
+};
+
+window.closePWAInstall = function(){
+  document.getElementById("pwaInstallPrompt")?.classList.remove("show");
+};
+
+window.openRecentAlbum = function(event, album){
+  const tempoTab = document.querySelector('[data-event="' + event + '"]');
+  if(tempoTab) tempoTab.click();
+  setTimeout(() => {
+    const btn = document.querySelector(`[data-album="${album}"]`);
+    if(btn) btn.click();
+  }, 300);
+  document.getElementById("recentActivity")?.classList.remove("show");
+};
