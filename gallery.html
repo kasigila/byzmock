@@ -2011,21 +2011,39 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   }
 
   function getAlbums(evt){
-    const keys = Object.keys(PHOTOS[evt] || {});
+    if(!PHOTOS || !PHOTOS[evt]){
+      console.warn("⚠️ No photos for event:", evt, "PHOTOS:", PHOTOS);
+      return [];
+    }
+    const keys = Object.keys(PHOTOS[evt]);
+    console.log("🔍 getAlbums for", evt, "found", keys.length, "albums:", keys);
     // ✅ always newest first
     keys.sort((a,b) => parseAlbumKey(b) - parseAlbumKey(a));
     return keys;
   }
 
   function countPhotos(evt){
+    if(!PHOTOS || !PHOTOS[evt]) return 0;
     const albums = getAlbums(evt);
-    return albums.reduce((sum,a)=> sum + ((PHOTOS[evt][a] || []).length), 0);
+    const count = albums.reduce((sum,a)=> sum + ((PHOTOS[evt][a] || []).length), 0);
+    console.log("📸 countPhotos for", evt, "=", count);
+    return count;
   }
 
   function updateMetaBoards(){
     const albums = getAlbums(currentEvent);
-    albumCountEl.textContent = String(albums.length);
-    countEl.textContent = String(countPhotos(currentEvent));
+    const photoCount = countPhotos(currentEvent);
+    console.log("📊 updateMetaBoards:", {
+      currentEvent,
+      albums: albums.length,
+      photoCount,
+      albumCountEl: !!albumCountEl,
+      countEl: !!countEl,
+      PHOTOS: !!PHOTOS,
+      PHOTOS_currentEvent: !!PHOTOS?.[currentEvent]
+    });
+    if(albumCountEl) albumCountEl.textContent = String(albums.length);
+    if(countEl) countEl.textContent = String(photoCount);
   }
 
   function updateMetaAlbum(total){
@@ -3126,11 +3144,26 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   }
 
   /* ===================== INITIALIZE ON PAGE LOAD - CRITICAL! ===================== */
+  console.log("🚀 Initializing gallery...");
+  console.log("🚀 BASE:", BASE);
+  console.log("🚀 PHOTOS:", PHOTOS);
+  console.log("🚀 currentEvent:", currentEvent);
+  console.log("🚀 Elements:", {
+    boardGrid: !!boardGrid,
+    albumView: !!albumView,
+    masonry: !!masonry,
+    eventTabs: eventTabs.length,
+    albumCountEl: !!albumCountEl,
+    countEl: !!countEl
+  });
+  
   parseURL();
   buildBoards();
   bindMasonryEvents();
   trackPerformance();
   updateRecentActivity();
+  
+  console.log("✅ Gallery initialized");
 })();
 
 /* ===================== GLOBAL FUNCTIONS FOR ONCLICK HANDLERS ===================== */
