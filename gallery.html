@@ -2475,14 +2475,7 @@ console.log("✅ Script file loaded!");
           <div class="pin-check"><i class="fa-solid fa-check"></i></div>
           <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
           <div class="pin-liked"><i class="fa-solid fa-heart"></i></div>
-          <picture>
-            <source srcset="${x.src.replace(/\.jpg$/i, '.webp')}" type="image/webp" />
-            <img src="${x.src}" 
-                 srcset="${x.src} 1x, ${x.src.replace(/\.jpg$/i, '@2x.jpg')} 2x" 
-                 alt="${currentEvent} photo" 
-                 loading="lazy" 
-                 decoding="async" />
-          </picture>
+          <img src="${x.src}" alt="${currentEvent} photo" loading="lazy" decoding="async" />
           <div class="pin-overlay">
             <div class="pin-label">${label}</div>
             <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
