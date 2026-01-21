@@ -1999,7 +1999,13 @@ section{padding: 92px 0}
   transition: transform .25s var(--ease), box-shadow .25s var(--ease);
 }
 .pin:hover{ transform: translateY(-3px); box-shadow: var(--shadow); }
-.pin img{ width:100%; height:auto; display:block; }
+.pin img{ 
+  width:100%; 
+  height:auto; 
+  display:block; 
+  background: transparent;
+  min-height: 100px;
+}
 
 /* hover overlay */
 .pin .pin-overlay{
@@ -2224,8 +2230,13 @@ section{padding: 92px 0}
   transition: transform .25s var(--ease), box-shadow .25s var(--ease);
 }
 .pin:hover{ transform: translateY(-3px); box-shadow: var(--shadow); }
-
-.pin img{ width:100%; height:auto; display:block; }
+.pin img{ 
+  width:100%; 
+  height:auto; 
+  display:block; 
+  background: transparent;
+  min-height: 100px;
+}
 
 .pin .pin-overlay{
   position:absolute;
@@ -6138,12 +6149,14 @@ boardGrid.innerHTML = boardItems.map(item => {
     if(albumTitleEl) albumTitleEl.textContent = title;
     if(albumSubEl) albumSubEl.textContent = sub;
 
-    masonry.innerHTML = sorted.map((x) => {
+    masonry.innerHTML = sorted.map((x, idx) => {
       const label = (albumKey === "all") ? titleizeAlbum(x.album) : titleizeAlbum(albumKey);
+       // Load first 12 images eagerly to prevent black boxes on laptop
+      const loadingAttr = idx < 12 ? "eager" : "lazy";
       return `
         <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" tabindex="0" role="button" aria-label="Open photo preview">
           <div class="pin-check"><i class="fa-solid fa-check"></i></div>
-          <img src="${x.src}" alt="${currentEvent} photo" loading="lazy" decoding="async" />
+          <img src="${x.src}" alt="${currentEvent} photo" loading="${loadingAttr}" decoding="async" />
           <div class="pin-overlay">
             <div class="pin-label">${label}</div>
             <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
