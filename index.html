@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -1362,19 +1362,37 @@ section{padding: 92px 0}
   transition: opacity 0.3s var(--ease);
   pointer-events: none;
 }
+
 .slot-content:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 8%, transparent),
+              var(--shadow);
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
 .slot-content:hover::before {
-  opacity: 0;
+  opacity: 1;
 }
 
-/* Remove tech-style border glow on hover */
+/* Tech-style border glow on hover */
 .slot-content::after {
-  display: none;
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--accent) 0%, transparent),
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    color-mix(in srgb, var(--accent) 0%, transparent));
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.slot-content:hover::after {
+  opacity: 0.4;
+}
 }
 
 .slot .left {
@@ -2230,6 +2248,7 @@ section{padding: 92px 0}
   transition: transform .25s var(--ease), box-shadow .25s var(--ease);
 }
 .pin:hover{ transform: translateY(-3px); box-shadow: var(--shadow); }
+
 .pin img{ 
   width:100%; 
   height:auto; 
@@ -4380,26 +4399,22 @@ body.bulkbar-active .social-dock{
     </div>
   </section>
 
-   <!-- WE HOST -->
-<section id="events">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:32px;">
-      <h2 style="font-size:clamp(32px, 5vw, 48px);font-weight:700;letter-spacing:-1px;margin-bottom:8px;">Choose Your Vibe</h2>
-      <p style="font-size:16px;color:var(--sub);max-width:600px;margin:0 auto;">Three distinct experiences. One unforgettable night.</p>
-    </div>
-    <div class="cards stagger reveal">
-      <div class="card">
-        <div class="card-top groove" aria-hidden="true"></div>
-        <div class="card-body">
-          <h3>Groove Series</h3>
-          <p>The heartbeat of Dar nightlife. Weekly Afro-house sessions.</p>
-          <div class="card-actions">
-            <a class="btn primary" href="groove-series.html">
-              <i class="fa-solid fa-circle-info" aria-hidden="true"></i> See Series
-            </a>
-          </div>
-        </div>
+    <!-- WE HOST -->
+  <section id="events">
+    <div class="container">
+      <div class="cards stagger reveal">
+  <div class="card">
+    <div class="card-top groove" aria-hidden="true"></div>
+    <div class="card-body">
+      <h3>Groove Series</h3>
+      <p>The heartbeat of Dar nightlife. Weekly Afro-house sessions.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="groove-series.html">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i> See Series
+        </a>
       </div>
+    </div>
+  </div>
 
   <div class="card">
     <div class="card-top apt" aria-hidden="true"></div>
@@ -4418,7 +4433,7 @@ body.bulkbar-active .social-dock{
       <h3>Tempo</h3>
       <p>Seasonal events with evolving themes.</p>
       <div class="card-actions">
-        <a class="btn primary" href="booking-tempo.html">Secure Your Spot</a>
+        <a class="btn primary" href="booking-tempo.html">Book Table / Ticket</a>
         <button class="btn" id="tempoScheduleBtn" type="button">
           <i class="fa-regular fa-calendar" aria-hidden="true"></i> View Schedule
         </button>
@@ -5338,27 +5353,39 @@ body.bulkbar-active .social-dock{
 
 <script>
 /* =========================================================
-   FORCE DARK MODE ALWAYS:
-   - Always dark mode, no toggle
+   APPLE-STYLE DARK MODE:
+   - Defaults to system
+   - Manual toggle saves preference
 ========================================================= */
 (function() {
   const root = document.documentElement;
   const toggle = document.getElementById("themeToggle");
-  
-  // Always apply dark mode
-  root.setAttribute("data-theme", "dark");
-  
-  // Remove toggle functionality (optional - hide the button)
-  if (toggle) {
-    toggle.style.display = "none";
-    // Or if you want to keep it visible but disabled:
-    // toggle.disabled = true;
-    // toggle.style.opacity = "0.5";
-    // toggle.style.cursor = "not-allowed";
+  const stored = localStorage.getItem("theme");
+
+  function applyTheme(theme) {
+    if (theme === "dark") root.setAttribute("data-theme","dark");
+    else root.setAttribute("data-theme","light");
+    if (toggle){
+  toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+  toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+}
   }
-  
-  // Clear any stored theme preference
-  localStorage.removeItem("theme");
+
+  if (stored) {
+    applyTheme(stored);
+  } else {
+    // Default to dark mode instead of system preference
+    applyTheme("dark");
+  }
+
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      const next = isDark ? "light" : "dark";
+      applyTheme(next);
+      localStorage.setItem("theme", next);
+    });
+  }
 })();
 
 /* =========================================================
@@ -6151,7 +6178,7 @@ boardGrid.innerHTML = boardItems.map(item => {
 
     masonry.innerHTML = sorted.map((x, idx) => {
       const label = (albumKey === "all") ? titleizeAlbum(x.album) : titleizeAlbum(albumKey);
-       // Load first 12 images eagerly to prevent black boxes on laptop
+      // Load first 12 images eagerly to prevent black boxes on laptop
       const loadingAttr = idx < 12 ? "eager" : "lazy";
       return `
         <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" tabindex="0" role="button" aria-label="Open photo preview">
@@ -6909,26 +6936,31 @@ document.addEventListener('keydown', (e) => {
     cardsContainer.appendChild(clone);
   });
 
-  // Clone again for smooth backward scrolling
+  // Clone again for smooth backward scrolling (insert at beginning)
+  const clonedCardsStart = [];
   cards.forEach(card => {
     const clone = card.cloneNode(true);
     clone.setAttribute('aria-hidden', 'true');
+    clonedCardsStart.push(clone);
+  });
+  clonedCardsStart.reverse().forEach(clone => {
     cardsContainer.insertBefore(clone, cardsContainer.firstChild);
   });
 
   let isScrolling = false;
 
-    // Center first card on load
+  // Set initial scroll position to start of real content (after clones)
   setTimeout(() => {
-    const firstCard = cardsContainer.querySelector('.artist-card:not([aria-hidden])');
-        if (firstCard) {
+    const realCards = cardsContainer.querySelectorAll('.artist-card:not([aria-hidden])');
+    if (realCards.length > 0) {
+      const firstRealCard = realCards[0];
       const containerWidth = cardsContainer.clientWidth;
-      const cardWidth = firstCard.offsetWidth;
+      const cardWidth = firstRealCard.offsetWidth;
       // Center the first real card (accounting for 12px padding on left)
-      const scrollLeft = firstCard.offsetLeft - (containerWidth / 2) + (cardWidth / 2) - 12;
+      const scrollLeft = firstRealCard.offsetLeft - (containerWidth / 2) + (cardWidth / 2) - 12;
       cardsContainer.scrollLeft = Math.max(0, scrollLeft);
     } else {
-      // Fallback to infinite scroll positioning
+      // Fallback: scroll to start of real content area
       cardsContainer.scrollLeft = cards.length * scrollAmount;
     }
   }, 100);
@@ -6948,19 +6980,25 @@ document.addEventListener('keydown', (e) => {
     const scrollWidth = cardsContainer.scrollWidth;
     const clientWidth = cardsContainer.clientWidth;
     const realCardsWidth = cards.length * scrollAmount;
+    const cloneWidth = realCardsWidth; // Width of cloned cards at start
 
-    // If scrolled past end (clone area), jump to beginning of real cards
+    // If scrolled past end (into clone area at the end), jump to beginning of real cards
     if (scrollLeft >= scrollWidth - clientWidth - scrollAmount) {
       isScrolling = true;
-      cardsContainer.scrollLeft = cardsContainer.scrollLeft - (cards.length * scrollAmount);
+      cardsContainer.scrollLeft = scrollLeft - realCardsWidth;
       setTimeout(() => { isScrolling = false; }, 50);
+      return;
     }
     
-    // If scrolled before start (clone area), jump to end of real cards
-    if (scrollLeft <= scrollAmount) {
+    // If scrolled into clone area at the start, jump to end of real cards
+    // Check if we're in the cloned section at the beginning
+    if (scrollLeft < cloneWidth) {
       isScrolling = true;
-      cardsContainer.scrollLeft = cardsContainer.scrollLeft + (cards.length * scrollAmount);
+      // Jump to the corresponding position in the real cards (at the end)
+      const offsetInClone = scrollLeft;
+      cardsContainer.scrollLeft = (realCardsWidth * 2) + offsetInClone;
       setTimeout(() => { isScrolling = false; }, 50);
+      return;
     }
   });
 
