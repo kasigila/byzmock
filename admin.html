@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
   <style>
     :root{
@@ -56,14 +55,14 @@
     .container{max-width:var(--max);margin:0 auto;padding:0 24px}
 
     header{
-  position: sticky;
-  top: 0;
-  height:var(--header-h);
-  background: color-mix(in srgb, var(--bg) 86%, transparent);
-  backdrop-filter: blur(18px);
-  border-bottom:1px solid var(--border);
-  z-index:999;
-}
+      position: sticky;
+      top: 0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
 
     .header-inner{
       height:var(--header-h);
@@ -177,7 +176,7 @@
       font-size:14px;
       box-shadow: var(--shadow-soft);
     }
-    button{
+    button, .btn{
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -191,8 +190,15 @@
       cursor:pointer;
       transition: transform .2s var(--ease), box-shadow .2s var(--ease);
       box-shadow: var(--shadow-soft);
+      text-decoration:none;
+      font-size:14px;
     }
-    button:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
+    button:hover, .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
+    button:disabled, .btn:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+    }
     .primary{
       background: var(--accent);
       color: var(--bg);
@@ -202,17 +208,17 @@
     .hidden{display:none}
 
     .dash-grid{display:grid;grid-template-columns:1fr;gap:16px;}
-#dashboard{
-  scroll-margin-top: calc(var(--header-h) + 16px);
-}
+    #dashboard{
+      scroll-margin-top: calc(var(--header-h) + 16px);
+    }
 
     .stats{
       display:grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap:12px;
       margin-top: 14px;
     }
-    @media (max-width: 980px){ .stats{grid-template-columns:1fr 1fr;} }
+    @media (max-width: 980px){ .stats{grid-template-columns:repeat(2, 1fr);} }
     @media (max-width: 560px){ .stats{grid-template-columns:1fr;} }
 
     .stat{
@@ -222,8 +228,9 @@
       box-shadow: var(--shadow-soft);
       padding: 14px;
     }
-    .stat .k{color:var(--sub);font-size:12px}
+    .stat .k{color:var(--sub);font-size:12px;font-weight:700}
     .stat .v{font-size:26px;font-weight:900;letter-spacing:-1px;margin-top:6px}
+    .stat .sub{color:var(--sub);font-size:11px;margin-top:4px}
 
     .tabs{
       display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;
@@ -232,6 +239,7 @@
       padding:10px 14px;border-radius:999px;border:1px solid var(--border);
       background: color-mix(in srgb, var(--bg) 92%, transparent);
       font-weight:800;font-size:13px;cursor:pointer;
+      transition: all .2s var(--ease);
     }
     .tab-btn.active{
       background: var(--accent);color: var(--bg);border-color: transparent;
@@ -243,7 +251,25 @@
     }
     .filters{
       display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+      flex: 1;
     }
+    .filters input, .filters select{
+      min-width: 180px;
+    }
+    @media (max-width: 768px){
+      .filters{flex-direction:column;align-items:stretch;}
+      .filters input, .filters select{width:100%;min-width:auto;}
+    }
+
+    .connection-status{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      font-size:11px;font-weight:700;
+      background: var(--bg-elev);
+      border:1px solid var(--border);
+    }
+    .connection-status.online{color:var(--ok)}
+    .connection-status.offline{color:var(--bad)}
 
     .table-wrap{
       margin-top: 14px;
@@ -261,47 +287,264 @@
       border-bottom:1px solid var(--border);
       font-size: 12px;letter-spacing:.06em;text-transform: uppercase;color: var(--sub);
       padding: 14px;text-align:left;
+      cursor:pointer;
+      user-select:none;
+      transition: background .2s var(--ease);
     }
+    thead th:hover{background: color-mix(in srgb, var(--bg-alt) 60%, transparent);}
+    thead th.sortable::after{
+      content:" ↕";
+      opacity:.3;
+      font-size:10px;
+    }
+    thead th.sort-asc::after{content:" ↑";opacity:1;}
+    thead th.sort-desc::after{content:" ↓";opacity:1;}
     tbody td{
       padding: 14px;border-bottom:1px solid var(--border);
       font-size: 14px;vertical-align: top;
     }
+    tbody tr{
+      transition: background .2s var(--ease);
+    }
     tbody tr:hover{background: color-mix(in srgb, var(--bg-alt) 60%, transparent);}
+    tbody tr.recent-action{
+      background: color-mix(in srgb, var(--ok) 15%, transparent);
+      animation: highlightFade 2s var(--ease);
+    }
+    @keyframes highlightFade{
+      0%{background: color-mix(in srgb, var(--ok) 30%, transparent);}
+      100%{background: color-mix(in srgb, var(--ok) 15%, transparent);}
+    }
     .scroll{overflow:auto;-webkit-overflow-scrolling: touch;}
 
-    .status{font-weight:900;letter-spacing:-.3px;}
-    .PENDING{color: var(--warn)}
-    .CONFIRMED{color: var(--ok)}
-    .REJECTED{color: var(--bad)}
+    .status{font-weight:900;letter-spacing:-.3px;display:inline-block;padding:4px 8px;border-radius:6px;}
+    .PENDING{color: var(--warn);background: color-mix(in srgb, var(--warn) 15%, transparent);}
+    .CONFIRMED{color: var(--ok);background: color-mix(in srgb, var(--ok) 15%, transparent);}
+    .REJECTED{color: var(--bad);background: color-mix(in srgb, var(--bad) 15%, transparent);}
 
     .approve{background:#eafff3;color:#0a7f3f;border:1px solid color-mix(in srgb, #0a7f3f 30%, var(--border));font-weight:900;}
     .reject{background:#ffecec;color:#b42318;border:1px solid color-mix(in srgb, #b42318 30%, var(--border));font-weight:900;}
     [data-theme="dark"] .approve{background: rgba(10,127,63,.14);color:#7dffb8;border:1px solid rgba(125,255,184,.22);}
     [data-theme="dark"] .reject{background: rgba(180,35,24,.18);color:#ff9b9b;border:1px solid rgba(255,155,155,.22);}
 
-    /* Scan panel */
-    .scan{margin-top:16px;border-radius: var(--radius-lg);border:1px solid var(--border);background: linear-gradient(180deg,color-mix(in srgb, var(--bg-alt) 80%, transparent),color-mix(in srgb, var(--bg) 92%, transparent));box-shadow: var(--shadow);padding:16px;}
-    .scan-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;}
-    .scan-badge{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;border:1px solid var(--border);background: var(--bg-elev);box-shadow: var(--shadow-soft);color: var(--sub);font-size:13px;width:fit-content;}
-    .scan-h{font-size:20px;font-weight:900;letter-spacing:-.6px;margin-top:10px}
-    .scan-sub{color:var(--sub);font-size:13px;margin-top:4px}
-    .scan-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .scan-grid{margin-top: 14px;display:grid;grid-template-columns: 1.1fr .9fr;gap:12px;}
-    @media (max-width: 980px){ .scan-grid{grid-template-columns:1fr;} }
-    .scan-video{border-radius: 22px;border:1px solid var(--border);background: var(--bg-elev);box-shadow: var(--shadow-soft);overflow:hidden;position:relative;min-height: 280px;}
-    #cam{width:100%;height:100%;object-fit:cover;display:block;background:#000;}
-    .scan-hint{position:absolute;left:14px;bottom:14px;padding:10px 12px;border-radius:999px;border:1px solid var(--border);background: color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter: blur(12px);box-shadow: var(--shadow-soft);color: var(--sub);font-size:13px;}
-    .scan-side{display:flex;flex-direction:column;gap:12px;}
-    .scan-manual{border-radius: 22px;border:1px solid var(--border);background: var(--bg-elev);box-shadow: var(--shadow-soft);padding: 14px;}
-    .scan-manual .k{color:var(--sub);font-size:12px;margin-bottom:10px}
-    .scan-manual .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .scan-manual input{margin-top:0}
-    .scan-result{border-radius: 22px;border:1px solid var(--border);background: color-mix(in srgb, var(--bg) 92%, transparent);box-shadow: var(--shadow-soft);padding: 14px;}
-    .scan-result .big{font-size:22px;font-weight:900;letter-spacing:-.6px}
-    .scan-result .sub{margin-top:6px;color:var(--sub);font-size:13px}
-    .scan-result .meta{margin-top:10px;color:var(--sub);font-size:13px;display:flex;flex-direction:column;gap:6px}
-    .scan-cta{display:flex;gap:10px;flex-wrap:wrap}
-    .scan-cta button:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+    /* Mobile Card View */
+    .card-view{display:none;}
+    @media (max-width: 768px){
+      .table-wrap{display:none;}
+      .card-view{display:block;}
+    }
+    .booking-card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .booking-card:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
+    .booking-card.recent-action{
+      background: color-mix(in srgb, var(--ok) 15%, transparent);
+      animation: highlightFade 2s var(--ease);
+    }
+    .card-header{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;
+    }
+    .card-title{font-weight:900;font-size:16px;letter-spacing:-.3px}
+    .card-meta{
+      display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--sub);
+    }
+    .card-meta b{color:var(--text);font-weight:700}
+    .card-actions{
+      display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;
+    }
+    .card-actions button{flex:1;min-width:120px;padding:12px;}
+
+    /* Toast Notifications */
+    .toast{
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      pointer-events: none;
+    }
+    @media (max-width: 560px){
+      .toast{left:16px;right:16px;max-width:none;}
+    }
+    .toast-item{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      pointer-events: auto;
+      animation: toastSlideIn .3s var(--ease);
+    }
+    @keyframes toastSlideIn{
+      from{transform: translateX(400px);opacity:0;}
+      to{transform: translateX(0);opacity:1;}
+    }
+    .toast-item.success{
+      border-color: color-mix(in srgb, var(--ok) 40%, var(--border));
+      background: color-mix(in srgb, var(--ok) 8%, var(--bg-elev));
+    }
+    .toast-item.error{
+      border-color: color-mix(in srgb, var(--bad) 40%, var(--border));
+      background: color-mix(in srgb, var(--bad) 8%, var(--bg-elev));
+    }
+    .toast-icon{
+      width:20px;height:20px;flex-shrink:0;margin-top:2px;
+    }
+    .toast-icon.success{color:var(--ok)}
+    .toast-icon.error{color:var(--bad)}
+    .toast-content{flex:1}
+    .toast-title{font-weight:800;font-size:14px;margin-bottom:4px}
+    .toast-message{font-size:13px;color:var(--sub);line-height:1.4}
+    .toast-close{
+      width:20px;height:20px;flex-shrink:0;
+      border:none;background:none;color:var(--sub);
+      cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:9998;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(12px);
+      display:grid;place-items:center;padding:20px;
+      animation: fadeIn .2s var(--ease);
+    }
+    @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+    .modal{
+      width: min(520px, 100%);
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      animation: modalSlideUp .3s var(--ease);
+    }
+    @keyframes modalSlideUp{from{transform: translateY(20px);opacity:0;} to{transform: translateY(0);opacity:1;}}
+    .modal-header{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;
+    }
+    .modal-title{font-weight:900;font-size:18px;letter-spacing:-.4px}
+    .modal-close{
+      width:32px;height:32px;border-radius:12px;
+      border:1px solid var(--border);background:var(--bg-elev);
+      display:grid;place-items:center;cursor:pointer;flex-shrink:0;
+    }
+    .modal-body{color:var(--sub);font-size:14px;line-height:1.6}
+    .modal-actions{
+      display:flex;gap:10px;justify-content:flex-end;margin-top:20px;
+    }
+
+    /* Verification Panel */
+    .verify-panel{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 60%, transparent);
+      padding: 16px;
+      margin-top: 14px;
+    }
+    .verify-header{
+      display:flex;align-items:center;gap:10px;margin-bottom:12px;
+    }
+    .verify-title{font-weight:900;font-size:16px}
+    .verify-grid{
+      display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;
+    }
+    .verify-item{
+      padding:12px;border-radius:16px;
+      background: var(--bg-elev);
+      border:1px solid var(--border);
+    }
+    .verify-label{font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px}
+    .verify-value{
+      font-size:18px;font-weight:900;letter-spacing:-.3px;
+      word-break:break-all;
+    }
+    .verify-value.match{color:var(--ok)}
+    .verify-value.mismatch{color:var(--bad)}
+    .verify-warning{
+      margin-top:12px;padding:10px;border-radius:12px;
+      background: color-mix(in srgb, var(--bad) 15%, transparent);
+      border:1px solid color-mix(in srgb, var(--bad) 30%, var(--border));
+      color:var(--bad);font-size:12px;font-weight:700;
+      display:flex;align-items:center;gap:8px;
+    }
+
+    /* Loading States */
+    .loading{opacity:.6;pointer-events:none;position:relative;}
+    .loading::after{
+      content:"";position:absolute;inset:0;
+      background: color-mix(in srgb, var(--bg) 80%, transparent);
+      backdrop-filter: blur(2px);
+    }
+    .spinner{
+      width:16px;height:16px;border:2px solid var(--border);
+      border-top-color:var(--accent);border-radius:50%;
+      animation: spin .6s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg);}}
+    button .spinner{margin:0;}
+
+    /* Empty State */
+    .empty-state{
+      text-align:center;padding:60px 20px;color:var(--sub);
+    }
+    .empty-state i{font-size:48px;opacity:.3;margin-bottom:16px}
+    .empty-state h3{font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
+    .empty-state p{font-size:14px}
+
+    /* Activity Log */
+    .activity-log{
+      max-height:200px;overflow-y:auto;margin-top:14px;
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      padding: 12px;
+    }
+    .activity-item{
+      padding:10px;border-radius:12px;background:var(--bg-alt);
+      margin-bottom:8px;font-size:12px;
+      display:flex;justify-content:space-between;align-items:center;gap:12px;
+    }
+    .activity-item:last-child{margin-bottom:0}
+    .activity-action{font-weight:700}
+    .activity-time{color:var(--sub);font-size:11px}
+
+    /* Row Details */
+    .row-details{
+      background: var(--bg-alt);
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .details-grid{
+      display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;
+    }
+    .detail-item{font-size:13px}
+    .detail-label{color:var(--sub);font-size:11px;font-weight:700;margin-bottom:4px}
+    .detail-value{font-weight:700}
+
+    /* Auto-refresh Toggle */
+    .refresh-toggle{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 12px;border-radius:999px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      font-size:12px;cursor:pointer;
+    }
+    .refresh-toggle.active{background:var(--accent);color:var(--bg);border-color:transparent}
   </style>
 </head>
 
@@ -316,6 +559,10 @@
       </a>
 
       <div class="top-actions">
+        <span class="connection-status" id="connectionStatus">
+          <i class="fa-solid fa-circle"></i>
+          <span>Online</span>
+        </span>
         <a class="pill" href="./index.html"><i class="fa-solid fa-house"></i> Home</a>
         <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
           <i class="fa-solid fa-circle-half-stroke"></i>
@@ -337,7 +584,7 @@
             </div>
           </div>
 
-          <input id="password" type="password" placeholder="Admin password" autocomplete="current-password">
+          <input id="password" type="password" placeholder="Admin password" autocomplete="current-password" onkeypress="if(event.key==='Enter') login()">
           <button class="primary full" onclick="login()">
             <i class="fa-solid fa-arrow-right-to-bracket"></i>
             Enter Dashboard
@@ -348,18 +595,37 @@
 
     <!-- DASHBOARD -->
     <div id="dashboard" class="dash-grid hidden">
-        
-
       <section class="card">
         <div class="card-head">
           <h1>BYZ Admin Control Center</h1>
           <p>Approvals, check‑ins, and live activity by event.</p>
 
           <div class="stats">
-            <div class="stat"><div class="k">Total</div><div class="v" id="statTotal">—</div></div>
-            <div class="stat"><div class="k">Pending</div><div class="v" id="statPending">—</div></div>
-            <div class="stat"><div class="k">Confirmed</div><div class="v" id="statConfirmed">—</div></div>
-            <div class="stat"><div class="k">Checked‑in</div><div class="v" id="statCheckedIn">—</div></div>
+            <div class="stat">
+              <div class="k">Total Bookings</div>
+              <div class="v" id="statTotal">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Pending Review</div>
+              <div class="v" id="statPending">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Confirmed</div>
+              <div class="v" id="statConfirmed">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Checked In</div>
+              <div class="v" id="statCheckedIn">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Total Revenue</div>
+              <div class="v" id="statRevenue">—</div>
+              <div class="sub" id="statRevenueSub"></div>
+            </div>
+            <div class="stat">
+              <div class="k">Avg Booking</div>
+              <div class="v" id="statAvg">—</div>
+            </div>
           </div>
 
           <div class="tabs">
@@ -371,17 +637,31 @@
 
           <div class="toolbar">
             <div class="filters">
-              <input id="search" placeholder="Search name / booking ID / phone" oninput="render()">
+              <input id="search" placeholder="Search name / booking ID / phone / transaction" oninput="debouncedRender()">
               <select id="statusFilter" onchange="render()">
-                <option value="">All</option>
+                <option value="">All Status</option>
                 <option value="PENDING">Pending</option>
                 <option value="CONFIRMED">Confirmed</option>
                 <option value="REJECTED">Rejected</option>
               </select>
+              <input type="date" id="dateFrom" onchange="render()" style="min-width:140px;">
+              <input type="date" id="dateTo" onchange="render()" style="min-width:140px;">
+              <select id="amountFilter" onchange="render()">
+                <option value="">All Amounts</option>
+                <option value="0-50000">0 - 50K</option>
+                <option value="50000-200000">50K - 200K</option>
+                <option value="200000-1000000">200K - 1M</option>
+                <option value="1000000-999999999">1M+</option>
+              </select>
             </div>
 
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="primary" onclick="load()">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <label class="refresh-toggle" id="autoRefreshToggle">
+                <input type="checkbox" id="autoRefreshCheck" onchange="toggleAutoRefresh()" style="display:none;">
+                <i class="fa-solid fa-rotate"></i>
+                <span>Auto-refresh</span>
+              </label>
+              <button class="primary" onclick="load()" id="refreshBtn">
                 <i class="fa-solid fa-rotate"></i>
                 Refresh
               </button>
@@ -389,89 +669,63 @@
                 <i class="fa-solid fa-file-csv"></i>
                 Export CSV
               </button>
-              <button onclick="openScan()" class="primary">
+              <a href="./scan.html" class="btn primary" target="_self" rel="noopener">
                 <i class="fa-solid fa-qrcode"></i>
-                Scan Mode
-              </button>
+                Door Check-in Scanner
+              </a>
             </div>
           </div>
 
-          <div id="scanPanel" class="scan hidden">
-            <div class="scan-top">
-              <div class="scan-title">
-                <div class="scan-badge"><i class="fa-solid fa-sparkles"></i> Door Check‑in</div>
-                <div class="scan-h">Scan booking QR</div>
-                <div class="scan-sub">Choose event, scan QR, check in 1 or all</div>
-              </div>
-
-              <div class="scan-actions">
-                <select id="scanEvent">
-                  <option value="groove">Groove</option>
-                  <option value="tempo">Tempo</option>
-                  <option value="apt">APT</option>
-                </select>
-                <button onclick="startScan()" class="primary">
-                  <i class="fa-solid fa-camera"></i> Start Camera
-                </button>
-                <button onclick="stopScan()">
-                  <i class="fa-solid fa-circle-stop"></i> Stop
-                </button>
-                <button onclick="closeScan()">
-                  <i class="fa-solid fa-xmark"></i> Close
-                </button>
+          <div id="verifyPanel" class="verify-panel hidden">
+            <div class="verify-header">
+              <i class="fa-solid fa-shield-halved"></i>
+              <div class="verify-title">Transaction Verification</div>
+            </div>
+            <div class="verify-grid" id="verifyGrid"></div>
+          <div id="verifyWarning" class="verify-warning hidden">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span></span>
+          </div>
+          <div style="margin-top:16px;padding:16px;border-radius:16px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));">
+            <div style="display:flex;align-items:center;gap:8px;color:var(--warn);font-size:13px;font-weight:700;margin-bottom:12px;">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>M-Pesa Verification Steps:</span>
+            </div>
+            <ol style="margin:0;padding-left:20px;font-size:12px;color:var(--text);line-height:2;">
+              <li>Copy the transaction code above</li>
+              <li>Open M-Pesa on the BYZ phone</li>
+              <li>Search for the transaction using the code</li>
+              <li><b>Verify the M-Pesa transaction amount matches the expected amount shown above</b></li>
+              <li>Only approve if the amounts match exactly</li>
+            </ol>
+            <div style="margin-top:12px;padding:10px;background:color-mix(in srgb, var(--bad) 8%, transparent);border-radius:8px;border-left:3px solid var(--bad);">
+              <div style="font-size:11px;color:var(--bad);font-weight:600;">
+                <i class="fa-solid fa-shield-halved"></i> Fraud Prevention: Always verify the M-Pesa transaction amount before approving.
               </div>
             </div>
-
-            <div class="scan-grid">
-              <div class="scan-video">
-                <video id="cam" playsinline muted></video>
-                <canvas id="scanCanvas" class="hidden"></canvas>
-                <div class="scan-hint" id="scanHint">Point camera at the QR code</div>
-              </div>
-
-              <div class="scan-side">
-                <div class="scan-manual">
-                  <div class="k">Manual Booking ID</div>
-                  <div class="row">
-                    <input id="manualBid" placeholder="e.g., BYZ-GROOVE-TICKET-XXXX" />
-                    <button class="primary" onclick="verifyById(manualBid.value)">
-                      <i class="fa-solid fa-magnifying-glass"></i> Verify
-                    </button>
-                  </div>
-                </div>
-
-                <div id="scanResult" class="scan-result">
-                  <div class="big">Ready</div>
-                  <div class="sub">Scan a QR or search a Booking ID.</div>
-                </div>
-
-                <div class="scan-cta">
-                  <button id="btnOne" class="primary" onclick="checkIn(1)" disabled>
-                    <i class="fa-solid fa-right-to-bracket"></i> Check in 1
-                  </button>
-                  <button id="btnAll" onclick="checkIn('all')" disabled>
-                    <i class="fa-solid fa-people-group"></i> Check in all
-                  </button>
-                </div>
-              </div>
-            </div>
+          </div>
           </div>
         </div>
 
         <div class="card-body">
+          <div id="activityLog" class="activity-log hidden">
+            <div style="font-weight:800;font-size:12px;margin-bottom:10px;color:var(--text)">Recent Activity</div>
+            <div id="activityItems"></div>
+          </div>
+
           <div class="table-wrap">
             <div class="scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Event</th>
-                    <th>Booking ID</th>
-                    <th>Type</th>
+                    <th class="sortable" data-sort="eventKey">Event</th>
+                    <th class="sortable" data-sort="bookingId">Booking ID</th>
+                    <th class="sortable" data-sort="bookingType">Type</th>
                     <th>Description</th>
-                    <th>Name</th>
+                    <th class="sortable" data-sort="name">Name</th>
                     <th>Phone</th>
-                    <th>Amount</th>
-                    <th>Status</th>
+                    <th class="sortable" data-sort="amount">Amount</th>
+                    <th class="sortable" data-sort="status">Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -479,120 +733,502 @@
               </table>
             </div>
           </div>
+
+          <div class="card-view">
+            <div id="cardRows"></div>
+          </div>
+
+          <div id="emptyState" class="empty-state hidden">
+            <i class="fa-solid fa-inbox"></i>
+            <h3>No bookings found</h3>
+            <p>Try adjusting your filters or search terms.</p>
+          </div>
         </div>
       </section>
     </div>
   </main>
+
+  <!-- Toast Container -->
+  <div class="toast" id="toastContainer"></div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="confirmTitle"></div>
+        <button class="modal-close" onclick="closeConfirmModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="confirmBody"></div>
+      <div class="modal-actions">
+        <button onclick="closeConfirmModal()">Cancel</button>
+        <button class="primary" id="confirmActionBtn" onclick="confirmAction()">Confirm</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
     const ADMIN_PASSWORD = "weballwithbyz";
 
     let bookings = [];
+    let filteredBookings = [];
     let currentEvent = "";
+    let sortColumn = "";
+    let sortDirection = "asc";
+    let currentVerifyBooking = null;
+    let pendingConfirm = null;
+    let autoRefreshInterval = null;
+    let activityLog = JSON.parse(localStorage.getItem("byz_activity") || "[]");
+    let lastLoadTime = null;
 
     (function initTheme(){
-      // Always force dark mode
-document.body.setAttribute("data-theme", "dark");
-localStorage.removeItem("byz_theme");
-})();
+      document.body.setAttribute("data-theme", "dark");
+      localStorage.removeItem("byz_theme");
+    })();
 
-function toggleTheme(){
-  // Disabled - always dark mode
-  return;
-}
+    function toggleTheme(){
+      return;
+    }
 
     function login(){
-  if(password.value === ADMIN_PASSWORD){
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("dashboard").classList.remove("hidden");
-
-        // ensure scrolling works + jump to top (below fixed header)
-    document.documentElement.style.overflow = "";
-    document.body.style.overflow = "";
-    
-    requestAnimationFrame(() => {
-      const dash = document.getElementById("dashboard");
-      if(dash){
-        dash.scrollIntoView({ behavior: "auto", block: "start" });
-      } else {
+      if(password.value === ADMIN_PASSWORD){
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+        requestAnimationFrame(() => {
+          const dash = document.getElementById("dashboard");
+          if(dash){
+            dash.scrollIntoView({ behavior: "auto", block: "start" });
+          } else {
             window.scrollTo({ top: 0, behavior: "auto" });
-      }
-    });
-
-
-
-    load();
-  } else {
-    alert("Incorrect password");
-  }
-}
-
-
-    async function load(){
-      try{
-        const url = currentEvent ? `${SCRIPT_URL}?event=${currentEvent}` : SCRIPT_URL;
-        const res = await fetch(url, { cache: "no-store" });
-        const data = await res.json();
-
-        bookings = Array.isArray(data.bookings) ? data.bookings : [];
-        render();
-
-      }catch(err){
-        console.error(err);
-        alert("Failed to load bookings");
+          }
+        });
+        load();
+      } else {
+        showToast("Incorrect password", "error");
       }
     }
 
-    function render(){
-      const q = search.value.toLowerCase();
-      const status = statusFilter.value;
-      rows.innerHTML="";
+    function updateConnectionStatus(){
+      const status = navigator.onLine ? "online" : "offline";
+      const el = document.getElementById("connectionStatus");
+      el.className = `connection-status ${status}`;
+      el.innerHTML = `<i class="fa-solid fa-circle"></i> <span>${status === "online" ? "Online" : "Offline"}</span>`;
+    }
+    window.addEventListener("online", updateConnectionStatus);
+    window.addEventListener("offline", updateConnectionStatus);
+    updateConnectionStatus();
 
-      const filtered = bookings.filter(b =>
-        (!status || b.status === status) &&
-        (!q ||
+    async function load(){
+      const btn = document.getElementById("refreshBtn");
+      const originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Loading...';
+
+      try{
+        const url = currentEvent ? `${SCRIPT_URL}?event=${currentEvent}` : SCRIPT_URL;
+        const res = await fetch(url, { cache: "no-store" });
+        if(!res.ok) throw new Error("Network error");
+        const data = await res.json();
+        bookings = Array.isArray(data.bookings) ? data.bookings : [];
+        lastLoadTime = Date.now();
+        render();
+        showToast("Data refreshed", "success");
+      }catch(err){
+        console.error(err);
+        showToast("Failed to load bookings. Check connection.", "error");
+        updateConnectionStatus();
+      }finally{
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+      }
+    }
+
+    let renderTimeout = null;
+    function debouncedRender(){
+      clearTimeout(renderTimeout);
+      renderTimeout = setTimeout(render, 300);
+    }
+
+    function calculateExpectedAmount(booking){
+      if(!booking) return 0;
+      // Amount is calculated automatically in booking.html based on type
+      // For TICKET: quantity * 30000
+      // For TABLE: tier determines amount (700K=700000, 1.2M=1200000, 1.8M=1800000)
+      if(booking.bookingType === "TICKET"){
+        const qty = Number(booking.quantity) || 1;
+        return qty * 30000; // TICKET_PRICE constant
+      }
+      if(booking.tier === "700K") return 700000;
+      if(booking.tier === "1.2M") return 1200000;
+      if(booking.tier === "1.8M") return 1800000;
+      // Fallback to stored amount if calculation fails
+      return Number(booking.amount) || 0;
+    }
+
+    function render(){
+      const q = (document.getElementById("search").value || "").toLowerCase();
+      const status = document.getElementById("statusFilter").value;
+      const dateFrom = document.getElementById("dateFrom").value;
+      const dateTo = document.getElementById("dateTo").value;
+      const amountFilter = document.getElementById("amountFilter").value;
+
+      filteredBookings = bookings.filter(b => {
+        if(status && b.status !== status) return false;
+        if(q && !(
           (b.name||"").toLowerCase().includes(q) ||
           (b.bookingId||"").toLowerCase().includes(q) ||
-          (b.phone||"").toLowerCase().includes(q)
-        )
-      );
+          (b.phone||"").toLowerCase().includes(q) ||
+          (b.transactionCode||"").toLowerCase().includes(q)
+        )) return false;
+        if(dateFrom || dateTo){
+          const bookingDate = (b.timestamp || b.createdAt || b.date) ? new Date(b.timestamp || b.createdAt || b.date) : null;
+          if(!bookingDate || isNaN(bookingDate.getTime())) return true;
+          if(dateFrom && bookingDate < new Date(dateFrom)) return false;
+          if(dateTo){
+            const toDate = new Date(dateTo);
+            toDate.setHours(23,59,59);
+            if(bookingDate > toDate) return false;
+          }
+        }
+        if(amountFilter){
+          const [min, max] = amountFilter.split("-").map(x => parseInt(x) || 0);
+          const amount = Number(b.amount) || 0;
+          if(amount < min || (max && amount > max)) return false;
+        }
+        return true;
+      });
 
-      const total = filtered.length;
-      const pending = filtered.filter(b => b.status === "PENDING").length;
-      const confirmed = filtered.filter(b => b.status === "CONFIRMED").length;
-      const checkedIn = filtered.reduce((s,b)=> s + (Number(b.checkedInCount)||0), 0);
+      if(sortColumn){
+        filteredBookings.sort((a, b) => {
+          let aVal = a[sortColumn] || "";
+          let bVal = b[sortColumn] || "";
+          if(sortColumn === "amount"){
+            aVal = Number(aVal) || 0;
+            bVal = Number(bVal) || 0;
+          } else {
+            aVal = String(aVal).toLowerCase();
+            bVal = String(bVal).toLowerCase();
+          }
+          if(sortDirection === "asc"){
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      }
 
-      statTotal.textContent = total;
-      statPending.textContent = pending;
-      statConfirmed.textContent = confirmed;
-      statCheckedIn.textContent = checkedIn;
+      const total = filteredBookings.length;
+      const pending = filteredBookings.filter(b => b.status === "PENDING").length;
+      const confirmed = filteredBookings.filter(b => b.status === "CONFIRMED").length;
+      const checkedIn = filteredBookings.reduce((s,b)=> s + (Number(b.checkedInCount)||0), 0);
+      const revenue = filteredBookings
+        .filter(b => b.status === "CONFIRMED")
+        .reduce((s,b) => s + (Number(b.amount)||0), 0);
+      const avgBooking = confirmed > 0 ? Math.round(revenue / confirmed) : 0;
 
-      filtered.forEach(b=>{
-        const tr=document.createElement("tr");
-        tr.innerHTML=`
+      document.getElementById("statTotal").textContent = total;
+      document.getElementById("statPending").textContent = pending;
+      document.getElementById("statConfirmed").textContent = confirmed;
+      document.getElementById("statCheckedIn").textContent = checkedIn;
+      document.getElementById("statRevenue").textContent = revenue > 0 ? (revenue / 1000).toFixed(0) + "K" : "—";
+      document.getElementById("statRevenueSub").textContent = revenue > 0 ? "TZS" : "";
+      document.getElementById("statAvg").textContent = avgBooking > 0 ? (avgBooking / 1000).toFixed(0) + "K" : "—";
+
+      const rowsEl = document.getElementById("rows");
+      const cardRowsEl = document.getElementById("cardRows");
+      const emptyState = document.getElementById("emptyState");
+
+      rowsEl.innerHTML = "";
+      cardRowsEl.innerHTML = "";
+
+      if(filteredBookings.length === 0){
+        emptyState.classList.remove("hidden");
+        return;
+      }
+      emptyState.classList.add("hidden");
+
+      filteredBookings.forEach((b, idx) => {
+        const expectedAmount = calculateExpectedAmount(b);
+        const enteredAmount = Number(b.amount) || 0;
+        const amountMatch = expectedAmount === enteredAmount;
+        const hasTransactionCode = b.transactionCode && b.transactionCode.trim();
+
+        const tr = document.createElement("tr");
+        tr.dataset.bookingId = b.bookingId;
+        tr.innerHTML = `
           <td>${(b.eventKey||"").toUpperCase()}</td>
           <td>${b.bookingId}</td>
           <td>${b.bookingType}</td>
           <td>${b.description}</td>
           <td>${b.name}</td>
           <td>${b.phone}</td>
-          <td>${b.amount || "-"}</td>
+          <td>
+            ${b.amount ? (Number(b.amount).toLocaleString() + " TZS") : "-"}
+            ${b.status === "PENDING" && b.transactionCode ? `<br><button onclick="showVerifyPanel('${b.bookingId}')" style="margin-top:4px;font-size:11px;padding:4px 8px;width:100%;">
+              <i class="fa-solid fa-shield-halved"></i> Verify
+            </button>` : ""}
+          </td>
           <td class="status ${b.status}">${b.status}</td>
           <td>
             ${b.status==="PENDING"
-              ? `<button class="approve" onclick="approve('${b.bookingId}','${b.eventKey}')">Approve</button>
-                 <button class="reject" onclick="rejectBooking('${b.bookingId}','${b.eventKey}')">Reject</button>`
-              : `<button onclick="resend('${b.bookingId}','${b.eventKey}')">Resend</button>`
+              ? `<button class="approve" onclick="showApproveModal('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-check"></i> Approve
+                 </button>
+                 <button class="reject" onclick="showRejectModal('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-xmark"></i> Reject
+                 </button>
+                 ${hasTransactionCode ? `<button onclick="showVerifyPanel('${b.bookingId}')" style="margin-top:6px;width:100%;font-size:12px;padding:8px;">
+                   <i class="fa-solid fa-shield-halved"></i> Verify
+                 </button>` : ""}`
+              : `<button onclick="resend('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-paper-plane"></i> Resend
+                 </button>`
             }
           </td>
         `;
-        rows.appendChild(tr);
+        rowsEl.appendChild(tr);
+
+        const card = document.createElement("div");
+        card.className = "booking-card";
+        card.dataset.bookingId = b.bookingId;
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${b.bookingId}</div>
+            <span class="status ${b.status}">${b.status}</span>
+          </div>
+          <div class="card-meta">
+            <div><b>Name:</b> ${b.name}</div>
+            <div><b>Phone:</b> ${b.phone}</div>
+            <div><b>Event:</b> ${(b.eventKey||"").toUpperCase()}</div>
+            <div><b>Type:</b> ${b.bookingType}</div>
+            <div><b>Description:</b> ${b.description}</div>
+            <div><b>Amount:</b> ${b.amount ? (Number(b.amount).toLocaleString() + " TZS") : "-"}</div>
+            ${hasTransactionCode ? `<div><b>Transaction:</b> ${b.transactionCode}</div>` : ""}
+          </div>
+          <div class="card-actions">
+            ${b.status==="PENDING"
+              ? `<button class="approve" onclick="showApproveModal('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-check"></i> Approve
+                 </button>
+                 <button class="reject" onclick="showRejectModal('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-xmark"></i> Reject
+                 </button>`
+              : `<button onclick="resend('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-paper-plane"></i> Resend
+                 </button>`
+            }
+          </div>
+        `;
+        cardRowsEl.appendChild(card);
+      });
+
+      updateSortIndicators();
+    }
+
+    function updateSortIndicators(){
+      document.querySelectorAll("thead th").forEach(th => {
+        th.classList.remove("sort-asc", "sort-desc");
+        if(th.dataset.sort === sortColumn){
+          th.classList.add(sortDirection === "asc" ? "sort-asc" : "sort-desc");
+        }
       });
     }
 
+    document.querySelectorAll("thead th.sortable").forEach(th => {
+      th.addEventListener("click", () => {
+        const col = th.dataset.sort;
+        if(sortColumn === col){
+          sortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+          sortColumn = col;
+          sortDirection = "asc";
+        }
+        render();
+      });
+    });
+
+    function showVerifyPanel(bookingId){
+      const booking = bookings.find(b => b.bookingId === bookingId);
+      if(!booking) return;
+
+      currentVerifyBooking = booking;
+      const expectedAmount = calculateExpectedAmount(booking);
+      const storedAmount = Number(booking.amount) || 0;
+      
+      // Amount is calculated automatically in booking.html (not entered by user)
+      // Admin workflow: Use transaction code to look up M-Pesa transaction on BYZ phone
+      // Verify the M-Pesa transaction amount matches the expected amount
+
+      document.getElementById("verifyPanel").classList.remove("hidden");
+      document.getElementById("verifyGrid").innerHTML = `
+        <div class="verify-item" style="grid-column: 1 / -1;">
+          <div class="verify-label">Transaction Code (Look up in M-Pesa)</div>
+          <div class="verify-value" style="font-size:24px;font-weight:900;word-break:break-all;letter-spacing:.15em;margin-top:12px;padding:16px;background:color-mix(in srgb, var(--primary) 8%, transparent);border-radius:12px;border:2px solid color-mix(in srgb, var(--primary) 20%, transparent);">
+            ${booking.transactionCode || "Not provided"}
+          </div>
+          ${booking.transactionCode ? `
+            <div style="display:flex;gap:8px;margin-top:16px;">
+              <button onclick="copyToClipboard('${booking.transactionCode}')" style="flex:1;font-size:14px;padding:12px;font-weight:600;">
+                <i class="fa-solid fa-copy"></i> Copy Code
+              </button>
+            </div>
+          ` : ""}
+        </div>
+        <div class="verify-item" style="grid-column: 1 / -1;">
+          <div class="verify-label">Expected Amount (Verify this matches M-Pesa)</div>
+          <div class="verify-value match" style="font-size:22px;font-weight:700;margin-top:8px;">
+            ${expectedAmount.toLocaleString()} TZS
+          </div>
+          <div style="font-size:12px;color:var(--sub);margin-top:8px;padding:10px;background:color-mix(in srgb, var(--bg2) 50%, transparent);border-radius:8px;">
+            <div><b>Calculation:</b></div>
+            ${booking.bookingType === "TICKET" 
+              ? `<div>${booking.quantity || 1} ticket(s) × 30,000 TZS = ${expectedAmount.toLocaleString()} TZS</div>`
+              : booking.tier 
+                ? `<div>VIP Table ${booking.tier} = ${expectedAmount.toLocaleString()} TZS</div>`
+                : `<div>Amount: ${expectedAmount.toLocaleString()} TZS</div>`}
+          </div>
+        </div>
+        <div class="verify-item" style="grid-column: 1 / -1;">
+          <div class="verify-label">Booking Details</div>
+          <div style="font-size:13px;margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:10px;">
+            <div><b>Name:</b> ${booking.name}</div>
+            <div><b>Phone:</b> ${booking.phone}</div>
+            <div><b>Type:</b> ${booking.bookingType}</div>
+            <div><b>Quantity:</b> ${booking.quantity || 1}</div>
+            ${booking.tier ? `<div><b>Tier:</b> ${booking.tier}</div>` : ""}
+            <div><b>Event:</b> ${(booking.eventKey || "").toUpperCase()}</div>
+          </div>
+        </div>
+      `;
+
+      // Only show warning if there's a data inconsistency (stored vs calculated)
+      // This shouldn't happen normally, but could indicate a bug
+      const hasDataMismatch = storedAmount !== expectedAmount && storedAmount > 0 && expectedAmount > 0;
+      document.getElementById("verifyWarning").classList.toggle("hidden", !hasDataMismatch);
+      if(hasDataMismatch){
+        document.getElementById("verifyWarning").innerHTML = `
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Data inconsistency: Stored amount (${storedAmount.toLocaleString()}) doesn't match calculated amount (${expectedAmount.toLocaleString()}). Please verify against M-Pesa.</span>
+        `;
+      }
+    }
+
+    function copyToClipboard(text){
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Copied to clipboard", "success");
+      });
+    }
+
+    function showApproveModal(id, eventKey){
+      const booking = bookings.find(b => b.bookingId === id);
+      if(!booking) return;
+
+      const expectedAmount = calculateExpectedAmount(booking);
+      const storedAmount = Number(booking.amount) || 0;
+      // Amount is calculated automatically, not entered by user
+      // Admin must verify against M-Pesa using transaction code
+      const hasDataMismatch = storedAmount !== expectedAmount && storedAmount > 0 && expectedAmount > 0;
+
+      pendingConfirm = { action: "approve", id, eventKey };
+      document.getElementById("confirmTitle").textContent = "Approve Payment";
+      document.getElementById("confirmBody").innerHTML = `
+        <div style="margin-bottom:12px;"><b>Booking ID:</b> ${booking.bookingId}</div>
+        <div style="margin-bottom:12px;"><b>Name:</b> ${booking.name}</div>
+        <div style="margin-bottom:12px;"><b>Expected Amount:</b> ${expectedAmount.toLocaleString()} TZS</div>
+        ${booking.transactionCode ? `
+          <div style="margin-bottom:12px;">
+            <b>Transaction Code:</b> 
+            <div style="font-family:monospace;font-size:14px;margin-top:4px;padding:8px;background:color-mix(in srgb, var(--bg2) 50%, transparent);border-radius:8px;word-break:break-all;">
+              ${booking.transactionCode}
+            </div>
+          </div>
+        ` : ""}
+        ${hasDataMismatch ? `
+          <div style="margin-top:12px;padding:10px;border-radius:12px;background:color-mix(in srgb, var(--bad) 15%, transparent);border:1px solid color-mix(in srgb, var(--bad) 30%, var(--border));color:var(--bad);font-size:12px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Data inconsistency: Stored amount (${storedAmount.toLocaleString()}) doesn't match calculated (${expectedAmount.toLocaleString()}). Verify against M-Pesa.
+          </div>
+        ` : ""}
+        <div style="margin-top:16px;padding:12px;border-radius:12px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));color:var(--text);font-size:12px;">
+          <i class="fa-solid fa-shield-halved"></i> <b>Before approving:</b> Verify the M-Pesa transaction amount matches ${expectedAmount.toLocaleString()} TZS using the transaction code above.
+        </div>
+      `;
+      document.getElementById("confirmActionBtn").className = "primary approve";
+      document.getElementById("confirmActionBtn").innerHTML = '<i class="fa-solid fa-check"></i> Approve';
+      document.getElementById("confirmModal").classList.remove("hidden");
+    }
+
+    function showRejectModal(id, eventKey){
+      const booking = bookings.find(b => b.bookingId === id);
+      if(!booking) return;
+
+      pendingConfirm = { action: "reject", id, eventKey };
+      document.getElementById("confirmTitle").textContent = "Reject Booking";
+      document.getElementById("confirmBody").innerHTML = `
+        <div style="margin-bottom:12px;"><b>Booking ID:</b> ${booking.bookingId}</div>
+        <div style="margin-bottom:12px;"><b>Name:</b> ${booking.name}</div>
+        <div style="margin-top:16px;color:var(--sub);font-size:13px;">This action cannot be undone. Are you sure?</div>
+      `;
+      document.getElementById("confirmActionBtn").className = "primary reject";
+      document.getElementById("confirmActionBtn").innerHTML = '<i class="fa-solid fa-xmark"></i> Reject';
+      document.getElementById("confirmModal").classList.remove("hidden");
+    }
+
+    function closeConfirmModal(){
+      document.getElementById("confirmModal").classList.add("hidden");
+      pendingConfirm = null;
+    }
+
+    function confirmAction(){
+      if(!pendingConfirm) return;
+      const { action, id, eventKey } = pendingConfirm;
+      closeConfirmModal();
+      if(action === "approve"){
+        approve(id, eventKey);
+      } else {
+        rejectBooking(id, eventKey);
+      }
+    }
+
+    function addActivity(action, bookingId, details){
+      activityLog.unshift({
+        action, bookingId, details,
+        time: new Date().toLocaleTimeString()
+      });
+      activityLog = activityLog.slice(0, 20);
+      localStorage.setItem("byz_activity", JSON.stringify(activityLog));
+      updateActivityLog();
+    }
+
+    function updateActivityLog(){
+      const container = document.getElementById("activityItems");
+      if(activityLog.length === 0){
+        document.getElementById("activityLog").classList.add("hidden");
+        return;
+      }
+      document.getElementById("activityLog").classList.remove("hidden");
+      container.innerHTML = activityLog.slice(0, 5).map(item => `
+        <div class="activity-item">
+          <div>
+            <span class="activity-action">${item.action}</span>
+            <span style="color:var(--sub);">${item.bookingId}</span>
+          </div>
+          <span class="activity-time">${item.time}</span>
+        </div>
+      `).join("");
+    }
+
     async function approve(id, eventKey){
-      if(!confirm("Approve this payment?")) return;
+      const btn = event.target.closest("button");
+      const originalHTML = btn ? btn.innerHTML : "";
+      if(btn){
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Processing...';
+      }
+
       try{
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
@@ -601,18 +1237,37 @@ function toggleTheme(){
         }).then(r=>r.json());
 
         if(!res.success){
-          return alert("Approve failed:\n" + (res.error || "Unknown"));
+          showToast("Approve failed: " + (res.error || "Unknown"), "error");
+          if(btn){
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+          }
+          return;
         }
-        alert("Approved ✅");
-        load();
+
+        addActivity("Approved", id, "Payment approved");
+        showToast("Payment approved successfully", "success");
+        await load();
+        highlightRow(id);
+        autoAdvanceToNextPending();
       }catch(err){
         console.error(err);
-        alert("Approve failed.");
+        showToast("Approve failed. Check connection.", "error");
+        if(btn){
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
       }
     }
 
     async function rejectBooking(id, eventKey){
-      if(!confirm("Reject this booking?")) return;
+      const btn = event.target.closest("button");
+      const originalHTML = btn ? btn.innerHTML : "";
+      if(btn){
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Processing...';
+      }
+
       try{
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
@@ -621,17 +1276,36 @@ function toggleTheme(){
         }).then(r=>r.json());
 
         if(!res.success){
-          return alert("Reject failed:\n" + (res.error || "Unknown"));
+          showToast("Reject failed: " + (res.error || "Unknown"), "error");
+          if(btn){
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+          }
+          return;
         }
-        alert("Rejected ✅");
-        load();
+
+        addActivity("Rejected", id, "Booking rejected");
+        showToast("Booking rejected", "success");
+        await load();
+        highlightRow(id);
       }catch(err){
         console.error(err);
-        alert("Reject failed.");
+        showToast("Reject failed. Check connection.", "error");
+        if(btn){
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
       }
     }
 
     async function resend(id, eventKey){
+      const btn = event.target.closest("button");
+      const originalHTML = btn ? btn.innerHTML : "";
+      if(btn){
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Sending...';
+      }
+
       try{
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
@@ -640,30 +1314,116 @@ function toggleTheme(){
         }).then(r=>r.json());
 
         if(!res.success){
-          return alert("Resend failed:\n" + (res.error || "Unknown"));
+          showToast("Resend failed: " + (res.error || "Unknown"), "error");
+          if(btn){
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+          }
+          return;
         }
-        alert("Resent ✅");
+
+        showToast("Confirmation email resent", "success");
       }catch(err){
         console.error(err);
-        alert("Resend failed.");
+        showToast("Resend failed. Check connection.", "error");
+      }finally{
+        if(btn){
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
       }
     }
 
+    function highlightRow(bookingId){
+      const row = document.querySelector(`tr[data-booking-id="${bookingId}"]`) || document.querySelector(`.booking-card[data-booking-id="${bookingId}"]`);
+      if(row){
+        row.classList.add("recent-action");
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => row.classList.remove("recent-action"), 2000);
+      }
+    }
+
+    function autoAdvanceToNextPending(){
+      setTimeout(() => {
+        const nextPending = filteredBookings.find(b => b.status === "PENDING");
+        if(nextPending){
+          const row = document.querySelector(`tr[data-booking-id="${nextPending.bookingId}"]`) || document.querySelector(`.booking-card[data-booking-id="${nextPending.bookingId}"]`);
+          if(row){
+            row.scrollIntoView({ behavior: "smooth", block: "center" });
+            row.style.outline = `2px solid ${getComputedStyle(document.documentElement).getPropertyValue("--accent")}`;
+            setTimeout(() => row.style.outline = "", 3000);
+          }
+        }
+      }, 500);
+    }
+
     function exportCsv(){
-      const rows = [["Event","Booking ID","Type","Description","Name","Phone","Amount","Status"]];
-      bookings.forEach(b=>{
-        rows.push([b.eventKey, b.bookingId, b.bookingType, b.description, b.name, b.phone, b.amount, b.status]);
+      const rows = [["Event","Booking ID","Type","Description","Name","Phone","Amount","Transaction Code","Status","Checked In"]];
+      filteredBookings.forEach(b=>{
+        rows.push([
+          b.eventKey || "",
+          b.bookingId || "",
+          b.bookingType || "",
+          b.description || "",
+          b.name || "",
+          b.phone || "",
+          b.amount || "",
+          b.transactionCode || "",
+          b.status || "",
+          b.checkedInCount || 0
+        ]);
       });
       const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `byz-${currentEvent || "all"}-export.csv`;
+      const filterInfo = currentEvent ? currentEvent : "all";
+      a.download = `byz-${filterInfo}-export-${new Date().toISOString().split("T")[0]}.csv`;
       a.click();
       URL.revokeObjectURL(a.href);
+      showToast("Export downloaded", "success");
     }
 
-    // Tabs
+    function showToast(message, type = "success"){
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast-item ${type}`;
+      toast.innerHTML = `
+        <i class="fa-solid ${type === "success" ? "fa-circle-check" : "fa-circle-xmark"} toast-icon ${type}"></i>
+        <div class="toast-content">
+          <div class="toast-title">${type === "success" ? "Success" : "Error"}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = "toastSlideIn .3s var(--ease) reverse";
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function toggleAutoRefresh(){
+      const checked = document.getElementById("autoRefreshCheck").checked;
+      const toggle = document.getElementById("autoRefreshToggle");
+      if(checked){
+        toggle.classList.add("active");
+        autoRefreshInterval = setInterval(() => {
+          if(document.visibilityState === "visible" && navigator.onLine){
+            load();
+          }
+        }, 30000);
+      } else {
+        toggle.classList.remove("active");
+        if(autoRefreshInterval){
+          clearInterval(autoRefreshInterval);
+          autoRefreshInterval = null;
+        }
+      }
+    }
+
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -673,230 +1433,19 @@ function toggleTheme(){
       });
     });
 
-    /* ===================== SCAN MODE LOGIC ===================== */
-    let scanOpen = false;
-    let camStream = null;
-    let scanLoopRunning = false;
-    let lastSeen = "";
-    let currentBooking = null;
-    let currentScanEvent = "groove";
-
-    function openScan(){
-      document.getElementById("scanPanel").classList.remove("hidden");
-      scanOpen = true;
-    }
-    function closeScan(){
-      stopScan();
-      document.getElementById("scanPanel").classList.add("hidden");
-      scanOpen = false;
-    }
-    function startScan(){
-      if(!scanOpen) openScan();
-      startCamera();
-    }
-    function stopScan(){
-      scanLoopRunning = false;
-      lastSeen = "";
-      currentBooking = null;
-      setScanResult("Ready", "Scan a QR or search a Booking ID.", null, false);
-      if(camStream){
-        camStream.getTracks().forEach(t => t.stop());
-        camStream = null;
+    document.getElementById("confirmModal").addEventListener("click", (e) => {
+      if(e.target.id === "confirmModal"){
+        closeConfirmModal();
       }
-      const v = document.getElementById("cam");
-      if(v) v.srcObject = null;
-    }
-
-    async function startCamera(){
-      try{
-        const v = document.getElementById("cam");
-        const canvas = document.getElementById("scanCanvas");
-        const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-        camStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" } },
-          audio: false
-        });
-
-        v.srcObject = camStream;
-        await v.play();
-
-        scanLoopRunning = true;
-        document.getElementById("scanHint").textContent = "Scanning…";
-
-        if("BarcodeDetector" in window){
-          const detector = new BarcodeDetector({ formats: ["qr_code"] });
-
-          (async function scanLoop(){
-            while(scanLoopRunning){
-              try{
-                const codes = await detector.detect(v);
-                if(codes && codes.length){
-                  const raw = (codes[0].rawValue || "").trim();
-                  if(raw && raw !== lastSeen){
-                    lastSeen = raw;
-                    const parsed = parseQr_(raw);
-                    if(parsed.bid) await verifyById(parsed.bid, parsed.event || currentScanEvent);
-                  }
-                }
-              }catch(e){}
-              await new Promise(r => setTimeout(r, 150));
-            }
-          })();
-          return;
-        }
-
-        if(typeof jsQR !== "function"){
-          document.getElementById("scanHint").textContent =
-            "Camera on, but QR library missing — use Manual Booking ID.";
-          return;
-        }
-
-        document.getElementById("scanHint").textContent = "Scanning… (Safari mode)";
-
-        (async function scanLoop(){
-          while(scanLoopRunning){
-            try{
-              const w = v.videoWidth;
-              const h = v.videoHeight;
-              if(!w || !h){ await new Promise(r => setTimeout(r, 120)); continue; }
-
-              canvas.width = w; canvas.height = h;
-              ctx.drawImage(v, 0, 0, w, h);
-              const img = ctx.getImageData(0, 0, w, h);
-
-              const code = jsQR(img.data, w, h, { inversionAttempts: "dontInvert" });
-              if(code && code.data){
-                const raw = String(code.data || "").trim();
-                if(raw && raw !== lastSeen){
-                  lastSeen = raw;
-                  const parsed = parseQr_(raw);
-                  if(parsed.bid) await verifyById(parsed.bid, parsed.event || currentScanEvent);
-                }
-              }
-            }catch(e){}
-            await new Promise(r => setTimeout(r, 220));
-          }
-        })();
-
-      }catch(err){
-        console.error(err);
-        alert("Camera blocked. Allow camera permission then try again.");
-      }
-    }
-
-    function parseQr_(raw){
-      try{
-        if(raw.includes("bid=")){
-          const u = new URL(raw);
-          return { bid: u.searchParams.get("bid"), event: u.searchParams.get("event") };
-        }
-      }catch(e){}
-      return { bid: raw, event: "" };
-    }
-
-    async function verifyById(bid, eventKey){
-      bid = (bid || "").trim();
-      if(!bid) return;
-
-      currentScanEvent = eventKey || document.getElementById("scanEvent").value;
-
-      setScanResult("Checking…", "Verifying booking…", null, false);
-
-      try{
-        const url = `${SCRIPT_URL}?event=${encodeURIComponent(currentScanEvent)}&bid=${encodeURIComponent(bid)}`;
-        const res = await fetch(url).then(r=>r.json());
-
-        if(!res.found){
-          setScanResult("❌ Not found", "This booking ID does not exist.", null, false);
-          return;
-        }
-
-        currentBooking = res.booking;
-        const ok = !!res.validForEntry;
-        const title = ok ? "✅ Valid for entry" : "❌ Not valid";
-        const sub = ok
-          ? `Remaining wristbands: ${res.remaining}`
-          : (currentBooking.status !== "CONFIRMED" ? "Status is not confirmed." : "No remaining entries.");
-
-        setScanResult(title, sub, res, ok);
-
-      }catch(err){
-        console.error(err);
-        setScanResult("⚠️ Error", "Could not reach server. Check internet.", null, false);
-      }
-    }
-
-    function setScanResult(title, subtitle, res, enableButtons){
-      const box = document.getElementById("scanResult");
-      box.innerHTML = `
-        <div class="big">${title}</div>
-        <div class="sub">${subtitle}</div>
-        ${res ? `
-          <div class="meta">
-            <div><b>ID:</b> ${res.booking.bookingId}</div>
-            <div><b>Name:</b> ${res.booking.name}</div>
-            <div><b>Description:</b> ${res.booking.description}</div>
-            <div><b>Qty:</b> ${res.booking.quantity} • <b>Checked in:</b> ${res.booking.checkedInCount} • <b>Remaining:</b> ${res.remaining}</div>
-            <div><b>Last:</b> ${res.booking.lastCheckInTime || "—"}</div>
-            <div><b>Status:</b> <span class="status ${res.booking.status}">${res.booking.status}</span></div>
-          </div>
-        ` : ``}
-      `;
-
-      document.getElementById("btnOne").disabled = !enableButtons;
-      document.getElementById("btnAll").disabled = !enableButtons;
-    }
-
-    async function checkIn(count){
-      if(!currentBooking) return;
-
-      try{
-        const payload = {
-          action: "checkin",
-          bookingId: currentBooking.bookingId,
-          count: count,
-          pin: ADMIN_PASSWORD,
-          eventKey: currentScanEvent
-        };
-
-        const res = await fetch(SCRIPT_URL, {
-          method:"POST",
-          headers:{ "Content-Type":"text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        }).then(r=>r.json());
-
-        if(!res.ok){
-          setScanResult("❌ Check-in blocked", res.error || "Not allowed.", null, false);
-          return;
-        }
-
-        const added = (res.added ?? "");
-        setScanResult(
-          "✅ Check-in complete",
-          `Entry recorded${added !== "" ? " (+" + added + ")" : ""}. Ready for next scan.`,
-          null,
-          false
-        );
-
-        currentBooking = null;
-        manualBid.value = "";
-
-        setTimeout(() => {
-          setScanResult("Ready", "Scan a QR or search a Booking ID.", null, false);
-        }, 1200);
-
-        load();
-
-      }catch(err){
-        console.error(err);
-        setScanResult("⚠️ Error", "Check-in failed. Try again.", null, false);
-      }
-    }
-
-    document.getElementById("scanEvent").addEventListener("change", (e)=> {
-      currentScanEvent = e.target.value;
     });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && !document.getElementById("confirmModal").classList.contains("hidden")){
+        closeConfirmModal();
+      }
+    });
+
+    updateActivityLog();
   </script>
 </body>
 </html>
