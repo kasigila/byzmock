@@ -647,8 +647,14 @@
                 <option value="CONFIRMED">Confirmed</option>
                 <option value="REJECTED">Rejected</option>
               </select>
-              <input type="date" id="dateFrom" onchange="render()" style="min-width:140px;">
-              <input type="date" id="dateTo" onchange="render()" style="min-width:140px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label for="dateFrom" style="font-size:12px;color:var(--sub);white-space:nowrap;">From:</label>
+                <input type="date" id="dateFrom" onchange="render()" style="min-width:140px;" title="Start date - Show bookings from this date onwards">
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label for="dateTo" style="font-size:12px;color:var(--sub);white-space:nowrap;">To:</label>
+                <input type="date" id="dateTo" onchange="render()" style="min-width:140px;" title="End date - Show bookings up to and including this date">
+              </div>
               <select id="amountFilter" onchange="render()">
                 <option value="">All Amounts</option>
                 <option value="0-50000">0 - 50K</option>
@@ -834,16 +840,56 @@
       try{
         const url = currentEvent ? `${SCRIPT_URL}?event=${currentEvent}` : SCRIPT_URL;
         const res = await fetch(url, { cache: "no-store" });
-        if(!res.ok) throw new Error("Network error");
-        const data = await res.json();
-        bookings = Array.isArray(data.bookings) ? data.bookings : [];
+        
+        if(!res.ok){
+          const errorText = await res.text();
+          console.error("Response not OK:", res.status, errorText);
+          throw new Error(`HTTP ${res.status}: ${errorText.substring(0, 100)}`);
+        }
+        
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch(parseErr){
+          console.error("JSON parse error:", parseErr, "Response text:", text.substring(0, 200));
+          throw new Error("Invalid JSON response from server");
+        }
+        
+        // Handle different response formats
+        if(Array.isArray(data)){
+          bookings = data;
+        } else if(data && Array.isArray(data.bookings)){
+          bookings = data.bookings;
+        } else if(data && typeof data === 'object'){
+          // Try to find bookings array in response
+          bookings = data.bookings || data.data || [];
+          // If still empty and we have event-specific data, try that
+          if(bookings.length === 0 && data.groove && Array.isArray(data.groove)){
+            bookings = data.groove;
+          }
+          if(bookings.length === 0 && data.tempo && Array.isArray(data.tempo)){
+            bookings = data.tempo;
+          }
+        } else {
+          bookings = [];
+        }
+        
+        console.log("Loaded bookings:", bookings.length, "from response:", data);
+        
         lastLoadTime = Date.now();
         render();
-        showToast("Data refreshed", "success");
+        showToast(`Loaded ${bookings.length} booking(s)`, "success");
       }catch(err){
-        console.error(err);
-        showToast("Failed to load bookings. Check connection.", "error");
+        console.error("Load error:", err);
+        const errorMsg = err.message || "Failed to load bookings. Check connection.";
+        showToast(errorMsg, "error");
         updateConnectionStatus();
+        // Keep existing bookings if any
+        if(bookings.length === 0){
+          bookings = [];
+          render();
+        }
       }finally{
         btn.disabled = false;
         btn.innerHTML = originalHTML;
