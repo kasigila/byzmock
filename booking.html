@@ -26,6 +26,7 @@
       --header-h: 64px;
 
       --ok:#0a7f3f;
+      --bad:#b42318;
       --warn:#b45309;
       --whatsapp:#25D366;
     }
@@ -468,6 +469,175 @@
       text-align:center;
     }
 
+    /* Form Validation Styles */
+    .field-wrapper{
+      position: relative;
+    }
+    .field-error{
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--bad);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .field-error i{
+      font-size: 11px;
+    }
+    input.error, textarea.error{
+      border-color: var(--bad);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 15%, transparent), var(--shadow-soft);
+    }
+    input.success{
+      border-color: var(--ok);
+    }
+    .required-indicator{
+      color: var(--bad);
+      margin-left: 4px;
+    }
+
+    /* Step Indicator */
+    .step-indicator{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+      border: 1px solid var(--border);
+    }
+    .step-dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sub);
+      transition: all .3s var(--ease);
+    }
+    .step-dot.active{
+      background: var(--accent);
+      transform: scale(1.3);
+    }
+    .step-dot.completed{
+      background: var(--ok);
+    }
+    .step-label{
+      font-size: 12px;
+      color: var(--sub);
+      font-weight: 600;
+    }
+    .step-label.active{
+      color: var(--text);
+    }
+
+    /* Loading States */
+    .loading-skeleton{
+      background: linear-gradient(90deg, var(--bg-alt) 25%, color-mix(in srgb, var(--bg-alt) 80%, transparent) 50%, var(--bg-alt) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s ease-in-out infinite;
+      border-radius: 22px;
+      min-height: 160px;
+    }
+    @keyframes loading{
+      0%{ background-position: 200% 0; }
+      100%{ background-position: -200% 0; }
+    }
+
+    /* Success Animation */
+    @keyframes successPulse{
+      0%, 100%{ transform: scale(1); }
+      50%{ transform: scale(1.05); }
+    }
+    .success-animation{
+      animation: successPulse .6s var(--ease);
+    }
+
+    /* Copy Button Animation */
+    @keyframes copyPulse{
+      0%, 100%{ transform: scale(1); }
+      50%{ transform: scale(0.95); }
+    }
+    .copy-pulse{
+      animation: copyPulse .3s var(--ease);
+    }
+
+    /* Guidance Card */
+    .guidance-card{
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--warn) 8%, transparent);
+      border: 1px solid color-mix(in srgb, var(--warn) 25%, var(--border));
+    }
+    .guidance-card h4{
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--warn);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .guidance-card ul{
+      margin: 0;
+      padding-left: 20px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+    .guidance-card li{
+      margin-top: 4px;
+    }
+
+    /* Security Badge */
+    .security-badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--ok) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--ok) 30%, var(--border));
+      font-size: 11px;
+      color: var(--ok);
+      font-weight: 600;
+    }
+
+    /* Confirmation Summary */
+    .confirmation-summary{
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--ok) 8%, transparent);
+      border: 1px solid color-mix(in srgb, var(--ok) 25%, var(--border));
+    }
+    .confirmation-summary h3{
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ok);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .confirmation-row{
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 13px;
+      border-bottom: 1px solid color-mix(in srgb, var(--ok) 15%, transparent);
+    }
+    .confirmation-row:last-child{
+      border-bottom: none;
+    }
+    .confirmation-row .label{
+      color: var(--sub);
+    }
+    .confirmation-row .value{
+      font-weight: 600;
+      color: var(--text);
+    }
+
     @media (max-width: 520px){
       .hero-inner{padding: 22px 16px}
       .card-head{padding: 16px 16px 0}
@@ -531,7 +701,7 @@
   </style>
 </head>
 
-<body data-theme="dark">
+<body data-theme="light">
   <header>
     <div class="container header-inner">
       <a class="brand" href="./index.html" aria-label="BYZ Home">
@@ -564,10 +734,16 @@
           </p>
         </div>
 
-        <div class="hero-right">
+          <div class="hero-right">
           <div class="tag"><i class="fa-solid fa-shield-halved"></i> Secure checkout flow</div>
           <div class="progress" aria-label="Progress">
             <div class="bar" id="progressBar"></div>
+          </div>
+          <div class="step-indicator" id="stepIndicator" aria-label="Booking steps">
+            <div class="step-dot active" data-step="1"></div>
+            <div class="step-dot" data-step="2"></div>
+            <div class="step-dot" data-step="3"></div>
+            <span class="step-label active" id="stepLabel">Step 1 of 3</span>
           </div>
           <div class="tag"><i class="fa-solid fa-location-dot"></i> Dar es Salaam</div>
         </div>
@@ -642,7 +818,9 @@
           <div class="step" id="tablesStep">
             <h3 style="letter-spacing:-.3px;margin-top:14px;">Choose your VIP package</h3>
             <p class="muted">Each tier has limited availability.</p>
-            <div class="packages" id="packages"></div>
+            <div class="packages" id="packages">
+            <div class="loading-skeleton" id="packagesLoading" style="display:none;"></div>
+          </div>
           </div>
         </div>
       </section>
@@ -668,12 +846,12 @@
                   <div class="mpesa-number" id="mpesaNumber">68286833</div>
 
                   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-                    <button class="btn primary" onclick="copyMpesa()" type="button">
+                    <button class="btn primary" id="copyMpesaBtn" onclick="copyMpesa()" type="button" aria-label="Copy M-Pesa number">
                       <i class="fa-regular fa-copy"></i>
                       Copy Lipa Number
                     </button>
 
-                    <a class="btn" href="tel:*150*00#" style="text-decoration:none">
+                    <a class="btn" href="tel:*150*00#" style="text-decoration:none" aria-label="Open M-Pesa">
                       <i class="fa-solid fa-phone"></i>
                       Open M-Pesa
                     </a>
@@ -686,6 +864,17 @@
                       Press <b>SEND</b>.
                     </div>
                   </div>
+
+                  <div class="guidance-card" style="margin-top:12px;">
+                    <h4><i class="fa-solid fa-circle-info"></i> Payment Instructions</h4>
+                    <ul>
+                      <li>Copy the Lipa Number above</li>
+                      <li>Open M-Pesa and go to Lipa na M-Pesa</li>
+                      <li>Enter the business number: <b>68286833</b></li>
+                      <li>Enter the exact amount shown</li>
+                      <li>Complete payment and copy the Transaction ID</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -693,17 +882,43 @@
 
           <div class="step" id="formStep">
             <div class="form">
-              <input id="fullName" placeholder="Full Name" autocomplete="name">
-              <input id="phone" placeholder="Phone (WhatsApp)" autocomplete="tel">
-              <input id="email" placeholder="Email" autocomplete="email">
-              <input id="txn" placeholder="M-Pesa Transaction ID">
+              <div class="field-wrapper">
+                <input id="fullName" placeholder="Full Name" autocomplete="name" required aria-required="true" aria-label="Full Name">
+                <div class="field-error" id="fullNameError" role="alert" aria-live="polite"></div>
+              </div>
+              
+              <div class="field-wrapper">
+                <input id="phone" type="tel" placeholder="Phone (WhatsApp)" autocomplete="tel" required aria-required="true" aria-label="Phone Number">
+                <div class="field-error" id="phoneError" role="alert" aria-live="polite"></div>
+              </div>
+              
+              <div class="field-wrapper">
+                <input id="email" type="email" placeholder="Email (optional)" autocomplete="email" aria-label="Email">
+                <div class="field-error" id="emailError" role="alert" aria-live="polite"></div>
+              </div>
+              
+              <div class="field-wrapper">
+                <input id="txn" placeholder="M-Pesa Transaction ID" required aria-required="true" aria-label="M-Pesa Transaction ID" pattern="[A-Z0-9]+" title="Transaction code should be alphanumeric">
+                <div class="field-error" id="txnError" role="alert" aria-live="polite"></div>
+              </div>
 
-              <button class="btn primary" id="submitBookingBtn" onclick="submitBooking()" type="button">
+              <button class="btn primary" id="submitBookingBtn" onclick="submitBooking()" type="button" aria-label="Submit Booking">
                 <i class="fa-solid fa-lock"></i>
                 Submit Booking
               </button>
 
-              <div class="notice">Once Whatsapp opens press <b>SEND</b> to verify payment.</div>
+              <div class="notice">
+                <i class="fa-solid fa-circle-info"></i> Once WhatsApp opens, press <b>SEND</b> to verify payment.
+              </div>
+            </div>
+
+            <div class="guidance-card">
+              <h4><i class="fa-solid fa-shield-halved"></i> What happens next?</h4>
+              <ul>
+                <li>Your booking will be reviewed within 24 hours</li>
+                <li>You'll receive a confirmation email once approved</li>
+                <li>Your QR code will be sent via WhatsApp</li>
+              </ul>
             </div>
 
             <div class="foot"> </div>
@@ -723,35 +938,77 @@
     let grooveType = "rnb";
 
     (function initTheme(){
-      // Always force dark mode
-document.body.setAttribute("data-theme", "dark");
-localStorage.removeItem("byz_theme");
-})();
+      const saved = localStorage.getItem("byz_theme");
+      if(saved === "dark"){ document.body.setAttribute("data-theme","dark"); }
+    })();
 
-function toggleTheme(){
-  // Disabled - always dark mode
-  return;
-}
+    function toggleTheme(){
+      const isDark = document.body.getAttribute("data-theme") === "dark";
+      document.body.setAttribute("data-theme", isDark ? "light" : "dark");
+      localStorage.setItem("byz_theme", isDark ? "light" : "dark");
+    }
 
     function setProgress(pct){
       const bar = document.getElementById("progressBar");
-      bar.style.width = pct + "%";
+      if(bar) bar.style.width = pct + "%";
     }
+
+    function updateStepIndicator(step){
+      const dots = document.querySelectorAll(".step-dot");
+      const label = document.getElementById("stepLabel");
+      const steps = ["Step 1 of 3", "Step 2 of 3", "Step 3 of 3"];
+      
+      dots.forEach((dot, idx) => {
+        const dotStep = Number(dot.dataset.step);
+        dot.classList.remove("active", "completed");
+        if(dotStep < step){
+          dot.classList.add("completed");
+        } else if(dotStep === step){
+          dot.classList.add("active");
+        }
+      });
+      
+      if(label && step <= 3){
+        label.textContent = steps[step - 1];
+        label.classList.toggle("active", true);
+      }
+    }
+
     setProgress(25);
+    updateStepIndicator(1);
 
     function copyMpesa(){
       const number = document.getElementById("mpesaNumber").innerText.trim();
+      const btn = document.getElementById("copyMpesaBtn");
+      
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(number);
+        navigator.clipboard.writeText(number).then(() => {
+          showToast(`<div><i class="fa-solid fa-circle-check"></i> <b>Copied!</b></div><div class="toast-sub">M-Pesa number copied to clipboard</div>`, 2000);
+          if(btn) btn.classList.add("copy-pulse");
+          setTimeout(() => {
+            if(btn) btn.classList.remove("copy-pulse");
+          }, 300);
+        }).catch(() => {
+          showToast(`<div><i class="fa-solid fa-circle-xmark"></i> <b>Copy failed</b></div><div class="toast-sub">Please copy manually: ${number}</div>`, 3000);
+        });
       } else {
         const temp = document.createElement("textarea");
         temp.value = number;
         document.body.appendChild(temp);
         temp.select();
-        document.execCommand("copy");
-        document.body.removeChild(temp);
+        try {
+          document.execCommand("copy");
+          document.body.removeChild(temp);
+          showToast(`<div><i class="fa-solid fa-circle-check"></i> <b>Copied!</b></div><div class="toast-sub">M-Pesa number copied to clipboard</div>`, 2000);
+          if(btn) btn.classList.add("copy-pulse");
+          setTimeout(() => {
+            if(btn) btn.classList.remove("copy-pulse");
+          }, 300);
+        } catch(err) {
+          document.body.removeChild(temp);
+          showToast(`<div><i class="fa-solid fa-circle-xmark"></i> <b>Copy failed</b></div><div class="toast-sub">Please copy manually: ${number}</div>`, 3000);
+        }
       }
-      alert("Lipa number copied. Open M-Pesa to complete payment.");
     }
 
     function selectType(type, el){
@@ -772,6 +1029,8 @@ function toggleTheme(){
       document.getElementById("formStep").classList.add("active");
 
       setProgress(66);
+      updateStepIndicator(2);
+      saveFormData();
     }
 
     function updateTicketPrice(){
@@ -780,6 +1039,7 @@ function toggleTheme(){
 
       document.getElementById("ticketTotal").textContent =
         (ticketQty * TICKET_PRICE).toLocaleString() + " TZS";
+      saveFormData();
     }
 
     function stepTicket(delta){
@@ -791,21 +1051,215 @@ function toggleTheme(){
     }
     updateTicketPrice();
 
+    // Form Validation Functions
+    function validateField(fieldId, value, type = "text"){
+      const errorEl = document.getElementById(fieldId + "Error");
+      const inputEl = document.getElementById(fieldId);
+      let isValid = true;
+      let errorMsg = "";
+
+      if(!inputEl) return true;
+
+      // Remove previous error state
+      inputEl.classList.remove("error", "success");
+      if(errorEl) errorEl.textContent = "";
+
+      // Required field validation
+      if(inputEl.hasAttribute("required") && !value.trim()){
+        isValid = false;
+        errorMsg = "This field is required";
+      }
+
+      // Type-specific validation
+      if(value.trim() && isValid){
+        switch(type){
+          case "email":
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if(!emailRegex.test(value)){
+              isValid = false;
+              errorMsg = "Please enter a valid email address";
+            }
+            break;
+          case "tel":
+            case "phone":
+            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+            if(!phoneRegex.test(value) || value.replace(/\D/g, "").length < 9){
+              isValid = false;
+              errorMsg = "Please enter a valid phone number";
+            }
+            break;
+          case "transaction":
+            const txnRegex = /^[A-Z0-9]+$/i;
+            if(!txnRegex.test(value) || value.length < 5){
+              isValid = false;
+              errorMsg = "Transaction code should be alphanumeric (min 5 characters)";
+            }
+            break;
+        }
+      }
+
+      // Update UI
+      if(!isValid && errorMsg){
+        inputEl.classList.add("error");
+        if(errorEl){
+          errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${errorMsg}`;
+          errorEl.style.display = "flex";
+        }
+      } else if(value.trim() && isValid){
+        inputEl.classList.add("success");
+      }
+
+      return isValid;
+    }
+
+    function validateAllFields(){
+      const name = document.getElementById("fullName")?.value || "";
+      const phone = document.getElementById("phone")?.value || "";
+      const email = document.getElementById("email")?.value || "";
+      const txn = document.getElementById("txn")?.value || "";
+
+      const nameValid = validateField("fullName", name);
+      const phoneValid = validateField("phone", phone, "tel");
+      const emailValid = !email || validateField("email", email, "email");
+      const txnValid = validateField("txn", txn, "transaction");
+
+      return nameValid && phoneValid && emailValid && txnValid;
+    }
+
+    // Auto-save form data
+    function saveFormData(){
+      const formData = {
+        bookingType,
+        tier,
+        ticketQty,
+        grooveType,
+        fullName: document.getElementById("fullName")?.value || "",
+        phone: document.getElementById("phone")?.value || "",
+        email: document.getElementById("email")?.value || "",
+        txn: document.getElementById("txn")?.value || "",
+        timestamp: Date.now()
+      };
+      localStorage.setItem("byz_booking_draft", JSON.stringify(formData));
+    }
+
+    function loadFormData(){
+      try {
+        const saved = localStorage.getItem("byz_booking_draft");
+        if(!saved) return;
+
+        const data = JSON.parse(saved);
+        // Only restore if less than 1 hour old
+        if(Date.now() - (data.timestamp || 0) > 3600000){
+          localStorage.removeItem("byz_booking_draft");
+          return;
+        }
+
+        if(data.bookingType){
+          bookingType = data.bookingType;
+          tier = data.tier || "";
+          ticketQty = data.ticketQty || 1;
+          grooveType = data.grooveType || "rnb";
+
+          // Restore form fields
+          const nameEl = document.getElementById("fullName");
+          const phoneEl = document.getElementById("phone");
+          const emailEl = document.getElementById("email");
+          const txnEl = document.getElementById("txn");
+          const grooveTypeEl = document.getElementById("grooveType");
+
+          if(nameEl && data.fullName) nameEl.value = data.fullName;
+          if(phoneEl && data.phone) phoneEl.value = data.phone;
+          if(emailEl && data.email) emailEl.value = data.email;
+          if(txnEl && data.txn) txnEl.value = data.txn;
+          if(grooveTypeEl && data.grooveType) grooveTypeEl.value = data.grooveType;
+
+          // Restore booking type selection
+          if(bookingType === "TICKET"){
+            const ticketChoice = document.querySelector('.choice[onclick*="TICKET"]');
+            if(ticketChoice) selectType("TICKET", ticketChoice);
+          } else if(bookingType === "TABLE" && tier){
+            const tableChoice = document.querySelector('.choice[onclick*="TABLE"]');
+            if(tableChoice) selectType("TABLE", tableChoice);
+            // Restore tier selection after a delay to ensure packages are rendered
+            setTimeout(() => {
+              const tierPackage = document.querySelector(`.package[data-tier="${tier}"]`);
+              if(tierPackage) tierPackage.click();
+            }, 500);
+          }
+
+          updateTicketPrice();
+          showToast(`<div><i class="fa-solid fa-rotate-left"></i> <b>Form restored</b></div><div class="toast-sub">Your previous booking data has been restored</div>`, 3000);
+        }
+      } catch(err){
+        console.error("Error loading form data:", err);
+        localStorage.removeItem("byz_booking_draft");
+      }
+    }
+
+    // Load saved form data on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      loadFormData();
+    });
+
+    // Auto-save on input
+    document.addEventListener("DOMContentLoaded", () => {
+      const inputs = ["fullName", "phone", "email", "txn"];
+      inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el){
+          el.addEventListener("input", () => {
+            saveFormData();
+            // Real-time validation
+            const type = id === "phone" ? "tel" : id === "email" ? "email" : id === "txn" ? "transaction" : "text";
+            validateField(id, el.value, type);
+          });
+          el.addEventListener("blur", () => {
+            const type = id === "phone" ? "tel" : id === "email" ? "email" : id === "txn" ? "transaction" : "text";
+            validateField(id, el.value, type);
+          });
+        }
+      });
+    });
+
+    // Warn before leaving with unsaved data
+    let hasUnsavedData = false;
+    window.addEventListener("beforeunload", (e) => {
+      const name = document.getElementById("fullName")?.value || "";
+      const phone = document.getElementById("phone")?.value || "";
+      const txn = document.getElementById("txn")?.value || "";
+      
+      if((name || phone || txn) && bookingType){
+        e.preventDefault();
+        e.returnValue = "You have unsaved booking data. Are you sure you want to leave?";
+        return e.returnValue;
+      }
+    });
+
     function safeArrayBookings(d){
       if(d && Array.isArray(d.bookings)) return d.bookings;
       return [];
     }
 
-    fetch(SCRIPT_URL + "?event=" + EVENT_KEY)
-      .then(r => r.json())
-      .then(d => {
-        availability = safeArrayBookings(d);
-        renderTables();
-      })
-      .catch(() => {
-        availability = [];
-        renderTables();
-      });
+    function loadAvailability(){
+      const loadingEl = document.getElementById("packagesLoading");
+      if(loadingEl) loadingEl.style.display = "block";
+      
+      fetch(SCRIPT_URL + "?event=" + EVENT_KEY)
+        .then(r => r.json())
+        .then(d => {
+          availability = safeArrayBookings(d);
+          renderTables();
+          if(loadingEl) loadingEl.style.display = "none";
+        })
+        .catch(() => {
+          availability = [];
+          renderTables();
+          if(loadingEl) loadingEl.style.display = "none";
+          showToast(`<div><i class="fa-solid fa-triangle-exclamation"></i> <b>Loading failed</b></div><div class="toast-sub">Could not load table availability. Please refresh.</div>`, 4000);
+        });
+    }
+    
+    loadAvailability();
 
     function renderTables(){
       const tiers = [
@@ -838,8 +1292,10 @@ function toggleTheme(){
         div.onclick = () => {
           if(sold) return;
           tier = t.id;
+          div.setAttribute("data-tier", t.id);
           document.querySelectorAll(".package").forEach(p => p.classList.remove("active"));
           div.classList.add("active");
+          saveFormData();
         };
 
         div.onkeydown = (e) => {
@@ -919,6 +1375,25 @@ function toggleTheme(){
         requestId: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2))
       };
 
+      // Validate all fields
+      if(!validateAllFields()){
+        if(btn){
+          btn.disabled = false;
+          btn.style.opacity = "";
+          btn.style.pointerEvents = "";
+          btn.innerHTML = btnText;
+        }
+        __submittingBooking = false;
+        showToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Validation Error</b></div><div class="toast-sub">Please check the form fields and fix any errors</div>`, 3000);
+        // Scroll to first error
+        const firstError = document.querySelector("input.error");
+        if(firstError){
+          firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+          firstError.focus();
+        }
+        return;
+      }
+
       if(!data.name || !data.phone || !data.transactionCode){
         if(btn){
           btn.disabled = false;
@@ -927,7 +1402,8 @@ function toggleTheme(){
           btn.innerHTML = btnText;
         }
         __submittingBooking = false;
-        return alert("Please enter Name, Phone, and Transaction ID.");
+        showToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Missing Information</b></div><div class="toast-sub">Please enter Name, Phone, and Transaction ID</div>`, 3000);
+        return;
       }
 
       try{
@@ -960,15 +1436,53 @@ Txn: ${data.transactionCode}`;
         sessionStorage.setItem("byz_last_status", "submitted");
 
         setProgress(100);
-showPendingToast();
-setTimeout(() => {
-  window.location.href = waUrl;
-}, 650);
+        updateStepIndicator(3);
+        
+        // Clear saved form data
+        localStorage.removeItem("byz_booking_draft");
+        
+        // Show confirmation summary
+        const confirmationHtml = `
+          <div class="confirmation-summary">
+            <h3><i class="fa-solid fa-circle-check"></i> Booking Submitted Successfully</h3>
+            <div class="confirmation-row">
+              <span class="label">Booking ID:</span>
+              <span class="value">${bookingId}</span>
+            </div>
+            <div class="confirmation-row">
+              <span class="label">Name:</span>
+              <span class="value">${data.name}</span>
+            </div>
+            <div class="confirmation-row">
+              <span class="label">Amount:</span>
+              <span class="value">${amount.toLocaleString()} TZS</span>
+            </div>
+            <div class="confirmation-row">
+              <span class="label">Type:</span>
+              <span class="value">${desc}</span>
+            </div>
+          </div>
+        `;
+        
+        const formStep = document.getElementById("formStep");
+        if(formStep){
+          const existingSummary = formStep.querySelector(".confirmation-summary");
+          if(existingSummary) existingSummary.remove();
+          formStep.insertAdjacentHTML("beforeend", confirmationHtml);
+        }
+        
+        // Add success animation to button
+        if(btn) btn.classList.add("success-animation");
+        
+        showPendingToast();
+        setTimeout(() => {
+          window.location.href = waUrl;
+        }, 650);
 
 
       }catch(err){
         console.error(err);
-        alert("Booking failed. Please try again.");
+        showToast(`<div><i class="fa-solid fa-triangle-exclamation"></i> <b>Submission Failed</b></div><div class="toast-sub">Please check your connection and try again</div>`, 4000);
 
         if(btn){
           btn.disabled = false;
@@ -1014,7 +1528,7 @@ function closeBookingModal(){
 }
 
 
-function showToast(html){
+function showToast(html, duration = 3000){
   ensureToast();
   const toast = document.getElementById("byzToast");
   const body = document.getElementById("byzToastBody");
@@ -1022,6 +1536,12 @@ function showToast(html){
   body.innerHTML = html;
   toast.classList.add("show");
   document.body.style.overflow = "hidden";
+
+  // Auto-close after duration
+  if(__toastTimer) clearTimeout(__toastTimer);
+  __toastTimer = setTimeout(() => {
+    closeBookingModal();
+  }, duration);
 }
 
 
@@ -1105,6 +1625,7 @@ document.addEventListener("visibilitychange", () => {
 
     document.getElementById("grooveType")?.addEventListener("change", (e) => {
       grooveType = e.target.value;
+      saveFormData();
     });
 
   </script>
