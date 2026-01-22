@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
@@ -358,6 +358,58 @@
     border-color: transparent;
   }
 
+  /* Form Validation Styles */
+  .field-error{
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--bad);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .field-error i{
+    font-size: 11px;
+  }
+  input.error, select.error, textarea.error{
+    border-color: var(--bad);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 15%, transparent), var(--shadow-soft);
+  }
+  input.success, select.success, textarea.success{
+    border-color: var(--ok);
+  }
+
+  /* Loading States */
+  .loading-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.3);
+    backdrop-filter: blur(8px);
+    display: none;
+    place-items: center;
+    z-index: 5000;
+  }
+  .loading-overlay.show{
+    display: grid;
+  }
+
+  /* Success Animation */
+  @keyframes successPulse{
+    0%, 100%{ transform: scale(1); }
+    50%{ transform: scale(1.05); }
+  }
+  .success-animation{
+    animation: successPulse .6s var(--ease);
+  }
+
+  :root{
+    --bad:#b42318;
+    --ok:#0a7f3f;
+  }
+  [data-theme="dark"]{
+    --bad:#ff453a;
+    --ok:#30d158;
+  }
+
   </style>
 </head>
 
@@ -423,39 +475,44 @@
       <form id="aptForm">
         <div class="form-grid">
           <div class="field">
-            <label for="aptName">Full Name</label>
-            <input id="aptName" required />
+            <label for="aptName">Full Name <span style="color:var(--bad);">*</span></label>
+            <input id="aptName" required aria-required="true" aria-label="Full Name" autocomplete="name" />
+            <div class="field-error" id="aptNameError" role="alert" aria-live="polite"></div>
           </div>
           <div class="field">
-            <label for="aptPhone">WhatsApp Number</label>
-            <input id="aptPhone" required />
+            <label for="aptPhone">WhatsApp Number <span style="color:var(--bad);">*</span></label>
+            <input id="aptPhone" type="tel" required aria-required="true" aria-label="WhatsApp Number" autocomplete="tel" />
+            <div class="field-error" id="aptPhoneError" role="alert" aria-live="polite"></div>
           </div>
           <div class="field">
             <label for="aptIg">Instagram Handle</label>
-            <input id="aptIg" placeholder="@handle" />
+            <input id="aptIg" placeholder="@handle" aria-label="Instagram Handle" />
+            <div class="field-error" id="aptIgError" role="alert" aria-live="polite"></div>
           </div>
           
           <div class="field">
-  <label for="aptBefore">Have you been to APT before?</label>
-  <select id="aptBefore" required>
-    <option value="" selected disabled>Select</option>
-    <option>Yes</option>
-    <option>No</option>
-  </select>
-</div>
+            <label for="aptBefore">Have you been to APT before? <span style="color:var(--bad);">*</span></label>
+            <select id="aptBefore" required aria-required="true" aria-label="Have you been to APT before">
+              <option value="" selected disabled>Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+            <div class="field-error" id="aptBeforeError" role="alert" aria-live="polite"></div>
+          </div>
 
           
           <div class="field">
             <label for="aptNotes">Notes</label>
-            <textarea id="aptNotes" placeholder="Any preferences or special requests"></textarea>
+            <textarea id="aptNotes" placeholder="Any preferences or special requests" aria-label="Notes"></textarea>
+            <div class="field-error" id="aptNotesError" role="alert" aria-live="polite"></div>
           </div>
         </div>
 
         <div class="form-actions">
           
-          <button id="aptSubmitBtn" class="btn primary" type="submit">
-  <i class="fa-solid fa-paper-plane"></i> Request Invite
-</button>
+          <button id="aptSubmitBtn" class="btn primary" type="submit" aria-label="Submit APT Request">
+            <i class="fa-solid fa-paper-plane"></i> Request Invite
+          </button>
 
           
           <span class="note">Submitting opens WhatsApp with your details.</span>
@@ -475,7 +532,155 @@
   const form = document.getElementById("aptForm");
     let __submittingApt = false;
 
-    const igInput = document.getElementById("aptIg");
+    // Form Validation Functions
+  function validateField(fieldId, value, type = "text"){
+    const errorEl = document.getElementById(fieldId + "Error");
+    const inputEl = document.getElementById(fieldId);
+    let isValid = true;
+    let errorMsg = "";
+
+    if(!inputEl) return true;
+
+    // Remove previous error state
+    inputEl.classList.remove("error", "success");
+    if(errorEl) errorEl.textContent = "";
+
+    // Required field validation
+    if(inputEl.hasAttribute("required") && !value.trim()){
+      isValid = false;
+      errorMsg = "This field is required";
+    }
+
+    // Type-specific validation
+    if(value.trim() && isValid){
+      switch(type){
+        case "tel":
+        case "phone":
+          const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+          if(!phoneRegex.test(value) || value.replace(/\D/g, "").length < 9){
+            isValid = false;
+            errorMsg = "Please enter a valid phone number";
+          }
+          break;
+        case "instagram":
+          if(value && !value.startsWith("@")){
+            isValid = false;
+            errorMsg = "Instagram handle must start with @";
+          }
+          break;
+      }
+    }
+
+    // Update UI
+    if(!isValid && errorMsg){
+      inputEl.classList.add("error");
+      if(errorEl){
+        errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${errorMsg}`;
+        errorEl.style.display = "flex";
+      }
+    } else if(value.trim() && isValid){
+      inputEl.classList.add("success");
+    }
+
+    return isValid;
+  }
+
+  function validateAllFields(){
+    const name = document.getElementById("aptName")?.value || "";
+    const phone = document.getElementById("aptPhone")?.value || "";
+    const ig = document.getElementById("aptIg")?.value || "";
+    const before = document.getElementById("aptBefore")?.value || "";
+
+    const nameValid = validateField("aptName", name);
+    const phoneValid = validateField("aptPhone", phone, "tel");
+    const igValid = !ig || validateField("aptIg", ig, "instagram");
+    const beforeValid = validateField("aptBefore", before);
+
+    return nameValid && phoneValid && igValid && beforeValid;
+  }
+
+  // Auto-save form data
+  function saveAptFormData(){
+    const formData = {
+      name: document.getElementById("aptName")?.value || "",
+      phone: document.getElementById("aptPhone")?.value || "",
+      ig: document.getElementById("aptIg")?.value || "",
+      before: document.getElementById("aptBefore")?.value || "",
+      notes: document.getElementById("aptNotes")?.value || "",
+      timestamp: Date.now()
+    };
+    localStorage.setItem("byz_apt_draft", JSON.stringify(formData));
+  }
+
+  function loadAptFormData(){
+    try {
+      const saved = localStorage.getItem("byz_apt_draft");
+      if(!saved) return;
+
+      const data = JSON.parse(saved);
+      // Only restore if less than 1 hour old
+      if(Date.now() - (data.timestamp || 0) > 3600000){
+        localStorage.removeItem("byz_apt_draft");
+        return;
+      }
+
+      if(data.name || data.phone){
+        const nameEl = document.getElementById("aptName");
+        const phoneEl = document.getElementById("aptPhone");
+        const igEl = document.getElementById("aptIg");
+        const beforeEl = document.getElementById("aptBefore");
+        const notesEl = document.getElementById("aptNotes");
+
+        if(nameEl && data.name) nameEl.value = data.name;
+        if(phoneEl && data.phone) phoneEl.value = data.phone;
+        if(igEl && data.ig) igEl.value = data.ig;
+        if(beforeEl && data.before) beforeEl.value = data.before;
+        if(notesEl && data.notes) notesEl.value = data.notes;
+      }
+    } catch(err){
+      console.error("Error loading form data:", err);
+      localStorage.removeItem("byz_apt_draft");
+    }
+  }
+
+  // Load saved form data on page load
+  window.addEventListener("DOMContentLoaded", () => {
+    loadAptFormData();
+  });
+
+  // Auto-save on input
+  document.addEventListener("DOMContentLoaded", () => {
+    const inputs = ["aptName", "aptPhone", "aptIg", "aptBefore", "aptNotes"];
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      if(el){
+        el.addEventListener("input", () => {
+          saveAptFormData();
+          // Real-time validation
+          const type = id === "aptPhone" ? "tel" : id === "aptIg" ? "instagram" : "text";
+          validateField(id, el.value, type);
+        });
+        el.addEventListener("blur", () => {
+          const type = id === "aptPhone" ? "tel" : id === "aptIg" ? "instagram" : "text";
+          validateField(id, el.value, type);
+        });
+      }
+    });
+  });
+
+  // Warn before leaving with unsaved data
+  window.addEventListener("beforeunload", (e) => {
+    const name = document.getElementById("aptName")?.value || "";
+    const phone = document.getElementById("aptPhone")?.value || "";
+    
+    if(name || phone){
+      e.preventDefault();
+      e.returnValue = "You have unsaved form data. Are you sure you want to leave?";
+      return e.returnValue;
+    }
+  });
+
+  const igInput = document.getElementById("aptIg");
   if(igInput){
     igInput.addEventListener("input", () => {
       let v = igInput.value || "";
@@ -483,6 +688,7 @@
       if(!v.startsWith("@")){
         igInput.value = "@" + v.replace(/^@+/, "");
       }
+      saveAptFormData();
     });
   }
 
@@ -494,6 +700,19 @@
   form.addEventListener("submit", async (e) => {
   e.preventDefault();
   if(__submittingApt) return;
+  
+  // Validate all fields
+  if(!validateAllFields()){
+    showAptErrorToast("Please check the form fields and fix any errors");
+    // Scroll to first error
+    const firstError = document.querySelector("input.error, select.error, textarea.error");
+    if(firstError){
+      firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+      firstError.focus();
+    }
+    return;
+  }
+
   __submittingApt = true;
 
   const submitBtn = document.getElementById("aptSubmitBtn");
@@ -521,14 +740,23 @@
     requestId: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2))
   };
 
+   // Clear saved form data
+   localStorage.removeItem("byz_apt_draft");
+   
+   // Add success animation
+   if(submitBtn) submitBtn.classList.add("success-animation");
+
    showAptModal();
 
-  // fire-and-forget submit (don’t block popup)
+  // fire-and-forget submit (don't block popup)
   fetch(SCRIPT_URL, {
     method:"POST",
     headers:{ "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify({ action:"addAptRequest", data })
-  }).catch(() => {});
+  }).catch((err) => {
+    console.error("Submission error:", err);
+    // Could show error toast here if needed
+  });
 
 
  
@@ -549,6 +777,19 @@
     }
   }
 
+  function showAptErrorToast(message){
+    // Create a simple toast notification for errors
+    const toast = document.createElement("div");
+    toast.style.cssText = "position:fixed;top:20px;right:20px;padding:14px 18px;border-radius:18px;background:var(--bg-elev);border:1px solid var(--border);box-shadow:var(--shadow);z-index:10000;max-width:400px;";
+    toast.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-circle-exclamation" style="color:var(--bad);"></i><span>${message}</span></div>`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transition = "opacity 0.3s";
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+
   function closeAptModal(){
     if(modal){
       modal.classList.add("hidden");
@@ -557,7 +798,7 @@
     }
     if(submitBtn){
       submitBtn.classList.add("submitted");
-      submitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Booking submitted`;
+      submitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Request submitted`;
     }
     __submittingApt = false;
     sessionStorage.setItem("apt_last_status","done");
@@ -602,18 +843,33 @@
 ========================================================= */
 (function() {
   const root = document.documentElement;
-const toggle = document.getElementById("themeToggle");
+  const toggle = document.getElementById("themeToggle");
+  const stored = localStorage.getItem("theme");
 
-// Always force dark mode
-root.setAttribute("data-theme", "dark");
+  function applyTheme(theme) {
+    if (theme === "dark") root.setAttribute("data-theme","dark");
+    else root.setAttribute("data-theme","light");
+    if (toggle){
+      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+      toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+    }
+  }
 
-// Hide/disable toggle button
-if (toggle) {
-  toggle.style.display = "none";
-}
+  if (stored) {
+    applyTheme(stored);
+  } else {
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(prefersDark ? "dark" : "light");
+  }
 
-// Clear any stored theme preference
-localStorage.removeItem("theme");
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      const next = isDark ? "light" : "dark";
+      applyTheme(next);
+      localStorage.setItem("theme", next);
+    });
+  }
 })();
 </script>
 <div id="aptModalBackdrop" class="apt-modal-backdrop hidden" aria-hidden="true">
