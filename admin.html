@@ -205,7 +205,7 @@
       border-color: transparent;
     }
     .full{width:100%; margin-top: 12px;}
-    .hidden{display:none}
+    .hidden{display:none !important}
 
     .dash-grid{display:grid;grid-template-columns:1fr;gap:16px;}
     #dashboard{
@@ -419,8 +419,11 @@
       position:fixed;inset:0;z-index:9998;
       background: rgba(0,0,0,.45);
       backdrop-filter: blur(12px);
-      display:grid;place-items:center;padding:20px;
+      display:none;place-items:center;padding:20px;
       animation: fadeIn .2s var(--ease);
+    }
+    .modal-backdrop:not(.hidden){
+      display:grid;
     }
     @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
     .modal{
@@ -752,15 +755,15 @@
   <div class="toast" id="toastContainer"></div>
 
   <!-- Confirmation Modal -->
-  <div id="confirmModal" class="modal-backdrop hidden">
+  <div id="confirmModal" class="modal-backdrop hidden" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
-        <div class="modal-title" id="confirmTitle"></div>
-        <button class="modal-close" onclick="closeConfirmModal()">
+        <div class="modal-title" id="confirmTitle">Confirm Action</div>
+        <button class="modal-close" onclick="closeConfirmModal()" aria-label="Close modal">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <div class="modal-body" id="confirmBody"></div>
+      <div class="modal-body" id="confirmBody">Please confirm this action.</div>
       <div class="modal-actions">
         <button onclick="closeConfirmModal()">Cancel</button>
         <button class="primary" id="confirmActionBtn" onclick="confirmAction()">Confirm</button>
