@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BYZ Door Check-in Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 22px;
+      --radius-lg: 28px;
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --ok:#0a7f3f;
+      --warn:#b45309;
+      --bad:#b42318;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header{
+      position: sticky;
+      top: 0;
+      height: 64px;
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+    }
+
+    .header-inner{
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      letter-spacing:-.4px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo-wrap{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+    }
+
+    .brand-logo{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    .header-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+      color: var(--text);
+      font-weight:700;
+      font-size:13px;
+      cursor:pointer;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+      box-shadow: var(--shadow-soft);
+      text-decoration: none;
+    }
+
+    .btn:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn.primary{
+      background: var(--accent);
+      color: var(--bg);
+      border-color: transparent;
+    }
+
+    main{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .scan-controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    select{
+      padding:10px 14px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      font-size:14px;
+      outline: none;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .scan-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
+      flex: 1;
+    }
+
+    @media (min-width: 980px){
+      .scan-grid{
+        grid-template-columns: 1.1fr .9fr;
+      }
+    }
+
+    .scan-video{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      min-height: 400px;
+      aspect-ratio: 4/3;
+    }
+
+    @media (max-width: 560px){
+      .scan-video{
+        min-height: 300px;
+      }
+    }
+
+    #cam{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      background:#000;
+    }
+
+    .scan-hint{
+      position:absolute;
+      left:14px;
+      bottom:14px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+      color: var(--sub);
+      font-size:13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scan-side{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .scan-manual{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .scan-manual .k{
+      color:var(--sub);
+      font-size:12px;
+      margin-bottom:10px;
+      font-weight: 700;
+    }
+
+    .scan-manual .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    input{
+      flex: 1;
+      min-width: 200px;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      outline: none;
+      font-size:14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .scan-result{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .scan-result .big{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:-.6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scan-result .sub{
+      margin-top:8px;
+      color:var(--sub);
+      font-size:13px;
+    }
+
+    .scan-result .meta{
+      margin-top:12px;
+      color:var(--sub);
+      font-size:13px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .scan-result .meta b{
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .scan-cta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .scan-cta button{
+      flex: 1;
+      min-width: 140px;
+      padding:14px 18px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      font-weight:800;
+      font-size:14px;
+      cursor:pointer;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .scan-cta button:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .scan-cta button.primary{
+      background: var(--accent);
+      color: var(--bg);
+      border-color: transparent;
+    }
+
+    .scan-cta button:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .status{
+      font-weight:900;
+      letter-spacing:-.3px;
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .status.PENDING{
+      color: var(--warn);
+      background: color-mix(in srgb, var(--warn) 15%, transparent);
+    }
+
+    .status.CONFIRMED{
+      color: var(--ok);
+      background: color-mix(in srgb, var(--ok) 15%, transparent);
+    }
+
+    .status.REJECTED{
+      color: var(--bad);
+      background: color-mix(in srgb, var(--bad) 15%, transparent);
+    }
+
+    .status-icon{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-icon.ok{
+      color: var(--ok);
+    }
+
+    .status-icon.bad{
+      color: var(--bad);
+    }
+
+    .status-icon.warn{
+      color: var(--warn);
+    }
+
+    #scanCanvas{
+      display: none;
+    }
+
+    .hidden{
+      display: none !important;
+    }
+
+    /* Toast Notifications */
+    .toast{
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      pointer-events: none;
+    }
+    @media (max-width: 560px){
+      .toast{left:16px;right:16px;max-width:none;}
+    }
+    .toast-item{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      pointer-events: auto;
+      animation: toastSlideIn .3s var(--ease);
+    }
+    @keyframes toastSlideIn{
+      from{transform: translateX(400px);opacity:0;}
+      to{transform: translateX(0);opacity:1;}
+    }
+    .toast-item.success{
+      border-color: color-mix(in srgb, var(--ok) 40%, var(--border));
+      background: color-mix(in srgb, var(--ok) 8%, var(--bg-elev));
+    }
+    .toast-item.error{
+      border-color: color-mix(in srgb, var(--bad) 40%, var(--border));
+      background: color-mix(in srgb, var(--bad) 8%, var(--bg-elev));
+    }
+    .toast-icon{
+      width:20px;height:20px;flex-shrink:0;margin-top:2px;
+    }
+    .toast-icon.success{color:var(--ok)}
+    .toast-icon.error{color:var(--bad)}
+    .toast-content{flex:1}
+    .toast-title{font-weight:800;font-size:14px;margin-bottom:4px}
+    .toast-message{font-size:13px;color:var(--sub);line-height:1.4}
+    .toast-close{
+      width:20px;height:20px;flex-shrink:0;
+      border:none;background:none;color:var(--sub);
+      cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+    }
+
+    /* Connection Status */
+    .connection-status{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      font-size:11px;font-weight:700;
+      background: var(--bg-elev);
+      border:1px solid var(--border);
+    }
+    .connection-status.online{color:var(--ok)}
+    .connection-status.offline{color:var(--bad)}
+
+    /* Loading States */
+    .spinner{
+      width:16px;height:16px;border:2px solid var(--border);
+      border-top-color:var(--accent);border-radius:50%;
+      animation: spin .6s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg);}}
+    button:disabled .spinner{margin:0;}
+
+    /* Flashlight Toggle */
+    .flashlight-btn{
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:44px;
+      height:44px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      box-shadow: var(--shadow-soft);
+      transition: transform .2s var(--ease);
+    }
+    .flashlight-btn:hover{transform: translateY(-2px);}
+    .flashlight-btn.active{
+      background: var(--accent);
+      color: var(--bg);
+      border-color: transparent;
+    }
+
+    /* Quick Stats */
+    .quick-stats{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .quick-stat{
+      flex:1;
+      min-width:100px;
+      padding:10px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      text-align:center;
+    }
+    .quick-stat .value{
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:-.5px;
+    }
+    .quick-stat .label{
+      font-size:11px;
+      color:var(--sub);
+      margin-top:4px;
+    }
+
+    /* Success Animation */
+    .scan-success{
+      animation: successPulse .5s var(--ease);
+    }
+    @keyframes successPulse{
+      0%,100%{transform:scale(1);}
+      50%{transform:scale(1.05);}
+    }
+
+    /* Mobile Full Screen */
+    @media (max-width: 768px){
+      header{position:relative;}
+      .scan-video{min-height:50vh;}
+      .scan-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+  <header>
+    <div class="header-inner">
+      <a class="brand" href="./admin.html" aria-label="Back to Admin">
+        <span class="brand-logo-wrap" aria-hidden="true">
+          <img class="brand-logo" src="assets/byz-logo-white.png" alt="" />
+        </span>
+        <span>Door Check-in</span>
+      </a>
+
+      <div class="header-actions">
+        <span class="connection-status" id="connectionStatus">
+          <i class="fa-solid fa-circle"></i>
+          <span>Online</span>
+        </span>
+        <a class="btn" href="./admin.html">
+          <i class="fa-solid fa-arrow-left"></i>
+          Back to Admin
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="scan-controls">
+      <select id="scanEvent">
+        <option value="groove">Groove</option>
+        <option value="tempo">Tempo</option>
+        <option value="apt">APT</option>
+      </select>
+      <button class="btn" onclick="stopScan()">
+        <i class="fa-solid fa-circle-stop"></i>
+        Stop Camera
+      </button>
+    </div>
+
+    <div class="scan-grid">
+      <div class="scan-video">
+        <video id="cam" playsinline muted></video>
+        <canvas id="scanCanvas" class="hidden"></canvas>
+        <button class="flashlight-btn" id="flashlightBtn" onclick="toggleFlashlight()" title="Toggle flashlight">
+          <i class="fa-solid fa-lightbulb"></i>
+        </button>
+        <div class="scan-hint" id="scanHint">
+          <i class="fa-solid fa-qrcode"></i>
+          <span>Point camera at QR code</span>
+        </div>
+      </div>
+
+      <div class="scan-side">
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <div class="value" id="statsToday">0</div>
+            <div class="label">Scans Today</div>
+          </div>
+          <div class="quick-stat">
+            <div class="value" id="statsCheckedIn">0</div>
+            <div class="label">Checked In</div>
+          </div>
+        </div>
+
+        <div class="scan-manual">
+          <div class="k">Manual Booking ID</div>
+          <div class="row">
+            <input id="manualBid" placeholder="e.g., BYZ-GROOVE-TICKET-XXXX" onkeypress="if(event.key==='Enter') verifyById(manualBid.value)" />
+            <button class="btn primary" onclick="verifyById(manualBid.value)" id="verifyBtn">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              Verify
+            </button>
+          </div>
+        </div>
+
+        <div id="scanResult" class="scan-result">
+          <div class="big">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Ready</span>
+          </div>
+          <div class="sub">Scan a QR code or enter a Booking ID to verify.</div>
+        </div>
+
+        <div class="scan-cta">
+          <button id="btnOne" class="primary" onclick="checkIn(1)" disabled>
+            <i class="fa-solid fa-user"></i>
+            Check in 1
+          </button>
+          <button id="btnAll" onclick="checkIn('all')" disabled>
+            <i class="fa-solid fa-users"></i>
+            Check in all
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Container -->
+  <div class="toast" id="toastContainer"></div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+
+    let camStream = null;
+    let scanLoopRunning = false;
+    let lastSeen = "";
+    let currentBookingId = "";
+    let currentScanEvent = "groove";
+    let flashlightTrack = null;
+    let scansToday = parseInt(localStorage.getItem("byz_scans_today") || "0");
+    let lastScanDate = localStorage.getItem("byz_last_scan_date") || "";
+    let checkedInToday = parseInt(localStorage.getItem("byz_checked_in_today") || "0");
+
+    // Reset daily stats
+    const today = new Date().toDateString();
+    if(lastScanDate !== today){
+      scansToday = 0;
+      checkedInToday = 0;
+      localStorage.setItem("byz_scans_today", "0");
+      localStorage.setItem("byz_checked_in_today", "0");
+      localStorage.setItem("byz_last_scan_date", today);
+    }
+
+    function updateConnectionStatus(){
+      const status = navigator.onLine ? "online" : "offline";
+      const el = document.getElementById("connectionStatus");
+      el.className = `connection-status ${status}`;
+      el.innerHTML = `<i class="fa-solid fa-circle"></i> <span>${status === "online" ? "Online" : "Offline"}</span>`;
+    }
+    window.addEventListener("online", updateConnectionStatus);
+    window.addEventListener("offline", updateConnectionStatus);
+    updateConnectionStatus();
+
+    function updateStats(){
+      document.getElementById("statsToday").textContent = scansToday;
+      document.getElementById("statsCheckedIn").textContent = checkedInToday;
+    }
+
+    function showToast(message, type = "success"){
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast-item ${type}`;
+      toast.innerHTML = `
+        <i class="fa-solid ${type === "success" ? "fa-circle-check" : "fa-circle-xmark"} toast-icon ${type}"></i>
+        <div class="toast-content">
+          <div class="toast-title">${type === "success" ? "Success" : "Error"}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = "toastSlideIn .3s var(--ease) reverse";
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function playSuccessSound(){
+      try{
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value = 800;
+        oscillator.type = "sine";
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.2);
+      }catch(e){}
+    }
+
+    function vibrate(pattern = [100]){
+      if("vibrate" in navigator){
+        navigator.vibrate(pattern);
+      }
+    }
+
+    function toggleFlashlight(){
+      if(!camStream) return;
+      const btn = document.getElementById("flashlightBtn");
+      const track = camStream.getVideoTracks()[0];
+      if(!track || !track.getCapabilities().torch) return;
+
+      try{
+        if(flashlightTrack){
+          flashlightTrack.applyConstraints({ advanced: [{ torch: false }] });
+          flashlightTrack = null;
+          btn.classList.remove("active");
+        } else {
+          track.applyConstraints({ advanced: [{ torch: true }] });
+          flashlightTrack = track;
+          btn.classList.add("active");
+        }
+      }catch(e){
+        showToast("Flashlight not supported on this device", "error");
+      }
+    }
+
+    // Auto-start camera when page loads
+    window.addEventListener("DOMContentLoaded", () => {
+      startCamera();
+      updateStats();
+    });
+
+    document.getElementById("scanEvent").addEventListener("change", (e) => {
+      currentScanEvent = e.target.value;
+    });
+
+    function getPin_(){
+      let pin = localStorage.getItem("byz_admin_pin") || "";
+      if(!pin){
+        pin = prompt("Enter admin pin (same as admin password):") || "";
+        pin = pin.trim();
+        if(pin) localStorage.setItem("byz_admin_pin", pin);
+      }
+      return pin;
+    }
+
+    function stopScan(){
+      scanLoopRunning = false;
+      lastSeen = "";
+      currentBookingId = "";
+      flashlightTrack = null;
+      setScanResult("Ready", "Scan a QR code or enter a Booking ID to verify.", null, false);
+      if(camStream){
+        camStream.getTracks().forEach(t => t.stop());
+        camStream = null;
+      }
+      const v = document.getElementById("cam");
+      if(v) v.srcObject = null;
+      document.getElementById("flashlightBtn").classList.remove("active");
+    }
+
+    async function startCamera(){
+      try{
+        const v = document.getElementById("cam");
+        const canvas = document.getElementById("scanCanvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+        camStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } },
+          audio: false
+        });
+
+        v.srcObject = camStream;
+        await v.play();
+
+        scanLoopRunning = true;
+        document.getElementById("scanHint").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Scanning...</span>';
+
+        if("BarcodeDetector" in window){
+          const detector = new BarcodeDetector({ formats: ["qr_code"] });
+
+          (async function scanLoop(){
+            while(scanLoopRunning){
+              try{
+                const codes = await detector.detect(v);
+                if(codes && codes.length){
+                  const raw = (codes[0].rawValue || "").trim();
+                  if(raw && raw !== lastSeen){
+                    lastSeen = raw;
+                    const bid = extractBookingId_(raw);
+                    if(bid){
+                      document.getElementById("manualBid").value = bid;
+                      await verifyById(bid);
+                    }
+                  }
+                }
+              }catch(e){}
+              await new Promise(r => setTimeout(r, 150));
+            }
+          })();
+          return;
+        }
+
+        if(typeof jsQR !== "function"){
+          document.getElementById("scanHint").innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i> <span>QR library missing — use Manual Booking ID</span>';
+          return;
+        }
+
+        document.getElementById("scanHint").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Scanning... (Safari mode)</span>';
+
+        (async function scanLoop(){
+          while(scanLoopRunning){
+            try{
+              const w = v.videoWidth;
+              const h = v.videoHeight;
+              if(!w || !h){ await new Promise(r => setTimeout(r, 120)); continue; }
+
+              canvas.width = w;
+              canvas.height = h;
+              ctx.drawImage(v, 0, 0, w, h);
+              const img = ctx.getImageData(0, 0, w, h);
+
+              const code = jsQR(img.data, w, h, { inversionAttempts: "dontInvert" });
+              if(code && code.data){
+                const raw = String(code.data || "").trim();
+                if(raw && raw !== lastSeen){
+                  lastSeen = raw;
+                  const bid = extractBookingId_(raw);
+                  if(bid){
+                    document.getElementById("manualBid").value = bid;
+                    await verifyById(bid);
+                  }
+                }
+              }
+            }catch(e){}
+            await new Promise(r => setTimeout(r, 220));
+          }
+        })();
+
+      }catch(err){
+        console.error(err);
+        document.getElementById("scanHint").innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i> <span>Camera blocked. Allow camera permission.</span>';
+      }
+    }
+
+    function extractBookingId_(raw){
+      // QR encodes bookingId directly. If it ever encodes a URL, we try to pull bid= too.
+      if(raw.includes("bid=")){
+        try{
+          const u = new URL(raw);
+          return (u.searchParams.get("bid") || "").trim();
+        }catch(e){
+          const m = raw.match(/bid=([^&]+)/);
+          return m ? decodeURIComponent(m[1]) : raw;
+        }
+      }
+      return raw;
+    }
+
+    async function verifyById(bid, eventKey){
+      bid = (bid || "").trim();
+      if(!bid) return;
+
+      currentBookingId = bid;
+      currentScanEvent = eventKey || document.getElementById("scanEvent").value;
+
+      const verifyBtn = document.getElementById("verifyBtn");
+      const originalHTML = verifyBtn.innerHTML;
+      verifyBtn.disabled = true;
+      verifyBtn.innerHTML = '<span class="spinner"></span> Verifying...';
+
+      setScanResult("Checking...", "Verifying booking...", null, false);
+
+      try{
+        // Use same API call as verify.html - just bid, no event parameter
+        const url = `${SCRIPT_URL}?bid=${encodeURIComponent(bid)}`;
+        const res = await fetch(url).then(r=>r.json());
+
+        if(!res.found){
+          setScanResult("Not found", "This booking ID does not exist.", null, false, "bad");
+          currentBookingId = "";
+          showToast("Booking not found", "error");
+          verifyBtn.disabled = false;
+          verifyBtn.innerHTML = originalHTML;
+          return;
+        }
+
+        scansToday++;
+        localStorage.setItem("byz_scans_today", String(scansToday));
+        updateStats();
+
+        const b = res.booking;
+        const remaining = res.remaining;
+        const ok = res.validForEntry;
+        
+        const title = ok ? "Valid for entry" : "Not valid";
+        const sub = ok
+          ? `Remaining wristbands: ${remaining}`
+          : (b.status !== "CONFIRMED" ? "Status is not confirmed." : "No remaining entries.");
+
+        setScanResult(title, sub, res, ok, ok ? "ok" : "bad");
+
+        if(ok){
+          playSuccessSound();
+          vibrate([50]);
+        }
+
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = originalHTML;
+
+      }catch(err){
+        console.error(err);
+        setScanResult("Error", "Could not reach server. Check internet.", null, false, "bad");
+        currentBookingId = "";
+        showToast("Connection error. Check internet.", "error");
+        updateConnectionStatus();
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = originalHTML;
+      }
+    }
+
+    function setScanResult(title, subtitle, res, enableButtons, statusType = "warn"){
+      const box = document.getElementById("scanResult");
+      
+      let icon = "fa-circle-check";
+      if(statusType === "bad") icon = "fa-circle-xmark";
+      else if(statusType === "warn") icon = "fa-circle-info";
+      else if(statusType === "ok") icon = "fa-circle-check";
+
+      box.innerHTML = `
+        <div class="big">
+          <i class="fa-solid ${icon} status-icon ${statusType}"></i>
+          <span>${title}</span>
+        </div>
+        <div class="sub">${subtitle}</div>
+        ${res ? `
+          <div class="meta">
+            <div><b>ID:</b> ${res.booking.bookingId}</div>
+            <div><b>Name:</b> ${res.booking.name}</div>
+            <div><b>Description:</b> ${res.booking.description}</div>
+            <div><b>Qty:</b> ${res.booking.quantity} • <b>Checked in:</b> ${res.booking.checkedInCount} • <b>Remaining:</b> ${res.remaining}</div>
+            <div><b>Last:</b> ${res.booking.lastCheckInTime || "—"}</div>
+            <div><b>Status:</b> <span class="status ${res.booking.status}">${res.booking.status}</span></div>
+          </div>
+        ` : ``}
+      `;
+
+      document.getElementById("btnOne").disabled = !enableButtons;
+      document.getElementById("btnAll").disabled = !enableButtons;
+    }
+
+    async function checkIn(count){
+      if(!currentBookingId){
+        const bid = document.getElementById("manualBid").value.trim();
+        if(!bid) {
+          setScanResult("No booking", "Scan or enter a Booking ID first.", null, false, "bad");
+          showToast("Enter a booking ID first", "error");
+          return;
+        }
+        currentBookingId = bid;
+      }
+
+      const pin = getPin_();
+      if(!pin) {
+        setScanResult("Pin required", "Admin pin required.", null, false, "bad");
+        showToast("Admin pin required", "error");
+        return;
+      }
+
+      const btnOne = document.getElementById("btnOne");
+      const btnAll = document.getElementById("btnAll");
+      const originalOne = btnOne.innerHTML;
+      const originalAll = btnAll.innerHTML;
+
+      btnOne.disabled = true;
+      btnAll.disabled = true;
+      btnOne.innerHTML = '<span class="spinner"></span> Processing...';
+      btnAll.innerHTML = '<span class="spinner"></span> Processing...';
+
+      setScanResult("Checking in...", "Processing check-in...", null, false, "warn");
+
+      try{
+        // Use same API call as verify.html - no eventKey parameter
+        const payload = {
+          action: "checkin",
+          pin: pin,
+          bookingId: currentBookingId,
+          count: count
+        };
+
+        const res = await fetch(SCRIPT_URL, {
+          method:"POST",
+          headers:{ "Content-Type":"text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        }).then(r=>r.json());
+
+        if(!res.ok){
+          setScanResult("Check-in blocked", res.error || "Not allowed.", null, false, "bad");
+          showToast("Check-in failed: " + (res.error || "Not allowed"), "error");
+          btnOne.disabled = false;
+          btnAll.disabled = false;
+          btnOne.innerHTML = originalOne;
+          btnAll.innerHTML = originalAll;
+          return;
+        }
+
+        const added = (res.added ?? "");
+        checkedInToday += (count === "all" ? parseInt(added) || 1 : 1);
+        localStorage.setItem("byz_checked_in_today", String(checkedInToday));
+        updateStats();
+
+        const resultBox = document.getElementById("scanResult");
+        resultBox.classList.add("scan-success");
+        setTimeout(() => resultBox.classList.remove("scan-success"), 500);
+
+        setScanResult(
+          "Check-in complete",
+          `Entry recorded${added !== "" ? " (+" + added + ")" : ""}. Ready for next scan.`,
+          null,
+          false,
+          "ok"
+        );
+
+        playSuccessSound();
+        vibrate([100, 50, 100]);
+        showToast(`Check-in successful${added !== "" ? " (+" + added + ")" : ""}`, "success");
+
+        // Reset UI for next person
+        currentBookingId = "";
+        document.getElementById("manualBid").value = "";
+        lastSeen = ""; // Reset to allow re-scanning same QR
+
+        btnOne.disabled = false;
+        btnAll.disabled = false;
+        btnOne.innerHTML = originalOne;
+        btnAll.innerHTML = originalAll;
+
+        setTimeout(() => {
+          setScanResult("Ready", "Scan a QR code or enter a Booking ID to verify.", null, false);
+        }, 2000);
+
+      }catch(err){
+        console.error(err);
+        setScanResult("Error", "Check-in failed. Try again.", null, false, "bad");
+        showToast("Check-in failed. Check connection.", "error");
+        updateConnectionStatus();
+        btnOne.disabled = false;
+        btnAll.disabled = false;
+        btnOne.innerHTML = originalOne;
+        btnAll.innerHTML = originalAll;
+      }
+    }
+  </script>
+</body>
+</html>
+
