@@ -2899,11 +2899,25 @@ footer{
     opacity: 0.95;
   }
       .artist-scroll-left {
-    left: 8px; /* Slightly inset so arrows are visible and not cut off */
+    left: -22px; /* Position outside the card area to avoid covering content */
   }
 
   .artist-scroll-right {
-    right: 8px; /* Slightly inset so arrows are visible and not cut off */
+    right: -22px; /* Position outside the card area to avoid covering content */
+  }
+  
+  /* On smaller screens, position arrows at the line where photo ends and text starts */
+  @media (max-width: 640px) {
+    .artist-scroll-btn {
+      top: 140px; /* Position at bottom of photo (where text starts) */
+      transform: translateY(-50%); /* Center vertically on the line */
+    }
+    .artist-scroll-left {
+      left: 8px;
+    }
+    .artist-scroll-right {
+      right: 8px;
+    }
   }
   
     /* Horizontal scroll for artist cards - centered */
@@ -2914,13 +2928,19 @@ footer{
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 16px;
-    padding: 12px 12px 12px; /* Padding to show rounded corners */
+    padding: 12px 60px 12px 60px; /* Extra padding on sides to accommodate arrows */
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
     grid-template-columns: none !important;
     justify-content: flex-start;
     align-items: center;
+  }
+  
+  @media (max-width: 640px) {
+    #artists .cards {
+      padding: 60px 12px 12px 12px; /* Top padding for arrows, less side padding on mobile */
+    }
   }
 
   #artists .cards::-webkit-scrollbar {
@@ -2951,11 +2971,23 @@ footer{
     opacity: 1;
     background: color-mix(in srgb, var(--bg-elev) 96%, transparent);
   }
+  
+  @media (max-width: 640px) {
+    .artist-scroll-btn:hover {
+      transform: translateY(-50%) scale(1.05);
+    }
+  }
 
   .artist-scroll-btn:active {
     transform: translateY(-50%) scale(0.96);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1), 
                 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+  
+  @media (max-width: 640px) {
+    .artist-scroll-btn:active {
+      transform: translateY(-50%) scale(0.96);
+    }
   }
 
   .artist-scroll-btn i {
@@ -7002,13 +7034,49 @@ document.addEventListener('keydown', (e) => {
     }
   });
 
-  // Scroll functions
+  // Scroll functions with seamless loop
   scrollLeftBtn.addEventListener('click', () => {
-    cardsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    if (isScrolling) return;
+    
+    const currentScroll = cardsContainer.scrollLeft;
+    const realCardsWidth = cards.length * scrollAmount;
+    
+    // If we're at the start of real cards, jump to end first
+    if (currentScroll <= realCardsWidth + scrollAmount) {
+      isScrolling = true;
+      // Jump to end of real cards (before clones at end)
+      cardsContainer.scrollLeft = (realCardsWidth * 2) - scrollAmount;
+      setTimeout(() => {
+        // Then scroll left smoothly
+        cardsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        setTimeout(() => { isScrolling = false; }, 300);
+      }, 50);
+    } else {
+      cardsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
   });
 
   scrollRightBtn.addEventListener('click', () => {
-    cardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    if (isScrolling) return;
+    
+    const currentScroll = cardsContainer.scrollLeft;
+    const scrollWidth = cardsContainer.scrollWidth;
+    const clientWidth = cardsContainer.clientWidth;
+    const realCardsWidth = cards.length * scrollAmount;
+    
+    // If we're near the end of real cards, jump to start first
+    if (currentScroll >= (realCardsWidth * 2) - scrollAmount - clientWidth) {
+      isScrolling = true;
+      // Jump to start of real cards (after clones at start)
+      cardsContainer.scrollLeft = realCardsWidth;
+      setTimeout(() => {
+        // Then scroll right smoothly
+        cardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        setTimeout(() => { isScrolling = false; }, 300);
+      }, 50);
+    } else {
+      cardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
   });
 
   // Initial button state
@@ -7278,4 +7346,5 @@ document.addEventListener('keydown', (e) => {
 
 </script>
 </body>
+</html>
 </html>
