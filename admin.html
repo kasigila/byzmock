@@ -983,9 +983,26 @@
       document.getElementById("statPending").textContent = pending;
       document.getElementById("statConfirmed").textContent = confirmed;
       document.getElementById("statCheckedIn").textContent = checkedIn;
-      document.getElementById("statRevenue").textContent = revenue > 0 ? (revenue / 1000).toFixed(0) + "K" : "—";
-      document.getElementById("statRevenueSub").textContent = revenue > 0 ? "TZS" : "";
-      document.getElementById("statAvg").textContent = avgBooking > 0 ? (avgBooking / 1000).toFixed(0) + "K" : "—";
+      if(revenue > 0){
+        if(revenue >= 1000000){
+          document.getElementById("statRevenue").textContent = (revenue / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+        } else {
+          document.getElementById("statRevenue").textContent = (revenue / 1000).toFixed(0) + "K";
+        }
+        document.getElementById("statRevenueSub").textContent = "TZS";
+      } else {
+        document.getElementById("statRevenue").textContent = "—";
+        document.getElementById("statRevenueSub").textContent = "";
+      }
+      if(avgBooking > 0){
+        if(avgBooking >= 1000000){
+          document.getElementById("statAvg").textContent = (avgBooking / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+        } else {
+          document.getElementById("statAvg").textContent = (avgBooking / 1000).toFixed(0) + "K";
+        }
+      } else {
+        document.getElementById("statAvg").textContent = "—";
+      }
 
       const rowsEl = document.getElementById("rows");
       const cardRowsEl = document.getElementById("cardRows");
@@ -1004,7 +1021,7 @@
         const expectedAmount = calculateExpectedAmount(b);
         const enteredAmount = Number(b.amount) || 0;
         const amountMatch = expectedAmount === enteredAmount;
-        const hasTransactionCode = b.transactionCode && b.transactionCode.trim();
+        const hasTransactionCode = b.transactionCode && String(b.transactionCode).trim();
 
         const tr = document.createElement("tr");
         tr.dataset.bookingId = b.bookingId;
@@ -1056,7 +1073,7 @@
             <div><b>Type:</b> ${b.bookingType}</div>
             <div><b>Description:</b> ${b.description}</div>
             <div><b>Amount:</b> ${b.amount ? (Number(b.amount).toLocaleString() + " TZS") : "-"}</div>
-            ${hasTransactionCode ? `<div><b>Transaction:</b> ${b.transactionCode}</div>` : ""}
+            ${hasTransactionCode ? `<div><b>Transaction:</b> ${String(b.transactionCode)}</div>` : ""}
           </div>
           <div class="card-actions">
             ${b.status==="PENDING"
@@ -1117,11 +1134,11 @@
         <div class="verify-item" style="grid-column: 1 / -1;">
           <div class="verify-label">Transaction Code (Look up in M-Pesa)</div>
           <div class="verify-value" style="font-size:24px;font-weight:900;word-break:break-all;letter-spacing:.15em;margin-top:12px;padding:16px;background:color-mix(in srgb, var(--primary) 8%, transparent);border-radius:12px;border:2px solid color-mix(in srgb, var(--primary) 20%, transparent);">
-            ${booking.transactionCode || "Not provided"}
+            ${booking.transactionCode ? String(booking.transactionCode) : "Not provided"}
           </div>
           ${booking.transactionCode ? `
             <div style="display:flex;gap:8px;margin-top:16px;">
-              <button onclick="copyToClipboard('${booking.transactionCode}')" style="flex:1;font-size:14px;padding:12px;font-weight:600;">
+              <button onclick="copyToClipboard('${String(booking.transactionCode)}')" style="flex:1;font-size:14px;padding:12px;font-weight:600;">
                 <i class="fa-solid fa-copy"></i> Copy Code
               </button>
             </div>
@@ -1192,7 +1209,7 @@
           <div style="margin-bottom:12px;">
             <b>Transaction Code:</b> 
             <div style="font-family:monospace;font-size:14px;margin-top:4px;padding:8px;background:color-mix(in srgb, var(--bg2) 50%, transparent);border-radius:8px;word-break:break-all;">
-              ${booking.transactionCode}
+              ${String(booking.transactionCode || "")}
             </div>
           </div>
         ` : ""}
