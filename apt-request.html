@@ -743,19 +743,38 @@
    // Clear saved form data
    localStorage.removeItem("byz_apt_draft");
    
-   // Add success animation
-   if(submitBtn) submitBtn.classList.add("success-animation");
-
+   // Show modal immediately
    showAptModal();
+   
+   // Reset button state after a short delay to show success
+   setTimeout(() => {
+     if(submitBtn){
+       submitBtn.disabled = false;
+       submitBtn.style.opacity = "";
+       submitBtn.style.pointerEvents = "";
+       submitBtn.classList.add("submitted");
+       submitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Request submitted`;
+     }
+   }, 500);
 
-  // fire-and-forget submit (don't block popup)
+  // Submit to backend (fire-and-forget, don't block UI)
   fetch(SCRIPT_URL, {
     method:"POST",
     headers:{ "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify({ action:"addAptRequest", data })
+  }).then(() => {
+    console.log("APT request submitted successfully");
   }).catch((err) => {
     console.error("Submission error:", err);
-    // Could show error toast here if needed
+    // Show error if submission fails
+    if(submitBtn){
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "";
+      submitBtn.style.pointerEvents = "";
+      submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Request Invite`;
+      __submittingApt = false;
+    }
+    showAptErrorToast("Failed to submit. Please try again.");
   });
 
 
@@ -796,10 +815,7 @@
       modal.setAttribute("aria-hidden","true");
       document.body.style.overflow = "";
     }
-    if(submitBtn){
-      submitBtn.classList.add("submitted");
-      submitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Request submitted`;
-    }
+    // Button state is already set when modal opens, no need to set it again here
     __submittingApt = false;
     sessionStorage.setItem("apt_last_status","done");
   }
