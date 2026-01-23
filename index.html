@@ -4,7 +4,7 @@
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>BYZ </title>
 <meta name="description" content="BYZ in the Hood creates unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam." />
 
@@ -5290,7 +5290,7 @@ body.bulkbar-active .social-dock{
         </button>
 
         <div class="gallery-meta" aria-live="polite">
-          <span id="albumCount">0</span> albums • <span id="photoCount">0</span> <i class="fa-solid fa-image" aria-label="photos"></i>
+          <span id="albumCount">0</span> albums • <span id="photoCount">0</span> photos
         </div>
       </div>
 
@@ -6522,7 +6522,7 @@ boardGrid.innerHTML = boardItems.map(item => {
     <button class="board" type="button" data-album="${item.key}" aria-label="Open album ${item.title}">
       <div class="board-preview">
         ${imgs}
-        <div class="board-info">${dateLabel} • ${item.count} photos</div>
+        <div class="board-info">${dateLabel} • ${item.count} <i class="fa-solid fa-image" aria-label="photos"></i></div>
         <img class="board-badge" src="${badgeSrc}" alt="" aria-hidden="true" loading="lazy">
       </div>
     </button>
@@ -8067,13 +8067,11 @@ document.addEventListener('keydown', (e) => {
     
     .chat-window {
       position: fixed;
-      bottom: 0;
-      right: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       max-width: 420px;
       height: 100vh;
-      max-height: 100vh;
+      height: 100dvh;
       border-radius: 0;
       border: none;
       border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
@@ -8087,6 +8085,7 @@ document.addEventListener('keydown', (e) => {
       overflow: hidden;
       margin: 0 auto;
       z-index: 10000;
+      touch-action: pan-y;
     }
     
     @media (min-width: 421px) {
@@ -8097,6 +8096,7 @@ document.addEventListener('keydown', (e) => {
         left: auto;
         height: 600px;
         max-height: 90vh;
+        inset: auto;
       }
     }
     
@@ -8108,8 +8108,7 @@ document.addEventListener('keydown', (e) => {
       align-items: center;
       justify-content: space-between;
       background: color-mix(in srgb, var(--bg) 95%, transparent);
-      position: sticky;
-      top: 0;
+      position: relative;
       z-index: 10;
       flex-shrink: 0;
       min-height: 60px;
@@ -8176,8 +8175,10 @@ document.addEventListener('keydown', (e) => {
     }
     
     .chat-messages {
-      flex: 1;
+      flex-grow: 1;
+      flex-shrink: 1;
       overflow-y: auto;
+      overflow-x: hidden;
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -8185,7 +8186,8 @@ document.addEventListener('keydown', (e) => {
       scrollbar-width: thin;
       scrollbar-color: var(--border) transparent;
       min-height: 0;
-      padding-bottom: env(safe-area-inset-bottom, 16px);
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
     
     .chat-messages::-webkit-scrollbar {
@@ -8302,8 +8304,7 @@ document.addEventListener('keydown', (e) => {
       gap: 10px;
       align-items: center;
       background: color-mix(in srgb, var(--bg) 95%, transparent);
-      position: sticky;
-      bottom: 0;
+      position: relative;
       z-index: 10;
       flex-shrink: 0;
     }
@@ -8315,9 +8316,12 @@ document.addEventListener('keydown', (e) => {
       border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
       background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
       color: var(--text);
-      font-size: 14px;
+      font-size: 16px;
       outline: none;
       transition: all 0.2s var(--ease);
+      -webkit-appearance: none;
+      appearance: none;
+      touch-action: manipulation;
     }
     
     .chat-input:focus {
@@ -8332,11 +8336,16 @@ document.addEventListener('keydown', (e) => {
       background: var(--accent);
       color: var(--bg);
       border: none;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s var(--ease);
+      flex-shrink: 0;
+    }
+    
+    .chat-send.visible {
+      display: flex;
     }
     
     .chat-send:hover {
@@ -8352,11 +8361,12 @@ document.addEventListener('keydown', (e) => {
       .chat-window {
         width: 100%;
         max-width: 100%;
-        height: calc(100vh - env(safe-area-inset-bottom, 0px));
-        max-height: calc(100vh - env(safe-area-inset-bottom, 0px));
+        height: 100vh;
+        height: 100dvh;
         border-radius: 0;
         right: 0;
         left: 0;
+        inset: 0;
       }
       
       #byzChatWidget {
@@ -8364,14 +8374,24 @@ document.addEventListener('keydown', (e) => {
         right: 16px;
       }
       
+      .chat-header {
+        padding-top: calc(12px + env(safe-area-inset-top, 0px));
+      }
+      
       .chat-messages {
-        padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-        max-height: calc(100vh - 180px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        flex-grow: 1;
+        flex-shrink: 1;
         overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
       }
       
       .chat-input-wrapper {
         padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      }
+      
+      .chat-input {
+        font-size: 16px;
       }
     }
   `;
@@ -8409,6 +8429,27 @@ document.addEventListener('keydown', (e) => {
   });
   
   close.addEventListener('click', closeChat);
+  
+  // Update send button visibility based on input content
+  function updateSendButton() {
+    if (input.value.trim().length > 0) {
+      send.classList.add('visible');
+    } else {
+      send.classList.remove('visible');
+    }
+  }
+  
+  input.addEventListener('input', updateSendButton);
+  input.addEventListener('keyup', updateSendButton);
+  
+  // Prevent auto-zoom on iOS
+  input.addEventListener('focus', function() {
+    setTimeout(() => {
+      if (document.activeElement === input) {
+        window.scrollTo(0, 0);
+      }
+    }, 100);
+  });
   
   function findResponse(text) {
     const lower = text.toLowerCase().trim();
@@ -8520,6 +8561,7 @@ document.addEventListener('keydown', (e) => {
     
     addMessage(text, true);
     input.value = '';
+    updateSendButton();
     
     // Simulate typing delay
     setTimeout(() => {
@@ -8533,6 +8575,9 @@ document.addEventListener('keydown', (e) => {
   input.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendMessage();
   });
+  
+  // Initialize send button state
+  updateSendButton();
   
   // Initial suggestions
   updateSuggestions(faqDatabase.hi.suggestions);
