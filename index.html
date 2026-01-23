@@ -3067,21 +3067,43 @@ footer{
   opacity: 0;
 }
 
-/* Modal card - Multi-layer glassmorphism */
+/* Modal card - Multi-layer glassmorphism with iOS 26 aesthetic */
 .byz-modal{
   width: min(520px, 100%);
-  border-radius: 26px;
-  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(60px) saturate(200%);
+  border-radius: 28px;
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: 
+    linear-gradient(135deg, 
+      color-mix(in srgb, var(--bg) 92%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 88%, transparent) 100%
+    );
+  backdrop-filter: blur(80px) saturate(220%);
   box-shadow: 
-    0 8px 32px rgba(0,0,0,.12),
-    0 2px 8px rgba(0,0,0,.08),
-    inset 0 1px 0 rgba(255,255,255,.1),
-    0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent);
+    0 20px 60px rgba(0,0,0,.25),
+    0 8px 24px rgba(0,0,0,.15),
+    0 2px 8px rgba(0,0,0,.1),
+    inset 0 1px 0 rgba(255,255,255,.15),
+    inset 0 -1px 0 rgba(0,0,0,.1),
+    0 0 0 1px color-mix(in srgb, var(--border) 30%, transparent);
   overflow:hidden;
   animation: modalEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: center;
+  position: relative;
+}
+
+.byz-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 20%, transparent) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
 @keyframes modalEnter {
@@ -3138,21 +3160,26 @@ footer{
   }
 }
 
-/* Modal header - Sticky with gradient overlay */
+/* Modal header - Sticky with enhanced gradient overlay */
 .byz-modal-head{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
   gap:12px;
-  padding:16px 16px 0 16px;
+  padding:20px 20px 0 20px;
   position: sticky;
   top: 0;
   z-index: 10;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  background: 
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--bg) 95%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 90%, transparent) 100%
+    );
+  backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
   margin-bottom: 0;
-  padding-bottom: 16px;
+  padding-bottom: 20px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.05);
 }
 .byz-modal-title{
   font-weight:900;
@@ -3226,24 +3253,54 @@ footer{
 }
 
 .byz-modal-row{
-  margin-top:10px;
-  border-radius:18px;
-  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
-  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
-  backdrop-filter: blur(20px);
+  margin-top:12px;
+  border-radius:20px;
+  border: 1px solid color-mix(in srgb, var(--border) 35%, transparent);
+  background: 
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--bg-elev) 98%, transparent) 0%,
+      color-mix(in srgb, var(--bg-elev) 95%, transparent) 100%
+    );
+  backdrop-filter: blur(30px) saturate(150%);
   box-shadow: 
-    0 2px 8px rgba(0,0,0,.06),
-    inset 0 1px 0 rgba(255,255,255,.05);
-  padding:12px 14px;
-  transition: all 0.25s var(--ease);
+    0 4px 16px rgba(0,0,0,.08),
+    0 1px 4px rgba(0,0,0,.04),
+    inset 0 1px 0 rgba(255,255,255,.1),
+    inset 0 -1px 0 rgba(0,0,0,.05);
+  padding:16px 18px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.byz-modal-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 15%, transparent) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
 }
 
 .byz-modal-row:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.01);
   box-shadow: 
-    0 4px 12px rgba(0,0,0,.08),
-    inset 0 1px 0 rgba(255,255,255,.08);
-  border-color: color-mix(in srgb, var(--border) 60%, transparent);
+    0 8px 24px rgba(0,0,0,.12),
+    0 2px 8px rgba(0,0,0,.06),
+    inset 0 1px 0 rgba(255,255,255,.15),
+    inset 0 -1px 0 rgba(0,0,0,.08);
+  border-color: color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+.byz-modal-row:hover::before {
+  opacity: 1;
 }
 .byz-modal-row .k{ color:var(--sub); font-size:12px; }
 .byz-modal-row .v{ margin-top:4px; font-weight:900; }
@@ -3743,17 +3800,40 @@ footer{
 
 .tempo-modal{
   width: min(560px, 100%);
-  border-radius: 26px;
-  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(60px) saturate(200%);
+  border-radius: 28px;
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: 
+    linear-gradient(135deg, 
+      color-mix(in srgb, var(--bg) 92%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 88%, transparent) 100%
+    );
+  backdrop-filter: blur(80px) saturate(220%);
   box-shadow: 
-    0 8px 32px rgba(0,0,0,.12),
-    0 2px 8px rgba(0,0,0,.08),
-    inset 0 1px 0 rgba(255,255,255,.1),
-    0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent);
+    0 20px 60px rgba(0,0,0,.25),
+    0 8px 24px rgba(0,0,0,.15),
+    0 2px 8px rgba(0,0,0,.1),
+    inset 0 1px 0 rgba(255,255,255,.15),
+    inset 0 -1px 0 rgba(0,0,0,.1),
+    0 0 0 1px color-mix(in srgb, var(--border) 30%, transparent);
   overflow:hidden;
   animation: modalEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+  position: relative;
+}
+
+.tempo-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 20%, transparent) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
 @media (max-width: 640px) {
@@ -3776,17 +3856,35 @@ footer{
   align-items:flex-start;
   justify-content:space-between;
   gap:12px;
-  padding:16px 16px 0 16px;
+  padding:20px 20px 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: 
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--bg) 95%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 90%, transparent) 100%
+    );
+  backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+  margin-bottom: 0;
+  padding-bottom: 20px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.05);
 }
 .tempo-modal-title{
   font-weight:900;
   letter-spacing:-.6px;
-  font-size:18px;
+  font-size:20px;
+  background: linear-gradient(135deg, var(--text), color-mix(in srgb, var(--text) 80%, var(--sub)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .tempo-modal-sub{
-  margin-top:4px;
+  margin-top:6px;
   font-size:13px;
   color:var(--sub);
+  line-height:1.4;
 }
 .tempo-modal-x{
   width:44px;
@@ -3802,6 +3900,18 @@ footer{
   align-items: center;
   justify-content: center;
   color: var(--text);
+}
+
+.tempo-modal-x:hover {
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  box-shadow: 
+    0 4px 16px rgba(0,0,0,.1),
+    0 0 0 1px color-mix(in srgb, var(--border) 30%, transparent);
+  transform: scale(1.05);
+}
+
+.tempo-modal-x:active {
+  transform: scale(0.95);
 }
 
 .tempo-modal-x:hover {
@@ -4533,6 +4643,7 @@ body.bulkbar-active .social-dock{
     <a href="#team">Meet the Team</a>
     <a href="gallery.html">Gallery</a>
     <a href="rate.html">Rate Experience</a>
+    <a href="admin.html">Admin Log In</a>
     <a href="#connect">Connect</a>
     <a href="https://kasigila.github.io/byzmock/booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
   </div>
@@ -5167,8 +5278,8 @@ body.bulkbar-active .social-dock{
         <div class="gallery-hint"> </div>
       </div>
 
-    <!-- ✅ Starts collapsed (especially on phone) -->
-    <div class="gallery-shell byz-hidden" id="galleryContent" aria-hidden="true">
+    <!-- ✅ Gallery content (now visible by default) -->
+    <div class="gallery-shell" id="galleryContent" aria-hidden="false">
       <!-- Event tabs -->
       <div class="gallery-tabs" role="tablist" aria-label="Choose event gallery">
         <button class="tab active" type="button" role="tab" aria-selected="true" data-event="groove">
@@ -7858,6 +7969,11 @@ document.addEventListener('keydown', (e) => {
     'location': { response: "We're in Dar es Salaam! Specific venue details are shared when you book. Want to book?", suggestions: ['Yes, book now', 'Contact'] },
     'where': { response: "BYZ events are in Dar es Salaam. Exact locations are provided when you complete your booking!", suggestions: ['Book now', 'Contact'] },
     'contact': { response: "You can reach us via WhatsApp at +255 768 464 367 or email byzentertainment@gmail.com", suggestions: ['WhatsApp', 'Email', 'Book now'] },
+    'facebook': { response: "Follow us on Facebook! Visit https://www.facebook.com/byzinthehood for updates, event announcements, and more.", suggestions: ['Instagram', 'TikTok', 'Book now'] },
+    'fb': { response: "Our Facebook page is https://www.facebook.com/byzinthehood - follow us for event updates!", suggestions: ['Instagram', 'TikTok', 'Book now'] },
+    'social': { response: "Find us on Instagram @byzinthehood, TikTok @byzinthehood, and Facebook @byzinthehood!", suggestions: ['Instagram', 'TikTok', 'Facebook'] },
+    'instagram': { response: "Follow us on Instagram @byzinthehood for the latest updates, behind-the-scenes, and event announcements!", suggestions: ['TikTok', 'Facebook', 'Book now'] },
+    'tiktok': { response: "Check us out on TikTok @byzinthehood for event highlights and fun content!", suggestions: ['Instagram', 'Facebook', 'Book now'] },
     'help': { response: "I'm ByzBot, your AI assistant! I can help with booking, event info, schedules, pricing, or anything BYZ-related. What do you need?", suggestions: ['Book tickets', 'Event info', 'View schedule'] },
     'default': { response: "I understand you're looking for information. Let me help! Are you interested in booking, event details, or something else?", suggestions: ['Book tickets', 'Event info', 'Contact'] }
   };
@@ -8003,6 +8119,7 @@ document.addEventListener('keydown', (e) => {
     
     .chat-header {
       padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top, 0px));
       border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
       display: flex;
       align-items: center;
@@ -8012,6 +8129,7 @@ document.addEventListener('keydown', (e) => {
       top: 0;
       z-index: 10;
       flex-shrink: 0;
+      min-height: 60px;
     }
     
     .chat-header-content {
@@ -8251,8 +8369,8 @@ document.addEventListener('keydown', (e) => {
       .chat-window {
         width: 100%;
         max-width: 100%;
-        height: 100vh;
-        max-height: 100vh;
+        height: calc(100vh - env(safe-area-inset-bottom, 0px));
+        max-height: calc(100vh - env(safe-area-inset-bottom, 0px));
         border-radius: 0;
         right: 0;
         left: 0;
@@ -8265,6 +8383,12 @@ document.addEventListener('keydown', (e) => {
       
       .chat-messages {
         padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        max-height: calc(100vh - 180px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        overflow-y: auto;
+      }
+      
+      .chat-input-wrapper {
+        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
       }
     }
   `;
@@ -8435,6 +8559,39 @@ document.addEventListener('keydown', (e) => {
     badge.style.display = 'none';
   }, { once: true });
 })();
+
+/* =========================================================
+   SOCIAL SHARING FUNCTION
+========================================================= */
+function shareEvent(title, description, url) {
+  const shareData = {
+    title: `${title} - BYZ Entertainment`,
+    text: description,
+    url: url || window.location.href
+  };
+  
+  if (navigator.share) {
+    navigator.share(shareData).catch(() => {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(url || window.location.href).then(() => {
+        if (typeof showToast !== 'undefined') {
+          showToast('Link copied to clipboard!');
+        } else {
+          alert('Link copied to clipboard!');
+        }
+      });
+    });
+  } else {
+    // Fallback: copy to clipboard
+    navigator.clipboard.writeText(url || window.location.href).then(() => {
+      if (typeof showToast !== 'undefined') {
+        showToast('Link copied to clipboard!');
+      } else {
+        alert('Link copied to clipboard!');
+      }
+    });
+  }
+}
 
 </script>
 </body>
