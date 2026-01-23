@@ -681,16 +681,32 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   flex-direction:column;
   gap:4px;
   min-width: 220px;
+  align-items:center;
+  text-align:center;
+  flex:1;
 }
 .album-title{
   font-weight: 600;
   letter-spacing:-.5px;
   font-size: 16px;
+  text-align:center;
+  width:100%;
+}
+.album-title-pill{
+  display:inline-block;
+  padding:8px 16px;
+  border-radius:20px;
+  background:color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  border:1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:0.02em;
 }
 .album-sub{
   color: var(--sub);
   font-size: 13px;
   font-weight: 400;
+  text-align:center;
 }
 
 .album-actions{
@@ -723,6 +739,7 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 
 .select{
   padding:10px 14px;
+  padding-right:36px;
   border-radius:16px;
   border:1px solid var(--border);
   background: var(--bg-elev);
@@ -730,6 +747,12 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   font-size:14px;
   outline:none;
   cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1a6' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
 }
 
 /* ===================== MASONRY GRID ===================== */
@@ -2189,7 +2212,7 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
           </button>
 
           <div class="gallery-meta" aria-live="polite">
-            <span id="albumCount">0</span> albums • <span id="photoCount">0</span> <i class="fa-solid fa-image" aria-label="photos"></i>
+            <span id="albumCount">0</span> albums • <span id="photoCount">0</span> photos
             <span id="socialProof" class="social-proof-text"></span>
           </div>
           
@@ -2297,9 +2320,6 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 
             <div class="bulk-actions">
               <button class="btn" id="bulkClear" type="button">Clear</button>
-              <button class="btn" id="bulkCopy" type="button">
-                <i class="fa-regular fa-copy" aria-hidden="true"></i> Copy links
-              </button>
               <button class="btn primary" id="bulkDownload" type="button">
                 <i class="fa-solid fa-download" aria-hidden="true"></i> Download selected
               </button>
@@ -2396,7 +2416,7 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   <div id="likedPhotosGrid" class="liked-photos-grid"></div>
   <div class="likes-actions">
     <button class="btn primary" id="downloadLikedBtn" type="button">
-      <i class="fa-solid fa-download"></i> Download All Liked
+      <i class="fa-solid fa-download"></i> Download All Liked Photos
     </button>
     <button class="btn" id="shareLikedBtn" type="button">
       <i class="fa-solid fa-share-nodes"></i> Share My Likes
@@ -2545,7 +2565,7 @@ console.log("✅ Script file loaded!");
   const bulkbar = document.getElementById("bulkbar");
   const selectedCountEl = document.getElementById("selectedCount");
   const bulkClear = document.getElementById("bulkClear");
-  const bulkCopy = document.getElementById("bulkCopy");
+  // bulkCopy removed
   const bulkDownload = document.getElementById("bulkDownload");
   const lightbox = document.getElementById("lightbox");
   const lbImg = document.getElementById("lbImg");
@@ -2659,7 +2679,16 @@ console.log("✅ Script file loaded!");
       if(album){
         setTimeout(() => {
           const albumBtn = boardGrid.querySelector(`[data-album="${album}"]`);
-          if(albumBtn) albumBtn.click();
+          if(albumBtn) {
+            albumBtn.click();
+            // Scroll to album view after opening
+            setTimeout(() => {
+              const albumView = document.getElementById("albumView");
+              if(albumView) {
+                albumView.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }, 100);
+          }
         }, 500);
       }
     }
@@ -2697,6 +2726,8 @@ console.log("✅ Script file loaded!");
     const month = monthNames[m.toLowerCase()] || m.charAt(0).toUpperCase() + m.slice(1);
     return `${month} ${Number(d)}, ${y}`;
   }
+  // Make accessible globally
+  window.titleizeAlbum = titleizeAlbum;
 
   function parseAlbumKey(key){
     const [m, d, y] = key.split("-");
@@ -2819,6 +2850,8 @@ console.log("✅ Script file loaded!");
   }
 
   function pickPreviewSources(evt, albumKey){
+    // Make accessible globally
+    window.pickPreviewSources = pickPreviewSources;
     const albums = getAlbums(evt);
 
     function shuffle(arr){
@@ -3021,7 +3054,7 @@ console.log("✅ Script file loaded!");
           ${badges.join("")}
           <div class="board-preview">
             ${imgs}
-            <div class="board-info">${dateLabel} • ${item.count} photos</div>
+            <div class="board-info">${dateLabel} • ${item.count} <i class="fa-solid fa-image" aria-label="photos"></i></div>
             <img class="board-badge" src="${badgeSrc}" alt="" aria-hidden="true" loading="lazy">
             <button class="board-share" onclick="event.stopPropagation();shareAlbum('${item.key}')" aria-label="Share album" type="button">
               <i class="fa-solid fa-share-nodes"></i>
@@ -3091,6 +3124,8 @@ console.log("✅ Script file loaded!");
 
   /* ===================== RENDER ALBUM ===================== */
   function renderAlbum(albumKey){
+    // Make accessible globally
+    window.renderAlbum = renderAlbum;
     selected.clear();
     updateBulkUI();
 
@@ -3101,10 +3136,14 @@ console.log("✅ Script file loaded!");
     updateMetaAlbum(currentList.length);
 
     const title = (albumKey === "all") ? `${currentEvent.toUpperCase()} — All Photos` : `${currentEvent.toUpperCase()} • ${titleizeAlbum(albumKey)}`;
-    const sub = `${currentList.length} <i class="fa-solid fa-image" aria-label="photos"></i>`;
+    const photoCount = currentList.length;
 
-    if(albumTitleEl) albumTitleEl.textContent = title;
-    if(albumSubEl) albumSubEl.textContent = sub;
+    if(albumTitleEl) {
+      albumTitleEl.innerHTML = `<span class="album-title-pill">${title}</span>`;
+    }
+    if(albumSubEl) {
+      albumSubEl.innerHTML = `${photoCount} <i class="fa-solid fa-image" aria-label="photos"></i>`;
+    }
 
     const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
     masonry.innerHTML = sorted.map((x, idx) => {
@@ -3487,17 +3526,7 @@ console.log("✅ Script file loaded!");
     });
   }
 
-  if(bulkCopy){
-    bulkCopy.addEventListener("click", async () => {
-      try{
-        const text = Array.from(selected).join("\n");
-        await navigator.clipboard.writeText(text);
-        showToast("Copied links");
-      }catch{
-        showToast("Copy failed");
-      }
-    });
-  }
+  // Copy links removed - not needed
 
   if(bulkDownload){
     bulkDownload.addEventListener("click", async () => {
@@ -4232,9 +4261,8 @@ setInterval(updateLikesCount, 2000);
       
       localStorage.setItem("byz_photo_layout", layout);
       
-      if(typeof renderAlbum === "function" && currentAlbum){
-        renderAlbum(currentAlbum);
-      }
+      // Don't call renderAlbum - just update the layout class
+      // This keeps the user in the album without kicking them out
     });
   });
   
@@ -4325,7 +4353,7 @@ setInterval(updateLikesCount, 2000);
     const mostLiked = document.createElement("div");
     mostLiked.className = "most-liked-section";
     mostLiked.innerHTML = `
-      <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+      <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="document.getElementById('myLikes')?.classList.add('show')">
         <i class="fa-solid fa-heart" style="color: #ff6b6b;"></i> My Likes
       </h3>
       <div id="mostLikedGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
@@ -4706,6 +4734,696 @@ if(typeof handleDoubleTap === "function"){
 setInterval(() => {
   updateLikesCount();
 }, 1000);
+
+/* ===================== GEN Z ENHANCEMENTS ===================== */
+
+// 1. Quick Actions: Long-press on photos for quick menu
+(function(){
+  let longPressTimer;
+  let longPressTarget = null;
+  
+  const quickMenu = document.createElement('div');
+  quickMenu.id = 'quickActionMenu';
+  quickMenu.className = 'quick-action-menu byz-hidden';
+  quickMenu.innerHTML = `
+    <button class="quick-action-btn" data-action="like">
+      <i class="fa-solid fa-heart"></i> Like
+    </button>
+    <button class="quick-action-btn" data-action="download">
+      <i class="fa-solid fa-download"></i> Download
+    </button>
+    <button class="quick-action-btn" data-action="share">
+      <i class="fa-solid fa-share-nodes"></i> Share
+    </button>
+  `;
+  document.body.appendChild(quickMenu);
+  
+  function showQuickMenu(pin, x, y) {
+    const src = pin.dataset.src;
+    if(!src) return;
+    
+    quickMenu.dataset.src = src;
+    quickMenu.style.left = `${x}px`;
+    quickMenu.style.top = `${y}px`;
+    quickMenu.classList.remove('byz-hidden');
+    
+    // Position menu to stay on screen
+    setTimeout(() => {
+      const rect = quickMenu.getBoundingClientRect();
+      if(rect.right > window.innerWidth) {
+        quickMenu.style.left = `${window.innerWidth - rect.width - 20}px`;
+      }
+      if(rect.bottom > window.innerHeight) {
+        quickMenu.style.top = `${y - rect.height - 10}px`;
+      }
+    }, 10);
+  }
+  
+  function hideQuickMenu() {
+    quickMenu.classList.add('byz-hidden');
+    longPressTarget = null;
+  }
+  
+  document.addEventListener('contextmenu', (e) => {
+    if(e.target.closest('.pin')) e.preventDefault();
+  });
+  
+  // Long-press detection
+  document.addEventListener('touchstart', (e) => {
+    const pin = e.target.closest('.pin');
+    if(!pin || selectMode) return;
+    
+    longPressTarget = pin;
+    const touch = e.touches[0];
+    
+    longPressTimer = setTimeout(() => {
+      if(longPressTarget === pin) {
+        e.preventDefault();
+        triggerHaptic('medium');
+        showQuickMenu(pin, touch.clientX, touch.clientY);
+      }
+    }, 500);
+  }, {passive: false});
+  
+  document.addEventListener('touchend', () => {
+    clearTimeout(longPressTimer);
+    if(longPressTarget) {
+      setTimeout(hideQuickMenu, 100);
+    }
+  });
+  
+  document.addEventListener('touchmove', () => {
+    clearTimeout(longPressTimer);
+    longPressTarget = null;
+  });
+  
+  // Click outside to close
+  document.addEventListener('click', (e) => {
+    if(!quickMenu.contains(e.target)) {
+      hideQuickMenu();
+    }
+  });
+  
+  // Handle quick menu actions
+  quickMenu.addEventListener('click', (e) => {
+    const btn = e.target.closest('.quick-action-btn');
+    if(!btn) return;
+    
+    const action = btn.dataset.action;
+    const src = quickMenu.dataset.src;
+    const pin = document.querySelector(`.pin[data-src="${src}"]`);
+    
+    if(!pin) return;
+    
+    switch(action) {
+      case 'like':
+        if(typeof handleDoubleTap === 'function') {
+          handleDoubleTap(pin, src);
+        }
+        break;
+      case 'download':
+        const a = document.createElement('a');
+        a.href = src;
+        a.download = '';
+        a.click();
+        showToast('Downloading...');
+        break;
+      case 'share':
+        if(navigator.share) {
+          navigator.share({
+            title: 'BYZ Memory',
+            text: 'Check out this photo from BYZ!',
+            url: src
+          }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(src).then(() => {
+            showToast('Link copied!');
+          });
+        }
+        break;
+    }
+    
+    hideQuickMenu();
+  });
+})();
+
+// 2. Haptic Feedback
+function triggerHaptic(type = 'light') {
+  if('vibrate' in navigator) {
+    const patterns = {
+      light: 10,
+      medium: 20,
+      heavy: [10, 50, 10]
+    };
+    navigator.vibrate(patterns[type] || patterns.light);
+  }
+}
+
+// Add haptic to double-tap like
+(function(){
+  const originalHandleDoubleTapFn = window.handleDoubleTap;
+  window.handleDoubleTap = function(pin, src) {
+    triggerHaptic('medium');
+    if(originalHandleDoubleTapFn) {
+      originalHandleDoubleTapFn(pin, src);
+    }
+  };
+})();
+
+// 3. Story-style preview: Tap and hold on album
+(function(){
+  let holdTimer;
+  let holdTarget = null;
+  let autoAdvanceInterval = null;
+  const storyPreview = document.createElement('div');
+  storyPreview.id = 'storyPreview';
+  storyPreview.className = 'story-preview byz-hidden';
+  document.body.appendChild(storyPreview);
+  
+  function showStoryPreview(board, sources) {
+    if(!sources || sources.length === 0) return;
+    
+    // Clear any existing interval
+    if(autoAdvanceInterval) {
+      clearInterval(autoAdvanceInterval);
+      autoAdvanceInterval = null;
+    }
+    
+    let currentIndex = 0;
+    storyPreview.innerHTML = `
+      <div class="story-preview-header">
+        <span class="story-preview-count">${currentIndex + 1} / ${sources.length}</span>
+        <button class="story-preview-close" onclick="closeStoryPreview()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="story-preview-content">
+        <img src="${sources[0]}" alt="Preview" />
+      </div>
+      <div class="story-preview-nav">
+        <button class="story-preview-prev" onclick="navigateStory(-1)">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="story-preview-next" onclick="navigateStory(1)">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    `;
+    
+    storyPreview.classList.remove('byz-hidden');
+    storyPreview.dataset.sources = JSON.stringify(sources);
+    storyPreview.dataset.currentIndex = '0';
+    
+    // Auto-advance every 2 seconds
+    autoAdvanceInterval = setInterval(() => {
+      if(!storyPreview.classList.contains('byz-hidden')) {
+        navigateStory(1);
+      } else {
+        clearInterval(autoAdvanceInterval);
+        autoAdvanceInterval = null;
+      }
+    }, 2000);
+  }
+  
+  window.closeStoryPreview = function() {
+    storyPreview.classList.add('byz-hidden');
+    if(autoAdvanceInterval) {
+      clearInterval(autoAdvanceInterval);
+      autoAdvanceInterval = null;
+    }
+  };
+  
+  window.navigateStory = function(direction) {
+    const sources = JSON.parse(storyPreview.dataset.sources || '[]');
+    if(sources.length === 0) return;
+    
+    let currentIndex = parseInt(storyPreview.dataset.currentIndex || '0');
+    currentIndex = (currentIndex + direction + sources.length) % sources.length;
+    storyPreview.dataset.currentIndex = currentIndex;
+    
+    const img = storyPreview.querySelector('.story-preview-content img');
+    if(img) {
+      img.src = sources[currentIndex];
+      const countEl = storyPreview.querySelector('.story-preview-count');
+      if(countEl) countEl.textContent = `${currentIndex + 1} / ${sources.length}`;
+    }
+  };
+  
+  const boardGrid = document.getElementById('boardGrid');
+  if(boardGrid) {
+    boardGrid.addEventListener('touchstart', (e) => {
+      const board = e.target.closest('.board');
+      if(!board) return;
+      
+      holdTarget = board;
+      const albumKey = board.dataset.album;
+      if(!albumKey) return;
+      
+      // Get preview sources
+      holdTimer = setTimeout(() => {
+        if(holdTarget === board) {
+          // Access pickPreviewSources from window or try to call it
+          let sources = [];
+          try {
+            if(typeof window.pickPreviewSources === 'function') {
+              sources = window.pickPreviewSources(currentEvent, albumKey);
+            } else if(typeof pickPreviewSources === 'function') {
+              sources = pickPreviewSources(currentEvent, albumKey);
+            }
+          } catch(e) {
+            console.warn('Could not get preview sources:', e);
+          }
+          
+          if(sources && sources.length > 0) {
+            triggerHaptic('light');
+            showStoryPreview(board, sources);
+          }
+        }
+      }, 300);
+    }, {passive: true});
+    
+    boardGrid.addEventListener('touchend', () => {
+      clearTimeout(holdTimer);
+      holdTarget = null;
+    }, {passive: true});
+    
+    boardGrid.addEventListener('touchmove', () => {
+      clearTimeout(holdTimer);
+      holdTarget = null;
+    }, {passive: true});
+  }
+})();
+
+// 4. Share to Story button (already exists in lightbox, enhance it)
+(function(){
+  function addShareToStoryButton() {
+    const lbActions = document.querySelector('.lb-actions');
+    if(!lbActions) return;
+    
+    // Check if already added
+    if(document.getElementById('shareToStoryBtn')) return;
+    
+    const storyBtn = document.createElement('button');
+    storyBtn.id = 'shareToStoryBtn';
+    storyBtn.className = 'share-to-story-btn';
+    storyBtn.innerHTML = '<i class="fa-brands fa-instagram"></i> Share to Story';
+    storyBtn.addEventListener('click', () => {
+      const lbImg = document.getElementById('lbImg');
+      if(!lbImg || !lbImg.src) return;
+      
+      const url = lbImg.src;
+      const text = "Check out this photo from BYZ!";
+      
+      if(navigator.share) {
+        navigator.share({
+          title: "BYZ Memory",
+          text: text,
+          url: url
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(`${text} ${url}`).then(() => {
+          showToast("Share link copied!");
+        });
+      }
+    });
+    
+    lbActions.insertBefore(storyBtn, lbActions.firstChild);
+  }
+  
+  setTimeout(addShareToStoryButton, 1000);
+})();
+
+// 5. Infinite Scroll Enhancement (Progressive Loading)
+(function(){
+  // Use Intersection Observer for better performance
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) {
+        const img = entry.target;
+        if(img.dataset.src && !img.src) {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+        }
+        imageObserver.unobserve(img);
+      }
+    });
+  }, {
+    rootMargin: '200px'
+  });
+  
+  // Observe all lazy-loaded images
+  function observeImages() {
+    document.querySelectorAll('.pin img[loading="lazy"]').forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
+  
+  // Re-observe after album render
+  const originalRenderAlbum = window.renderAlbum;
+  if(typeof renderAlbum === 'function') {
+    window.renderAlbum = function(albumKey) {
+      if(originalRenderAlbum) originalRenderAlbum(albumKey);
+      setTimeout(observeImages, 100);
+    };
+  }
+  
+  observeImages();
+})();
+
+// 6. Dark Mode Animations (Glow/Pulse)
+(function(){
+  const style = document.createElement('style');
+  style.textContent = `
+    .pin {
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), filter 0.3s var(--ease);
+    }
+    .pin:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(255,255,255,0.08), var(--shadow);
+      filter: brightness(1.1);
+    }
+    .pin:active {
+      transform: translateY(-2px) scale(0.98);
+    }
+    .board:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(255,255,255,0.1), var(--shadow);
+    }
+    .btn:hover {
+      box-shadow: 0 4px 16px rgba(255,255,255,0.1);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.1); }
+      50% { box-shadow: 0 0 20px 5px rgba(255,255,255,0.15); }
+    }
+    .pin-heart.show {
+      animation: pulse-glow 0.6s var(--ease);
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+// 7. Quick Filters: Swipe up on album view
+(function(){
+  const albumView = document.getElementById('albumView');
+  if(!albumView) return;
+  
+  let swipeStartY = 0;
+  let swipeStartTime = 0;
+  const quickFilters = document.createElement('div');
+  quickFilters.id = 'quickFilters';
+  quickFilters.className = 'quick-filters byz-hidden';
+  quickFilters.innerHTML = `
+    <div class="quick-filters-header">
+      <h3>Quick Filters</h3>
+      <button class="quick-filters-close" onclick="document.getElementById('quickFilters').classList.add('byz-hidden')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="quick-filters-content">
+      <button class="quick-filter-btn" data-filter="recent">
+        <i class="fa-solid fa-clock"></i> Recent
+      </button>
+      <button class="quick-filter-btn" data-filter="liked">
+        <i class="fa-solid fa-heart"></i> Liked
+      </button>
+      <button class="quick-filter-btn" data-filter="all">
+        <i class="fa-solid fa-grid"></i> All Photos
+      </button>
+    </div>
+  `;
+  document.body.appendChild(quickFilters);
+  
+  albumView.addEventListener('touchstart', (e) => {
+    swipeStartY = e.touches[0].clientY;
+    swipeStartTime = Date.now();
+  }, {passive: true});
+  
+  albumView.addEventListener('touchend', (e) => {
+    if(!swipeStartY) return;
+    
+    const swipeEndY = e.changedTouches[0].clientY;
+    const diffY = swipeStartY - swipeEndY;
+    const timeDiff = Date.now() - swipeStartTime;
+    
+    // Swipe up (at least 80px in less than 300ms)
+    if(diffY > 80 && timeDiff < 300) {
+      triggerHaptic('light');
+      quickFilters.classList.remove('byz-hidden');
+    }
+    
+    swipeStartY = 0;
+  }, {passive: true});
+  
+  quickFilters.addEventListener('click', (e) => {
+    const btn = e.target.closest('.quick-filter-btn');
+    if(!btn) return;
+    
+    const filter = btn.dataset.filter;
+    const allPhotos = flattenPhotos(currentEvent, currentAlbum);
+    let filtered = [];
+    
+    switch(filter) {
+      case 'recent':
+        // Show last 20 photos
+        filtered = allPhotos.slice(0, 20);
+        break;
+      case 'liked':
+        const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+        filtered = allPhotos.filter(p => photoLikes[p.src] === true);
+        break;
+      case 'all':
+        filtered = allPhotos;
+        break;
+    }
+    
+    if(filtered.length > 0 && typeof renderAlbum === 'function') {
+      // Temporarily override currentList for display
+      const sorted = applySort(filtered);
+      currentList = sorted.map(x => x.src);
+      
+      const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+      const masonry = document.getElementById("masonry");
+      if(masonry) {
+        masonry.innerHTML = sorted.map((x, idx) => {
+          const label = (currentAlbum === "all") ? titleizeAlbum(x.album) : titleizeAlbum(currentAlbum);
+          const isLiked = photoLikes[x.src] === true;
+          return `
+            <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
+              <div class="pin-check"><i class="fa-solid fa-check"></i></div>
+              <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
+              <div class="pin-liked"><i class="fa-solid fa-heart"></i></div>
+              <img src="${x.src}" alt="${currentEvent} photo" loading="lazy" decoding="async" />
+              <div class="pin-overlay">
+                <div class="pin-label">${label}</div>
+                <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
+                  <i class="fa-solid fa-download"></i> Download
+                </a>
+              </div>
+            </div>
+          `;
+        }).join("");
+        bindMasonryEvents();
+      }
+    }
+    
+    quickFilters.classList.add('byz-hidden');
+    showToast(`Showing ${filtered.length} photos`);
+  });
+})();
+</script>
+
+<style>
+/* Quick Action Menu */
+.quick-action-menu {
+  position: fixed;
+  z-index: 10001;
+  background: color-mix(in srgb, var(--bg) 95%, transparent);
+  backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border-radius: 20px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 12px 48px rgba(0,0,0,.4);
+  animation: menuSlide 0.2s var(--ease);
+}
+@keyframes menuSlide {
+  from { opacity: 0; transform: scale(0.9) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.quick-action-btn {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  text-align: left;
+  min-width: 140px;
+}
+.quick-action-btn:hover {
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+}
+.quick-action-btn i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Story Preview */
+.story-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  background: rgba(0,0,0,0.95);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  animation: storyFadeIn 0.3s var(--ease);
+}
+@keyframes storyFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.story-preview-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  z-index: 10;
+}
+.story-preview-count {
+  font-weight: 700;
+  font-size: 14px;
+}
+.story-preview-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.story-preview-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.story-preview-content img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.story-preview-nav {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.story-preview-prev,
+.story-preview-next {
+  flex: 1;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+.story-preview-prev:hover,
+.story-preview-next:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* Quick Filters */
+.quick-filters {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10003;
+  background: color-mix(in srgb, var(--bg) 95%, transparent);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border-radius: 24px 24px 0 0;
+  padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  max-height: 60vh;
+  animation: slideUp 0.3s var(--ease);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.quick-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.quick-filters-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+.quick-filters-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.quick-filters-content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.quick-filter-btn {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+.quick-filter-btn:hover {
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+.quick-filter-btn i {
+  font-size: 20px;
+}
+</style>
 </script>
 </body>
 </html>
