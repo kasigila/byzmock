@@ -697,6 +697,28 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   display:flex;
   gap:10px;
   align-items:center;
+  flex-wrap:wrap;
+}
+@media (max-width: 640px){
+  .album-actions{
+    gap:8px;
+  }
+  .album-actions .btn{
+    font-size:13px;
+    padding:10px 14px;
+    min-width:auto;
+  }
+  .album-actions .select{
+    font-size:13px;
+    padding:10px 12px;
+    min-width:120px;
+  }
+  .photo-layout-toggle{
+    order:-1;
+    width:100%;
+    justify-content:center;
+    margin-bottom:8px;
+  }
 }
 
 .select{
@@ -1928,14 +1950,20 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 }
 
 .photo-of-day{
-  margin: 24px 0;
-  padding: 20px;
-  border-radius: 20px;
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 16px;
   background: linear-gradient(135deg, 
     rgba(255,107,107,.1) 0%,
     rgba(255,165,0,.1) 100%
   );
   border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+@media (max-width: 640px){
+  .photo-of-day{
+    margin: 16px 0;
+    padding: 14px;
+  }
 }
 
 .photo-of-day-badge{
@@ -1952,25 +1980,37 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 }
 
 .most-liked-section{
-  margin: 24px 0;
-  padding: 20px;
-  border-radius: 20px;
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 16px;
   background: linear-gradient(135deg, 
     color-mix(in srgb, var(--bg-elev) 95%, transparent) 0%,
     color-mix(in srgb, var(--bg-elev) 90%, transparent) 100%
   );
   border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
 }
+@media (max-width: 640px){
+  .most-liked-section{
+    margin: 16px 0;
+    padding: 14px;
+  }
+}
 
 .memories-section{
-  margin: 24px 0;
-  padding: 20px;
-  border-radius: 20px;
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 16px;
   background: linear-gradient(135deg, 
     rgba(37,211,102,.1) 0%,
     rgba(78,205,196,.1) 100%
   );
   border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+@media (max-width: 640px){
+  .memories-section{
+    margin: 16px 0;
+    padding: 14px;
+  }
 }
 
 .memories-badge{
@@ -2083,7 +2123,7 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
       <button class="btn ghost" id="recentActivityBtn" type="button" aria-label="Recent activity">
         <i class="fa-solid fa-clock-rotate-left"></i>
       </button>
-      <a class="btn ghost" href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+      <a class="btn ghost" href="index.html" style="font-size: 13px; padding: 10px 14px;"><i class="fa-solid fa-arrow-left"></i> Home</a>
     </div>
   </div>
 </header>
@@ -2098,26 +2138,11 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
 
   <section id="gallery">
     <div class="container">
-      <!-- Breadcrumb Navigation (8) -->
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="index.html">Home</a>
-        <span class="breadcrumb-sep">›</span>
-        <span>Memory Gallery</span>
-        <span id="breadcrumbEvent" class="byz-hidden">
-          <span class="breadcrumb-sep">›</span>
-          <span id="breadcrumbEventName"></span>
-        </span>
-        <span id="breadcrumbAlbum" class="byz-hidden">
-          <span class="breadcrumb-sep">›</span>
-          <span id="breadcrumbAlbumName"></span>
-        </span>
-      </nav>
-
       <div class="gallery-shell">
-        <!-- Search Bar (4) -->
+        <!-- Unified Search Bar -->
         <div class="search-bar">
           <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input type="text" class="search-input" id="searchInput" placeholder="Search albums by date or event..." aria-label="Search albums" />
+          <input type="text" class="search-input" id="searchInput" placeholder="Search albums, photos, or events..." aria-label="Search albums and photos" />
           <button class="search-clear" id="searchClear" aria-label="Clear search" type="button">×</button>
         </div>
 
@@ -2164,7 +2189,7 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
           </button>
 
           <div class="gallery-meta" aria-live="polite">
-            <span id="albumCount">0</span> albums • <span id="photoCount">0</span> photos
+            <span id="albumCount">0</span> albums • <span id="photoCount">0</span> <i class="fa-solid fa-image" aria-label="photos"></i>
             <span id="socialProof" class="social-proof-text"></span>
           </div>
           
@@ -2664,7 +2689,12 @@ console.log("✅ Script file loaded!");
 
   function titleizeAlbum(key){
     const [m, d, y] = key.split("-");
-    const month = m.charAt(0).toUpperCase() + m.slice(1);
+    const monthNames = {
+      'january': 'January', 'february': 'February', 'march': 'March', 'april': 'April',
+      'may': 'May', 'june': 'June', 'july': 'July', 'august': 'August',
+      'september': 'September', 'october': 'October', 'november': 'November', 'december': 'December'
+    };
+    const month = monthNames[m.toLowerCase()] || m.charAt(0).toUpperCase() + m.slice(1);
     return `${month} ${Number(d)}, ${y}`;
   }
 
@@ -3070,8 +3100,8 @@ console.log("✅ Script file loaded!");
     currentList = sorted.map(x => x.src);
     updateMetaAlbum(currentList.length);
 
-    const title = (albumKey === "all") ? `${currentEvent.toUpperCase()} — All Photos` : `${currentEvent.toUpperCase()} — ${titleizeAlbum(albumKey)}`;
-    const sub = `${currentList.length} photos`;
+    const title = (albumKey === "all") ? `${currentEvent.toUpperCase()} — All Photos` : `${currentEvent.toUpperCase()} • ${titleizeAlbum(albumKey)}`;
+    const sub = `${currentList.length} <i class="fa-solid fa-image" aria-label="photos"></i>`;
 
     if(albumTitleEl) albumTitleEl.textContent = title;
     if(albumSubEl) albumSubEl.textContent = sub;
@@ -3114,7 +3144,7 @@ console.log("✅ Script file loaded!");
     updateBreadcrumb();
     addToRecent(albumKey);
 
-    document.getElementById("gallery")?.scrollIntoView({ behavior:"smooth", block:"start" });
+    // Don't scroll to top - keep user's current position
     showToast("Album opened");
     
     /* ===================== UPDATE URL (36) ===================== */
@@ -4219,49 +4249,7 @@ setInterval(updateLikesCount, 2000);
 
 // Feature 6: Gen Z engagement features
 (function(){
-  // Find Me feature
-  function initFindMe(){
-    const findMeSection = document.createElement("div");
-    findMeSection.className = "find-me-section";
-    findMeSection.innerHTML = `
-      <div class="find-me-header">
-        <i class="fa-solid fa-user-check"></i>
-        <div>
-          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">Find Me</h3>
-          <p style="font-size: 13px; color: var(--sub);">Search for photos by date or event</p>
-        </div>
-      </div>
-      <div class="find-me-input-group">
-        <input type="text" id="findMeInput" placeholder="Enter date (e.g., Dec 26) or event name" />
-        <button onclick="findMePhotos()" type="button">
-          <i class="fa-solid fa-search"></i> Search
-        </button>
-      </div>
-    `;
-    
-    const galleryShell = document.querySelector(".gallery-shell");
-    if(galleryShell){
-      galleryShell.insertBefore(findMeSection, galleryShell.firstChild);
-    }
-  }
-  
-  window.findMePhotos = function(){
-    const input = document.getElementById("findMeInput");
-    if(!input) return;
-    const query = input.value.toLowerCase().trim();
-    if(!query){
-      showToast("Enter a date or event name");
-      return;
-    }
-    
-    // Search albums
-    const searchInput = document.getElementById("searchInput");
-    if(searchInput){
-      searchInput.value = query;
-      searchInput.dispatchEvent(new Event("input"));
-    }
-    showToast(`Searching for "${query}"...`);
-  };
+  // Find Me feature removed - consolidated into main search bar
   
   // Photo of the Day
   function initPhotoOfDay(){
@@ -4279,9 +4267,10 @@ setInterval(updateLikesCount, 2000);
     
     const galleryShell = document.querySelector(".gallery-shell");
     if(galleryShell){
-      const findMe = document.querySelector(".find-me-section");
-      if(findMe){
-        galleryShell.insertBefore(photoOfDay, findMe.nextSibling);
+      // Insert after search bar, before boards
+      const searchBar = document.querySelector(".search-bar");
+      if(searchBar){
+        galleryShell.insertBefore(photoOfDay, searchBar.nextSibling);
       } else {
         galleryShell.insertBefore(photoOfDay, galleryShell.firstChild);
       }
@@ -4331,17 +4320,17 @@ setInterval(updateLikesCount, 2000);
     showToast("Opening photo...");
   };
   
-  // Most Liked section
+  // My Likes section
   function initMostLiked(){
     const mostLiked = document.createElement("div");
     mostLiked.className = "most-liked-section";
     mostLiked.innerHTML = `
       <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-        <i class="fa-solid fa-fire" style="color: #ff6b6b;"></i> Most Liked
+        <i class="fa-solid fa-heart" style="color: #ff6b6b;"></i> My Likes
       </h3>
       <div id="mostLikedGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
         <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
-          Most liked photos will appear here
+          Your liked photos will appear here
         </div>
       </div>
     `;
@@ -4354,7 +4343,7 @@ setInterval(updateLikesCount, 2000);
       }
     }
     
-    // Update most liked (would need backend tracking, for now show placeholder)
+    // Update my likes (shows user's liked photos from localStorage)
     setTimeout(() => {
       const grid = document.getElementById("mostLikedGrid");
       if(grid){
@@ -4363,9 +4352,15 @@ setInterval(updateLikesCount, 2000);
         if(likedUrls.length > 0){
           grid.innerHTML = likedUrls.slice(0, 6).map(url => `
             <div class="liked-photo-item" onclick="openLikedPhoto('${url.replace(/'/g, "\\'")}')">
-              <img src="${url}" alt="Most liked" loading="lazy" />
+              <img src="${url}" alt="Liked photo" loading="lazy" />
             </div>
           `).join("");
+        } else {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
+              Double-tap photos to like them
+            </div>
+          `;
         }
       }
     }, 1500);
@@ -4373,21 +4368,46 @@ setInterval(updateLikesCount, 2000);
   
   // Memories (On This Day)
   function initMemories(){
-    const memories = document.createElement("div");
-    memories.className = "memories-section";
     const today = new Date();
     const month = today.toLocaleString('en-US', { month: 'long' });
     const day = today.getDate();
     
+    // Find photos from this date in previous years
+    const matchingPhotos = [];
+    if(typeof PHOTOS !== "undefined"){
+      Object.keys(PHOTOS).forEach(event => {
+        Object.keys(PHOTOS[event]).forEach(album => {
+          const [m, d] = album.split("-");
+          const monthName = monthNames[m.toLowerCase()];
+          if(Number(d) === day && monthName === month){
+            PHOTOS[event][album].slice(0, 4).forEach(file => {
+              matchingPhotos.push({
+                src: `${BASE[event]}${album}/${file}`,
+                event: event,
+                album: album
+              });
+            });
+          }
+        });
+      });
+    }
+    
+    // Only show section if there are photos
+    if(matchingPhotos.length === 0) return;
+    
+    const memories = document.createElement("div");
+    memories.className = "memories-section";
     memories.innerHTML = `
       <div class="memories-badge">
         <i class="fa-solid fa-clock-rotate-left"></i> On This Day
       </div>
       <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">${month} ${day}</h3>
       <div id="memoriesGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-        <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
-          Photos from past events on this date will appear here
-        </div>
+        ${matchingPhotos.slice(0, 4).map(photo => `
+          <div onclick="openPhotoOfDay('${photo.src.replace(/'/g, "\\'")}')" style="cursor: pointer; border-radius: 12px; overflow: hidden;">
+            <img src="${photo.src}" alt="Memory" loading="lazy" style="width: 100%; height: auto; display: block;" />
+          </div>
+        `).join("")}
       </div>
     `;
     
@@ -4401,7 +4421,6 @@ setInterval(updateLikesCount, 2000);
   }
   
   setTimeout(() => {
-    initFindMe();
     initPhotoOfDay();
     initMostLiked();
     initMemories();
