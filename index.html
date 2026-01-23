@@ -8117,17 +8117,207 @@ document.addEventListener('keydown', (e) => {
 })();
 
 /* =========================================================
-   BYZBOT - HIGH-TECH INTERACTIVE CHAT (FAQ-Based, Looks AI)
+   BYZBOT - AI-POWERED CHAT (Hugging Face Integration)
 ========================================================= */
 (function() {
-  // Context tracking
-  let conversationContext = {
-    currentTopic: null, // 'groove', 'tempo', 'apt', etc.
-    lastEvent: null
-  };
+  // Conversation history for context
+  let conversationHistory = [];
   
-  // Enhanced FAQ database with context awareness
-  const faqDatabase = {
+  // BYZ Information Context for AI
+  const byzContext = `You are ByzBot, the AI assistant for BYZ Entertainment, a nightlife and entertainment company in Dar es Salaam, Tanzania.
+
+COMPANY INFORMATION:
+- BYZ Entertainment creates legendary nightlife experiences in Dar es Salaam
+- Location: Dar es Salaam, Tanzania
+- Email: byzentertainment@gmail.com
+- WhatsApp: +255 768 464 367
+- Website: https://kasigila.github.io/byzmock/
+
+EVENTS:
+1. Groove Series - Weekly Afro-house nights. Happens every week. Features different groove types: Caribbean Groove, RnB Groove, Afrobeats Groove. Venue: Tips Coco.
+2. Tempo - Seasonal event with evolving themes. Check schedule for dates.
+3. APT Sessions - Invite-only apartment sessions with premium vibes. Users must request an invite.
+
+TEAM MEMBERS:
+- Frank - Founder & CEO. Instagram: @jrmgoyo. WhatsApp: +255 755 790 033
+- Sameera - Brand Partnerships & Creative Lead. Instagram: @sams__cam
+- Edson - Finance & Payments Lead. Instagram: @edsont.11
+- Tuari - Logistics & Venue Management. Instagram: @tuariotk
+- Abd - Operations & Event Coordination. Instagram: @abd.raww
+
+ARTISTS/DJs:
+- DJ Sammy - Specializes in Afrobeats, House, Hip-Hop, Dancehall, Amapiano, R&B. Instagram: @djsammyofficial_
+- Apuki - DJ and performer. Dynamic sets blending Afrobeats, Dancehall, Hip-Hop. Available for local and international bookings. Instagram: @apukiofficial. TikTok: @apukioffical. Spotify available. Booking email: Apuki.Bookings@gmail.com
+- Renee - Artist specializing in Hip-Hop, Rap, R&B. Instagram: @renesw0rld777. TikTok: @ren55974. YouTube: @renesa777
+
+SOCIAL MEDIA:
+- Instagram: @byzinthehood
+- TikTok: @byzinthehood
+- Facebook: byzinthehood
+
+WEBSITE FEATURES:
+- Booking pages: booking.html (Groove Series), booking-tempo.html (Tempo), apt-request.html (APT invite request)
+- Gallery: gallery.html (Memory Gallery with photos from events)
+- Rate page: rate.html (Feedback/rating)
+- Groove Series page: groove-series.html
+- Admin: admin.html (for BYZ admins)
+
+IMPORTANT:
+- Be friendly, helpful, and concise
+- Always provide relevant links when mentioning booking, gallery, or other pages
+- For booking questions, direct users to the appropriate booking page
+- For artist/DJ questions, mention they can view profiles in the "Book Our Artists & DJs" section
+- For team questions, mention the "Meet the Team" section
+- Keep responses conversational and natural
+- If asked about something not in this context, politely say you don't have that information but can help with BYZ-related questions`;
+
+  // Hugging Face API Configuration
+  const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
+  // Alternative free models if Mistral has rate limits:
+  // 'HuggingFaceH4/zephyr-7b-beta'
+  // 'meta-llama/Llama-2-7b-chat-hf'
+  
+  // AI Response function
+  async function getAIResponse(userMessage) {
+    try {
+      // Build conversation context
+      const recentHistory = conversationHistory.slice(-4); // Last 4 messages for context
+      const historyText = recentHistory.map(m => 
+        `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`
+      ).join('\n');
+      
+      // Format for Mistral instruct model
+      const prompt = `<s>[INST] ${byzContext}\n\nPrevious conversation:\n${historyText || 'None'}\n\nUser: ${userMessage}\nAssistant: [/INST]`;
+      
+      const response = await fetch(HF_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: 200,
+            temperature: 0.7,
+            top_p: 0.9,
+            return_full_text: false
+          }
+        })
+      });
+      
+      if (!response.ok) {
+        // If model is loading, wait and retry
+        if (response.status === 503) {
+          const data = await response.json();
+          if (data.estimated_time) {
+            await new Promise(resolve => setTimeout(resolve, data.estimated_time * 1000));
+            return getAIResponse(userMessage); // Retry
+          }
+        }
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Extract response text
+      let aiResponse = '';
+      if (Array.isArray(data) && data[0]?.generated_text) {
+        aiResponse = data[0].generated_text.trim();
+      } else if (data.generated_text) {
+        aiResponse = data.generated_text.trim();
+      } else if (typeof data === 'string') {
+        aiResponse = data.trim();
+      }
+      
+      // Clean up response (remove any model artifacts)
+      aiResponse = aiResponse.replace(/\[INST\].*?\[\/INST\]/g, '').trim();
+      aiResponse = aiResponse.split('\n')[0]; // Take first line if multiple
+      aiResponse = aiResponse.replace(/^Assistant:\s*/i, '').trim();
+      
+      if (!aiResponse || aiResponse.length < 5) {
+        throw new Error('Empty or invalid response from AI');
+      }
+      
+      return aiResponse;
+    } catch (error) {
+      console.error('AI Error:', error);
+      throw error; // Let caller handle fallback
+    }
+  }
+  
+  // Enhanced response parser to extract links and actions
+  function parseAIResponse(aiText, userMessage) {
+    const lower = userMessage.toLowerCase();
+    const response = { 
+      response: aiText, 
+      suggestions: [],
+      actionButton: null,
+      link: null,
+      linkType: null
+    };
+    
+    // Detect booking intent
+    if (lower.includes('book') || lower.includes('ticket') || lower.includes('reserve')) {
+      if (lower.includes('groove')) {
+        response.actionButton = { text: 'Book Groove Series', href: 'booking.html', type: 'link' };
+        response.suggestions = ['View lineup', 'More info'];
+      } else if (lower.includes('tempo')) {
+        response.actionButton = { text: 'Book Tempo', href: 'booking-tempo.html', type: 'link' };
+        response.suggestions = ['View schedule', 'More info'];
+      } else if (lower.includes('apt')) {
+        response.actionButton = { text: 'Request Invite', href: 'apt-request.html', type: 'link' };
+        response.suggestions = ['More info'];
+      } else {
+        response.suggestions = ['Groove Series', 'Tempo', 'APT Session'];
+      }
+    }
+    
+    // Detect social media mentions
+    if (aiText.includes('Instagram') || lower.includes('instagram')) {
+      response.link = 'https://www.instagram.com/byzinthehood';
+      response.linkType = 'instagram';
+    }
+    if (aiText.includes('Facebook') || lower.includes('facebook')) {
+      response.link = 'https://www.facebook.com/byzinthehood';
+      response.linkType = 'facebook';
+    }
+    if (aiText.includes('TikTok') || lower.includes('tiktok')) {
+      response.link = 'https://www.tiktok.com/@byzinthehood';
+      response.linkType = 'tiktok';
+    }
+    if (aiText.includes('WhatsApp') || lower.includes('whatsapp')) {
+      response.link = 'https://wa.me/255768464367';
+      response.linkType = 'whatsapp';
+    }
+    
+    // Default suggestions if none provided
+    if (response.suggestions.length === 0) {
+      response.suggestions = ['Book tickets', 'Event info', 'Contact'];
+    }
+    
+    return response;
+  }
+  
+  // Fallback response using keyword matching
+  function getFallbackResponse(text) {
+    const lower = text.toLowerCase().trim();
+    
+    // Check quick actions first
+    for (const [key, data] of Object.entries(quickActions)) {
+      if (lower.includes(key)) {
+        return data;
+      }
+    }
+    
+    // Default helpful response
+    return {
+      response: "I'm here to help! I can assist with booking tickets, event information, team details, artist bookings, or anything about BYZ Entertainment. What would you like to know?",
+      suggestions: ['Book tickets', 'Event info', 'Contact']
+    };
+  }
+  
+  // Quick action responses (for instant responses to common actions - fallback only)
+  const quickActions = {
     'hi': { response: "Hey! 👋 Welcome to BYZ. I'm ByzBot, your support assistant. How can I help you today?", suggestions: ['Book tickets', 'Event info', 'Contact', 'View schedule'] },
     'hello': { response: "Hello! 👋 I'm ByzBot, your support assistant. What can I help you with?", suggestions: ['Book tickets', 'Event info', 'Contact'] },
     'book': { response: "Great! You can book tables or tickets for our events. Which event are you interested in?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
@@ -8304,8 +8494,7 @@ document.addEventListener('keydown', (e) => {
     'social': { response: "Find us on Instagram, TikTok, and Facebook!", suggestions: ['Instagram', 'TikTok', 'Facebook'] },
     'instagram': { response: "Follow us on Instagram for the latest updates, behind-the-scenes, and event announcements!", suggestions: ['TikTok', 'Facebook', 'Book now'], link: 'https://www.instagram.com/byzinthehood', linkType: 'instagram' },
     'tiktok': { response: "Check us out on TikTok for event highlights and fun content!", suggestions: ['Instagram', 'Facebook', 'Book now'], link: 'https://www.tiktok.com/@byzinthehood', linkType: 'tiktok' },
-    'help': { response: "I'm ByzBot, your support assistant! I can help with booking, event info, schedules, pricing, or anything BYZ-related. What do you need?", suggestions: ['Book tickets', 'Event info', 'View schedule'] },
-    'default': { response: "I understand you're looking for information. Let me help! Are you interested in booking, event details, or something else?", suggestions: ['Book tickets', 'Event info', 'Contact'] }
+    'help': { response: "I'm ByzBot, your support assistant! I can help with booking, event info, schedules, pricing, or anything BYZ-related. What do you need?", suggestions: ['Book tickets', 'Event info', 'View schedule'] }
   };
   
   // Create chat widget HTML
@@ -8871,6 +9060,39 @@ document.addEventListener('keydown', (e) => {
       font-size: 12px;
     }
     
+    /* Typing indicator animation */
+    .typing-dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+    
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--sub);
+      animation: typing 1.4s infinite;
+    }
+    
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+      0%, 60%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+      }
+      30% {
+        opacity: 1;
+        transform: translateY(-4px);
+      }
+    }
+    
     @media (max-width: 640px) {
       .chat-window {
         width: 100%;
@@ -8980,77 +9202,50 @@ document.addEventListener('keydown', (e) => {
     }, 100);
   });
   
-  function findResponse(text) {
+  // Main response function - uses AI with fallback
+  async function findResponse(text) {
     const lower = text.toLowerCase().trim();
     
-    // Context-aware matching
-    // Check for schedule-related when talking about tempo
-    if ((conversationContext.currentTopic === 'tempo' || conversationContext.lastEvent === 'tempo') && 
-        (lower.includes('schedule') || lower.includes('view') || lower.includes('see'))) {
+    // Quick responses for greetings (instant, no API call)
+    if (lower === 'hi' || lower === 'hello' || lower === 'hey') {
+      return {
+        response: "Hey! 👋 Welcome to BYZ. I'm ByzBot, your AI assistant. How can I help you today?",
+        suggestions: ['Book tickets', 'Event info', 'Contact', 'View schedule']
+      };
+    }
+    
+    // Special handling for schedule requests (instant action)
+    if (lower.includes('schedule') && lower.includes('tempo')) {
       const scheduleBtn = document.getElementById('tempoScheduleBtn');
       if (scheduleBtn) {
         setTimeout(() => scheduleBtn.click(), 1000);
-        return { 
-          response: "Opening the Tempo schedule for you! You'll see all upcoming dates marked in red.", 
-          suggestions: ['Book Tempo', 'More info'] 
+        return {
+          response: "Opening the Tempo schedule for you! You'll see all upcoming dates marked in red.",
+          suggestions: ['Book Tempo', 'More info']
         };
       }
     }
     
-    // Check for ticket/booking intent
-    if (lower.includes('ticket') || lower.includes('tickets') || lower.includes('book') || lower.includes('reserve')) {
-      if (lower.includes('groove')) {
-        conversationContext.currentTopic = 'groove';
-        conversationContext.lastEvent = 'groove';
-        return { 
-          response: "Great! You can book tickets for Groove Series. It's our weekly Afro-house night. Want to book now?", 
-          suggestions: ['Yes, book Groove', 'View lineup', 'More info'] 
-        };
-      } else if (lower.includes('tempo')) {
-        conversationContext.currentTopic = 'tempo';
-        conversationContext.lastEvent = 'tempo';
-        return { 
-          response: "Perfect! You can book tickets for Tempo. Want to book now or view the schedule first?", 
-          suggestions: ['Book Tempo', 'View schedule', 'More info'] 
-        };
-      } else if (lower.includes('apt')) {
-        conversationContext.currentTopic = 'apt';
-        conversationContext.lastEvent = 'apt';
-        return { 
-          response: "APT Sessions are invite-only. You can request an invite. Want to request one?", 
-          suggestions: ['Request invite', 'More info'],
-          actionButton: { text: 'Request Invite', href: 'apt-request.html', type: 'link' }
-        };
+    // Use AI for all other queries
+    try {
+      const aiText = await getAIResponse(text);
+      const parsed = parseAIResponse(aiText, text);
+      
+      // Update conversation history
+      conversationHistory.push({ role: 'user', content: text });
+      conversationHistory.push({ role: 'assistant', content: aiText });
+      
+      // Keep history manageable (last 10 messages)
+      if (conversationHistory.length > 10) {
+        conversationHistory = conversationHistory.slice(-10);
       }
+      
+      return parsed;
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      // Fallback to keyword matching
+      return getFallbackResponse(text);
     }
-    
-    // Standard keyword matching
-    for (const [key, data] of Object.entries(faqDatabase)) {
-      if (lower.includes(key)) {
-        // Update context if event mentioned
-        if (data.context) {
-          conversationContext.currentTopic = data.context;
-          conversationContext.lastEvent = data.context;
-        }
-        
-        // Handle schedule requests with context
-        if (data.isSchedule && (conversationContext.currentTopic === 'tempo' || conversationContext.lastEvent === 'tempo')) {
-          const scheduleBtn = document.getElementById('tempoScheduleBtn');
-          if (scheduleBtn) {
-            setTimeout(() => scheduleBtn.click(), 1000);
-            return { 
-              response: "Opening the Tempo schedule for you! You'll see all upcoming dates marked in red.", 
-              suggestions: ['Book Tempo', 'More info'] 
-            };
-          }
-        }
-        
-        // Don't auto-scroll - let user click buttons/links to navigate
-        return data;
-      }
-    }
-    
-    return faqDatabase.default;
   }
   
   function addMessage(text, isUser = false) {
@@ -9121,7 +9316,7 @@ document.addEventListener('keydown', (e) => {
     });
   }
   
-  function sendMessage() {
+  async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
     
@@ -9129,11 +9324,37 @@ document.addEventListener('keydown', (e) => {
     input.value = '';
     updateSendButton();
     
-      // Simulate typing delay
-    setTimeout(() => {
-      const response = findResponse(text);
-      let responseText = response.response;
+    // Show typing indicator
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'chat-message bot';
+    typingIndicator.id = 'typingIndicator';
+    typingIndicator.innerHTML = `
+      <div class="message-avatar">
+        <img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />
+      </div>
+      <div class="message-content">
+        <div class="message-text" style="padding: 10px 14px;">
+          <span class="typing-dots">
+            <span>.</span><span>.</span><span>.</span>
+          </span>
+        </div>
+      </div>
+    `;
+    messages.appendChild(typingIndicator);
+    messages.scrollTop = messages.scrollHeight;
+    
+    try {
+      // Get AI response
+      const response = await findResponse(text);
+      let responseText = response.response || response;
       let actionButtonHtml = '';
+      
+      // Handle both string and object responses
+      if (typeof response === 'string') {
+        responseText = response;
+      } else if (response.response) {
+        responseText = response.response;
+      }
       
       // Add clickable links if provided
       if (response.link && response.linkType) {
@@ -9169,10 +9390,20 @@ document.addEventListener('keydown', (e) => {
         actionButtonHtml = `<a href="${response.actionButton.href}" class="chat-action-btn"><i class="${btnIcon}"></i> ${response.actionButton.text}</a>`;
       }
       
+      // Remove typing indicator
+      typingIndicator.remove();
+      
+      // Add AI response
       addMessage(responseText + actionButtonHtml, false);
-      updateSuggestions(response.suggestions);
-      // User clicks buttons/links to navigate - no auto-scroll
-    }, 500);
+      updateSuggestions(response.suggestions || ['Book tickets', 'Event info', 'Contact']);
+    } catch (error) {
+      // Remove typing indicator
+      typingIndicator.remove();
+      
+      // Show error message
+      addMessage("Sorry, I'm having trouble connecting right now. Please try again or contact us directly!", false);
+      updateSuggestions(['Contact', 'Book tickets', 'Event info']);
+    }
   }
   
   send.addEventListener('click', sendMessage);
