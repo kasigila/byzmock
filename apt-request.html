@@ -127,26 +127,6 @@
   .btn.primary{background:var(--accent);color:var(--bg);border-color:transparent}
   .btn.ghost{background:transparent}
 
-  .theme-btn{
-    width:44px;
-    height:44px;
-    border-radius:999px;
-    border:1px solid var(--border);
-    background: var(--bg-elev);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
-    box-shadow: var(--shadow-soft);
-    color: var(--text);
-  }
-  .theme-btn:hover{
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-  }
-  .theme-glyph{
-    width:20px;
     height:20px;
     display:block;
   }
@@ -251,14 +231,28 @@
   label{font-size:13px;color:var(--sub)}
   input, select, textarea{
     width:100%;
-    padding:14px;
+    padding:16px 18px;
     border-radius:18px;
     border:1px solid var(--border);
     background: var(--bg-elev);
     color: var(--text);
-    font-size:14px;
+    font-size:15px;
     outline:none;
     box-shadow: var(--shadow-soft);
+    transition: all 0.2s var(--ease);
+    min-height: 52px; /* Better touch target */
+  }
+  input:focus, select:focus, textarea:focus{
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
+    transform: translateY(-1px);
+  }
+  input.success, select.success, textarea.success{
+    border-color: var(--ok);
+    background: color-mix(in srgb, var(--ok) 5%, var(--bg-elev));
+  }
+  input.error, select.error, textarea.error{
+    border-color: var(--bad);
+    background: color-mix(in srgb, var(--bad) 5%, var(--bg-elev));
   }
   textarea{min-height:120px;resize:vertical}
 
@@ -413,7 +407,7 @@
   </style>
 </head>
 
-<body>
+<body data-theme="dark">
 <header>
   <div class="container header-inner">
     <a class="brand" href="index.html" aria-label="BYZ Home">
@@ -424,9 +418,6 @@
     </a>
 
     <div class="header-actions">
-      <button class="theme-btn" id="themeToggle" type="button" aria-label="Toggle theme" aria-pressed="false" title="Switch to dark mode">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-glyph">
-          <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2" />
           <circle cx="12" cy="12" r="6" fill="currentColor" />
           <defs>
             <clipPath id="themeHalfClip">
@@ -510,12 +501,15 @@
 
         <div class="form-actions">
           
-          <button id="aptSubmitBtn" class="btn primary" type="submit" aria-label="Submit APT Request">
+          <button id="aptSubmitBtn" class="btn primary" type="submit" aria-label="Submit APT Request" style="min-height: 52px; font-size: 15px; padding: 16px 24px;">
             <i class="fa-solid fa-paper-plane"></i> Request Invite
           </button>
 
           
-          <span class="note">Submitting opens WhatsApp with your details.</span>
+          <div class="note" style="display: flex; align-items: flex-start; gap: 8px; margin-top: 8px;">
+            <i class="fa-solid fa-circle-info" style="color: var(--sub); margin-top: 2px; flex-shrink: 0;"></i>
+            <span>Submitting opens WhatsApp with your details. Your request will be reviewed and you'll receive a response via WhatsApp.</span>
+          </div>
         </div>
       </form>
       
@@ -563,9 +557,19 @@
           }
           break;
         case "instagram":
-          if(value && !value.startsWith("@")){
-            isValid = false;
-            errorMsg = "Instagram handle must start with @";
+          if(value && value.trim()){
+            const cleanValue = value.trim();
+            // Allow with or without @, but normalize to @
+            if(!cleanValue.startsWith("@") && !cleanValue.match(/^[a-zA-Z0-9._]+$/)){
+              isValid = false;
+              errorMsg = "Invalid Instagram handle format";
+            } else if(cleanValue.length < 2){
+              isValid = false;
+              errorMsg = "Instagram handle too short";
+            } else if(cleanValue.length > 30){
+              isValid = false;
+              errorMsg = "Instagram handle too long";
+            }
           }
           break;
       }
@@ -648,7 +652,7 @@
     loadAptFormData();
   });
 
-  // Auto-save on input
+  // Auto-save on input and enhancements
   document.addEventListener("DOMContentLoaded", () => {
     const inputs = ["aptName", "aptPhone", "aptIg", "aptBefore", "aptNotes"];
     inputs.forEach(id => {
@@ -666,6 +670,73 @@
         });
       }
     });
+
+    // Auto-format phone numbers
+    const phoneInput = document.getElementById("aptPhone");
+    if(phoneInput){
+      phoneInput.addEventListener("input", (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if(value.length > 0){
+          // Format as: +255 768 464 367
+          if(value.startsWith("255")){
+            value = "+" + value;
+          } else if(!value.startsWith("+255") && value.length >= 9){
+            value = "+255" + value;
+          }
+          if(value.length > 4) value = value.slice(0, 4) + " " + value.slice(4);
+          if(value.length > 8) value = value.slice(0, 8) + " " + value.slice(8);
+          if(value.length > 12) value = value.slice(0, 12) + " " + value.slice(12);
+          e.target.value = value;
+        }
+      });
+    }
+
+    // Smart field focus - auto-focus next field on Enter
+    const formInputs = Array.from(form.querySelectorAll("input, select, textarea"));
+    formInputs.forEach((input, index) => {
+      input.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" && !e.shiftKey && input.tagName !== "TEXTAREA"){
+          e.preventDefault();
+          const nextInput = formInputs[index + 1];
+          if(nextInput){
+            nextInput.focus();
+          } else {
+            // Last field - focus submit button
+            const submitBtn = document.getElementById("aptSubmitBtn");
+            if(submitBtn) submitBtn.focus();
+          }
+        }
+      });
+    });
+
+    // Sticky submit button on mobile scroll
+    const submitBtn = document.getElementById("aptSubmitBtn");
+    if(submitBtn && window.innerWidth <= 640){
+      let lastScroll = window.scrollY;
+      window.addEventListener("scroll", () => {
+        const currentScroll = window.scrollY;
+        if(currentScroll > lastScroll && currentScroll > 200){
+          submitBtn.style.position = "fixed";
+          submitBtn.style.bottom = "20px";
+          submitBtn.style.left = "50%";
+          submitBtn.style.transform = "translateX(-50%)";
+          submitBtn.style.width = "calc(100% - 48px)";
+          submitBtn.style.maxWidth = "500px";
+          submitBtn.style.zIndex = "1000";
+          submitBtn.style.boxShadow = "0 8px 24px rgba(0,0,0,.4)";
+        } else {
+          submitBtn.style.position = "";
+          submitBtn.style.bottom = "";
+          submitBtn.style.left = "";
+          submitBtn.style.transform = "";
+          submitBtn.style.width = "";
+          submitBtn.style.maxWidth = "";
+          submitBtn.style.zIndex = "";
+          submitBtn.style.boxShadow = "";
+        }
+        lastScroll = currentScroll;
+      }, { passive: true });
+    }
   });
 
   // Warn before leaving with unsaved data
@@ -857,35 +928,11 @@
 /* =========================================================
    APPLE-STYLE DARK MODE (MATCH INDEX)
 ========================================================= */
+// Dark mode permanently enabled
 (function() {
   const root = document.documentElement;
-  const toggle = document.getElementById("themeToggle");
-  const stored = localStorage.getItem("theme");
-
-  function applyTheme(theme) {
-    if (theme === "dark") root.setAttribute("data-theme","dark");
-    else root.setAttribute("data-theme","light");
-    if (toggle){
-      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-      toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
-    }
-  }
-
-  if (stored) {
-    applyTheme(stored);
-  } else {
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(prefersDark ? "dark" : "light");
-  }
-
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      const isDark = root.getAttribute("data-theme") === "dark";
-      const next = isDark ? "light" : "dark";
-      applyTheme(next);
-      localStorage.setItem("theme", next);
-    });
-  }
+  root.setAttribute("data-theme","dark");
+  localStorage.removeItem("theme");
 })();
 </script>
 <div id="aptModalBackdrop" class="apt-modal-backdrop hidden" aria-hidden="true">
