@@ -724,7 +724,7 @@ section{padding: 92px 0}
 /* ===================== SOCIAL FLOATING DOCK (IG / TIKTOK / WHATSAPP / ADMIN) - COLLAPSIBLE ===================== */
 .social-dock{
   position: fixed;
-  bottom: 80px;
+  bottom: calc(80px + 16px);
   right: 16px;
   z-index: 999;
   display: flex;
@@ -802,22 +802,25 @@ section{padding: 92px 0}
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
-.social-dock-toggle .fa-plus,
-.social-dock-toggle .fa-minus {
+.social-dock-toggle i {
   font-size: 22px;
   color: var(--text);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.social-dock-toggle .fa-minus {
+.social-dock-toggle .fa-ellipsis {
+  display: block;
+}
+
+.social-dock-toggle .fa-xmark {
   display: none;
 }
 
-.social-dock:not(.collapsed) .social-dock-toggle .fa-plus {
+.social-dock:not(.collapsed) .social-dock-toggle .fa-ellipsis {
   display: none;
 }
 
-.social-dock:not(.collapsed) .social-dock-toggle .fa-minus {
+.social-dock:not(.collapsed) .social-dock-toggle .fa-xmark {
   display: block;
 }
 
@@ -4816,8 +4819,8 @@ body.bulkbar-active .social-dock{
 <!-- Floating Social Dock - Collapsible -->
 <div class="social-dock collapsed" id="socialDock" aria-label="Social links">
   <button class="social-dock-toggle" id="socialDockToggle" aria-label="Toggle social links" aria-expanded="false">
-    <i class="fa-solid fa-plus"></i>
-    <i class="fa-solid fa-minus"></i>
+    <i class="fa-solid fa-ellipsis"></i>
+    <i class="fa-solid fa-xmark"></i>
   </button>
   <a class="soc instagram" href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" aria-label="Instagram">
     <i class="fa-brands fa-instagram"></i>
@@ -4827,10 +4830,6 @@ body.bulkbar-active .social-dock{
   </a>
   <a class="soc facebook" href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" aria-label="Facebook">
     <i class="fa-brands fa-facebook"></i>
-  </a>
-  <!-- Admin lock -->
-  <a class="soc admin-lock" href="https://kasigila.github.io/byzmock/admin.html" aria-label="Admin dashboard">
-    <i class="fa-solid fa-lock"></i>
   </a>
 </div>
 
@@ -8083,7 +8082,8 @@ document.addEventListener('keydown', (e) => {
     'apt': { 
       response: "APT Sessions are invite-only apartment sessions with premium vibes. Request an invite to join!", 
       suggestions: ['Request invite', 'More info'],
-      context: 'apt'
+      context: 'apt',
+      actionButton: { text: 'Request Invite', href: 'apt-request.html', type: 'link' }
     },
     'schedule': { 
       response: "Which event's schedule would you like to see?",
@@ -8095,9 +8095,138 @@ document.addEventListener('keydown', (e) => {
       suggestions: ['Tempo', 'Groove'],
       isSchedule: true
     },
-    'ceo': { response: "BYZ Entertainment is led by a passionate team dedicated to creating legendary experiences in Dar es Salaam. For specific inquiries, contact us at byzentertainment@gmail.com", suggestions: ['Contact', 'Book now'] },
-    'owner': { response: "BYZ Entertainment is a team-driven company focused on creating amazing nightlife experiences. For business inquiries, email byzentertainment@gmail.com", suggestions: ['Contact', 'Book now'] },
+    'frank': { 
+      response: "Frank is the Founder & CEO of BYZ Entertainment. You can reach him directly!", 
+      suggestions: ['Contact Frank', 'Instagram', 'WhatsApp'],
+      link: 'https://www.instagram.com/jrmgoyo',
+      linkType: 'instagram',
+      actionButton: { text: 'Contact Frank', href: 'https://wa.me/255755790033', type: 'whatsapp' }
+    },
+    'ceo': { 
+      response: "Frank is the Founder & CEO of BYZ Entertainment. He leads our team in creating legendary nightlife experiences in Dar es Salaam.", 
+      suggestions: ['Contact Frank', 'Instagram', 'WhatsApp'],
+      link: 'https://www.instagram.com/jrmgoyo',
+      linkType: 'instagram',
+      actionButton: { text: 'Contact Frank', href: 'https://wa.me/255755790033', type: 'whatsapp' }
+    },
+    'owner': { 
+      response: "Frank is the Founder & CEO of BYZ Entertainment. He leads our team in creating legendary nightlife experiences in Dar es Salaam.", 
+      suggestions: ['Contact Frank', 'Instagram', 'WhatsApp'],
+      link: 'https://www.instagram.com/jrmgoyo',
+      linkType: 'instagram',
+      actionButton: { text: 'Contact Frank', href: 'https://wa.me/255755790033', type: 'whatsapp' }
+    },
     'who': { response: "BYZ Entertainment creates legendary nightlife experiences in Dar es Salaam. We host Groove Series (weekly), Tempo (seasonal), and APT Sessions (invite-only).", suggestions: ['Book tickets', 'Event info'] },
+    'sammy': {
+      response: "DJ Sammy is one of our featured artists! He specializes in Afrobeats, House, Hip-Hop, Dancehall, Amapiano, and R&B. Check out his profile and book him for your event!",
+      suggestions: ['Book DJ Sammy', 'View Artists', 'Contact'],
+      scrollTo: '#artists',
+      actionButton: { text: 'View DJ Sammy', href: '#artists', type: 'link' }
+    },
+    'dj sammy': {
+      response: "DJ Sammy is one of our featured artists! He specializes in Afrobeats, House, Hip-Hop, Dancehall, Amapiano, and R&B. Check out his profile and book him for your event!",
+      suggestions: ['Book DJ Sammy', 'View Artists', 'Contact'],
+      scrollTo: '#artists',
+      actionButton: { text: 'View DJ Sammy', href: '#artists', type: 'link' }
+    },
+    'apuki': {
+      response: "Apuki is one of our featured DJs and performers! Known for dynamic sets blending Afrobeats, Dancehall, and Hip-Hop. Available for local and international bookings. Check out his music on Spotify!",
+      suggestions: ['Book Apuki', 'Listen on Spotify', 'View Artists'],
+      scrollTo: '#artists',
+      actionButton: { text: 'View Apuki', href: '#artists', type: 'link' }
+    },
+    'renee': {
+      response: "Renee is one of our featured artists! Specializing in Hip-Hop, Rap, and R&B. Available for performances, collaborations, and live shows. Check out her profile!",
+      suggestions: ['Book Renee', 'View Artists', 'Contact'],
+      scrollTo: '#artists',
+      actionButton: { text: 'View Renee', href: '#artists', type: 'link' }
+    },
+    'sameera': {
+      response: "Sameera is our Brand Partnerships & Creative Lead at BYZ Entertainment. Check out the Meet the Team section to learn more!",
+      suggestions: ['Meet the Team', 'Contact', 'About BYZ'],
+      scrollTo: '#team',
+      link: 'https://www.instagram.com/sams__cam',
+      linkType: 'instagram'
+    },
+    'edson': {
+      response: "Edson is our Finance & Payments Lead at BYZ Entertainment. Check out the Meet the Team section to learn more!",
+      suggestions: ['Meet the Team', 'Contact', 'About BYZ'],
+      scrollTo: '#team',
+      link: 'https://www.instagram.com/edsont.11',
+      linkType: 'instagram'
+    },
+    'tuari': {
+      response: "Tuari handles Logistics & Venue Management at BYZ Entertainment. Check out the Meet the Team section to learn more!",
+      suggestions: ['Meet the Team', 'Contact', 'About BYZ'],
+      scrollTo: '#team',
+      link: 'https://www.instagram.com/tuariotk',
+      linkType: 'instagram'
+    },
+    'abd': {
+      response: "Abd is our Operations & Event Coordination lead at BYZ Entertainment. Check out the Meet the Team section to learn more!",
+      suggestions: ['Meet the Team', 'Contact', 'About BYZ'],
+      scrollTo: '#team',
+      link: 'https://www.instagram.com/abd.raww',
+      linkType: 'instagram'
+    },
+    'team': {
+      response: "Meet the BYZ Team! We have Frank (Founder & CEO), Sameera (Brand Partnerships), Edson (Finance), Tuari (Logistics), and Abd (Operations). Scroll to see them!",
+      suggestions: ['View Team', 'Contact', 'About BYZ'],
+      scrollTo: '#team',
+      actionButton: { text: 'Meet the Team', href: '#team', type: 'link' }
+    },
+    'artists': {
+      response: "Check out our featured artists and DJs! We have DJ Sammy, Apuki, and Renee. You can book them for events or view their profiles!",
+      suggestions: ['Book an Artist', 'View Lineup', 'Contact'],
+      scrollTo: '#artists',
+      actionButton: { text: 'View Artists', href: '#artists', type: 'link' }
+    },
+    'djs': {
+      response: "We have amazing DJs! DJ Sammy and Apuki are available for bookings. Check out their profiles and book them for your event!",
+      suggestions: ['Book a DJ', 'View Artists', 'Lineup'],
+      scrollTo: '#artists',
+      actionButton: { text: 'View DJs', href: '#artists', type: 'link' }
+    },
+    'lineup': {
+      response: "Check out our DJ Timings, Lineups & Announcements section! You'll find set times, event schedules, and artist announcements.",
+      suggestions: ['View Lineup', 'Book Now', 'Event Info'],
+      scrollTo: '#dj',
+      actionButton: { text: 'View Lineup', href: '#dj', type: 'link' }
+    },
+    'gallery': {
+      response: "Check out our Memory Gallery! Browse photos from Groove Series, Tempo, and APT Sessions. You can like photos, download them, and share your favorites!",
+      suggestions: ['View Gallery', 'Browse Photos', 'Share'],
+      scrollTo: '#gallery',
+      actionButton: { text: 'View Gallery', href: 'gallery.html', type: 'link' }
+    },
+    'photos': {
+      response: "Browse our Memory Gallery! See photos from all our events. You can filter by event type (Groove, Tempo) and like your favorites!",
+      suggestions: ['View Gallery', 'Browse Photos', 'Events'],
+      scrollTo: '#gallery',
+      actionButton: { text: 'View Gallery', href: 'gallery.html', type: 'link' }
+    },
+    'rate': {
+      response: "We'd love to hear your feedback! Rate your experience with BYZ Entertainment and help us improve.",
+      suggestions: ['Rate Experience', 'Contact', 'Book Again'],
+      actionButton: { text: 'Rate Experience', href: 'rate.html', type: 'link' }
+    },
+    'feedback': {
+      response: "Share your feedback with us! Rate your experience and let us know how we can improve.",
+      suggestions: ['Rate Experience', 'Contact', 'Book Again'],
+      actionButton: { text: 'Rate Experience', href: 'rate.html', type: 'link' }
+    },
+    'youtube': {
+      response: "Check out our YouTube channel! Watch event highlights, DJ sets, and behind-the-scenes content from BYZ Entertainment.",
+      suggestions: ['View YouTube', 'Watch Videos', 'Events'],
+      scrollTo: '#youtube',
+      actionButton: { text: 'View YouTube', href: '#youtube', type: 'link' }
+    },
+    'videos': {
+      response: "Watch our videos on YouTube! See event highlights, performances, and exclusive content from BYZ Entertainment.",
+      suggestions: ['View YouTube', 'Watch Videos', 'Events'],
+      scrollTo: '#youtube',
+      actionButton: { text: 'View YouTube', href: '#youtube', type: 'link' }
+    },
     'price': { response: "Pricing varies by event and table type. Check our booking pages for current rates. Which event are you interested in?", suggestions: ['Groove prices', 'Tempo prices', 'Contact us'] },
     'cost': { response: "Prices depend on the event and what you're booking (tables vs tickets). Visit the booking page for details! Which event?", suggestions: ['Groove', 'Tempo', 'APT'] },
     'when': { response: "Event dates vary! Groove is weekly, Tempo is seasonal. Check our schedule or booking pages for dates. Which event?", suggestions: ['Groove dates', 'Tempo schedule', 'Book now'] },
@@ -8171,9 +8300,16 @@ document.addEventListener('keydown', (e) => {
   chatStyles.textContent = `
     #byzChatWidget {
       position: fixed;
-      bottom: 80px;
+      bottom: 16px;
       right: 16px;
       z-index: 1000;
+    }
+    
+    @media (min-width: 768px) {
+      #byzChatWidget {
+        bottom: 24px;
+        right: 24px;
+      }
     }
     
     .chat-toggle {
@@ -8249,14 +8385,18 @@ document.addEventListener('keydown', (e) => {
         left: 50%;
         transform: translate(-50%, -50%);
         width: 90%;
-        max-width: 400px;
-        height: auto;
-        max-height: 80vh;
+        max-width: 420px;
+        height: 85vh;
+        max-height: 700px;
+        min-height: 500px;
         border-radius: 24px;
         border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
         inset: auto;
         bottom: auto;
         right: auto;
+        box-shadow: 
+          0 20px 60px rgba(0,0,0,.4),
+          0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent);
       }
     }
     
@@ -8280,9 +8420,10 @@ document.addEventListener('keydown', (e) => {
       align-items: center;
       justify-content: space-between;
       background: color-mix(in srgb, var(--bg) 95%, transparent);
+      backdrop-filter: blur(40px) saturate(180%);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 100;
       flex-shrink: 0;
       min-height: 60px;
       width: 100%;
@@ -8354,6 +8495,7 @@ document.addEventListener('keydown', (e) => {
       overflow-y: auto;
       overflow-x: hidden;
       padding: 16px;
+      padding-top: 8px;
       padding-bottom: env(safe-area-inset-bottom, 16px);
       display: flex;
       flex-direction: column;
@@ -8364,6 +8506,11 @@ document.addEventListener('keydown', (e) => {
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
       height: 0; /* Force flex-grow to work */
+    }
+    
+    /* Ensure first message is visible when keyboard opens */
+    .chat-messages:focus-within {
+      padding-top: 8px;
     }
     
     .chat-messages::-webkit-scrollbar {
@@ -8568,6 +8715,33 @@ document.addEventListener('keydown', (e) => {
       margin-left: 4px;
     }
     
+    /* Chat Action Button */
+    .chat-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      border-radius: 14px;
+      background: var(--accent);
+      color: var(--bg);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.2s var(--ease);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+    
+    .chat-action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,.3);
+    }
+    
+    .chat-action-btn i {
+      font-size: 12px;
+    }
+    
     @media (max-width: 640px) {
       .chat-window {
         width: 100%;
@@ -8707,7 +8881,8 @@ document.addEventListener('keydown', (e) => {
         conversationContext.lastEvent = 'apt';
         return { 
           response: "APT Sessions are invite-only. You can request an invite. Want to request one?", 
-          suggestions: ['Request invite', 'More info'] 
+          suggestions: ['Request invite', 'More info'],
+          actionButton: { text: 'Request Invite', href: 'apt-request.html', type: 'link' }
         };
       }
     }
@@ -8733,6 +8908,7 @@ document.addEventListener('keydown', (e) => {
           }
         }
         
+        // Don't auto-scroll - let user click buttons/links to navigate
         return data;
       }
     }
@@ -8781,6 +8957,11 @@ document.addEventListener('keydown', (e) => {
       </div>
     `;
     
+    // Scroll to show first message when keyboard opens
+    setTimeout(() => {
+      messages.scrollTop = 0;
+    }, 100);
+    
     messages.appendChild(message);
     messages.scrollTop = messages.scrollHeight;
   }
@@ -8806,10 +8987,11 @@ document.addEventListener('keydown', (e) => {
     input.value = '';
     updateSendButton();
     
-    // Simulate typing delay
+      // Simulate typing delay
     setTimeout(() => {
       const response = findResponse(text);
       let responseText = response.response;
+      let actionButtonHtml = '';
       
       // Add clickable links if provided
       if (response.link && response.linkType) {
@@ -8834,8 +9016,20 @@ document.addEventListener('keydown', (e) => {
         responseText += ` <a href="${linkUrl}" target="_blank" class="chat-link"><i class="${icons[response.linkType]}"></i> ${labels[response.linkType]}</a>`;
       }
       
-      addMessage(responseText, false);
+      // Add action button if provided (e.g., "Request Invite")
+      if (response.actionButton) {
+        const btnIcons = {
+          'link': 'fa-solid fa-arrow-right',
+          'whatsapp': 'fa-brands fa-whatsapp',
+          'email': 'fa-solid fa-envelope'
+        };
+        const btnIcon = btnIcons[response.actionButton.type] || 'fa-solid fa-arrow-right';
+        actionButtonHtml = `<a href="${response.actionButton.href}" class="chat-action-btn"><i class="${btnIcon}"></i> ${response.actionButton.text}</a>`;
+      }
+      
+      addMessage(responseText + actionButtonHtml, false);
       updateSuggestions(response.suggestions);
+      // User clicks buttons/links to navigate - no auto-scroll
     }, 500);
   }
   
