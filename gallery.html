@@ -744,12 +744,20 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   border:1px solid var(--border);
   background: var(--bg-elev);
   color: var(--text);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
   font-size:14px;
   outline:none;
   cursor:pointer;
   appearance:none;
   -webkit-appearance:none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1a6' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 12px;
@@ -3394,11 +3402,11 @@ console.log("✅ Script file loaded!");
       const timeDiff = now - lastTap;
       if(timeDiff < 300 && timeDiff > 0){
         clearTimeout(tapTimeout);
+        e.preventDefault();
+        e.stopPropagation();
         handleDoubleTap(pin, src);
         lastTap = 0;
-        // Don't return - allow lightbox to open too if user wants
-        // But prevent the single-tap timeout from firing
-        return;
+        return; // Prevent lightbox from opening on double-tap
       }else{
         lastTap = now;
         tapTimeout = setTimeout(() => {
@@ -3421,9 +3429,11 @@ console.log("✅ Script file loaded!");
       if(timeDiff < 300 && timeDiff > 0){
         // Double tap detected - like the photo
         clearTimeout(tapTimeout);
+        e.preventDefault();
+        e.stopPropagation();
         handleDoubleTap(pin, src);
         lastTap = 0;
-        // Don't prevent default - allow both like and lightbox if needed
+        return; // Prevent lightbox from opening on double-tap
       }else{
         lastTap = now;
         tapTimeout = setTimeout(() => {
@@ -3431,7 +3441,7 @@ console.log("✅ Script file loaded!");
           if(idx >= 0) openLightboxByIndex(idx);
         }, 300);
       }
-    }, { passive: true });
+    }, { passive: false }); // Changed to false to allow preventDefault
 
     masonry.addEventListener("keydown", (e) => {
       if(e.key !== "Enter") return;
@@ -3481,17 +3491,22 @@ console.log("✅ Script file loaded!");
   }
 
   /* ===================== LAYOUT TOGGLE (5) ===================== */
-  document.querySelectorAll(".layout-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".layout-btn").forEach(b => {
-        b.classList.remove("active");
-        b.setAttribute("aria-selected","false");
-      });
-      btn.classList.add("active");
-      btn.setAttribute("aria-selected","true");
-      layoutMode = btn.dataset.layout;
-      localStorage.setItem("byz_layout", layoutMode);
-      buildBoards();
+  // Only bind to album layout toggle, NOT photo layout toggle
+  document.querySelectorAll(".layout-toggle .layout-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      // Only change album layout if we're on the main albums view
+      if(albumView.classList.contains("byz-hidden")) {
+        document.querySelectorAll(".layout-toggle .layout-btn").forEach(b => {
+          b.classList.remove("active");
+          b.setAttribute("aria-selected","false");
+        });
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected","true");
+        layoutMode = btn.dataset.layout;
+        localStorage.setItem("byz_layout", layoutMode);
+        buildBoards();
+      }
     });
   });
 
@@ -4281,13 +4296,23 @@ setInterval(updateLikesCount, 2000);
       
       newBtn.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent any parent handlers
+        e.preventDefault(); // Prevent any default behavior
+        
+        // Only work if we're inside an album view
+        const albumView = document.getElementById("albumView");
+        if(!albumView || albumView.classList.contains("byz-hidden")) {
+          return; // Not in album view, don't do anything
+        }
+        
         const layout = newBtn.dataset.photoLayout;
         const masonry = document.getElementById("masonry");
         if(!masonry) return;
         
+        // Update layout classes
         masonry.classList.remove("masonry-layout", "grid-layout", "compact-layout");
         masonry.classList.add(`${layout}-layout`);
         
+        // Update button states
         document.querySelectorAll('.photo-layout-toggle .layout-btn').forEach(b => {
           b.classList.remove("active");
           b.setAttribute("aria-selected", "false");
@@ -4295,10 +4320,11 @@ setInterval(updateLikesCount, 2000);
         newBtn.classList.add("active");
         newBtn.setAttribute("aria-selected", "true");
         
+        // Save preference
         localStorage.setItem("byz_photo_layout", layout);
         
-        // Don't call renderAlbum - just update the layout class
-        // This keeps the user in the album without kicking them out
+        // DO NOT call renderAlbum, buildBoards, or backToBoards
+        // Just update the CSS class - user stays in album
       });
     });
   }
