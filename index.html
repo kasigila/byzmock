@@ -22,6 +22,8 @@
   --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
   --ease: cubic-bezier(.2,.8,.2,1);
   --max: 1100px;
+  --radius: 22px;
+  --radius-lg: 28px;
 
   --header-h: 64px;
 }
@@ -340,7 +342,7 @@ section{padding: 92px 0}
 }
 
 .card{
-  border-radius: var(--radius);
+  border-radius: 22px !important;
   border: 1px solid var(--border);
   background: var(--bg-elev);
   box-shadow: var(--shadow-soft);
@@ -719,15 +721,9 @@ section{padding: 92px 0}
   }
 }
 
-/* ===================== SOCIAL FLOATING DOCK (IG / TIKTOK / WHATSAPP / ADMIN) ===================== */
+/* ===================== SOCIAL FLOATING DOCK (IG / TIKTOK / WHATSAPP / ADMIN) - HIDDEN ===================== */
 .social-dock{
-  position:fixed;
-  right:16px;
-  bottom:16px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  z-index: 900;
+  display:none; /* Hidden as requested */
 }
 
 .soc{
@@ -777,7 +773,7 @@ section{padding: 92px 0}
   align-items:start;
 }
 .video-main{
-  border-radius: var(--radius-lg);
+  border-radius: 28px !important;
   overflow:hidden;
   border:1px solid var(--border);
   background: var(--bg-elev);
@@ -910,7 +906,7 @@ section{padding: 92px 0}
   scroll-snap-align:start;
   min-width:220px;
   max-width:220px;
-  border-radius:var(--radius);
+  border-radius: 22px !important;
   border:1px solid var(--border);
   background:var(--bg-elev);
   box-shadow:var(--shadow-soft);
@@ -1063,7 +1059,7 @@ section{padding: 92px 0}
   gap:16px;
 }
 .dj-card{
-  border-radius: var(--radius);
+  border-radius: 22px !important;
   border:1px solid var(--border);
   background: var(--bg-elev);
   box-shadow: var(--shadow-soft);
@@ -2866,11 +2862,11 @@ footer{
     opacity: 0.95;
   }
       .artist-scroll-left {
-    left: -22px; /* Position outside the card area to avoid covering content */
+    left: -50px; /* Better placement - further outside */
   }
 
   .artist-scroll-right {
-    right: -22px; /* Position outside the card area to avoid covering content */
+    right: -50px; /* Better placement - further outside */
   }
   
   /* On smaller screens, position arrows at the line where photo ends and text starts */
@@ -2880,10 +2876,10 @@ footer{
       transform: translateY(-50%); /* Center vertically on the line */
     }
     .artist-scroll-left {
-      left: 8px;
+      left: 4px; /* Better placement */
     }
     .artist-scroll-right {
-      right: 8px;
+      right: 4px; /* Better placement */
     }
   }
   
@@ -3161,12 +3157,17 @@ footer{
 .byz-modal-title{
   font-weight:900;
   letter-spacing:-.6px;
-  font-size:18px;
+  font-size:20px;
+  background: linear-gradient(135deg, var(--text), color-mix(in srgb, var(--text) 80%, var(--sub)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .byz-modal-sub{
-  margin-top:4px;
+  margin-top:6px;
   font-size:13px;
   color:var(--sub);
+  line-height:1.4;
 }
 /* Enhanced close button with subtle glow */
 .byz-modal-x{
@@ -4507,6 +4508,7 @@ body.bulkbar-active .social-dock{
         <li><a href="#youtube">YouTube</a></li>
         <li><a href="#team">Meet the Team</a></li>
         <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="admin.html">Admin Log In</a></li>
         <li><a href="#connect">Connect</a></li>
       </ul>
     </nav>
@@ -4658,6 +4660,10 @@ body.bulkbar-active .social-dock{
     <!-- WE HOST -->
   <section id="events">
     <div class="container">
+      <div class="section-title reveal">
+        <h2>We Host</h2>
+        <p>Choose your experience</p>
+      </div>
       <div class="cards stagger reveal">
   <div class="card">
     <div class="card-top groove" aria-hidden="true"></div>
@@ -4668,6 +4674,9 @@ body.bulkbar-active .social-dock{
         <a class="btn primary" href="groove-series.html">
           <i class="fa-solid fa-circle-info" aria-hidden="true"></i> See Series
         </a>
+        <button class="btn" onclick="shareEvent('Groove Series', 'Weekly Afro-house nights at BYZ', window.location.href + '#events')" type="button">
+          <i class="fa-solid fa-share-nodes"></i> Share
+        </button>
       </div>
     </div>
   </div>
@@ -4679,6 +4688,9 @@ body.bulkbar-active .social-dock{
       <p>Invite-only apartment sessions with premium vibes.</p>
       <div class="card-actions">
         <a class="btn primary" href="apt-request.html">Request Invite</a>
+        <button class="btn" onclick="shareEvent('APT Session', 'Invite-only apartment sessions', window.location.href + '#events')" type="button">
+          <i class="fa-solid fa-share-nodes"></i> Share
+        </button>
       </div>
     </div>
   </div>
@@ -4689,16 +4701,14 @@ body.bulkbar-active .social-dock{
       <h3>Tempo</h3>
       <p>Seasonal events with evolving themes.</p>
       <div class="card-actions">
-        <a class="btn primary" href="booking-tempo.html">Book Table / Ticket</a>
+        <a class="btn primary" href="booking-tempo.html">Reserve</a>
         <button class="btn" id="tempoScheduleBtn" type="button">
           <i class="fa-regular fa-calendar" aria-hidden="true"></i> View Schedule
         </button>
+        <button class="btn" onclick="shareEvent('Tempo', 'Seasonal events with evolving themes', window.location.href + '#events')" type="button">
+          <i class="fa-solid fa-share-nodes"></i> Share
+        </button>
       </div>
-      <p style="margin-top:12px; font-size:12px;">
-        <a href="rate.html" style="color:var(--sub); text-decoration:underline; display:inline-flex; align-items:center; gap:6px;">
-          <i class="fa-solid fa-star" style="font-size:11px;"></i> Rate your last visit
-        </a>
-      </p>
     </div>
   </div>
         
@@ -5152,16 +5162,6 @@ body.bulkbar-active .social-dock{
 
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px;">
           <!-- ✅ Hide/Show (mobile-friendly) -->
-          <button class="gallery-toggle" id="galleryToggleBtn" type="button" aria-expanded="false">
-            <i class="fa-regular fa-images" aria-hidden="true"></i>
-            <span class="gt-text">Show Gallery</span>
-          </button>
-          
-          <!-- View More Albums Button -->
-          <a href="gallery.html" class="gallery-toggle" style="text-decoration:none;">
-            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-            <span>View All Albums</span>
-          </a>
         </div>
 
         <div class="gallery-hint"> </div>
@@ -5185,6 +5185,14 @@ body.bulkbar-active .social-dock{
 
       <!-- ✅ Pinterest-style boards live here -->
       <div class="board-grid" id="boardGrid" aria-label="Albums"></div>
+      
+      <!-- View All Albums Button -->
+      <div style="margin-top:24px; text-align:center;">
+        <a href="gallery.html" class="btn primary" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-images"></i>
+          <span>View All Albums</span>
+        </a>
+      </div>
 
       <!-- ✅ Album view (hidden until you tap a board) -->
       <div class="album-view byz-hidden" id="albumView" aria-hidden="true">
@@ -5515,9 +5523,15 @@ body.bulkbar-active .social-dock{
           <i class="fa-solid fa-calendar-star" style="margin-right:6px;"></i> Tempo
         </div>
         <div class="byz-modal-actions" style="margin-top:8px;">
-          <a class="byz-modal-btn primary" href="booking-tempo.html">
+          <a class="byz-modal-btn" href="booking-tempo.html">
             <i class="fa-solid fa-ticket"></i> Book Tempo
           </a>
+          <button class="byz-modal-btn" onclick="shareEvent('Tempo', 'Seasonal events with evolving themes', window.location.href + '#events'); event.stopPropagation();" type="button">
+            <i class="fa-solid fa-share-nodes"></i> Share
+          </button>
+          <button class="byz-modal-btn" onclick="generateQRCode(window.location.href + '#events'); event.stopPropagation();" type="button">
+            <i class="fa-solid fa-qrcode"></i> QR Code
+          </button>
         </div>
       </div>
 
@@ -5529,6 +5543,9 @@ body.bulkbar-active .social-dock{
           <a class="byz-modal-btn" href="apt-request.html">
             <i class="fa-solid fa-envelope"></i> Request Invite
           </a>
+          <button class="byz-modal-btn" onclick="shareEvent('APT Session', 'Invite-only apartment sessions', window.location.href + '#events'); event.stopPropagation();" type="button">
+            <i class="fa-solid fa-share-nodes"></i> Share
+          </button>
         </div>
       </div>
     </div>
@@ -7281,50 +7298,117 @@ document.addEventListener('keydown', (e) => {
     }
   });
 
-  // Scroll functions with seamless loop
-  scrollLeftBtn.addEventListener('click', () => {
+  // Scroll functions with seamless loop and proper centering
+  function scrollToCard(direction) {
     if (isScrolling) return;
+    isScrolling = true;
     
-    const currentScroll = cardsContainer.scrollLeft;
-    const realCardsWidth = cards.length * scrollAmount;
-    
-    // If we're at the start of real cards, jump to end first
-    if (currentScroll <= realCardsWidth + scrollAmount) {
-      isScrolling = true;
-      // Jump to end of real cards (before clones at end)
-      cardsContainer.scrollLeft = (realCardsWidth * 2) - scrollAmount;
-      setTimeout(() => {
-        // Then scroll left smoothly
-        cardsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-        setTimeout(() => { isScrolling = false; }, 300);
-      }, 50);
-    } else {
-      cardsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    }
-  });
-
-  scrollRightBtn.addEventListener('click', () => {
-    if (isScrolling) return;
-    
+    const containerWidth = cardsContainer.clientWidth;
     const currentScroll = cardsContainer.scrollLeft;
     const scrollWidth = cardsContainer.scrollWidth;
-    const clientWidth = cardsContainer.clientWidth;
     const realCardsWidth = cards.length * scrollAmount;
+    const cloneWidth = realCardsWidth;
     
-    // If we're near the end of real cards, jump to start first
-    if (currentScroll >= (realCardsWidth * 2) - scrollAmount - clientWidth) {
-      isScrolling = true;
-      // Jump to start of real cards (after clones at start)
-      cardsContainer.scrollLeft = realCardsWidth;
-      setTimeout(() => {
-        // Then scroll right smoothly
-        cardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        setTimeout(() => { isScrolling = false; }, 300);
-      }, 50);
+    // Get all cards (including clones)
+    const allCards = Array.from(cardsContainer.querySelectorAll('.artist-card'));
+    let targetCard = null;
+    let targetScroll = 0;
+    
+    if (direction === 'right') {
+      // Find the next card to center
+      for (let i = 0; i < allCards.length; i++) {
+        const card = allCards[i];
+        const cardLeft = card.offsetLeft;
+        const cardRight = cardLeft + card.offsetWidth;
+        const visibleRight = currentScroll + containerWidth;
+        
+        // Find first card that's partially or fully visible on the right
+        if (cardLeft < visibleRight && cardRight > visibleRight) {
+          targetCard = card;
+          targetScroll = cardLeft - (containerWidth / 2) + (card.offsetWidth / 2);
+          break;
+        }
+      }
+      
+      // If no partially visible card, find next completely hidden card
+      if (!targetCard) {
+        for (let i = 0; i < allCards.length; i++) {
+          const card = allCards[i];
+          if (card.offsetLeft > currentScroll + containerWidth) {
+            targetCard = card;
+            targetScroll = card.offsetLeft - (containerWidth / 2) + (card.offsetWidth / 2);
+            break;
+          }
+        }
+      }
+      
+      // Handle loop: if we're at the end, jump to start
+      if (currentScroll >= scrollWidth - containerWidth - scrollAmount) {
+        const jumpPos = cloneWidth;
+        cardsContainer.scrollLeft = jumpPos;
+        setTimeout(() => {
+          if (targetCard) {
+            const newTargetScroll = targetCard.offsetLeft - (containerWidth / 2) + (targetCard.offsetWidth / 2);
+            cardsContainer.scrollTo({ left: newTargetScroll, behavior: 'smooth' });
+          }
+          setTimeout(() => { isScrolling = false; }, 400);
+        }, 50);
+        return;
+      }
     } else {
-      cardsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      // Left direction
+      for (let i = allCards.length - 1; i >= 0; i--) {
+        const card = allCards[i];
+        const cardLeft = card.offsetLeft;
+        const cardRight = cardLeft + card.offsetWidth;
+        const visibleLeft = currentScroll;
+        
+        // Find first card that's partially visible on the left
+        if (cardLeft < visibleLeft && cardRight > visibleLeft) {
+          targetCard = card;
+          targetScroll = cardLeft - (containerWidth / 2) + (card.offsetWidth / 2);
+          break;
+        }
+      }
+      
+      // If no partially visible card, find previous card
+      if (!targetCard) {
+        for (let i = allCards.length - 1; i >= 0; i--) {
+          const card = allCards[i];
+          if (card.offsetLeft + card.offsetWidth < currentScroll) {
+            targetCard = card;
+            targetScroll = card.offsetLeft - (containerWidth / 2) + (card.offsetWidth / 2);
+            break;
+          }
+        }
+      }
+      
+      // Handle loop: if we're at the start, jump to end
+      if (currentScroll < cloneWidth + scrollAmount) {
+        const jumpPos = (realCardsWidth * 2);
+        cardsContainer.scrollLeft = jumpPos;
+        setTimeout(() => {
+          if (targetCard) {
+            const newTargetScroll = targetCard.offsetLeft - (containerWidth / 2) + (targetCard.offsetWidth / 2);
+            cardsContainer.scrollTo({ left: newTargetScroll, behavior: 'smooth' });
+          }
+          setTimeout(() => { isScrolling = false; }, 400);
+        }, 50);
+        return;
+      }
     }
-  });
+    
+    // Normal scroll with centering
+    if (targetCard && targetScroll >= 0) {
+      cardsContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      setTimeout(() => { isScrolling = false; }, 400);
+    } else {
+      isScrolling = false;
+    }
+  }
+  
+  scrollLeftBtn.addEventListener('click', () => scrollToCard('left'));
+  scrollRightBtn.addEventListener('click', () => scrollToCard('right'));
 
   // Initial button state
   updateButtonStates();
@@ -7722,27 +7806,60 @@ document.addEventListener('keydown', (e) => {
 })();
 
 /* =========================================================
-   HIGH-TECH INTERACTIVE CHAT WIDGET (FAQ-Based, Looks AI)
+   BYZBOT - HIGH-TECH INTERACTIVE CHAT (FAQ-Based, Looks AI)
 ========================================================= */
 (function() {
-  // FAQ database
+  // Context tracking
+  let conversationContext = {
+    currentTopic: null, // 'groove', 'tempo', 'apt', etc.
+    lastEvent: null
+  };
+  
+  // Enhanced FAQ database with context awareness
   const faqDatabase = {
-    'hi': { response: "Hey! 👋 Welcome to BYZ. How can I help you today?", suggestions: ['Book a table', 'Event info', 'Contact'] },
-    'hello': { response: "Hello! 👋 What can I help you with?", suggestions: ['Book a table', 'Event info', 'Contact'] },
+    'hi': { response: "Hey! 👋 Welcome to BYZ. I'm ByzBot, your AI assistant. How can I help you today?", suggestions: ['Book tickets', 'Event info', 'Contact', 'View schedule'] },
+    'hello': { response: "Hello! 👋 I'm ByzBot. What can I help you with?", suggestions: ['Book tickets', 'Event info', 'Contact'] },
     'book': { response: "Great! You can book tables or tickets for our events. Which event are you interested in?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
-    'booking': { response: "To book, visit our booking page or tap 'Reserve a Table' on the homepage. Need help choosing an event?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
-    'groove': { response: "Groove Series is our weekly Afro-house night! It happens every week. Want to book a table?", suggestions: ['Yes, book now', 'More info', 'Lineup'] },
-    'tempo': { response: "Tempo is our seasonal event with evolving themes. Check the schedule to see upcoming dates!", suggestions: ['View schedule', 'Book now', 'More info'] },
-    'apt': { response: "APT Sessions are invite-only apartment sessions with premium vibes. Request an invite to join!", suggestions: ['Request invite', 'More info'] },
-    'price': { response: "Pricing varies by event and table type. Check our booking pages for current rates. Need specific info?", suggestions: ['Groove prices', 'Tempo prices', 'Contact us'] },
-    'cost': { response: "Prices depend on the event and what you're booking (tables vs tickets). Visit the booking page for details!", suggestions: ['View booking', 'Contact'] },
-    'when': { response: "Event dates vary! Groove is weekly, Tempo is seasonal. Check our schedule or booking pages for dates.", suggestions: ['View schedule', 'Book now'] },
+    'booking': { response: "To book, visit our booking page or tap 'Reserve' on the homepage. Which event would you like to book?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
+    'ticket': { response: "Perfect! You can book tickets for any of our events. Which event are you interested in?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
+    'tickets': { response: "Great! You can book tickets for our events. Which event would you like tickets for?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
+    'groove': { 
+      response: "Groove Series is our weekly Afro-house night! It happens every week. Want to book a table or tickets?", 
+      suggestions: ['Book Groove', 'View lineup', 'More info'],
+      context: 'groove'
+    },
+    'tempo': { 
+      response: "Tempo is our seasonal event with evolving themes. Check the schedule to see upcoming dates! Want to view the schedule or book?", 
+      suggestions: ['View schedule', 'Book Tempo', 'More info'],
+      context: 'tempo'
+    },
+    'apt': { 
+      response: "APT Sessions are invite-only apartment sessions with premium vibes. Request an invite to join!", 
+      suggestions: ['Request invite', 'More info'],
+      context: 'apt'
+    },
+    'schedule': { 
+      response: "Which event's schedule would you like to see?",
+      suggestions: ['Tempo schedule', 'Groove lineup'],
+      isSchedule: true
+    },
+    'view schedule': {
+      response: "Which event schedule would you like to view?",
+      suggestions: ['Tempo', 'Groove'],
+      isSchedule: true
+    },
+    'ceo': { response: "BYZ Entertainment is led by a passionate team dedicated to creating legendary experiences in Dar es Salaam. For specific inquiries, contact us at byzentertainment@gmail.com", suggestions: ['Contact', 'Book now'] },
+    'owner': { response: "BYZ Entertainment is a team-driven company focused on creating amazing nightlife experiences. For business inquiries, email byzentertainment@gmail.com", suggestions: ['Contact', 'Book now'] },
+    'who': { response: "BYZ Entertainment creates legendary nightlife experiences in Dar es Salaam. We host Groove Series (weekly), Tempo (seasonal), and APT Sessions (invite-only).", suggestions: ['Book tickets', 'Event info'] },
+    'price': { response: "Pricing varies by event and table type. Check our booking pages for current rates. Which event are you interested in?", suggestions: ['Groove prices', 'Tempo prices', 'Contact us'] },
+    'cost': { response: "Prices depend on the event and what you're booking (tables vs tickets). Visit the booking page for details! Which event?", suggestions: ['Groove', 'Tempo', 'APT'] },
+    'when': { response: "Event dates vary! Groove is weekly, Tempo is seasonal. Check our schedule or booking pages for dates. Which event?", suggestions: ['Groove dates', 'Tempo schedule', 'Book now'] },
     'time': { response: "Event times are usually late night! Groove starts around 10 PM. Check the lineup section for set times.", suggestions: ['View lineup', 'Book now'] },
-    'location': { response: "We're in Dar es Salaam! Specific venue details are shared when you book. Want to book?", suggestions: ['Yes', 'Contact'] },
+    'location': { response: "We're in Dar es Salaam! Specific venue details are shared when you book. Want to book?", suggestions: ['Yes, book now', 'Contact'] },
     'where': { response: "BYZ events are in Dar es Salaam. Exact locations are provided when you complete your booking!", suggestions: ['Book now', 'Contact'] },
     'contact': { response: "You can reach us via WhatsApp at +255 768 464 367 or email byzentertainment@gmail.com", suggestions: ['WhatsApp', 'Email', 'Book now'] },
-    'help': { response: "I'm here to help! Ask me about booking, events, pricing, or anything BYZ-related.", suggestions: ['Book a table', 'Event info', 'Contact'] },
-    'default': { response: "I'm not sure about that, but I can help with booking, event info, or connecting you with our team!", suggestions: ['Book a table', 'Event info', 'Contact'] }
+    'help': { response: "I'm ByzBot, your AI assistant! I can help with booking, event info, schedules, pricing, or anything BYZ-related. What do you need?", suggestions: ['Book tickets', 'Event info', 'View schedule'] },
+    'default': { response: "I understand you're looking for information. Let me help! Are you interested in booking, event details, or something else?", suggestions: ['Book tickets', 'Event info', 'Contact'] }
   };
   
   // Create chat widget HTML
@@ -7757,10 +7874,10 @@ document.addEventListener('keydown', (e) => {
       <div class="chat-header">
         <div class="chat-header-content">
           <div class="chat-avatar">
-            <i class="fa-solid fa-robot"></i>
+            <img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:6px;" />
           </div>
           <div>
-            <div class="chat-title">BYZ Assistant</div>
+            <div class="chat-title">ByzBot</div>
             <div class="chat-status">
               <span class="status-dot"></span>
               <span>Online</span>
@@ -7774,10 +7891,10 @@ document.addEventListener('keydown', (e) => {
       <div class="chat-messages" id="chatMessages">
         <div class="chat-message bot">
           <div class="message-avatar">
-            <i class="fa-solid fa-robot"></i>
+            <img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />
           </div>
           <div class="message-content">
-            <div class="message-text">Hey! 👋 I'm your BYZ assistant. Ask me about events, booking, or anything BYZ-related!</div>
+            <div class="message-text">Hey! 👋 I'm ByzBot, your AI assistant. Ask me about events, booking, schedules, or anything BYZ-related!</div>
             <div class="message-time">Just now</div>
           </div>
         </div>
@@ -7850,32 +7967,51 @@ document.addEventListener('keydown', (e) => {
     }
     
     .chat-window {
-      position: absolute;
-      bottom: 70px;
+      position: fixed;
+      bottom: 0;
       right: 0;
-      width: 360px;
-      max-width: calc(100vw - 32px);
-      height: 500px;
-      max-height: calc(100vh - 200px);
-      border-radius: 24px;
-      border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      left: 0;
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+      border: none;
+      border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      background: color-mix(in srgb, var(--bg) 95%, transparent);
       backdrop-filter: blur(40px) saturate(180%);
       box-shadow: 
-        0 12px 48px rgba(0,0,0,.2),
+        0 -12px 48px rgba(0,0,0,.2),
         0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent);
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      margin: 0 auto;
+      z-index: 10000;
+    }
+    
+    @media (min-width: 421px) {
+      .chat-window {
+        border-radius: 24px 24px 0 0;
+        bottom: 0;
+        right: 16px;
+        left: auto;
+        height: 600px;
+        max-height: 90vh;
+      }
     }
     
     .chat-header {
-      padding: 16px;
+      padding: 12px 16px;
       border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: color-mix(in srgb, var(--bg) 95%, transparent);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      flex-shrink: 0;
     }
     
     .chat-header-content {
@@ -7888,11 +8024,13 @@ document.addEventListener('keydown', (e) => {
       width: 40px;
       height: 40px;
       border-radius: 20px;
-      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, transparent));
+      background: var(--bg-elev);
+      border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--bg);
+      overflow: hidden;
+      flex-shrink: 0;
     }
     
     .chat-title {
@@ -7945,6 +8083,8 @@ document.addEventListener('keydown', (e) => {
       gap: 12px;
       scrollbar-width: thin;
       scrollbar-color: var(--border) transparent;
+      min-height: 0;
+      padding-bottom: env(safe-area-inset-bottom, 16px);
     }
     
     .chat-messages::-webkit-scrollbar {
@@ -7994,8 +8134,9 @@ document.addEventListener('keydown', (e) => {
     }
     
     .chat-message.bot .message-avatar {
-      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, transparent));
-      color: var(--bg);
+      background: var(--bg-elev);
+      border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+      overflow: hidden;
     }
     
     .message-content {
@@ -8054,11 +8195,16 @@ document.addEventListener('keydown', (e) => {
     
     .chat-input-wrapper {
       padding: 12px 16px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
       border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
       display: flex;
       gap: 10px;
       align-items: center;
       background: color-mix(in srgb, var(--bg) 95%, transparent);
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+      flex-shrink: 0;
     }
     
     .chat-input {
@@ -8103,14 +8249,22 @@ document.addEventListener('keydown', (e) => {
     
     @media (max-width: 640px) {
       .chat-window {
-        width: calc(100vw - 32px);
-        height: calc(100vh - 120px);
-        max-height: 600px;
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        right: 0;
+        left: 0;
       }
       
       #byzChatWidget {
-        bottom: 70px;
-        right: 12px;
+        bottom: 16px;
+        right: 16px;
+      }
+      
+      .chat-messages {
+        padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
       }
     }
   `;
@@ -8152,8 +8306,67 @@ document.addEventListener('keydown', (e) => {
   function findResponse(text) {
     const lower = text.toLowerCase().trim();
     
+    // Context-aware matching
+    // Check for schedule-related when talking about tempo
+    if ((conversationContext.currentTopic === 'tempo' || conversationContext.lastEvent === 'tempo') && 
+        (lower.includes('schedule') || lower.includes('view') || lower.includes('see'))) {
+      const scheduleBtn = document.getElementById('tempoScheduleBtn');
+      if (scheduleBtn) {
+        setTimeout(() => scheduleBtn.click(), 1000);
+        return { 
+          response: "Opening the Tempo schedule for you! You'll see all upcoming dates marked in red.", 
+          suggestions: ['Book Tempo', 'More info'] 
+        };
+      }
+    }
+    
+    // Check for ticket/booking intent
+    if (lower.includes('ticket') || lower.includes('tickets') || lower.includes('book') || lower.includes('reserve')) {
+      if (lower.includes('groove')) {
+        conversationContext.currentTopic = 'groove';
+        conversationContext.lastEvent = 'groove';
+        return { 
+          response: "Great! You can book tickets for Groove Series. It's our weekly Afro-house night. Want to book now?", 
+          suggestions: ['Yes, book Groove', 'View lineup', 'More info'] 
+        };
+      } else if (lower.includes('tempo')) {
+        conversationContext.currentTopic = 'tempo';
+        conversationContext.lastEvent = 'tempo';
+        return { 
+          response: "Perfect! You can book tickets for Tempo. Want to book now or view the schedule first?", 
+          suggestions: ['Book Tempo', 'View schedule', 'More info'] 
+        };
+      } else if (lower.includes('apt')) {
+        conversationContext.currentTopic = 'apt';
+        conversationContext.lastEvent = 'apt';
+        return { 
+          response: "APT Sessions are invite-only. You can request an invite. Want to request one?", 
+          suggestions: ['Request invite', 'More info'] 
+        };
+      }
+    }
+    
+    // Standard keyword matching
     for (const [key, data] of Object.entries(faqDatabase)) {
       if (lower.includes(key)) {
+        // Update context if event mentioned
+        if (data.context) {
+          conversationContext.currentTopic = data.context;
+          conversationContext.lastEvent = data.context;
+        }
+        
+        // Handle schedule requests with context
+        if (data.isSchedule && (conversationContext.currentTopic === 'tempo' || conversationContext.lastEvent === 'tempo')) {
+          const scheduleBtn = document.getElementById('tempoScheduleBtn');
+          if (scheduleBtn) {
+            setTimeout(() => scheduleBtn.click(), 1000);
+            return { 
+              response: "Opening the Tempo schedule for you! You'll see all upcoming dates marked in red.", 
+              suggestions: ['Book Tempo', 'More info'] 
+            };
+          }
+        }
+        
         return data;
       }
     }
@@ -8169,7 +8382,7 @@ document.addEventListener('keydown', (e) => {
     
     message.innerHTML = `
       <div class="message-avatar">
-        <i class="fa-solid ${isUser ? 'fa-user' : 'fa-robot'}"></i>
+        ${isUser ? '<i class="fa-solid fa-user"></i>' : '<img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />'}
       </div>
       <div class="message-content">
         <div class="message-text">${text}</div>
