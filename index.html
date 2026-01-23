@@ -5265,18 +5265,18 @@ body.bulkbar-active .social-dock{
   </section>
 
   <!-- GALLERY -->
-  <section id="gallery">
-    <div class="container">
-      <div class="section-title reveal">
-        <h2>Memory Gallery</h2>
-        <p>Did the photographer catch you lacking? Download your pictures here!</p>
+<section id="gallery">
+  <div class="container">
+    <div class="section-title reveal">
+      <h2>Memory Gallery</h2>
+      <p>Did the photographer catch you lacking? Download your pictures here!</p>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px;">
-          <!-- ✅ Hide/Show (mobile-friendly) -->
+      <!-- ✅ Hide/Show (mobile-friendly) -->
         </div>
 
-        <div class="gallery-hint"> </div>
-      </div>
+      <div class="gallery-hint"> </div>
+    </div>
 
     <!-- ✅ Gallery content (now visible by default) -->
     <div class="gallery-shell" id="galleryContent" aria-hidden="false">
@@ -5290,7 +5290,7 @@ body.bulkbar-active .social-dock{
         </button>
 
         <div class="gallery-meta" aria-live="polite">
-          <span id="albumCount">0</span> albums • <span id="photoCount">0</span> photos
+          <span id="albumCount">0</span> albums • <span id="photoCount">0</span> <i class="fa-solid fa-image" aria-label="photos"></i>
         </div>
       </div>
 
@@ -6531,7 +6531,12 @@ boardGrid.innerHTML = boardItems.map(item => {
 
 
   boardGrid.querySelectorAll(".board").forEach(btn => {
-    btn.addEventListener("click", () => openAlbum(btn.dataset.album));
+    btn.addEventListener("click", () => {
+      const albumKey = btn.dataset.album;
+      const event = currentEvent || 'groove';
+      // Navigate to gallery.html with album parameter
+      window.location.href = `gallery.html?event=${event}&album=${albumKey}`;
+    });
   });
 
   // ✅ make previews "live"
@@ -6822,15 +6827,15 @@ boardGrid.innerHTML = boardItems.map(item => {
 
   // ===== Gallery initialization (always visible, no toggle) =====
   // Ensure gallery is visible
-  content.classList.remove("byz-hidden");
-  content.setAttribute("aria-hidden","false");
+      content.classList.remove("byz-hidden");
+      content.setAttribute("aria-hidden","false");
 
   // Build boards immediately (gallery is always visible now)
-  if(!boardGrid.dataset.ready){
-    buildBoards();
-    boardGrid.dataset.ready = "1";
-    bindMasonryEvents();
-  }
+      if(!boardGrid.dataset.ready){
+        buildBoards();
+        boardGrid.dataset.ready = "1";
+        bindMasonryEvents();
+      }
 
   // Gallery is always visible now (no toggle functionality)
 })();
@@ -6961,7 +6966,7 @@ boardGrid.innerHTML = boardItems.map(item => {
 
     const today = new Date();
     const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
-    
+
     for(let d = 1; d <= daysInMonth; d++){
       const dateStr = `${year}-${String(month + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
       const cell = document.createElement("div");
