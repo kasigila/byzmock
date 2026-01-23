@@ -6291,7 +6291,8 @@ body.bulkbar-active .social-dock{
 
   const toast = document.getElementById("toast");
 
-  if(!toggleBtn || !content || !boardGrid || !albumView || !masonry || !eventTabs.length) return;
+  // toggleBtn is optional (removed), but other elements are required
+  if(!content || !boardGrid || !albumView || !masonry || !eventTabs.length) return;
 
   // State
   let currentEvent = "groove";
@@ -6819,42 +6820,19 @@ boardGrid.innerHTML = boardItems.map(item => {
   // Back
   backBtn?.addEventListener("click", backToBoards);
 
-  // ===== Hide/Show Gallery (fast scroll on mobile) =====
-  function setGalleryOpen(open){
-    if(open){
-      content.classList.remove("byz-hidden");
-      content.setAttribute("aria-hidden","false");
-      toggleBtn.setAttribute("aria-expanded","true");
-      if(toggleText) toggleText.textContent = "Hide Gallery";
+  // ===== Gallery initialization (always visible, no toggle) =====
+  // Ensure gallery is visible
+  content.classList.remove("byz-hidden");
+  content.setAttribute("aria-hidden","false");
 
-      // Build boards on first open (prevents loading images before user asks)
-      if(!boardGrid.dataset.ready){
-        buildBoards();
-        boardGrid.dataset.ready = "1";
-        bindMasonryEvents();
-      }
-
-    }else{
-      content.classList.add("byz-hidden");
-      content.setAttribute("aria-hidden","true");
-      toggleBtn.setAttribute("aria-expanded","false");
-      if(toggleText) toggleText.textContent = "Show Gallery";
-    }
-    localStorage.setItem("byz_gallery_open", open ? "1" : "0");
+  // Build boards immediately (gallery is always visible now)
+  if(!boardGrid.dataset.ready){
+    buildBoards();
+    boardGrid.dataset.ready = "1";
+    bindMasonryEvents();
   }
 
-  toggleBtn.addEventListener("click", () => {
-    const open = toggleBtn.getAttribute("aria-expanded") === "true";
-    setGalleryOpen(!open);
-  });
-
-  // Default closed on phone, open on desktop (but remembers last choice)
-  const saved = localStorage.getItem("byz_gallery_open");
-  const isMobile = window.matchMedia && window.matchMedia("(max-width: 820px)").matches;
-
-  if(saved === "1") setGalleryOpen(true);
-  else if(saved === "0") setGalleryOpen(false);
-  else setGalleryOpen(!isMobile);
+  // Gallery is always visible now (no toggle functionality)
 })();
   /* =========================================================
    FLOATING SOCIAL DOCK POSITIONING
