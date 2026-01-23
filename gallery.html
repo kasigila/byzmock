@@ -2896,6 +2896,10 @@ console.log("✅ Script file loaded!");
     return daysSince < 30;
   }
 
+  // Popular albums are based on THIS USER's viewing history (localStorage)
+  // Each user sees their own "popular" albums based on how many times THEY clicked on them
+  // Albums with more than 10 views by this user are considered popular
+  // Shows top 2 most-viewed albums per user
   function getPopularAlbums(evt){
     const views = JSON.parse(localStorage.getItem("byz_album_views") || "{}");
     const albums = getAlbums(evt);
@@ -3850,7 +3854,38 @@ console.log("✅ Script file loaded!");
   /* ===================== SORT / SELECT ===================== */
   if(sortEl){
     sortEl.addEventListener("change", () => {
-      if(currentAlbum) renderAlbum(currentAlbum);
+      // Only re-render if we're in an album view, but don't close the album
+      if(currentAlbum) {
+        // Just update the sort, don't close the album
+        const sorted = applySort(flattenPhotos(currentEvent, currentAlbum));
+        currentList = sorted.map(x => x.src);
+        updateMetaAlbum(currentList.length);
+        
+        const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+        const masonry = document.getElementById("masonry");
+        if(masonry) {
+          masonry.innerHTML = sorted.map((x, idx) => {
+            const label = (currentAlbum === "all") ? titleizeAlbum(x.album) : titleizeAlbum(currentAlbum);
+            const isLiked = photoLikes[x.src] === true;
+            const loadingAttr = idx < 12 ? "eager" : "lazy";
+            return `
+              <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
+                <div class="pin-check"><i class="fa-solid fa-check"></i></div>
+                <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
+                <div class="pin-liked"><i class="fa-solid fa-heart"></i></div>
+                <img src="${x.src}" alt="${currentEvent} photo" loading="${loadingAttr}" decoding="async" />
+                <div class="pin-overlay">
+                  <div class="pin-label">${label}</div>
+                  <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
+                    <i class="fa-solid fa-download"></i> Download
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join("");
+          bindMasonryEvents();
+        }
+      }
     });
   }
 
@@ -4243,28 +4278,47 @@ setInterval(updateLikesCount, 2000);
 
 // Feature 4: Photo layout toggle (already added in HTML, just need to ensure it works)
 (function(){
-  document.querySelectorAll('.photo-layout-toggle .layout-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const layout = btn.dataset.photoLayout;
-      const masonry = document.getElementById("masonry");
-      if(!masonry) return;
+  function initPhotoLayoutToggle() {
+    document.querySelectorAll('.photo-layout-toggle .layout-btn').forEach(btn => {
+      // Remove any existing listeners to prevent duplicates
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
       
-      masonry.classList.remove("masonry-layout", "grid-layout", "compact-layout");
-      masonry.classList.add(`${layout}-layout`);
-      
-      document.querySelectorAll('.photo-layout-toggle .layout-btn').forEach(b => {
-        b.classList.remove("active");
-        b.setAttribute("aria-selected", "false");
+      newBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent any parent handlers
+        const layout = newBtn.dataset.photoLayout;
+        const masonry = document.getElementById("masonry");
+        if(!masonry) return;
+        
+        masonry.classList.remove("masonry-layout", "grid-layout", "compact-layout");
+        masonry.classList.add(`${layout}-layout`);
+        
+        document.querySelectorAll('.photo-layout-toggle .layout-btn').forEach(b => {
+          b.classList.remove("active");
+          b.setAttribute("aria-selected", "false");
+        });
+        newBtn.classList.add("active");
+        newBtn.setAttribute("aria-selected", "true");
+        
+        localStorage.setItem("byz_photo_layout", layout);
+        
+        // Don't call renderAlbum - just update the layout class
+        // This keeps the user in the album without kicking them out
       });
-      btn.classList.add("active");
-      btn.setAttribute("aria-selected", "true");
-      
-      localStorage.setItem("byz_photo_layout", layout);
-      
-      // Don't call renderAlbum - just update the layout class
-      // This keeps the user in the album without kicking them out
     });
-  });
+  }
+  
+  // Initialize on page load
+  initPhotoLayoutToggle();
+  
+  // Re-initialize when album opens (in case DOM was replaced)
+  const originalOpenAlbum = window.openAlbum;
+  if(typeof openAlbum === 'function') {
+    window.openAlbum = function(albumKey) {
+      if(originalOpenAlbum) originalOpenAlbum(albumKey);
+      setTimeout(initPhotoLayoutToggle, 100);
+    };
+  }
   
   const savedPhotoLayout = localStorage.getItem("byz_photo_layout") || "masonry";
   const photoLayoutBtn = document.querySelector(`.photo-layout-toggle .layout-btn[data-photo-layout="${savedPhotoLayout}"]`);
@@ -4737,135 +4791,6 @@ setInterval(() => {
 
 /* ===================== GEN Z ENHANCEMENTS ===================== */
 
-// 1. Quick Actions: Long-press on photos for quick menu
-(function(){
-  let longPressTimer;
-  let longPressTarget = null;
-  
-  const quickMenu = document.createElement('div');
-  quickMenu.id = 'quickActionMenu';
-  quickMenu.className = 'quick-action-menu byz-hidden';
-  quickMenu.innerHTML = `
-    <button class="quick-action-btn" data-action="like">
-      <i class="fa-solid fa-heart"></i> Like
-    </button>
-    <button class="quick-action-btn" data-action="download">
-      <i class="fa-solid fa-download"></i> Download
-    </button>
-    <button class="quick-action-btn" data-action="share">
-      <i class="fa-solid fa-share-nodes"></i> Share
-    </button>
-  `;
-  document.body.appendChild(quickMenu);
-  
-  function showQuickMenu(pin, x, y) {
-    const src = pin.dataset.src;
-    if(!src) return;
-    
-    quickMenu.dataset.src = src;
-    quickMenu.style.left = `${x}px`;
-    quickMenu.style.top = `${y}px`;
-    quickMenu.classList.remove('byz-hidden');
-    
-    // Position menu to stay on screen
-    setTimeout(() => {
-      const rect = quickMenu.getBoundingClientRect();
-      if(rect.right > window.innerWidth) {
-        quickMenu.style.left = `${window.innerWidth - rect.width - 20}px`;
-      }
-      if(rect.bottom > window.innerHeight) {
-        quickMenu.style.top = `${y - rect.height - 10}px`;
-      }
-    }, 10);
-  }
-  
-  function hideQuickMenu() {
-    quickMenu.classList.add('byz-hidden');
-    longPressTarget = null;
-  }
-  
-  document.addEventListener('contextmenu', (e) => {
-    if(e.target.closest('.pin')) e.preventDefault();
-  });
-  
-  // Long-press detection
-  document.addEventListener('touchstart', (e) => {
-    const pin = e.target.closest('.pin');
-    if(!pin || selectMode) return;
-    
-    longPressTarget = pin;
-    const touch = e.touches[0];
-    
-    longPressTimer = setTimeout(() => {
-      if(longPressTarget === pin) {
-        e.preventDefault();
-        triggerHaptic('medium');
-        showQuickMenu(pin, touch.clientX, touch.clientY);
-      }
-    }, 500);
-  }, {passive: false});
-  
-  document.addEventListener('touchend', () => {
-    clearTimeout(longPressTimer);
-    if(longPressTarget) {
-      setTimeout(hideQuickMenu, 100);
-    }
-  });
-  
-  document.addEventListener('touchmove', () => {
-    clearTimeout(longPressTimer);
-    longPressTarget = null;
-  });
-  
-  // Click outside to close
-  document.addEventListener('click', (e) => {
-    if(!quickMenu.contains(e.target)) {
-      hideQuickMenu();
-    }
-  });
-  
-  // Handle quick menu actions
-  quickMenu.addEventListener('click', (e) => {
-    const btn = e.target.closest('.quick-action-btn');
-    if(!btn) return;
-    
-    const action = btn.dataset.action;
-    const src = quickMenu.dataset.src;
-    const pin = document.querySelector(`.pin[data-src="${src}"]`);
-    
-    if(!pin) return;
-    
-    switch(action) {
-      case 'like':
-        if(typeof handleDoubleTap === 'function') {
-          handleDoubleTap(pin, src);
-        }
-        break;
-      case 'download':
-        const a = document.createElement('a');
-        a.href = src;
-        a.download = '';
-        a.click();
-        showToast('Downloading...');
-        break;
-      case 'share':
-        if(navigator.share) {
-          navigator.share({
-            title: 'BYZ Memory',
-            text: 'Check out this photo from BYZ!',
-            url: src
-          }).catch(() => {});
-        } else {
-          navigator.clipboard.writeText(src).then(() => {
-            showToast('Link copied!');
-          });
-        }
-        break;
-    }
-    
-    hideQuickMenu();
-  });
-})();
 
 // 2. Haptic Feedback
 function triggerHaptic(type = 'light') {
@@ -5126,159 +5051,9 @@ function triggerHaptic(type = 'light') {
   document.head.appendChild(style);
 })();
 
-// 7. Quick Filters: Swipe up on album view
-(function(){
-  const albumView = document.getElementById('albumView');
-  if(!albumView) return;
-  
-  let swipeStartY = 0;
-  let swipeStartTime = 0;
-  const quickFilters = document.createElement('div');
-  quickFilters.id = 'quickFilters';
-  quickFilters.className = 'quick-filters byz-hidden';
-  quickFilters.innerHTML = `
-    <div class="quick-filters-header">
-      <h3>Quick Filters</h3>
-      <button class="quick-filters-close" onclick="document.getElementById('quickFilters').classList.add('byz-hidden')">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <div class="quick-filters-content">
-      <button class="quick-filter-btn" data-filter="recent">
-        <i class="fa-solid fa-clock"></i> Recent
-      </button>
-      <button class="quick-filter-btn" data-filter="liked">
-        <i class="fa-solid fa-heart"></i> Liked
-      </button>
-      <button class="quick-filter-btn" data-filter="all">
-        <i class="fa-solid fa-grid"></i> All Photos
-      </button>
-    </div>
-  `;
-  document.body.appendChild(quickFilters);
-  
-  albumView.addEventListener('touchstart', (e) => {
-    swipeStartY = e.touches[0].clientY;
-    swipeStartTime = Date.now();
-  }, {passive: true});
-  
-  albumView.addEventListener('touchend', (e) => {
-    if(!swipeStartY) return;
-    
-    const swipeEndY = e.changedTouches[0].clientY;
-    const diffY = swipeStartY - swipeEndY;
-    const timeDiff = Date.now() - swipeStartTime;
-    
-    // Swipe up (at least 80px in less than 300ms)
-    if(diffY > 80 && timeDiff < 300) {
-      triggerHaptic('light');
-      quickFilters.classList.remove('byz-hidden');
-    }
-    
-    swipeStartY = 0;
-  }, {passive: true});
-  
-  quickFilters.addEventListener('click', (e) => {
-    const btn = e.target.closest('.quick-filter-btn');
-    if(!btn) return;
-    
-    const filter = btn.dataset.filter;
-    const allPhotos = flattenPhotos(currentEvent, currentAlbum);
-    let filtered = [];
-    
-    switch(filter) {
-      case 'recent':
-        // Show last 20 photos
-        filtered = allPhotos.slice(0, 20);
-        break;
-      case 'liked':
-        const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
-        filtered = allPhotos.filter(p => photoLikes[p.src] === true);
-        break;
-      case 'all':
-        filtered = allPhotos;
-        break;
-    }
-    
-    if(filtered.length > 0 && typeof renderAlbum === 'function') {
-      // Temporarily override currentList for display
-      const sorted = applySort(filtered);
-      currentList = sorted.map(x => x.src);
-      
-      const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
-      const masonry = document.getElementById("masonry");
-      if(masonry) {
-        masonry.innerHTML = sorted.map((x, idx) => {
-          const label = (currentAlbum === "all") ? titleizeAlbum(x.album) : titleizeAlbum(currentAlbum);
-          const isLiked = photoLikes[x.src] === true;
-          return `
-            <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
-              <div class="pin-check"><i class="fa-solid fa-check"></i></div>
-              <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
-              <div class="pin-liked"><i class="fa-solid fa-heart"></i></div>
-              <img src="${x.src}" alt="${currentEvent} photo" loading="lazy" decoding="async" />
-              <div class="pin-overlay">
-                <div class="pin-label">${label}</div>
-                <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
-                  <i class="fa-solid fa-download"></i> Download
-                </a>
-              </div>
-            </div>
-          `;
-        }).join("");
-        bindMasonryEvents();
-      }
-    }
-    
-    quickFilters.classList.add('byz-hidden');
-    showToast(`Showing ${filtered.length} photos`);
-  });
-})();
 </script>
 
 <style>
-/* Quick Action Menu */
-.quick-action-menu {
-  position: fixed;
-  z-index: 10001;
-  background: color-mix(in srgb, var(--bg) 95%, transparent);
-  backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-  border-radius: 20px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  box-shadow: 0 12px 48px rgba(0,0,0,.4);
-  animation: menuSlide 0.2s var(--ease);
-}
-@keyframes menuSlide {
-  from { opacity: 0; transform: scale(0.9) translateY(-10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-.quick-action-btn {
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: none;
-  background: transparent;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: all 0.2s var(--ease);
-  text-align: left;
-  min-width: 140px;
-}
-.quick-action-btn:hover {
-  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
-}
-.quick-action-btn i {
-  width: 20px;
-  text-align: center;
-}
 
 /* Story Preview */
 .story-preview {
@@ -5354,75 +5129,6 @@ function triggerHaptic(type = 'light') {
   background: rgba(255,255,255,0.25);
 }
 
-/* Quick Filters */
-.quick-filters {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 10003;
-  background: color-mix(in srgb, var(--bg) 95%, transparent);
-  backdrop-filter: blur(40px) saturate(180%);
-  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-  border-radius: 24px 24px 0 0;
-  padding: 24px;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom));
-  max-height: 60vh;
-  animation: slideUp 0.3s var(--ease);
-}
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-.quick-filters-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.quick-filters-header h3 {
-  font-size: 18px;
-  font-weight: 700;
-}
-.quick-filters-close {
-  width: 32px;
-  height: 32px;
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.quick-filters-content {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-.quick-filter-btn {
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.2s var(--ease);
-}
-.quick-filter-btn:hover {
-  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,.2);
-}
-.quick-filter-btn i {
-  font-size: 20px;
-}
 </style>
 </script>
 </body>
