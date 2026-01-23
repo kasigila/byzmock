@@ -1055,34 +1055,7 @@
         });
       });
 
-      // Sticky submit button on mobile scroll
-      const submitBtn = document.getElementById("submitBookingBtn");
-      if(submitBtn && window.innerWidth <= 640){
-        let lastScroll = window.scrollY;
-        window.addEventListener("scroll", () => {
-          const currentScroll = window.scrollY;
-          if(currentScroll > lastScroll && currentScroll > 200){
-            submitBtn.style.position = "fixed";
-            submitBtn.style.bottom = "20px";
-            submitBtn.style.left = "50%";
-            submitBtn.style.transform = "translateX(-50%)";
-            submitBtn.style.width = "calc(100% - 48px)";
-            submitBtn.style.maxWidth = "500px";
-            submitBtn.style.zIndex = "1000";
-            submitBtn.style.boxShadow = "0 8px 24px rgba(0,0,0,.4)";
-          } else {
-            submitBtn.style.position = "";
-            submitBtn.style.bottom = "";
-            submitBtn.style.left = "";
-            submitBtn.style.transform = "";
-            submitBtn.style.width = "";
-            submitBtn.style.maxWidth = "";
-            submitBtn.style.zIndex = "";
-            submitBtn.style.boxShadow = "";
-          }
-          lastScroll = currentScroll;
-        }, { passive: true });
-      }
+      // Submit button stays in fixed position - no sticky behavior
     });
 
     function setProgress(pct){
