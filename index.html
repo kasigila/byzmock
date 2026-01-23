@@ -721,10 +721,133 @@ section{padding: 92px 0}
   }
 }
 
-/* ===================== SOCIAL FLOATING DOCK (IG / TIKTOK / WHATSAPP / ADMIN) - HIDDEN ===================== */
+/* ===================== SOCIAL FLOATING DOCK (IG / TIKTOK / WHATSAPP / ADMIN) - COLLAPSIBLE ===================== */
 .social-dock{
-  display:none; /* Hidden as requested */
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+  pointer-events: none;
 }
+
+.social-dock.collapsed .soc {
+  opacity: 0;
+  transform: translateY(20px) scale(0) rotate(180deg);
+  pointer-events: none;
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.social-dock:not(.collapsed) .soc {
+  opacity: 1;
+  transform: translateY(0) scale(1) rotate(0deg);
+  pointer-events: auto;
+  animation: popOut 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popOut {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0) rotate(180deg);
+  }
+  60% {
+    transform: translateY(-8px) scale(1.1) rotate(-5deg);
+  }
+  80% {
+    transform: translateY(2px) scale(0.95) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+.social-dock.collapsed .soc:nth-child(2) { animation-delay: 0s; }
+.social-dock.collapsed .soc:nth-child(3) { animation-delay: 0s; }
+.social-dock.collapsed .soc:nth-child(4) { animation-delay: 0s; }
+.social-dock.collapsed .soc:nth-child(5) { animation-delay: 0s; }
+
+.social-dock:not(.collapsed) .soc:nth-child(2) { animation-delay: 0.05s; }
+.social-dock:not(.collapsed) .soc:nth-child(3) { animation-delay: 0.1s; }
+.social-dock:not(.collapsed) .soc:nth-child(4) { animation-delay: 0.15s; }
+.social-dock:not(.collapsed) .soc:nth-child(5) { animation-delay: 0.2s; }
+
+.social-dock-toggle {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 1000;
+  position: relative;
+}
+
+.social-dock-toggle:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: color-mix(in srgb, var(--accent) 15%, var(--bg) 85%);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+
+.social-dock-toggle .fa-plus,
+.social-dock-toggle .fa-minus {
+  font-size: 22px;
+  color: var(--text);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.social-dock-toggle .fa-minus {
+  display: none;
+}
+
+.social-dock:not(.collapsed) .social-dock-toggle .fa-plus {
+  display: none;
+}
+
+.social-dock:not(.collapsed) .social-dock-toggle .fa-minus {
+  display: block;
+}
+
+.social-dock.collapsed {
+  pointer-events: auto;
+}
+
+/* Closing animation - icons twist into minus */
+.social-dock.closing .soc {
+  animation: twistIn 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+}
+
+@keyframes twistIn {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translateY(10px) scale(0.5) rotate(360deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px) scale(0) rotate(540deg);
+  }
+}
+
+.social-dock.closing .soc:nth-child(5) { animation-delay: 0s; }
+.social-dock.closing .soc:nth-child(4) { animation-delay: 0.05s; }
+.social-dock.closing .soc:nth-child(3) { animation-delay: 0.1s; }
+.social-dock.closing .soc:nth-child(2) { animation-delay: 0.15s; }
 
 .soc{
   width:52px;height:52px;border-radius:18px;
@@ -4690,20 +4813,21 @@ body.bulkbar-active .social-dock{
   </div>
 </div>
 
-<!-- Floating Social Dock -->
-<div class="social-dock" aria-label="Social links">
+<!-- Floating Social Dock - Collapsible -->
+<div class="social-dock collapsed" id="socialDock" aria-label="Social links">
+  <button class="social-dock-toggle" id="socialDockToggle" aria-label="Toggle social links" aria-expanded="false">
+    <i class="fa-solid fa-plus"></i>
+    <i class="fa-solid fa-minus"></i>
+  </button>
   <a class="soc instagram" href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" aria-label="Instagram">
     <i class="fa-brands fa-instagram"></i>
   </a>
-
   <a class="soc tiktok" href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener" aria-label="TikTok">
     <i class="fa-brands fa-tiktok"></i>
   </a>
-
-    <a class="soc facebook" href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" aria-label="Facebook">
+  <a class="soc facebook" href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" aria-label="Facebook">
     <i class="fa-brands fa-facebook"></i>
   </a>
-
   <!-- Admin lock -->
   <a class="soc admin-lock" href="https://kasigila.github.io/byzmock/admin.html" aria-label="Admin dashboard">
     <i class="fa-solid fa-lock"></i>
@@ -6840,32 +6964,61 @@ boardGrid.innerHTML = boardItems.map(item => {
   // Gallery is always visible now (no toggle functionality)
 })();
   /* =========================================================
-   FLOATING SOCIAL DOCK POSITIONING
+   FLOATING SOCIAL DOCK - COLLAPSIBLE FUNCTIONALITY
 ========================================================= */
 (function(){
-  const dock = document.querySelector(".social-dock");
+  const dock = document.getElementById("socialDock");
+  const dockToggle = document.getElementById("socialDockToggle");
   const footer = document.querySelector("footer");
   const root = document.documentElement;
-  if(!dock || !footer) return;
-
-  let ticking = false;
-
-  function update(){
-    const footerRect = footer.getBoundingClientRect();
-    const overlap = Math.max(0, window.innerHeight - footerRect.top + 24);
-    root.style.setProperty("--dock-offset", `${overlap}px`);
-    ticking = false;
+  
+  if(dock && dockToggle) {
+    dockToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isCollapsed = dock.classList.contains("collapsed");
+      
+      if(isCollapsed) {
+        // Opening - pop out animation
+        dock.classList.remove("collapsed", "closing");
+        dockToggle.setAttribute("aria-expanded", "true");
+      } else {
+        // Closing - twist in animation
+        dock.classList.add("closing");
+        setTimeout(() => {
+          dock.classList.add("collapsed");
+          dock.classList.remove("closing");
+          dockToggle.setAttribute("aria-expanded", "false");
+        }, 400); // Match animation duration
+      }
+      
+      // Trigger haptic feedback if available
+      if(navigator.vibrate) {
+        navigator.vibrate(10);
+      }
+    });
   }
+  
+  // Legacy positioning code (keeping for compatibility)
+  if(dock && footer) {
+    let ticking = false;
 
-  function onScroll(){
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(update);
+    function update(){
+      const footerRect = footer.getBoundingClientRect();
+      const overlap = Math.max(0, window.innerHeight - footerRect.top + 24);
+      root.style.setProperty("--dock-offset", `${overlap}px`);
+      ticking = false;
+    }
+
+    function onScroll(){
+      if(ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
   }
-
-  update();
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", onScroll);
 })();
 
 /* =========================================================
@@ -7911,8 +8064,8 @@ document.addEventListener('keydown', (e) => {
   
   // Enhanced FAQ database with context awareness
   const faqDatabase = {
-    'hi': { response: "Hey! 👋 Welcome to BYZ. I'm ByzBot, your AI assistant. How can I help you today?", suggestions: ['Book tickets', 'Event info', 'Contact', 'View schedule'] },
-    'hello': { response: "Hello! 👋 I'm ByzBot. What can I help you with?", suggestions: ['Book tickets', 'Event info', 'Contact'] },
+    'hi': { response: "Hey! 👋 Welcome to BYZ. I'm ByzBot, your support assistant. How can I help you today?", suggestions: ['Book tickets', 'Event info', 'Contact', 'View schedule'] },
+    'hello': { response: "Hello! 👋 I'm ByzBot, your support assistant. What can I help you with?", suggestions: ['Book tickets', 'Event info', 'Contact'] },
     'book': { response: "Great! You can book tables or tickets for our events. Which event are you interested in?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
     'booking': { response: "To book, visit our booking page or tap 'Reserve' on the homepage. Which event would you like to book?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
     'ticket': { response: "Perfect! You can book tickets for any of our events. Which event are you interested in?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
@@ -7951,13 +8104,13 @@ document.addEventListener('keydown', (e) => {
     'time': { response: "Event times are usually late night! Groove starts around 10 PM. Check the lineup section for set times.", suggestions: ['View lineup', 'Book now'] },
     'location': { response: "We're in Dar es Salaam! Specific venue details are shared when you book. Want to book?", suggestions: ['Yes, book now', 'Contact'] },
     'where': { response: "BYZ events are in Dar es Salaam. Exact locations are provided when you complete your booking!", suggestions: ['Book now', 'Contact'] },
-    'contact': { response: "You can reach us via WhatsApp at +255 768 464 367 or email byzentertainment@gmail.com", suggestions: ['WhatsApp', 'Email', 'Book now'] },
-    'facebook': { response: "Follow us on Facebook! Visit https://www.facebook.com/byzinthehood for updates, event announcements, and more.", suggestions: ['Instagram', 'TikTok', 'Book now'] },
-    'fb': { response: "Our Facebook page is https://www.facebook.com/byzinthehood - follow us for event updates!", suggestions: ['Instagram', 'TikTok', 'Book now'] },
-    'social': { response: "Find us on Instagram @byzinthehood, TikTok @byzinthehood, and Facebook @byzinthehood!", suggestions: ['Instagram', 'TikTok', 'Facebook'] },
-    'instagram': { response: "Follow us on Instagram @byzinthehood for the latest updates, behind-the-scenes, and event announcements!", suggestions: ['TikTok', 'Facebook', 'Book now'] },
-    'tiktok': { response: "Check us out on TikTok @byzinthehood for event highlights and fun content!", suggestions: ['Instagram', 'Facebook', 'Book now'] },
-    'help': { response: "I'm ByzBot, your AI assistant! I can help with booking, event info, schedules, pricing, or anything BYZ-related. What do you need?", suggestions: ['Book tickets', 'Event info', 'View schedule'] },
+    'contact': { response: "You can reach us via WhatsApp or email. Tap the links below!", suggestions: ['WhatsApp', 'Email', 'Book now'] },
+    'facebook': { response: "Follow us on Facebook! Visit our page for updates, event announcements, and more.", suggestions: ['Instagram', 'TikTok', 'Book now'], link: 'https://www.facebook.com/byzinthehood', linkType: 'facebook' },
+    'fb': { response: "Our Facebook page - follow us for event updates!", suggestions: ['Instagram', 'TikTok', 'Book now'], link: 'https://www.facebook.com/byzinthehood', linkType: 'facebook' },
+    'social': { response: "Find us on Instagram, TikTok, and Facebook!", suggestions: ['Instagram', 'TikTok', 'Facebook'] },
+    'instagram': { response: "Follow us on Instagram for the latest updates, behind-the-scenes, and event announcements!", suggestions: ['TikTok', 'Facebook', 'Book now'], link: 'https://www.instagram.com/byzinthehood', linkType: 'instagram' },
+    'tiktok': { response: "Check us out on TikTok for event highlights and fun content!", suggestions: ['Instagram', 'Facebook', 'Book now'], link: 'https://www.tiktok.com/@byzinthehood', linkType: 'tiktok' },
+    'help': { response: "I'm ByzBot, your support assistant! I can help with booking, event info, schedules, pricing, or anything BYZ-related. What do you need?", suggestions: ['Book tickets', 'Event info', 'View schedule'] },
     'default': { response: "I understand you're looking for information. Let me help! Are you interested in booking, event details, or something else?", suggestions: ['Book tickets', 'Event info', 'Contact'] }
   };
   
@@ -7993,7 +8146,7 @@ document.addEventListener('keydown', (e) => {
             <img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />
           </div>
           <div class="message-content">
-            <div class="message-text">Hey! 👋 I'm ByzBot, your AI assistant. Ask me about events, booking, schedules, or anything BYZ-related!</div>
+            <div class="message-text">Hi! 👋 I'm ByzBot, your support assistant. How can I help you today?</div>
             <div class="message-time">Just now</div>
           </div>
         </div>
@@ -8088,7 +8241,26 @@ document.addEventListener('keydown', (e) => {
       touch-action: pan-y;
     }
     
-    @media (min-width: 421px) {
+    /* Desktop/Laptop View - Centered Modal */
+    @media (min-width: 768px) {
+      .chat-window {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 400px;
+        height: auto;
+        max-height: 80vh;
+        border-radius: 24px;
+        border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+        inset: auto;
+        bottom: auto;
+        right: auto;
+      }
+    }
+    
+    @media (min-width: 421px) and (max-width: 767px) {
       .chat-window {
         border-radius: 24px 24px 0 0;
         bottom: 0;
@@ -8108,10 +8280,12 @@ document.addEventListener('keydown', (e) => {
       align-items: center;
       justify-content: space-between;
       background: color-mix(in srgb, var(--bg) 95%, transparent);
-      position: relative;
+      position: sticky;
+      top: 0;
       z-index: 10;
       flex-shrink: 0;
       min-height: 60px;
+      width: 100%;
     }
     
     .chat-header-content {
@@ -8180,6 +8354,7 @@ document.addEventListener('keydown', (e) => {
       overflow-y: auto;
       overflow-x: hidden;
       padding: 16px;
+      padding-bottom: env(safe-area-inset-bottom, 16px);
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -8188,6 +8363,7 @@ document.addEventListener('keydown', (e) => {
       min-height: 0;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
+      height: 0; /* Force flex-grow to work */
     }
     
     .chat-messages::-webkit-scrollbar {
@@ -8304,9 +8480,11 @@ document.addEventListener('keydown', (e) => {
       gap: 10px;
       align-items: center;
       background: color-mix(in srgb, var(--bg) 95%, transparent);
-      position: relative;
+      position: sticky;
+      bottom: 0;
       z-index: 10;
       flex-shrink: 0;
+      width: 100%;
     }
     
     .chat-input {
@@ -8357,6 +8535,39 @@ document.addEventListener('keydown', (e) => {
       transform: scale(0.95);
     }
     
+    /* Chat Links Styling */
+    .chat-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      margin-top: 8px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.2s var(--ease);
+      cursor: pointer;
+    }
+    
+    .chat-link:hover {
+      background: color-mix(in srgb, var(--accent) 25%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      transform: translateY(-1px);
+    }
+    
+    .chat-link i {
+      font-size: 14px;
+    }
+    
+    .message-text a.chat-link {
+      display: inline-block;
+      margin-left: 4px;
+    }
+    
     @media (max-width: 640px) {
       .chat-window {
         width: 100%;
@@ -8375,7 +8586,10 @@ document.addEventListener('keydown', (e) => {
       }
       
       .chat-header {
+        position: sticky;
+        top: 0;
         padding-top: calc(12px + env(safe-area-inset-top, 0px));
+        flex-shrink: 0;
       }
       
       .chat-messages {
@@ -8384,10 +8598,14 @@ document.addEventListener('keydown', (e) => {
         overflow-y: auto;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
+        height: 0; /* Force flex-grow */
       }
       
       .chat-input-wrapper {
+        position: sticky;
+        bottom: 0;
         padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        flex-shrink: 0;
       }
       
       .chat-input {
@@ -8528,12 +8746,37 @@ document.addEventListener('keydown', (e) => {
     
     const time = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
     
+    // Process text for links and icons
+    let processedText = text;
+    
+    // Add clickable links for social media
+    if (text.includes('facebook.com') || (text.includes('Facebook') && !text.includes('chat-link'))) {
+      processedText = text.replace(/https:\/\/www\.facebook\.com\/byzinthehood/g, 
+        '<a href="https://www.facebook.com/byzinthehood" target="_blank" class="chat-link"><i class="fa-brands fa-facebook"></i> Facebook</a>');
+    }
+    if (text.includes('Instagram') && !text.includes('chat-link')) {
+      processedText = processedText.replace(/Instagram @byzinthehood/g, 
+        '<a href="https://www.instagram.com/byzinthehood" target="_blank" class="chat-link"><i class="fa-brands fa-instagram"></i> Instagram</a>');
+    }
+    if (text.includes('TikTok') && !text.includes('chat-link')) {
+      processedText = processedText.replace(/TikTok @byzinthehood/g, 
+        '<a href="https://www.tiktok.com/@byzinthehood" target="_blank" class="chat-link"><i class="fa-brands fa-tiktok"></i> TikTok</a>');
+    }
+    if (text.includes('WhatsApp') && !text.includes('chat-link')) {
+      processedText = processedText.replace(/\+255 768 464 367/g, 
+        '<a href="https://wa.me/255768464367" target="_blank" class="chat-link"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>');
+    }
+    if ((text.includes('email') || text.includes('byzentertainment@gmail.com')) && !text.includes('chat-link')) {
+      processedText = processedText.replace(/byzentertainment@gmail\.com/g, 
+        '<a href="mailto:byzentertainment@gmail.com" class="chat-link"><i class="fa-solid fa-envelope"></i> Email</a>');
+    }
+    
     message.innerHTML = `
       <div class="message-avatar">
         ${isUser ? '<i class="fa-solid fa-user"></i>' : '<img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />'}
       </div>
       <div class="message-content">
-        <div class="message-text">${text}</div>
+        <div class="message-text">${processedText}</div>
         <div class="message-time">${time}</div>
       </div>
     `;
@@ -8566,7 +8809,32 @@ document.addEventListener('keydown', (e) => {
     // Simulate typing delay
     setTimeout(() => {
       const response = findResponse(text);
-      addMessage(response.response, false);
+      let responseText = response.response;
+      
+      // Add clickable links if provided
+      if (response.link && response.linkType) {
+        const icons = {
+          'facebook': 'fa-brands fa-facebook',
+          'instagram': 'fa-brands fa-instagram',
+          'tiktok': 'fa-brands fa-tiktok',
+          'whatsapp': 'fa-brands fa-whatsapp',
+          'email': 'fa-solid fa-envelope'
+        };
+        const labels = {
+          'facebook': 'Facebook',
+          'instagram': 'Instagram',
+          'tiktok': 'TikTok',
+          'whatsapp': 'WhatsApp',
+          'email': 'Email'
+        };
+        const linkUrl = response.linkType === 'whatsapp' ? 'https://wa.me/255768464367' : 
+                       response.linkType === 'email' ? 'mailto:byzentertainment@gmail.com' : 
+                       response.link;
+        
+        responseText += ` <a href="${linkUrl}" target="_blank" class="chat-link"><i class="${icons[response.linkType]}"></i> ${labels[response.linkType]}</a>`;
+      }
+      
+      addMessage(responseText, false);
       updateSuggestions(response.suggestions);
     }, 500);
   }
