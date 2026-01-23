@@ -6,6 +6,7 @@
   <title>BYZ Tempo Booking</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
   <style>
     /* same CSS as booking.html */
     :root{
@@ -100,18 +101,6 @@
     }
     .pill:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
     .pill strong{color:var(--text);font-weight:700}
-    .theme-btn{
-      width:42px;height:42px;border-radius:16px;
-      border:1px solid var(--border);
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-soft);
-      display:grid;place-items:center;
-      cursor:pointer;
-      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
-    }
-    .theme-btn:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
-    .theme-btn i{font-size:18px;color:var(--text)}
     main{padding-top: 28px;padding-bottom: 90px;}
     .hero{
       margin-top: 8px;
@@ -313,13 +302,31 @@
     .whatsapp-dot{width:10px;height:10px;border-radius:999px;background: var(--whatsapp);margin-top:4px;flex:0 0 auto;}
     .form{margin-top:12px;display:flex;flex-direction:column;gap:10px;}
     input{
-      width:100%;padding:14px;border-radius:18px;border:1px solid var(--border);
-      background: var(--bg-elev);color: var(--text);outline:none;font-size:14px;
-      transition: box-shadow .2s var(--ease), transform .2s var(--ease);
+      width:100%;padding:16px 18px;border-radius:18px;border:1px solid var(--border);
+      background: var(--bg-elev);color: var(--text);outline:none;font-size:15px;
+      transition: all 0.2s var(--ease);
       box-shadow: var(--shadow-soft);
+      min-height: 52px; /* Better touch target */
     }
     input:focus{
       box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
+      transform: translateY(-1px);
+    }
+    input.success{
+      border-color: var(--ok);
+      background: color-mix(in srgb, var(--ok) 5%, var(--bg-elev));
+    }
+    input.error{
+      border-color: var(--bad);
+      background: color-mix(in srgb, var(--bad) 5%, var(--bg-elev));
+    }
+    .copy-success{
+      animation: copyPulse 0.4s var(--ease);
+    }
+    @keyframes copyPulse{
+      0%{ transform: scale(1); }
+      50%{ transform: scale(1.05); }
+      100%{ transform: scale(1); }
     }
     .notice{margin-top:6px;color:var(--sub);font-size:13px}
     .foot{margin-top:16px;color:var(--sub);font-size:12px;text-align:center;}
@@ -471,21 +478,61 @@
     }
 
     /* Guidance Card */
+    /* Guidance Card - Collapsible Accordion */
     .guidance-card{
       margin-top: 12px;
-      padding: 14px;
       border-radius: 18px;
       background: color-mix(in srgb, var(--warn) 8%, transparent);
       border: 1px solid color-mix(in srgb, var(--warn) 25%, var(--border));
+      overflow: hidden;
+      transition: all 0.3s var(--ease);
     }
-    .guidance-card h4{
+    .guidance-card-header{
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      user-select: none;
+      transition: background 0.2s var(--ease);
+    }
+    .guidance-card-header:hover{
+      background: color-mix(in srgb, var(--warn) 12%, transparent);
+    }
+    .guidance-card-header h4{
       font-size: 13px;
       font-weight: 700;
       color: var(--warn);
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 8px;
+      margin: 0;
+      flex: 1;
+    }
+    .guidance-card-toggle{
+      width: 24px;
+      height: 24px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--warn) 20%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s var(--ease);
+      flex-shrink: 0;
+    }
+    .guidance-card.expanded .guidance-card-toggle{
+      transform: rotate(180deg);
+    }
+    .guidance-card-content{
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s var(--ease), padding 0.3s var(--ease);
+      padding: 0 14px;
+    }
+    .guidance-card.expanded .guidance-card-content{
+      max-height: 500px;
+      padding: 0 14px 14px 14px;
     }
     .guidance-card ul{
       margin: 0;
@@ -536,7 +583,7 @@
   </style>
 </head>
 
-<body data-theme="light">
+<body data-theme="dark">
   <header>
     <div class="container header-inner">
       <a class="brand" href="./index.html" aria-label="BYZ Home">
@@ -551,9 +598,6 @@
           <i class="fa-solid fa-arrow-left"></i>
           <span>Back to <strong>Home</strong></span>
         </a>
-        <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
-          <i class="fa-solid fa-circle-half-stroke"></i>
-        </button>
       </div>
     </div>
   </header>
@@ -687,15 +731,22 @@
                     </div>
                   </div>
 
-                  <div class="guidance-card" style="margin-top:12px;">
-                    <h4><i class="fa-solid fa-circle-info"></i> Payment Instructions</h4>
-                    <ul>
-                      <li>Copy the Lipa Number above</li>
-                      <li>Open M-Pesa and go to Lipa na M-Pesa</li>
-                      <li>Enter the business number: <b>68286833</b></li>
-                      <li>Enter the exact amount shown</li>
-                      <li>Complete payment and copy the Transaction ID</li>
-                    </ul>
+                  <div class="guidance-card" style="margin-top:12px;" onclick="toggleGuidanceCard(this)" role="button" tabindex="0" aria-expanded="false">
+                    <div class="guidance-card-header">
+                      <h4><i class="fa-solid fa-circle-info"></i> Payment Instructions</h4>
+                      <div class="guidance-card-toggle">
+                        <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: var(--warn);"></i>
+                      </div>
+                    </div>
+                    <div class="guidance-card-content">
+                      <ul>
+                        <li>Copy the Lipa Number above</li>
+                        <li>Open M-Pesa and go to Lipa na M-Pesa</li>
+                        <li>Enter the business number: <b>68286833</b></li>
+                        <li>Enter the exact amount shown</li>
+                        <li>Complete payment and copy the Transaction ID</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -724,7 +775,7 @@
                 <div class="field-error" id="txnError" role="alert" aria-live="polite"></div>
               </div>
 
-              <button class="btn primary" id="submitBookingBtn" onclick="submitBooking()" type="button" aria-label="Submit Booking">
+              <button class="btn primary" id="submitBookingBtn" onclick="submitBooking()" type="button" aria-label="Submit Booking" style="min-height: 52px; font-size: 15px; padding: 16px 24px;">
                 <i class="fa-solid fa-lock"></i>
                 Submit Booking
               </button>
@@ -734,14 +785,21 @@
               </div>
             </div>
 
-            <div class="guidance-card">
-              <h4><i class="fa-solid fa-shield-halved"></i> What happens next?</h4>
-              <ul>
-                <li>Your booking will be reviewed within 24 hours</li>
-                <li>You'll receive a confirmation email once approved</li>
-                <li>Your QR code will be sent via email</li>
-                <li>Present your QR code at the door for entry</li>
-              </ul>
+            <div class="guidance-card" onclick="toggleGuidanceCard(this)" role="button" tabindex="0" aria-expanded="false">
+              <div class="guidance-card-header">
+                <h4><i class="fa-solid fa-shield-halved"></i> What happens next?</h4>
+                <div class="guidance-card-toggle">
+                  <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: var(--warn);"></i>
+                </div>
+              </div>
+              <div class="guidance-card-content">
+                <ul>
+                  <li>Your booking will be reviewed within 24 hours</li>
+                  <li>You'll receive a confirmation email once approved</li>
+                  <li>Your QR code will be sent via email</li>
+                  <li>Present your QR code at the door for entry</li>
+                </ul>
+              </div>
             </div>
 
             <div class="foot"> </div>
@@ -759,16 +817,97 @@
 
     let bookingType="", tier="", ticketQty=1, availability=[];
 
+    // Dark mode permanently enabled
     (function initTheme(){
-      const saved = localStorage.getItem("byz_theme");
-      if(saved === "dark"){ document.body.setAttribute("data-theme","dark"); }
+      document.body.setAttribute("data-theme","dark");
+      localStorage.removeItem("byz_theme");
     })();
 
-    function toggleTheme(){
-      const isDark = document.body.getAttribute("data-theme") === "dark";
-      document.body.setAttribute("data-theme", isDark ? "light" : "dark");
-      localStorage.setItem("byz_theme", isDark ? "light" : "dark");
+    // Toggle guidance card accordion
+    function toggleGuidanceCard(card){
+      const isExpanded = card.classList.contains("expanded");
+      card.classList.toggle("expanded");
+      card.setAttribute("aria-expanded", !isExpanded);
     }
+
+    // Allow keyboard navigation for accordions
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".guidance-card").forEach(card => {
+        card.addEventListener("keydown", (e) => {
+          if(e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            toggleGuidanceCard(card);
+          }
+        });
+      });
+
+      // Auto-format phone numbers
+      const phoneInput = document.getElementById("phone");
+      if(phoneInput){
+        phoneInput.addEventListener("input", (e) => {
+          let value = e.target.value.replace(/\D/g, "");
+          if(value.length > 0){
+            // Format as: +255 768 464 367
+            if(value.startsWith("255")){
+              value = "+" + value;
+            } else if(!value.startsWith("+255") && value.length >= 9){
+              value = "+255" + value;
+            }
+            if(value.length > 4) value = value.slice(0, 4) + " " + value.slice(4);
+            if(value.length > 8) value = value.slice(0, 8) + " " + value.slice(8);
+            if(value.length > 12) value = value.slice(0, 12) + " " + value.slice(12);
+            e.target.value = value;
+          }
+        });
+      }
+
+      // Smart field focus - auto-focus next field on Enter
+      const formInputs = document.querySelectorAll("#formStep input");
+      formInputs.forEach((input, index) => {
+        input.addEventListener("keydown", (e) => {
+          if(e.key === "Enter" && !e.shiftKey){
+            e.preventDefault();
+            const nextInput = formInputs[index + 1];
+            if(nextInput){
+              nextInput.focus();
+            } else {
+              // Last field - focus submit button
+              const submitBtn = document.getElementById("submitBookingBtn");
+              if(submitBtn) submitBtn.focus();
+            }
+          }
+        });
+      });
+
+      // Sticky submit button on mobile scroll
+      const submitBtn = document.getElementById("submitBookingBtn");
+      if(submitBtn && window.innerWidth <= 640){
+        let lastScroll = window.scrollY;
+        window.addEventListener("scroll", () => {
+          const currentScroll = window.scrollY;
+          if(currentScroll > lastScroll && currentScroll > 200){
+            submitBtn.style.position = "fixed";
+            submitBtn.style.bottom = "20px";
+            submitBtn.style.left = "50%";
+            submitBtn.style.transform = "translateX(-50%)";
+            submitBtn.style.width = "calc(100% - 48px)";
+            submitBtn.style.maxWidth = "500px";
+            submitBtn.style.zIndex = "1000";
+            submitBtn.style.boxShadow = "0 8px 24px rgba(0,0,0,.4)";
+          } else {
+            submitBtn.style.position = "";
+            submitBtn.style.bottom = "";
+            submitBtn.style.left = "";
+            submitBtn.style.transform = "";
+            submitBtn.style.width = "";
+            submitBtn.style.maxWidth = "";
+            submitBtn.style.zIndex = "";
+            submitBtn.style.boxShadow = "";
+          }
+          lastScroll = currentScroll;
+        }, { passive: true });
+      }
+    });
 
     function setProgress(pct){
       const bar = document.getElementById("progressBar");
@@ -805,11 +944,22 @@
       
       if (navigator.clipboard) {
         navigator.clipboard.writeText(number).then(() => {
+          // Enhanced visual feedback
+          if(btn){
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+            btn.style.background = 'var(--ok)';
+            btn.style.color = '#fff';
+            btn.classList.add("copy-success");
+            
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+              btn.style.background = '';
+              btn.style.color = '';
+              btn.classList.remove("copy-success");
+            }, 2000);
+          }
           showToast(`<div><i class="fa-solid fa-circle-check"></i> <b>Copied!</b></div><div class="toast-sub">M-Pesa number copied to clipboard</div>`, 2000);
-          if(btn) btn.classList.add("copy-pulse");
-          setTimeout(() => {
-            if(btn) btn.classList.remove("copy-pulse");
-          }, 300);
         }).catch(() => {
           showToast(`<div><i class="fa-solid fa-circle-xmark"></i> <b>Copy failed</b></div><div class="toast-sub">Please copy manually: ${number}</div>`, 3000);
         });
@@ -1284,9 +1434,6 @@ Txn: ${data.transactionCode}`;
               <button class="btn primary" onclick="downloadReceipt('${bookingId}')" style="width: 100%; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 <i class="fa-solid fa-download"></i> Download Receipt
               </button>
-              <p style="text-align: center; margin-top: 12px; font-size: 12px; color: var(--sub);">
-                Share your booking on social media!
-              </p>
             </div>
           </div>
         `;
@@ -1598,24 +1745,29 @@ function downloadReceipt(bookingId) {
           font-size: 13px;
           text-decoration: none;
         }
-        .share-hint {
-          background: rgba(225,48,108,.1);
-          border: 1px solid rgba(225,48,108,.2);
-          border-radius: 12px;
-          padding: 12px;
-          margin-top: 20px;
-          text-align: center;
-          font-size: 12px;
-          color: #E1306C;
+        .logo-img {
+          width: 80px;
+          height: 80px;
+          margin: 0 auto 16px;
+          display: block;
+          opacity: 0.95;
         }
-        .share-hint i {
-          margin-right: 6px;
+        .watermark {
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
+          font-size: 10px;
+          color: rgba(255,255,255,.15);
+          font-weight: 500;
+          pointer-events: none;
         }
       </style>
     </head>
     <body>
       <div class="receipt">
+        <div class="watermark">For personal use only</div>
         <div class="header">
+          <img src="https://byzentertainment.com/assets/byz-logo-white.png" alt="BYZ Logo" class="logo-img" onerror="this.style.display='none'">
           <h1>BYZ Entertainment</h1>
           <p>Booking Receipt</p>
           <div class="status-badge">
@@ -1666,10 +1818,6 @@ function downloadReceipt(bookingId) {
             <span>Present QR code at door for entry</span>
           </div>
         </div>
-        <div class="share-hint">
-          <i class="fa-solid fa-share-nodes"></i>
-          Share this receipt on your story!
-        </div>
         <div class="footer">
           <p class="footer-text">See you at the event!</p>
           <a href="https://byzentertainment.com" class="footer-url">byzentertainment.com</a>
@@ -1689,16 +1837,7 @@ function downloadReceipt(bookingId) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   
-  // Show share prompt after download
-  setTimeout(() => {
-    if (navigator.share) {
-      navigator.share({
-        title: `I'm going to ${eventName}!`,
-        text: `Just booked my spot at BYZ ${eventName}! Booking ID: ${bookingId}`,
-        url: window.location.href
-      }).catch(() => {});
-    }
-  }, 500);
+  // Receipt downloaded - no social sharing prompt
 }
   </script>
 </body>
