@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -9,27 +9,8 @@
 <meta name="description" content="BYZ in the Hood creates unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam." />
 
   <style>
-/* ===================== APPLE-LIKE DESIGN TOKENS ===================== */
+/* ===================== APPLE-LIKE DESIGN TOKENS (DARK MODE ONLY) ===================== */
 :root{
-  --bg:#ffffff;
-  --bg-alt:#f5f5f7;
-  --bg-elev:#ffffff;
-  --text:#1d1d1f;
-  --sub:#6e6e73;
-  --border:#d2d2d7;
-  --accent:#000000;
-
-  --radius: 22px;
-  --radius-lg: 28px;
-  --shadow: 0 18px 60px rgba(0,0,0,.08);
-  --shadow-soft: 0 10px 30px rgba(0,0,0,.08);
-  --ease: cubic-bezier(.2,.8,.2,1);
-  --max: 1100px;
-
-  --header-h: 64px;
-}
-
-[data-theme="dark"]{
   --bg:#000000;
   --bg-alt:#1c1c1e;
   --bg-elev:#0b0b0c;
@@ -39,6 +20,10 @@
   --accent:#ffffff;
   --shadow: 0 18px 60px rgba(0,0,0,.35);
   --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --max: 1100px;
+
+  --header-h: 64px;
 }
 
 /* ===================== BASE ===================== */
@@ -89,9 +74,8 @@ header{
   display:block;
 }
 
-.logo-dark{display:none;}
-[data-theme="dark"] .logo-light{display:none;}
-[data-theme="dark"] .logo-dark{display:block;}
+.logo-light{display:none;}
+.logo-dark{display:block;}
 
 nav ul{display:flex;gap:26px;list-style:none;align-items:center}
 nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
@@ -172,58 +156,6 @@ nav a:hover{color:var(--text)}
 }
 .cta:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
 
-/* Dark mode toggle (Apple-ish) */
-.toggle{
-  position:relative;
-}
-.toggle::before{
-  content:"\f185"; /* sun */
-  font-family:"Font Awesome 6 Free";
-  font-weight:900;
-  position:absolute;
-  top:50%;
-  left:9px;
-  transform: translateY(-50%);
-  font-size:12px;
-  color:var(--sub);
-  opacity:.9;
-  pointer-events:none;
-  transition: left .25s var(--ease);
-}
-[data-theme="dark"] .toggle::before{
-  content:"\f186"; /* moon */
-  left: calc(100% - 21px);
-}
-/* Theme icon button (matches booking.html style) */
-.theme-btn{
-  width:44px;
-  height:44px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background: var(--bg-elev);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
-  box-shadow: var(--shadow-soft);
-  color: var(--text);
-}
-
-.theme-btn:hover{
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
-}
-
-.theme-btn:active{
-  transform: translateY(0px);
-}
-
-.theme-glyph{
-  width:20px;
-  height:20px;
-  display:block;
-}
   
 /* ===================== HERO (APPLE STORYTELLING) ===================== */
 main{padding-top:var(--header-h)}
@@ -745,6 +677,46 @@ section{padding: 92px 0}
   background: var(--accent);
   color: var(--bg);
   border-color: transparent;
+}
+
+/* ===================== QUICK BOOK FAB (MOBILE) ===================== */
+.quick-book-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 90px;
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background: var(--accent);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  z-index: 901;
+  transition: all 0.3s var(--ease);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.quick-book-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(0,0,0,.4);
+}
+
+.quick-book-fab i {
+  font-size: 24px;
+}
+
+@media (max-width: 640px) {
+  .quick-book-fab {
+    display: flex;
+  }
+}
+
+@media (min-width: 641px) {
+  .quick-book-fab {
+    display: none;
+  }
 }
 
 /* ===================== SOCIAL FLOATING DOCK (IG / TIKTOK / WHATSAPP / ADMIN) ===================== */
@@ -1393,7 +1365,6 @@ section{padding: 92px 0}
 .slot-content:hover::after {
   opacity: 0.4;
 }
-}
 
 .slot .left {
   flex: 1;
@@ -1858,10 +1829,6 @@ section{padding: 92px 0}
 }
 .tab:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
 .tab.active{
-  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
-}
-[data-theme="dark"] .tab.active{
   background: var(--accent);
   color: var(--bg);
   border-color: transparent;
@@ -2756,7 +2723,7 @@ section{padding: 92px 0}
 .social-card.youtube{ --tint: linear-gradient(135deg, rgba(255,0,0,.65), rgba(255,0,0,.22)); }
 .social-card.facebook{ --tint: linear-gradient(135deg, rgba(24,119,242,.60), rgba(24,119,242,.22)); }
 
-[data-theme="dark"] .social-card::before{
+.social-card::before{
   opacity:.45;
 }
 
@@ -2955,7 +2922,7 @@ footer{
     flex-basis: 320px;
   }
 
-  [data-theme="dark"] .artist-scroll-btn {
+  .artist-scroll-btn {
     background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
     border-color: color-mix(in srgb, var(--border) 50%, transparent);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 
@@ -3069,36 +3036,127 @@ footer{
   box-shadow: var(--shadow);
 }
 
-/* Modal backdrop */
+/* ===================== iOS 26 MODAL DESIGN SYSTEM ===================== */
+
+/* Modal backdrop - Ultra-blur with layered depth */
 .byz-modal-backdrop{
   position:fixed;
   inset:0;
   z-index: 4000;
-  background: rgba(0,0,0,.45);
-  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(40px) saturate(180%);
+  background-image: radial-gradient(
+    circle at 50% 0%,
+    rgba(255,255,255,.03) 0%,
+    transparent 50%
+  );
   display:grid;
   place-items:center;
   padding: 20px;
+  animation: backdropEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
 }
-.byz-hidden{ display:none !important; }
 
-/* Modal card */
+.byz-modal-backdrop:not(.byz-hidden) {
+  opacity: 1;
+}
+
+@keyframes backdropEnter {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.byz-hidden{ 
+  display:none !important; 
+  opacity: 0;
+}
+
+/* Modal card - Multi-layer glassmorphism */
 .byz-modal{
   width: min(520px, 100%);
   border-radius: 26px;
-  border:1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  box-shadow: var(--shadow);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(60px) saturate(200%);
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,.12),
+    0 2px 8px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.1),
+    0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent);
   overflow:hidden;
+  animation: modalEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
 }
 
-/* Modal header */
+@keyframes modalEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes modalExit {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    filter: blur(4px);
+  }
+}
+
+/* Mobile bottom sheet behavior */
+@media (max-width: 640px) {
+  .byz-modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  
+  .byz-modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 28px 28px 0 0;
+    margin-top: auto;
+    max-height: 90vh;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  @keyframes slideUp {
+    0% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Modal header - Sticky with gradient overlay */
 .byz-modal-head{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
   gap:12px;
   padding:16px 16px 0 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  margin-bottom: 0;
+  padding-bottom: 16px;
 }
 .byz-modal-title{
   font-weight:900;
@@ -3110,25 +3168,81 @@ footer{
   font-size:13px;
   color:var(--sub);
 }
+/* Enhanced close button with subtle glow */
 .byz-modal-x{
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   border-radius:16px;
-  border:1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+  backdrop-filter: blur(20px);
   box-shadow: var(--shadow-soft);
   cursor:pointer;
+  transition: all 0.2s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
 }
 
-/* Modal body rows */
-.byz-modal-body{ padding:16px; }
+.byz-modal-x:hover {
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  box-shadow: 
+    0 4px 16px rgba(0,0,0,.1),
+    0 0 0 1px color-mix(in srgb, var(--border) 30%, transparent);
+  transform: scale(1.05);
+}
+
+.byz-modal-x:active {
+  transform: scale(0.95);
+}
+
+/* Modal body rows - Enhanced depth */
+.byz-modal-body{ 
+  padding:16px; 
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.byz-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.byz-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.byz-modal-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.byz-modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--sub);
+}
+
 .byz-modal-row{
   margin-top:10px;
   border-radius:18px;
-  border:1px solid var(--border);
-  background: var(--bg-elev);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 2px 8px rgba(0,0,0,.06),
+    inset 0 1px 0 rgba(255,255,255,.05);
   padding:12px 14px;
+  transition: all 0.25s var(--ease);
+}
+
+.byz-modal-row:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  border-color: color-mix(in srgb, var(--border) 60%, transparent);
 }
 .byz-modal-row .k{ color:var(--sub); font-size:12px; }
 .byz-modal-row .v{ margin-top:4px; font-weight:900; }
@@ -3153,6 +3267,7 @@ footer{
   justify-content:center;
   gap:10px;
   padding:12px 16px;
+  min-height: 44px; /* Touch target optimization */
   border-radius:999px;
   border:1px solid var(--border);
   background: var(--bg-elev);
@@ -3161,6 +3276,18 @@ footer{
   cursor:pointer;
   box-shadow: var(--shadow-soft);
   text-decoration:none;
+  transition: all 0.2s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.byz-modal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.byz-modal-btn:active {
+  transform: translateY(0);
 }
 .byz-modal-btn.primary{
   border-color: transparent;
@@ -3300,7 +3427,7 @@ footer{
   color: var(--accent);
 }
 
-[data-theme="dark"] .contact-badge {
+.contact-badge {
   background: color-mix(in srgb, var(--accent) 18%, var(--bg-elev));
   color: var(--accent);
 }
@@ -3471,7 +3598,7 @@ footer{
   color: var(--accent);
 }
 
-[data-theme="dark"] .contact-badge {
+.contact-badge {
   background: color-mix(in srgb, var(--accent) 18%, var(--bg-elev));
   color: var(--accent);
 }
@@ -3553,9 +3680,21 @@ footer{
 .venue-item {
   padding: 14px;
   border-radius: 16px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 2px 8px rgba(0,0,0,.06),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  transition: all 0.25s var(--ease);
+}
+
+.venue-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  border-color: color-mix(in srgb, var(--border) 60%, transparent);
 }
 
 .venue-name {
@@ -3578,24 +3717,58 @@ footer{
   text-align: left;
 }
 
-/* ===================== TEMPO SCHEDULE MODAL ===================== */
+/* ===================== TEMPO SCHEDULE MODAL (iOS 26 Style) ===================== */
 .tempo-modal-backdrop{
   position:fixed;
   inset:0;
   z-index: 4200;
-  background: rgba(0,0,0,.45);
-  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(40px) saturate(180%);
+  background-image: radial-gradient(
+    circle at 50% 0%,
+    rgba(255,255,255,.03) 0%,
+    transparent 50%
+  );
   display:grid;
   place-items:center;
   padding: 20px;
+  animation: backdropEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
 }
+
+.tempo-modal-backdrop:not(.byz-hidden) {
+  opacity: 1;
+}
+
 .tempo-modal{
   width: min(560px, 100%);
   border-radius: 26px;
-  border:1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  box-shadow: var(--shadow);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(60px) saturate(200%);
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,.12),
+    0 2px 8px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.1),
+    0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent);
   overflow:hidden;
+  animation: modalEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 640px) {
+  .tempo-modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  
+  .tempo-modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 28px 28px 0 0;
+    margin-top: auto;
+    max-height: 90vh;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }
 .tempo-modal-head{
   display:flex;
@@ -3615,16 +3788,58 @@ footer{
   color:var(--sub);
 }
 .tempo-modal-x{
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   border-radius:16px;
-  border:1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+  backdrop-filter: blur(20px);
   box-shadow: var(--shadow-soft);
   cursor:pointer;
+  transition: all 0.2s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
 }
 
-.tempo-modal-body{ padding:16px; }
+.tempo-modal-x:hover {
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  box-shadow: 
+    0 4px 16px rgba(0,0,0,.1),
+    0 0 0 1px color-mix(in srgb, var(--border) 30%, transparent);
+  transform: scale(1.05);
+}
+
+.tempo-modal-x:active {
+  transform: scale(0.95);
+}
+
+.tempo-modal-body{ 
+  padding:16px; 
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.tempo-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tempo-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tempo-modal-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.tempo-modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--sub);
+}
   
   .tempo-modal{
   max-width: 560px;
@@ -3643,12 +3858,28 @@ footer{
   width:44px;
   height:44px;
   border-radius:16px;
-  border:1px solid var(--border);
-  background: var(--bg-elev);
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+  backdrop-filter: blur(20px);
   box-shadow: var(--shadow-soft);
   cursor:pointer;
   font-weight:900;
-  font-size:20px;
+  font-size:18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  transition: all 0.2s var(--ease);
+}
+
+.tempo-nav-btn:hover {
+  transform: scale(1.05);
+  background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+  box-shadow: var(--shadow);
+}
+
+.tempo-nav-btn:active {
+  transform: scale(0.95);
 }
 
   .tempo-calendars{
@@ -3716,6 +3947,17 @@ footer{
   inset:0;
   border-radius:14px;
   border:2px solid rgba(255,59,48,.85);
+}
+
+.tempo-date.today {
+  background: color-mix(in srgb, var(--accent) 15%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.tempo-date.today span {
+  font-weight: 900;
+  color: var(--accent);
 }
 
 .tempo-date span{
@@ -3843,13 +4085,12 @@ footer{
 }
 /* ---------- DARK MODE FIX (TEXT VISIBILITY) ---------- */
 
-html[data-theme="dark"] #gallery,
-body.dark #gallery {
+#gallery {
   color: var(--text);
 }
 
-html[data-theme="dark"] #gallery .gallery-meta,
-html[data-theme="dark"] #gallery .gallery-note {
+#gallery .gallery-meta,
+#gallery .gallery-note {
   color: var(--sub);
 }
 
@@ -4265,7 +4506,7 @@ body.bulkbar-active .social-dock{
         <li><a href="#dj">Lineup</a></li>
         <li><a href="#youtube">YouTube</a></li>
         <li><a href="#team">Meet the Team</a></li>
-        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
         <li><a href="#connect">Connect</a></li>
       </ul>
     </nav>
@@ -4277,24 +4518,6 @@ body.bulkbar-active .social-dock{
           <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
         </svg>
       </button>
-      <button class="theme-btn" id="themeToggle" type="button" aria-label="Toggle theme" aria-pressed="false" title="Switch to dark mode">
-  <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-glyph">
-    <!-- outer ring -->
-    <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2" />
-    <!-- inner circle -->
-    <circle cx="12" cy="12" r="6" fill="currentColor" />
-    <!-- right half cutout (shows background color) -->
-    <defs>
-      <clipPath id="themeHalfClip">
-        <circle cx="12" cy="12" r="6" />
-      </clipPath>
-    </defs>
-    <g clip-path="url(#themeHalfClip)">
-      <rect x="12" y="6" width="6" height="12" style="fill: var(--bg-elev);" />
-    </g>
-  </svg>
-</button>
-      
       <a class="mini" href="https://kasigila.github.io/byzmock/booking.html">Reserve</a>
     </div>
   </div>
@@ -4306,7 +4529,8 @@ body.bulkbar-active .social-dock{
     <a href="#dj">Lineup</a>
     <a href="#youtube">YouTube</a>
     <a href="#team">Meet the Team</a>
-    <a href="#gallery">Gallery</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="rate.html">Rate Experience</a>
     <a href="#connect">Connect</a>
     <a href="https://kasigila.github.io/byzmock/booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
   </div>
@@ -4470,6 +4694,11 @@ body.bulkbar-active .social-dock{
           <i class="fa-regular fa-calendar" aria-hidden="true"></i> View Schedule
         </button>
       </div>
+      <p style="margin-top:12px; font-size:12px;">
+        <a href="rate.html" style="color:var(--sub); text-decoration:underline; display:inline-flex; align-items:center; gap:6px;">
+          <i class="fa-solid fa-star" style="font-size:11px;"></i> Rate your last visit
+        </a>
+      </p>
     </div>
   </div>
         
@@ -4915,20 +5144,28 @@ body.bulkbar-active .social-dock{
   </section>
 
   <!-- GALLERY -->
-<section id="gallery">
-  <div class="container">
-    <div class="section-title reveal">
-      <h2>Memory Gallery</h2>
-      <p>Did the photographer catch you lacking? Download your pictures here!</p>
+  <section id="gallery">
+    <div class="container">
+      <div class="section-title reveal">
+        <h2>Memory Gallery</h2>
+        <p>Did the photographer catch you lacking? Download your pictures here!</p>
 
-      <!-- ✅ Hide/Show (mobile-friendly) -->
-      <button class="gallery-toggle" id="galleryToggleBtn" type="button" aria-expanded="false">
-        <i class="fa-regular fa-images" aria-hidden="true"></i>
-        <span class="gt-text">Show Gallery</span>
-      </button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px;">
+          <!-- ✅ Hide/Show (mobile-friendly) -->
+          <button class="gallery-toggle" id="galleryToggleBtn" type="button" aria-expanded="false">
+            <i class="fa-regular fa-images" aria-hidden="true"></i>
+            <span class="gt-text">Show Gallery</span>
+          </button>
+          
+          <!-- View More Albums Button -->
+          <a href="gallery.html" class="gallery-toggle" style="text-decoration:none;">
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            <span>View All Albums</span>
+          </a>
+        </div>
 
-      <div class="gallery-hint"> </div>
-    </div>
+        <div class="gallery-hint"> </div>
+      </div>
 
     <!-- ✅ Starts collapsed (especially on phone) -->
     <div class="gallery-shell byz-hidden" id="galleryContent" aria-hidden="true">
@@ -5124,6 +5361,8 @@ body.bulkbar-active .social-dock{
           <p><a href="#events">We Host</a></p>
           <p><a href="#dj">Lineup</a></p>
           <p><a href="#youtube">YouTube</a></p>
+          <p><a href="gallery.html">Memory Gallery</a></p>
+          <p><a href="rate.html">Rate Your Experience</a></p>
           <p><a href="/booking.html">Book Now</a></p>
         </div>
         
@@ -5188,8 +5427,10 @@ body.bulkbar-active .social-dock{
 
       <div class="byz-modal-actions">
   <a class="byz-modal-btn primary"
-     href="mailto:Karen_Marie1@icloud.com?subject=BYZ%20Website%20&body=Hi%20Karen%20!">
+     href="mailto:Karen_Marie1@icloud.com?subject=BYZ%20Website%20&body=Hi%20Karen%20!"
+     id="devEmailBtn">
     <i class="fa-solid fa-envelope"></i> Email
+    <i class="fa-solid fa-copy" style="font-size:10px; margin-left:4px;"></i>
   </a>
 
   <a class="byz-modal-btn wa"
@@ -5253,25 +5494,41 @@ body.bulkbar-active .social-dock{
 
     <div class="byz-modal-body">
       <div class="byz-modal-row">
-        <div class="k">Groove Series</div>
+        <div class="k">
+          <i class="fa-solid fa-music" style="margin-right:6px;"></i> Groove Series
+        </div>
         <div class="byz-modal-actions" style="margin-top:8px;">
-          <a class="byz-modal-btn" href="booking.html?type=rnb">RnB Groove</a>
-          <a class="byz-modal-btn" href="booking.html?type=afrobeats">Afrobeats Groove</a>
-          <a class="byz-modal-btn" href="booking.html?type=caribbean">Caribbean Groove</a>
+          <a class="byz-modal-btn" href="booking.html?type=rnb">
+            <i class="fa-solid fa-circle" style="font-size:8px;"></i> RnB Groove
+          </a>
+          <a class="byz-modal-btn" href="booking.html?type=afrobeats">
+            <i class="fa-solid fa-circle" style="font-size:8px;"></i> Afrobeats Groove
+          </a>
+          <a class="byz-modal-btn" href="booking.html?type=caribbean">
+            <i class="fa-solid fa-circle" style="font-size:8px;"></i> Caribbean Groove
+          </a>
         </div>
       </div>
 
       <div class="byz-modal-row">
-        <div class="k">Tempo</div>
+        <div class="k">
+          <i class="fa-solid fa-calendar-star" style="margin-right:6px;"></i> Tempo
+        </div>
         <div class="byz-modal-actions" style="margin-top:8px;">
-          <a class="byz-modal-btn primary" href="booking-tempo.html">Book Tempo</a>
+          <a class="byz-modal-btn primary" href="booking-tempo.html">
+            <i class="fa-solid fa-ticket"></i> Book Tempo
+          </a>
         </div>
       </div>
 
       <div class="byz-modal-row">
-        <div class="k">APT Session (Invite‑Only)</div>
+        <div class="k">
+          <i class="fa-solid fa-key" style="margin-right:6px;"></i> APT Session (Invite‑Only)
+        </div>
         <div class="byz-modal-actions" style="margin-top:8px;">
-          <a class="byz-modal-btn" href="apt-request.html">Request Invite</a>
+          <a class="byz-modal-btn" href="apt-request.html">
+            <i class="fa-solid fa-envelope"></i> Request Invite
+          </a>
         </div>
       </div>
     </div>
@@ -5363,16 +5620,24 @@ body.bulkbar-active .social-dock{
       <div class="byz-modal-body">
         <div class="venues-list">
           <div class="venue-item">
-            <div class="venue-name">Uncle's Lounge</div>
+            <div class="venue-name">
+              <i class="fa-solid fa-location-dot" style="margin-right:8px; color:var(--accent);"></i> Uncle's Lounge
+            </div>
           </div>
           <div class="venue-item">
-            <div class="venue-name">Tips Coco</div>
+            <div class="venue-name">
+              <i class="fa-solid fa-location-dot" style="margin-right:8px; color:var(--accent);"></i> Tips Coco
+            </div>
           </div>
           <div class="venue-item">
-            <div class="venue-name">Squishy Life</div>
+            <div class="venue-name">
+              <i class="fa-solid fa-location-dot" style="margin-right:8px; color:var(--accent);"></i> Squishy Life
+            </div>
           </div>
           <div class="venue-item">
-            <div class="venue-name">iRoc Networks</div>
+            <div class="venue-name">
+              <i class="fa-solid fa-location-dot" style="margin-right:8px; color:var(--accent);"></i> iRoc Networks
+            </div>
           </div>
         </div>
       </div>
@@ -5385,39 +5650,13 @@ body.bulkbar-active .social-dock{
 
 <script>
 /* =========================================================
-   APPLE-STYLE DARK MODE:
-   - Defaults to system
-   - Manual toggle saves preference
+   DARK MODE PERMANENT (NO TOGGLE)
 ========================================================= */
 (function() {
-  const root = document.documentElement;
-  const toggle = document.getElementById("themeToggle");
-  const stored = localStorage.getItem("theme");
-
-  function applyTheme(theme) {
-    if (theme === "dark") root.setAttribute("data-theme","dark");
-    else root.setAttribute("data-theme","light");
-    if (toggle){
-  toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-  toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
-}
-  }
-
-  if (stored) {
-    applyTheme(stored);
-  } else {
-    // Default to dark mode instead of system preference
-    applyTheme("dark");
-  }
-
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      const isDark = root.getAttribute("data-theme") === "dark";
-      const next = isDark ? "light" : "dark";
-      applyTheme(next);
-      localStorage.setItem("theme", next);
-    });
-  }
+  // Set dark mode permanently
+  document.documentElement.setAttribute("data-theme", "dark");
+  // Remove any stored theme preference
+  localStorage.removeItem("theme");
 })();
 
 /* =========================================================
@@ -6569,7 +6808,9 @@ boardGrid.innerHTML = boardItems.map(item => {
 
   if(!openBtn || !modal || !grid || !monthLabel || !prevBtn || !nextBtn) return;
 
-  // ✅ 2026 sample dates (May–August)
+  // ✅ UPDATE THIS ARRAY with your Tempo event dates
+  // Format: "YYYY-MM-DD" (e.g., "2026-05-07")
+  // Add or remove dates as needed - calendar will automatically highlight them
   const TEMPO_DATES = [
     "2026-05-07",
     "2026-05-23",
@@ -6583,7 +6824,9 @@ boardGrid.innerHTML = boardItems.map(item => {
   ];
 
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  let currentMonth = new Date(2026, 4, 1); // start at May 2026
+  // ✅ UPDATE: Set starting month for calendar view (year, month-1, day)
+  // Example: new Date(2026, 4, 1) = May 2026 (month is 0-indexed)
+  let currentMonth = new Date(2026, 4, 1);
 
   function renderCalendar(){
     grid.innerHTML = "";
@@ -6610,11 +6853,15 @@ boardGrid.innerHTML = boardItems.map(item => {
       grid.appendChild(blank);
     }
 
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+    
     for(let d = 1; d <= daysInMonth; d++){
       const dateStr = `${year}-${String(month + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
       const cell = document.createElement("div");
       cell.className = "tempo-date";
       if(TEMPO_DATES.includes(dateStr)) cell.classList.add("event");
+      if(isCurrentMonth && d === today.getDate()) cell.classList.add("today");
       cell.innerHTML = `<span>${d}</span>`;
       grid.appendChild(cell);
     }
@@ -7344,7 +7591,638 @@ document.addEventListener('keydown', (e) => {
   
 })();
 
+/* =========================================================
+   SWIPE-TO-DISMISS MODALS (MOBILE)
+========================================================= */
+(function() {
+  const modals = document.querySelectorAll('.byz-modal-backdrop, .tempo-modal-backdrop');
+  
+  modals.forEach(backdrop => {
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+    const modal = backdrop.querySelector('.byz-modal, .tempo-modal');
+    
+    if (!modal) return;
+    
+    // Only on mobile
+    if (window.innerWidth > 640) return;
+    
+    backdrop.addEventListener('touchstart', (e) => {
+      if (e.target === backdrop || e.target.closest('.byz-modal-head, .tempo-modal-head')) {
+        startY = e.touches[0].clientY;
+        isDragging = true;
+      }
+    }, { passive: true });
+    
+    backdrop.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      currentY = e.touches[0].clientY;
+      const deltaY = currentY - startY;
+      
+      if (deltaY > 0) {
+        modal.style.transform = `translateY(${deltaY}px)`;
+        modal.style.opacity = Math.max(0.5, 1 - (deltaY / 300));
+      }
+    }, { passive: true });
+    
+    backdrop.addEventListener('touchend', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      
+      const deltaY = currentY - startY;
+      
+      if (deltaY > 100) {
+        // Swipe down to close
+        const closeBtn = backdrop.querySelector('.byz-modal-x, .tempo-modal-x, [onclick*="close"]');
+        if (closeBtn) closeBtn.click();
+      } else {
+        // Snap back
+        modal.style.transform = '';
+        modal.style.opacity = '';
+      }
+      
+      startY = 0;
+      currentY = 0;
+    }, { passive: true });
+  });
+})();
+
+/* =========================================================
+   GEN Z ENHANCEMENTS - MICRO-ANIMATIONS & QUICK ACTIONS
+========================================================= */
+(function() {
+  // Pulse effect for primary buttons
+  const primaryButtons = document.querySelectorAll('.btn.primary, .byz-modal-btn.primary');
+  primaryButtons.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      btn.style.animation = 'pulse 1.5s ease-in-out infinite';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.animation = '';
+    });
+  });
+  
+  // Add pulse keyframe
+  if (!document.getElementById('pulseKeyframe')) {
+    const style = document.createElement('style');
+    style.id = 'pulseKeyframe';
+    style.textContent = `
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  // Enhanced button hover effects
+  const buttons = document.querySelectorAll('.byz-modal-btn, .btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      // Ripple effect
+      const ripple = document.createElement('span');
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      
+      ripple.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.3);
+        transform: scale(0);
+        animation: ripple 0.6s ease-out;
+        left: ${x}px;
+        top: ${y}px;
+        pointer-events: none;
+      `;
+      
+      this.style.position = 'relative';
+      this.style.overflow = 'hidden';
+      this.appendChild(ripple);
+      
+      setTimeout(() => ripple.remove(), 600);
+    });
+  });
+  
+  // Add ripple keyframe
+  if (!document.getElementById('rippleKeyframe')) {
+    const style = document.createElement('style');
+    style.id = 'rippleKeyframe';
+    style.textContent = `
+      @keyframes ripple {
+        to { transform: scale(2); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+})();
+
+/* =========================================================
+   HIGH-TECH INTERACTIVE CHAT WIDGET (FAQ-Based, Looks AI)
+========================================================= */
+(function() {
+  // FAQ database
+  const faqDatabase = {
+    'hi': { response: "Hey! 👋 Welcome to BYZ. How can I help you today?", suggestions: ['Book a table', 'Event info', 'Contact'] },
+    'hello': { response: "Hello! 👋 What can I help you with?", suggestions: ['Book a table', 'Event info', 'Contact'] },
+    'book': { response: "Great! You can book tables or tickets for our events. Which event are you interested in?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
+    'booking': { response: "To book, visit our booking page or tap 'Reserve a Table' on the homepage. Need help choosing an event?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
+    'groove': { response: "Groove Series is our weekly Afro-house night! It happens every week. Want to book a table?", suggestions: ['Yes, book now', 'More info', 'Lineup'] },
+    'tempo': { response: "Tempo is our seasonal event with evolving themes. Check the schedule to see upcoming dates!", suggestions: ['View schedule', 'Book now', 'More info'] },
+    'apt': { response: "APT Sessions are invite-only apartment sessions with premium vibes. Request an invite to join!", suggestions: ['Request invite', 'More info'] },
+    'price': { response: "Pricing varies by event and table type. Check our booking pages for current rates. Need specific info?", suggestions: ['Groove prices', 'Tempo prices', 'Contact us'] },
+    'cost': { response: "Prices depend on the event and what you're booking (tables vs tickets). Visit the booking page for details!", suggestions: ['View booking', 'Contact'] },
+    'when': { response: "Event dates vary! Groove is weekly, Tempo is seasonal. Check our schedule or booking pages for dates.", suggestions: ['View schedule', 'Book now'] },
+    'time': { response: "Event times are usually late night! Groove starts around 10 PM. Check the lineup section for set times.", suggestions: ['View lineup', 'Book now'] },
+    'location': { response: "We're in Dar es Salaam! Specific venue details are shared when you book. Want to book?", suggestions: ['Yes', 'Contact'] },
+    'where': { response: "BYZ events are in Dar es Salaam. Exact locations are provided when you complete your booking!", suggestions: ['Book now', 'Contact'] },
+    'contact': { response: "You can reach us via WhatsApp at +255 768 464 367 or email byzentertainment@gmail.com", suggestions: ['WhatsApp', 'Email', 'Book now'] },
+    'help': { response: "I'm here to help! Ask me about booking, events, pricing, or anything BYZ-related.", suggestions: ['Book a table', 'Event info', 'Contact'] },
+    'default': { response: "I'm not sure about that, but I can help with booking, event info, or connecting you with our team!", suggestions: ['Book a table', 'Event info', 'Contact'] }
+  };
+  
+  // Create chat widget HTML
+  const chatWidget = document.createElement('div');
+  chatWidget.id = 'byzChatWidget';
+  chatWidget.innerHTML = `
+    <div class="chat-toggle" id="chatToggle" aria-label="Open chat">
+      <i class="fa-solid fa-comments"></i>
+      <span class="chat-badge" id="chatBadge">1</span>
+    </div>
+    <div class="chat-window byz-hidden" id="chatWindow" aria-hidden="true">
+      <div class="chat-header">
+        <div class="chat-header-content">
+          <div class="chat-avatar">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <div class="chat-title">BYZ Assistant</div>
+            <div class="chat-status">
+              <span class="status-dot"></span>
+              <span>Online</span>
+            </div>
+          </div>
+        </div>
+        <button class="chat-close" id="chatClose" aria-label="Close chat">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-message bot">
+          <div class="message-avatar">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="message-content">
+            <div class="message-text">Hey! 👋 I'm your BYZ assistant. Ask me about events, booking, or anything BYZ-related!</div>
+            <div class="message-time">Just now</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-suggestions" id="chatSuggestions">
+        <button class="suggestion-btn">Book a table</button>
+        <button class="suggestion-btn">Event info</button>
+        <button class="suggestion-btn">Contact</button>
+      </div>
+      <div class="chat-input-wrapper">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." autocomplete="off">
+        <button class="chat-send" id="chatSend" aria-label="Send message">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(chatWidget);
+  
+  // Chat widget styles
+  const chatStyles = document.createElement('style');
+  chatStyles.textContent = `
+    #byzChatWidget {
+      position: fixed;
+      bottom: 80px;
+      right: 16px;
+      z-index: 1000;
+    }
+    
+    .chat-toggle {
+      width: 56px;
+      height: 56px;
+      border-radius: 28px;
+      background: var(--accent);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      position: relative;
+    }
+    
+    .chat-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 32px rgba(0,0,0,.3);
+    }
+    
+    .chat-toggle i {
+      font-size: 24px;
+    }
+    
+    .chat-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      background: #ff3b30;
+      color: white;
+      font-size: 11px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--bg);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .chat-window {
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      width: 360px;
+      max-width: calc(100vw - 32px);
+      height: 500px;
+      max-height: calc(100vh - 200px);
+      border-radius: 24px;
+      border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(40px) saturate(180%);
+      box-shadow: 
+        0 12px 48px rgba(0,0,0,.2),
+        0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .chat-header {
+      padding: 16px;
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: color-mix(in srgb, var(--bg) 95%, transparent);
+    }
+    
+    .chat-header-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .chat-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, transparent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+    }
+    
+    .chat-title {
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+    
+    .chat-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 4px;
+      background: #34c759;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .chat-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    
+    .chat-close:hover {
+      transform: scale(1.1);
+      background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    
+    .chat-messages::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+    
+    .chat-message {
+      display: flex;
+      gap: 10px;
+      animation: messageSlide 0.3s var(--ease);
+    }
+    
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .chat-message.bot {
+      align-items: flex-start;
+    }
+    
+    .chat-message.user {
+      flex-direction: row-reverse;
+      align-items: flex-start;
+    }
+    
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--bg-alt) 80%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .chat-message.bot .message-avatar {
+      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, transparent));
+      color: var(--bg);
+    }
+    
+    .message-content {
+      flex: 1;
+      max-width: 75%;
+    }
+    
+    .message-text {
+      padding: 10px 14px;
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+      border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    .chat-message.user .message-text {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: transparent;
+    }
+    
+    .message-time {
+      font-size: 11px;
+      color: var(--sub);
+      margin-top: 4px;
+      padding: 0 4px;
+    }
+    
+    .chat-suggestions {
+      padding: 12px 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+      background: color-mix(in srgb, var(--bg) 95%, transparent);
+    }
+    
+    .suggestion-btn {
+      padding: 6px 12px;
+      border-radius: 16px;
+      border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    
+    .suggestion-btn:hover {
+      transform: translateY(-1px);
+      background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+      border-color: color-mix(in srgb, var(--border) 70%, transparent);
+    }
+    
+    .chat-input-wrapper {
+      padding: 12px 16px;
+      border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: color-mix(in srgb, var(--bg) 95%, transparent);
+    }
+    
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s var(--ease);
+    }
+    
+    .chat-input:focus {
+      border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+      background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+    }
+    
+    .chat-send {
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    
+    .chat-send:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+    
+    .chat-send:active {
+      transform: scale(0.95);
+    }
+    
+    @media (max-width: 640px) {
+      .chat-window {
+        width: calc(100vw - 32px);
+        height: calc(100vh - 120px);
+        max-height: 600px;
+      }
+      
+      #byzChatWidget {
+        bottom: 70px;
+        right: 12px;
+      }
+    }
+  `;
+  document.head.appendChild(chatStyles);
+  
+  // Chat functionality
+  const toggle = document.getElementById('chatToggle');
+  const window = document.getElementById('chatWindow');
+  const close = document.getElementById('chatClose');
+  const messages = document.getElementById('chatMessages');
+  const input = document.getElementById('chatInput');
+  const send = document.getElementById('chatSend');
+  const suggestions = document.getElementById('chatSuggestions');
+  const badge = document.getElementById('chatBadge');
+  
+  let isOpen = false;
+  
+  function openChat() {
+    window.classList.remove('byz-hidden');
+    window.setAttribute('aria-hidden', 'false');
+    isOpen = true;
+    badge.style.display = 'none';
+    input.focus();
+  }
+  
+  function closeChat() {
+    window.classList.add('byz-hidden');
+    window.setAttribute('aria-hidden', 'true');
+    isOpen = false;
+  }
+  
+  toggle.addEventListener('click', () => {
+    if (isOpen) closeChat();
+    else openChat();
+  });
+  
+  close.addEventListener('click', closeChat);
+  
+  function findResponse(text) {
+    const lower = text.toLowerCase().trim();
+    
+    for (const [key, data] of Object.entries(faqDatabase)) {
+      if (lower.includes(key)) {
+        return data;
+      }
+    }
+    
+    return faqDatabase.default;
+  }
+  
+  function addMessage(text, isUser = false) {
+    const message = document.createElement('div');
+    message.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+    
+    const time = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    
+    message.innerHTML = `
+      <div class="message-avatar">
+        <i class="fa-solid ${isUser ? 'fa-user' : 'fa-robot'}"></i>
+      </div>
+      <div class="message-content">
+        <div class="message-text">${text}</div>
+        <div class="message-time">${time}</div>
+      </div>
+    `;
+    
+    messages.appendChild(message);
+    messages.scrollTop = messages.scrollHeight;
+  }
+  
+  function updateSuggestions(suggestionsList) {
+    suggestions.innerHTML = suggestionsList.map(s => 
+      `<button class="suggestion-btn">${s}</button>`
+    ).join('');
+    
+    suggestions.querySelectorAll('.suggestion-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        input.value = btn.textContent;
+        sendMessage();
+      });
+    });
+  }
+  
+  function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    
+    addMessage(text, true);
+    input.value = '';
+    
+    // Simulate typing delay
+    setTimeout(() => {
+      const response = findResponse(text);
+      addMessage(response.response, false);
+      updateSuggestions(response.suggestions);
+    }, 500);
+  }
+  
+  send.addEventListener('click', sendMessage);
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+  
+  // Initial suggestions
+  updateSuggestions(faqDatabase.hi.suggestions);
+  
+  // Hide badge after first interaction
+  toggle.addEventListener('click', () => {
+    badge.style.display = 'none';
+  }, { once: true });
+})();
+
 </script>
 </body>
-</html>
 </html>
