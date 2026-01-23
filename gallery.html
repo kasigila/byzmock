@@ -2381,9 +2381,6 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
                 <a class="lb-download" id="lbDownload" href="#" download>
                   <i class="fa-solid fa-download" aria-hidden="true"></i> Download
                 </a>
-                <button class="lb-copy" id="lbCopy" type="button">
-                  <i class="fa-regular fa-copy" aria-hidden="true"></i> Copy link
-                </button>
                 <button class="lb-share" id="lbShare" type="button">
                   <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share
                 </button>
@@ -3399,12 +3396,14 @@ console.log("✅ Script file loaded!");
         clearTimeout(tapTimeout);
         handleDoubleTap(pin, src);
         lastTap = 0;
+        // Don't return - allow lightbox to open too if user wants
+        // But prevent the single-tap timeout from firing
         return;
       }else{
         lastTap = now;
         tapTimeout = setTimeout(() => {
           const idx = currentList.indexOf(src);
-          openLightboxByIndex(idx >= 0 ? idx : 0);
+          if(idx >= 0) openLightboxByIndex(idx);
         }, 300);
       }
     });
@@ -3420,14 +3419,19 @@ console.log("✅ Script file loaded!");
       const now = Date.now();
       const timeDiff = now - lastTap;
       if(timeDiff < 300 && timeDiff > 0){
-        e.preventDefault();
+        // Double tap detected - like the photo
         clearTimeout(tapTimeout);
         handleDoubleTap(pin, src);
         lastTap = 0;
+        // Don't prevent default - allow both like and lightbox if needed
       }else{
         lastTap = now;
+        tapTimeout = setTimeout(() => {
+          const idx = currentList.indexOf(src);
+          if(idx >= 0) openLightboxByIndex(idx);
+        }, 300);
       }
-    });
+    }, { passive: true });
 
     masonry.addEventListener("keydown", (e) => {
       if(e.key !== "Enter") return;
@@ -3611,16 +3615,7 @@ console.log("✅ Script file loaded!");
   lbPrev?.addEventListener("click", prev);
   lbNext?.addEventListener("click", next);
 
-  if(lbCopy){
-    lbCopy.addEventListener("click", async () => {
-      try{
-        await navigator.clipboard.writeText(lbDownload.href);
-        showToast("Copied link");
-      }catch{
-        showToast("Copy failed");
-      }
-    });
-  }
+  // Copy link removed - share button handles this
 
   /* ===================== SHARE PHOTO (16) ===================== */
   if(lbShare){
@@ -4320,10 +4315,18 @@ setInterval(updateLikesCount, 2000);
     };
   }
   
+  // Don't auto-click - let user choose layout manually
+  // This prevents conflicts with album opening
   const savedPhotoLayout = localStorage.getItem("byz_photo_layout") || "masonry";
-  const photoLayoutBtn = document.querySelector(`.photo-layout-toggle .layout-btn[data-photo-layout="${savedPhotoLayout}"]`);
-  if(photoLayoutBtn){
-    setTimeout(() => photoLayoutBtn.click(), 500);
+  const masonry = document.getElementById("masonry");
+  if(masonry && savedPhotoLayout) {
+    masonry.classList.remove("masonry-layout", "grid-layout", "compact-layout");
+    masonry.classList.add(`${savedPhotoLayout}-layout`);
+    const photoLayoutBtn = document.querySelector(`.photo-layout-toggle .layout-btn[data-photo-layout="${savedPhotoLayout}"]`);
+    if(photoLayoutBtn) {
+      photoLayoutBtn.classList.add("active");
+      photoLayoutBtn.setAttribute("aria-selected", "true");
+    }
   }
 })();
 
