@@ -37,7 +37,7 @@
   a{color:inherit;text-decoration:none}
   .container{max-width:var(--max);margin:0 auto;padding:0 24px}
     
-  @media (max-width: 560px){
+@media (max-width: 560px){
     .container{ padding: 0 20px; }
     /* Safe area for notched devices */
     body{
@@ -62,12 +62,12 @@
     height:var(--header-h);
     display:flex;align-items:center;justify-content:space-between;
   }
-  .header-actions{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-left:auto;
-  }
+    .header-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-left:auto;
+}
 
   .brand{
     display:flex;align-items:center;gap:10px;
@@ -125,7 +125,7 @@
   .btn.social i{font-size:16px}
   @media (max-width: 560px){
     .btn.social i{font-size:18px}
-  }
+}
 
   main{padding-top:var(--header-h)}
   .hero{
@@ -210,10 +210,10 @@
 
   /* Coming Soon Grid */
   .grid-coming{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
     gap:20px;
-    padding-bottom: 80px;
+  padding-bottom: 80px;
     opacity:0.7;
   }
   @media (max-width: 980px){ 
@@ -308,32 +308,7 @@
     transform: scale(1.05);
   }
 
-  /* Card Icon */
-  .card-icon{
-    position:absolute;
-    top:12px;
-    left:12px;
-    width:44px;
-    height:44px;
-    border-radius:12px;
-    background: rgba(0,0,0,.5);
-    backdrop-filter: blur(12px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#fff;
-    font-size:20px;
-    z-index:5;
-  }
-  @media (max-width: 560px){
-    .card-icon{
-      width:40px;
-      height:40px;
-      font-size:18px;
-      top:10px;
-      left:10px;
-    }
-  }
+  /* Card Icon - Removed */
 
   .card-body{
     padding:20px;
@@ -605,7 +580,6 @@
   <section class="hero">
     <div class="container">
       <h1>Groove Series</h1>
-      <p>Three core Groove experiences live now, plus future formats dropping soon.</p>
     </div>
   </section>
 
@@ -614,31 +588,27 @@
     <div class="container">
       <div class="section-divider">
         <h2>Live Now</h2>
-        <p>Book your spot at these upcoming events</p>
       </div>
 
       <div class="grid-active">
         <!-- Caribbean Groove - Featured -->
         <div class="card active" data-event="caribbean">
           <div class="card-badge">Featured</div>
-          <div class="card-icon">
-            <i class="fa-solid fa-music"></i>
-          </div>
           <div class="card-media">
             <img src="CARIBBEAN-GROOVE-BANNER.jpg" alt="Caribbean Groove" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #FF6B35, #F7931E)'">
           </div>
-          <div class="card-body">
+        <div class="card-body">
             <h3>Caribbean Groove</h3>
             <p>Dancehall, reggae, and island heat all night. Feel the rhythm of the Caribbean.</p>
             
             <div class="card-meta">
               <div class="meta-row">
                 <i class="fa-solid fa-calendar-days"></i>
-                <span>Next: <span class="meta-value">Every Friday</span></span>
+                <span>Next: <span class="meta-value">June 7, 2026</span></span>
               </div>
               <div class="meta-row">
                 <i class="fa-solid fa-location-dot"></i>
-                <span class="meta-value">BYZ Venue, Dar es Salaam</span>
+                <span class="meta-value">Tips Coco</span>
               </div>
               <div class="dj-preview">
                 <i class="fa-solid fa-microphone"></i>
@@ -649,7 +619,7 @@
             <div class="card-stats">
               <div class="stat-item">
                 <i class="fa-solid fa-users"></i>
-                <span>150+ going</span>
+                <span>150+ attended last time</span>
               </div>
               <div class="countdown">
                 <i class="fa-solid fa-clock"></i>
@@ -657,7 +627,7 @@
               </div>
             </div>
 
-            <div class="card-actions">
+          <div class="card-actions">
               <a class="btn primary" href="booking.html?type=caribbean">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
@@ -675,9 +645,6 @@
 
         <!-- RnB Groove -->
         <div class="card active" data-event="rnb">
-          <div class="card-icon">
-            <i class="fa-solid fa-heart"></i>
-          </div>
           <div class="card-media" style="background:linear-gradient(135deg,#1a1a1a,#2f2f2f)">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
           </div>
@@ -688,11 +655,11 @@
             <div class="card-meta">
               <div class="meta-row">
                 <i class="fa-solid fa-calendar-days"></i>
-                <span>Next: <span class="meta-value">Every Saturday</span></span>
+                <span>Next: <span class="meta-value">June 14, 2026</span></span>
               </div>
               <div class="meta-row">
                 <i class="fa-solid fa-location-dot"></i>
-                <span class="meta-value">BYZ Venue, Dar es Salaam</span>
+                <span class="meta-value">Tips Coco</span>
               </div>
               <div class="dj-preview">
                 <i class="fa-solid fa-microphone"></i>
@@ -703,15 +670,15 @@
             <div class="card-stats">
               <div class="stat-item">
                 <i class="fa-solid fa-users"></i>
-                <span>120+ going</span>
+                <span>120+ attended last time</span>
               </div>
               <div class="countdown">
                 <i class="fa-solid fa-clock"></i>
                 <span>4 days</span>
-              </div>
-            </div>
+        </div>
+      </div>
 
-            <div class="card-actions">
+          <div class="card-actions">
               <a class="btn primary" href="booking.html?type=rnb">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
@@ -729,9 +696,6 @@
 
         <!-- Afrobeats Groove -->
         <div class="card active" data-event="afrobeats">
-          <div class="card-icon">
-            <i class="fa-solid fa-fire"></i>
-          </div>
           <div class="card-media" style="background:linear-gradient(135deg,#0b0b0c,#3b2b1f)">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
           </div>
@@ -742,11 +706,11 @@
             <div class="card-meta">
               <div class="meta-row">
                 <i class="fa-solid fa-calendar-days"></i>
-                <span>Next: <span class="meta-value">Every Sunday</span></span>
+                <span>Next: <span class="meta-value">June 21, 2026</span></span>
               </div>
               <div class="meta-row">
                 <i class="fa-solid fa-location-dot"></i>
-                <span class="meta-value">BYZ Venue, Dar es Salaam</span>
+                <span class="meta-value">Tips Coco</span>
               </div>
               <div class="dj-preview">
                 <i class="fa-solid fa-microphone"></i>
@@ -757,7 +721,7 @@
             <div class="card-stats">
               <div class="stat-item">
                 <i class="fa-solid fa-users"></i>
-                <span>180+ going</span>
+                <span>180+ attended last time</span>
               </div>
               <div class="countdown">
                 <i class="fa-solid fa-clock"></i>
@@ -765,7 +729,7 @@
               </div>
             </div>
 
-            <div class="card-actions">
+          <div class="card-actions">
               <a class="btn primary" href="booking.html?type=afrobeats">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
@@ -793,49 +757,40 @@
       </div>
 
       <div class="grid-coming">
-        <div class="card">
-          <div class="card-icon">
-            <i class="fa-solid fa-compact-disc"></i>
-          </div>
+      <div class="card">
           <div class="card-media" style="background:linear-gradient(135deg,#1a2233,#0f1623)">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
           </div>
-          <div class="card-body">
-            <h3>Groove Amapiano</h3>
+        <div class="card-body">
+          <h3>Groove Amapiano</h3>
             <p>Deep log drums and minimal grooves. The sound of South Africa.</p>
           </div>
           <div class="coming-soon">
             <i class="fa-solid fa-hourglass-half"></i>
             <span>Coming Soon</span>
-          </div>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="card-icon">
-            <i class="fa-solid fa-vinyl"></i>
-          </div>
+      <div class="card">
           <div class="card-media" style="background:linear-gradient(135deg,#1d1113,#2c1b1e)">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
           </div>
-          <div class="card-body">
-            <h3>Groove Retro</h3>
+        <div class="card-body">
+          <h3>Groove Retro</h3>
             <p>90s & 2000s classics with a modern mix. Nostalgia meets now.</p>
           </div>
           <div class="coming-soon">
             <i class="fa-solid fa-hourglass-half"></i>
             <span>Coming Soon</span>
-          </div>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="card-icon">
-            <i class="fa-solid fa-sun"></i>
-          </div>
+      <div class="card">
           <div class="card-media" style="background:linear-gradient(135deg,#0b1f1f,#1f3a3a)">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
           </div>
-          <div class="card-body">
-            <h3>Groove Sunset</h3>
+        <div class="card-body">
+          <h3>Groove Sunset</h3>
             <p>Golden hour sets with a beach‑club vibe. Sunset sessions.</p>
           </div>
           <div class="coming-soon">
@@ -850,7 +805,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
+  <script>
 // Share Event Function
 function shareEvent(type, name){
   const url = window.location.origin + window.location.pathname.replace('groove-series.html', '') + `booking.html?type=${type}`;
@@ -875,18 +830,18 @@ function addToCalendar(type){
   const events = {
     caribbean: {
       title: 'Caribbean Groove',
-      date: getNextFriday(),
-      location: 'BYZ Venue, Dar es Salaam'
+      date: new Date(2026, 5, 7), // June 7, 2026
+      location: 'Tips Coco'
     },
     rnb: {
       title: 'RnB Groove',
-      date: getNextSaturday(),
-      location: 'BYZ Venue, Dar es Salaam'
+      date: new Date(2026, 5, 14), // June 14, 2026
+      location: 'Tips Coco'
     },
     afrobeats: {
       title: 'Afrobeats Groove',
-      date: getNextSunday(),
-      location: 'BYZ Venue, Dar es Salaam'
+      date: new Date(2026, 5, 21), // June 21, 2026
+      location: 'Tips Coco'
     }
   };
 
@@ -925,23 +880,7 @@ function addToCalendar(type){
   showToast('Added to calendar!');
 }
 
-function getNextFriday(){
-  const d = new Date();
-  d.setDate(d.getDate() + (5 - d.getDay() + 7) % 7);
-  return d;
-}
-
-function getNextSaturday(){
-  const d = new Date();
-  d.setDate(d.getDate() + (6 - d.getDay() + 7) % 7);
-  return d;
-}
-
-function getNextSunday(){
-  const d = new Date();
-  d.setDate(d.getDate() + (7 - d.getDay() + 7) % 7);
-  return d;
-}
+// Date functions removed - using fixed dates in June 2026
 
 // Toast Notification
 function showToast(message){
