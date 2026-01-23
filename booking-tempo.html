@@ -741,6 +741,7 @@
                 <li>Your booking will be reviewed within 24 hours</li>
                 <li>You'll receive a confirmation email once approved</li>
                 <li>Your QR code will be sent via email</li>
+                <li>Present your QR code at the door for entry</li>
               </ul>
             </div>
 
@@ -1390,9 +1391,12 @@ function showBookingSubmittedUI(){
     ${bookingId ? `<div class="toast-sub">Booking ID: <b>${bookingId}</b></div>` : ``}
     <div class="toast-actions">
       ${wa ? `<a class="toast-link" href="${wa}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Open WhatsApp again</a>` : ``}
+      <button class="toast-link" onclick="downloadReceipt('${bookingId}')" style="background:none; border:none; color:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:8px; transition:background 0.2s;">
+        <i class="fa-solid fa-download"></i> Download Receipt
+      </button>
     </div>
   `;
-  showToast(toastHtml, 9000);
+  showToast(toastHtml, 12000);
   setProgress(100);
 }
 function handleReturnFromWhatsApp(){
@@ -1409,6 +1413,156 @@ window.addEventListener("focus", handleReturnFromWhatsApp);
 document.addEventListener("visibilitychange", () => {
   if(!document.hidden) handleReturnFromWhatsApp();
 });
+
+// Download Receipt Function (Gen Z Feature)
+function downloadReceipt(bookingId) {
+  const formData = JSON.parse(localStorage.getItem("byz_booking_draft") || "{}");
+  const eventName = "Tempo";
+  
+  const receiptHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>BYZ Booking Receipt - ${bookingId}</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+          background: #000;
+          color: #fff;
+          padding: 40px 20px;
+          line-height: 1.6;
+        }
+        .receipt {
+          max-width: 400px;
+          margin: 0 auto;
+          background: linear-gradient(135deg, #1c1c1e 0%, #0b0b0c 100%);
+          border-radius: 24px;
+          padding: 32px;
+          box-shadow: 0 20px 60px rgba(0,0,0,.5);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 32px;
+          border-bottom: 1px solid rgba(255,255,255,.1);
+          padding-bottom: 24px;
+        }
+        .header h1 {
+          font-size: 28px;
+          font-weight: 900;
+          letter-spacing: -0.5px;
+          margin-bottom: 8px;
+        }
+        .header p {
+          color: #a1a1a6;
+          font-size: 14px;
+        }
+        .details {
+          margin-bottom: 24px;
+        }
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 0;
+          border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+        .detail-row:last-child {
+          border-bottom: none;
+        }
+        .label {
+          color: #a1a1a6;
+          font-size: 14px;
+        }
+        .value {
+          font-weight: 700;
+          font-size: 14px;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 32px;
+          padding-top: 24px;
+          border-top: 1px solid rgba(255,255,255,.1);
+          color: #a1a1a6;
+          font-size: 12px;
+        }
+        .qr-note {
+          background: rgba(255,255,255,.05);
+          border-radius: 12px;
+          padding: 16px;
+          margin-top: 24px;
+          font-size: 13px;
+          text-align: center;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="receipt">
+        <div class="header">
+          <h1>BYZ Entertainment</h1>
+          <p>Booking Receipt</p>
+        </div>
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">Booking ID</span>
+            <span class="value">${bookingId || "Pending"}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Event</span>
+            <span class="value">${eventName}</span>
+          </div>
+          ${formData.name ? `<div class="detail-row">
+            <span class="label">Name</span>
+            <span class="value">${formData.name}</span>
+          </div>` : ''}
+          ${formData.phone ? `<div class="detail-row">
+            <span class="label">Phone</span>
+            <span class="value">${formData.phone}</span>
+          </div>` : ''}
+          ${formData.quantity ? `<div class="detail-row">
+            <span class="label">Quantity</span>
+            <span class="value">${formData.quantity}</span>
+          </div>` : ''}
+          ${formData.amount ? `<div class="detail-row">
+            <span class="label">Amount</span>
+            <span class="value">${formData.amount} TZS</span>
+          </div>` : ''}
+          <div class="detail-row">
+            <span class="label">Date</span>
+            <span class="value">${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          </div>
+        </div>
+        <div class="qr-note">
+          📧 Your QR code will be sent via email<br>
+          🚪 Present QR code at door for entry
+        </div>
+        <div class="footer">
+          <p>See you at the event! 🎉</p>
+          <p style="margin-top:8px;">byzentertainment.com</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  const blob = new Blob([receiptHtml], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `BYZ-Booking-${bookingId || 'Receipt'}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  setTimeout(() => {
+    if (navigator.share) {
+      navigator.share({
+        title: `I'm going to ${eventName}! 🎉`,
+        text: `Just booked my spot at BYZ ${eventName}! Booking ID: ${bookingId}`,
+        url: window.location.href
+      }).catch(() => {});
+    }
+  }, 500);
+}
   </script>
 </body>
 </html>
