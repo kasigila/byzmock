@@ -761,12 +761,56 @@
               </div>
               
               <div class="field-wrapper">
-                <input id="phone" type="tel" placeholder="Phone (WhatsApp)" autocomplete="tel" required aria-required="true" aria-label="Phone Number">
+                <label style="display:block;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);">Phone (WhatsApp) <span style="color:var(--bad);">*</span></label>
+                <div style="display:flex;gap:8px;align-items:stretch;">
+                  <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-elev);color:var(--text);outline:none;font-size:14px;font-weight:500;cursor:pointer;" aria-label="Country Code">
+                    <option value="+255">🇹🇿 +255 (TZ)</option>
+                    <option value="+1">🇺🇸 +1 (US/CA)</option>
+                    <option value="+44">🇬🇧 +44 (UK)</option>
+                    <option value="+27">🇿🇦 +27 (ZA)</option>
+                    <option value="+254">🇰🇪 +254 (KE)</option>
+                    <option value="+256">🇺🇬 +256 (UG)</option>
+                    <option value="+250">🇷🇼 +250 (RW)</option>
+                    <option value="+234">🇳🇬 +234 (NG)</option>
+                    <option value="+233">🇬🇭 +233 (GH)</option>
+                    <option value="+91">🇮🇳 +91 (IN)</option>
+                    <option value="+86">🇨🇳 +86 (CN)</option>
+                    <option value="+971">🇦🇪 +971 (AE)</option>
+                    <option value="+61">🇦🇺 +61 (AU)</option>
+                    <option value="+49">🇩🇪 +49 (DE)</option>
+                    <option value="+33">🇫🇷 +33 (FR)</option>
+                    <option value="+39">🇮🇹 +39 (IT)</option>
+                    <option value="+34">🇪🇸 +34 (ES)</option>
+                    <option value="+31">🇳🇱 +31 (NL)</option>
+                    <option value="+32">🇧🇪 +32 (BE)</option>
+                    <option value="+41">🇨🇭 +41 (CH)</option>
+                    <option value="+46">🇸🇪 +46 (SE)</option>
+                    <option value="+47">🇳🇴 +47 (NO)</option>
+                    <option value="+45">🇩🇰 +45 (DK)</option>
+                    <option value="+358">🇫🇮 +358 (FI)</option>
+                    <option value="+351">🇵🇹 +351 (PT)</option>
+                    <option value="+353">🇮🇪 +353 (IE)</option>
+                    <option value="+48">🇵🇱 +48 (PL)</option>
+                    <option value="+7">🇷🇺 +7 (RU)</option>
+                    <option value="+81">🇯🇵 +81 (JP)</option>
+                    <option value="+82">🇰🇷 +82 (KR)</option>
+                    <option value="+65">🇸🇬 +65 (SG)</option>
+                    <option value="+60">🇲🇾 +60 (MY)</option>
+                    <option value="+66">🇹🇭 +66 (TH)</option>
+                    <option value="+84">🇻🇳 +84 (VN)</option>
+                    <option value="+62">🇮🇩 +62 (ID)</option>
+                    <option value="+55">🇧🇷 +55 (BR)</option>
+                    <option value="+52">🇲🇽 +52 (MX)</option>
+                    <option value="+54">🇦🇷 +54 (AR)</option>
+                    <option value="+20">🇪🇬 +20 (EG)</option>
+                  </select>
+                  <input id="phone" type="tel" placeholder="Phone number (without country code)" autocomplete="tel" required aria-required="true" aria-label="Phone Number" style="flex:1;">
+                </div>
                 <div class="field-error" id="phoneError" role="alert" aria-live="polite"></div>
               </div>
               
               <div class="field-wrapper">
-                <input id="email" type="email" placeholder="Email (optional)" autocomplete="email" aria-label="Email">
+                <input id="email" type="email" placeholder="Email (required for QR code)" autocomplete="email" required aria-required="true" aria-label="Email">
                 <div class="field-error" id="emailError" role="alert" aria-live="polite"></div>
               </div>
               
@@ -841,23 +885,13 @@
         });
       });
 
-      // Auto-format phone numbers
+      // Auto-format phone numbers (only the number part, not country code)
       const phoneInput = document.getElementById("phone");
       if(phoneInput){
         phoneInput.addEventListener("input", (e) => {
+          // Only allow digits, remove all non-digits
           let value = e.target.value.replace(/\D/g, "");
-          if(value.length > 0){
-            // Format as: +255 768 464 367
-            if(value.startsWith("255")){
-              value = "+" + value;
-            } else if(!value.startsWith("+255") && value.length >= 9){
-              value = "+255" + value;
-            }
-            if(value.length > 4) value = value.slice(0, 4) + " " + value.slice(4);
-            if(value.length > 8) value = value.slice(0, 8) + " " + value.slice(8);
-            if(value.length > 12) value = value.slice(0, 12) + " " + value.slice(12);
-            e.target.value = value;
-          }
+          e.target.value = value;
         });
       }
 
@@ -1026,10 +1060,11 @@
             break;
           case "tel":
           case "phone":
-            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-            if(!phoneRegex.test(value) || value.replace(/\D/g, "").length < 9){
+            const phoneValue = value.replace(/\D/g, "");
+            // Validate: at least 7 digits (minimum for most countries), max 15
+            if(phoneValue.length < 7 || phoneValue.length > 15){
               isValid = false;
-              errorMsg = "Please enter a valid phone number";
+              errorMsg = "Please enter a valid phone number (7-15 digits)";
             }
             break;
           case "transaction":
@@ -1064,7 +1099,7 @@
 
       const nameValid = validateField("fullName", name);
       const phoneValid = validateField("phone", phone, "tel");
-      const emailValid = !email || validateField("email", email, "email");
+      const emailValid = validateField("email", email, "email"); // Now required
       const txnValid = validateField("txn", txn, "transaction");
 
       return nameValid && phoneValid && emailValid && txnValid;
@@ -1077,7 +1112,7 @@
         tier,
         ticketQty,
         fullName: document.getElementById("fullName")?.value || "",
-        phone: document.getElementById("phone")?.value || "",
+        phone: (document.getElementById("phoneCountryCode")?.value || "+255") + (document.getElementById("phone")?.value || "").replace(/\D/g, ""),
         email: document.getElementById("email")?.value || "",
         txn: document.getElementById("txn")?.value || "",
         timestamp: Date.now()
@@ -1105,11 +1140,24 @@
           // Restore form fields
           const nameEl = document.getElementById("fullName");
           const phoneEl = document.getElementById("phone");
+          const countryCodeEl = document.getElementById("phoneCountryCode");
           const emailEl = document.getElementById("email");
           const txnEl = document.getElementById("txn");
 
           if(nameEl && data.fullName) nameEl.value = data.fullName;
-          if(phoneEl && data.phone) phoneEl.value = data.phone;
+          if(phoneEl && data.phone) {
+            // Extract country code and phone number from saved data
+            const savedPhone = data.phone;
+            const countryCodeMatch = savedPhone.match(/^(\+\d{1,4})/);
+            if(countryCodeMatch && countryCodeEl) {
+              const code = countryCodeMatch[1];
+              countryCodeEl.value = code;
+              phoneEl.value = savedPhone.replace(/^\+\d{1,4}/, "").replace(/\D/g, "");
+            } else {
+              if(countryCodeEl) countryCodeEl.value = "+255";
+              phoneEl.value = savedPhone.replace(/\D/g, "");
+            }
+          }
           if(emailEl && data.email) emailEl.value = data.email;
           if(txnEl && data.txn) txnEl.value = data.txn;
 
@@ -1300,7 +1348,7 @@
         checkedInCount: 0,
         amount,
         name: fullName.value,
-        phone: phone.value,
+        phone: (document.getElementById("phoneCountryCode")?.value || "+255") + phone.value.replace(/\D/g, ""),
         email: email.value,
         transactionCode: txn.value,
         requestId: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2))
