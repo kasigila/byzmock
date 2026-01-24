@@ -1,10 +1,10 @@
 // BYZ Admin Service Worker
 const CACHE_NAME = 'byz-admin-v1';
 const urlsToCache = [
-  '/admin.html',
-  '/admin-manifest.json',
-  '/assets/byz-logo-white.png',
-  '/assets/byz-logo-black.png',
+  './admin.html',
+  './admin-manifest.json',
+  './assets/byz-logo-black.png',
+  './assets/byz-logo-white.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
 ];
 
