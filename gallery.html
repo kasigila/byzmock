@@ -1751,6 +1751,188 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   object-fit: cover;
 }
 
+/* ===================== LIKED PHOTOS CAROUSEL ===================== */
+.liked-photos-carousel{ 
+  position: fixed; 
+  inset: 0; 
+  z-index: 2001; 
+  display: none; 
+}
+.liked-photos-carousel.show{ 
+  display: block; 
+  animation: fadeIn .2s var(--ease); 
+}
+
+.liked-carousel-backdrop{ 
+  position: absolute; 
+  inset: 0; 
+  background: rgba(0,0,0,.72); 
+  backdrop-filter: blur(6px); 
+}
+
+.liked-carousel-panel{
+  position: relative;
+  width: min(980px, calc(100% - 26px));
+  height: calc(100% - 80px);
+  margin: 40px auto;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: color-mix(in srgb, #0b0b0c 80%, transparent);
+  box-shadow: 0 22px 80px rgba(0,0,0,.45);
+  overflow: hidden;
+  animation: scaleIn .3s var(--ease);
+  display: flex;
+  flex-direction: column;
+}
+
+.liked-carousel-close{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-weight: 950;
+  cursor: pointer;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.liked-carousel-nav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-weight: 950;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s var(--ease);
+}
+
+.liked-carousel-nav:hover{
+  background: rgba(255,255,255,.15);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.liked-carousel-nav.prev{ 
+  left: 12px; 
+}
+.liked-carousel-nav.next{ 
+  right: 12px; 
+}
+
+.liked-carousel-media{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 80px;
+  overflow: hidden;
+}
+
+.liked-carousel-media img{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.liked-carousel-footer{
+  padding: 20px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.liked-carousel-counter{
+  color: rgba(255,255,255,.8);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.liked-carousel-actions{
+  display: flex;
+  gap: 12px;
+}
+
+.liked-carousel-unlike,
+.liked-carousel-download{
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s var(--ease);
+}
+
+.liked-carousel-unlike:hover{
+  background: rgba(255,59,48,.2);
+  border-color: rgba(255,59,48,.4);
+  color: #ff3b30;
+}
+
+.liked-carousel-download:hover{
+  background: rgba(255,255,255,.15);
+}
+
+@media (max-width: 640px){
+  .liked-carousel-panel{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .liked-carousel-media{
+    padding: 40px 20px;
+  }
+  
+  .liked-carousel-nav{
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+  
+  .liked-carousel-footer{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .liked-carousel-actions{
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .liked-carousel-unlike,
+  .liked-carousel-download{
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .likes-actions{
   padding: 16px;
   border-top: 1px solid var(--border);
@@ -2039,31 +2221,13 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   transform: scale(1.05);
 }
 
+/* Photo of the Day - REMOVED (user requested removal) */
 .photo-of-day{
-  margin: 20px 0;
-  padding: 16px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, 
-    rgba(255,107,107,.1) 0%,
-    rgba(255,165,0,.1) 100%
-  );
-  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
-}
-@media (max-width: 640px){
-  .photo-of-day{
-    margin: 16px 0;
-    padding: 14px;
-  }
+  display: none !important;
 }
 
 .photo-of-day-badge{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 12px;
-  background: rgba(255,107,107,.2);
-  color: #ff6b6b;
+  display: none !important;
   font-size: 12px;
   font-weight: 700;
   margin-bottom: 12px;
@@ -3227,7 +3391,7 @@ console.log("✅ Script file loaded!");
         <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
           <div class="pin-check"><i class="fa-solid fa-check"></i></div>
           <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
-          <div class="pin-liked"><i class="fa-solid fa-heart"></i></div>
+                <div class="pin-liked" onclick="event.stopPropagation(); if(typeof handleUnlike === 'function') handleUnlike('${x.src.replace(/'/g, "\\'")}', this);"><i class="fa-solid fa-heart"></i></div>
           <img src="${x.src}" alt="${currentEvent} photo" loading="${loadingAttr}" decoding="async" />
           <div class="pin-overlay">
             <div class="pin-label">${label}</div>
@@ -3436,6 +3600,49 @@ console.log("✅ Script file loaded!");
   
   // Make handleDoubleTap available globally
   window.handleDoubleTap = handleDoubleTap;
+  
+  // Unlike function - called when clicking the top-right heart icon
+  window.handleUnlike = function(src, element) {
+    const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+    if(photoLikes[src] === true) {
+      delete photoLikes[src];
+      localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
+      
+      // Update pin state
+      const pin = element.closest(".pin");
+      if(pin) {
+        pin.dataset.liked = "false";
+        pin.classList.remove("liked");
+      }
+      
+      showToast("Unliked");
+      trackEvent("photo_liked", "unliked");
+      
+      // Update likes count and render
+      if(typeof updateLikesCount === "function") updateLikesCount();
+      if(typeof renderLikedPhotos === "function") renderLikedPhotos();
+      
+      // Update most liked grid
+      const mostLikedGrid = document.getElementById("mostLikedGrid");
+      if(mostLikedGrid) {
+        const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+        const likedUrls = Object.keys(photoLikes).filter(url => photoLikes[url] === true);
+        if(likedUrls.length > 0){
+          mostLikedGrid.innerHTML = likedUrls.slice(0, 6).map(url => `
+            <div class="liked-photo-item" onclick="openLikedPhoto('${url.replace(/'/g, "\\'")}')">
+              <img src="${url}" alt="Liked photo" loading="lazy" />
+            </div>
+          `).join("");
+        } else {
+          mostLikedGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
+              Double-tap photos to like them
+            </div>
+          `;
+        }
+      }
+    }
+  };
 
   /* ===================== GALLERY INTERACTIONS - COMPLETE OVERHAUL ===================== */
   // REMOVED ALL OLD EVENT LISTENERS - FRESH IMPLEMENTATION
@@ -3550,7 +3757,7 @@ console.log("✅ Script file loaded!");
       const currentTime = new Date().getTime();
       const tapLength = currentTime - tapData.lastTap;
       
-      if (tapLength < 600 && tapLength > 0 && tapData.lastTap > 0) {
+      if (tapLength < 800 && tapLength > 0 && tapData.lastTap > 0) {
         // DOUBLE-TAP DETECTED
         e.preventDefault();
         e.stopPropagation();
@@ -4041,7 +4248,7 @@ console.log("✅ Script file loaded!");
               <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
                 <div class="pin-check"><i class="fa-solid fa-check"></i></div>
                 <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
-                <div class="pin-liked"><i class="fa-solid fa-heart"></i></div>
+                <div class="pin-liked" onclick="event.stopPropagation(); handleUnlike('${x.src.replace(/'/g, "\\'")}', this);"><i class="fa-solid fa-heart"></i></div>
                 <img src="${x.src}" alt="${currentEvent} photo" loading="${loadingAttr}" decoding="async" />
                 <div class="pin-overlay">
                   <div class="pin-label">${label}</div>
@@ -4274,15 +4481,194 @@ function renderLikedPhotos(){
   }).join("");
 }
 
-window.openLikedPhoto = function(url){
-  const pins = document.querySelectorAll('.pin[data-src]');
-  for(let pin of pins){
-    if(pin.dataset.src === url){
-      pin.click();
-      return;
+// Liked Photos Carousel
+let likedPhotosCarousel = null;
+let likedPhotosList = [];
+let likedPhotosCurrentIndex = 0;
+
+function initLikedPhotosCarousel() {
+  // Create carousel if it doesn't exist
+  if (!likedPhotosCarousel) {
+    likedPhotosCarousel = document.createElement('div');
+    likedPhotosCarousel.className = 'liked-photos-carousel';
+    likedPhotosCarousel.id = 'likedPhotosCarousel';
+    likedPhotosCarousel.innerHTML = `
+      <div class="liked-carousel-backdrop" data-liked-carousel-close></div>
+      <div class="liked-carousel-panel" role="dialog" aria-modal="true" aria-label="Liked photos carousel">
+        <button class="liked-carousel-close" type="button" aria-label="Close" data-liked-carousel-close>✕</button>
+        <button class="liked-carousel-nav liked-carousel-prev" id="likedCarouselPrev" type="button" aria-label="Previous photo">‹</button>
+        <button class="liked-carousel-nav liked-carousel-next" id="likedCarouselNext" type="button" aria-label="Next photo">›</button>
+        <div class="liked-carousel-media">
+          <img id="likedCarouselImg" alt="Liked photo" loading="lazy" />
+        </div>
+        <div class="liked-carousel-footer">
+          <div class="liked-carousel-counter" id="likedCarouselCounter">1 / 1</div>
+          <div class="liked-carousel-actions">
+            <button class="liked-carousel-unlike" id="likedCarouselUnlike" type="button" aria-label="Unlike photo">
+              <i class="fa-solid fa-heart"></i> Unlike
+            </button>
+            <a class="liked-carousel-download" id="likedCarouselDownload" href="#" download>
+              <i class="fa-solid fa-download"></i> Download
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(likedPhotosCarousel);
+    
+    // Close handlers
+    likedPhotosCarousel.querySelectorAll('[data-liked-carousel-close]').forEach(btn => {
+      btn.addEventListener('click', closeLikedPhotosCarousel);
+    });
+    
+    // Navigation handlers
+    const prevBtn = document.getElementById('likedCarouselPrev');
+    const nextBtn = document.getElementById('likedCarouselNext');
+    if (prevBtn) prevBtn.addEventListener('click', () => navigateLikedCarousel(-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => navigateLikedCarousel(1));
+    
+    // Unlike handler
+    const unlikeBtn = document.getElementById('likedCarouselUnlike');
+    if (unlikeBtn) {
+      unlikeBtn.addEventListener('click', function() {
+        const currentUrl = likedPhotosList[likedPhotosCurrentIndex];
+        if (currentUrl && typeof handleUnlike === 'function') {
+          // Find the pin element if it exists
+          const pin = document.querySelector(`.pin[data-src="${currentUrl}"]`);
+          if (pin) {
+            const likedElement = pin.querySelector('.pin-liked');
+            if (likedElement) {
+              handleUnlike(currentUrl, likedElement);
+            } else {
+              // Direct unlike if pin not found
+              const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+              delete photoLikes[currentUrl];
+              localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
+              showToast("Unliked");
+            }
+          } else {
+            // Direct unlike if pin not found
+            const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+            delete photoLikes[currentUrl];
+            localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
+            showToast("Unliked");
+          }
+          
+          // Update carousel
+          updateLikedPhotosList();
+          if (likedPhotosList.length === 0) {
+            closeLikedPhotosCarousel();
+            renderLikedPhotos();
+          } else {
+            // Adjust index if needed
+            if (likedPhotosCurrentIndex >= likedPhotosList.length) {
+              likedPhotosCurrentIndex = likedPhotosList.length - 1;
+            }
+            updateLikedCarouselDisplay();
+          }
+        }
+      });
     }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (likedPhotosCarousel && likedPhotosCarousel.classList.contains('show')) {
+        if (e.key === 'ArrowLeft') {
+          navigateLikedCarousel(-1);
+        } else if (e.key === 'ArrowRight') {
+          navigateLikedCarousel(1);
+        } else if (e.key === 'Escape') {
+          closeLikedPhotosCarousel();
+        }
+      }
+    });
   }
-  showToast("Photo not in current view");
+}
+
+function updateLikedPhotosList() {
+  const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+  likedPhotosList = Object.keys(photoLikes).filter(url => photoLikes[url] === true);
+}
+
+function openLikedPhotosCarousel(url) {
+  initLikedPhotosCarousel();
+  updateLikedPhotosList();
+  
+  if (likedPhotosList.length === 0) {
+    showToast("No liked photos");
+    return;
+  }
+  
+  // Find index of clicked photo
+  likedPhotosCurrentIndex = likedPhotosList.indexOf(url);
+  if (likedPhotosCurrentIndex === -1) {
+    likedPhotosCurrentIndex = 0;
+  }
+  
+  likedPhotosCarousel.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  updateLikedCarouselDisplay();
+}
+
+function updateLikedCarouselDisplay() {
+  if (!likedPhotosCarousel || likedPhotosList.length === 0) return;
+  
+  const img = document.getElementById('likedCarouselImg');
+  const counter = document.getElementById('likedCarouselCounter');
+  const downloadBtn = document.getElementById('likedCarouselDownload');
+  const prevBtn = document.getElementById('likedCarouselPrev');
+  const nextBtn = document.getElementById('likedCarouselNext');
+  
+  const currentUrl = likedPhotosList[likedPhotosCurrentIndex];
+  
+  if (img) {
+    img.src = '';
+    img.src = currentUrl;
+  }
+  
+  if (counter) {
+    counter.textContent = `${likedPhotosCurrentIndex + 1} / ${likedPhotosList.length}`;
+  }
+  
+  if (downloadBtn) {
+    downloadBtn.href = currentUrl;
+    downloadBtn.setAttribute('download', '');
+  }
+  
+  // Show/hide navigation buttons
+  if (prevBtn) {
+    prevBtn.style.display = likedPhotosList.length > 1 ? 'flex' : 'none';
+  }
+  if (nextBtn) {
+    nextBtn.style.display = likedPhotosList.length > 1 ? 'flex' : 'none';
+  }
+}
+
+function navigateLikedCarousel(direction) {
+  if (likedPhotosList.length === 0) return;
+  
+  likedPhotosCurrentIndex += direction;
+  
+  if (likedPhotosCurrentIndex < 0) {
+    likedPhotosCurrentIndex = likedPhotosList.length - 1; // Loop to end
+  } else if (likedPhotosCurrentIndex >= likedPhotosList.length) {
+    likedPhotosCurrentIndex = 0; // Loop to beginning
+  }
+  
+  updateLikedCarouselDisplay();
+}
+
+function closeLikedPhotosCarousel() {
+  if (likedPhotosCarousel) {
+    likedPhotosCarousel.classList.remove('show');
+    document.body.style.overflow = '';
+    // Re-render liked photos grid
+    renderLikedPhotos();
+  }
+}
+
+window.openLikedPhoto = function(url){
+  openLikedPhotosCarousel(url);
 };
 
 function downloadAllLiked(){
@@ -4521,74 +4907,7 @@ setInterval(updateLikesCount, 2000);
 (function(){
   // Find Me feature removed - consolidated into main search bar
   
-  // Photo of the Day
-  function initPhotoOfDay(){
-    const photoOfDay = document.createElement("div");
-    photoOfDay.className = "photo-of-day";
-    photoOfDay.innerHTML = `
-      <div class="photo-of-day-badge">
-        <i class="fa-solid fa-star"></i> Photo of the Day
-      </div>
-      <div id="photoOfDayContent" style="text-align: center; padding: 20px; color: var(--sub);">
-        <i class="fa-solid fa-image" style="font-size: 32px; opacity: 0.3; margin-bottom: 12px; display: block;"></i>
-        <p style="font-size: 13px;">Featured photo will appear here</p>
-      </div>
-    `;
-    
-    const galleryShell = document.querySelector(".gallery-shell");
-    if(galleryShell){
-      // Insert after search bar, before boards
-      const searchBar = document.querySelector(".search-bar");
-      if(searchBar){
-        galleryShell.insertBefore(photoOfDay, searchBar.nextSibling);
-      } else {
-        galleryShell.insertBefore(photoOfDay, galleryShell.firstChild);
-      }
-    }
-    
-    // Set photo of the day (random from all photos)
-    setTimeout(() => {
-      const allPhotos = [];
-      if(typeof PHOTOS !== "undefined"){
-        Object.keys(PHOTOS).forEach(event => {
-          Object.keys(PHOTOS[event]).forEach(album => {
-            PHOTOS[event][album].forEach(file => {
-              allPhotos.push({
-                src: `${BASE[event]}${album}/${file}`,
-                event: event,
-                album: album
-              });
-            });
-          });
-        });
-        
-        if(allPhotos.length > 0){
-          const today = new Date().getDate();
-          const photoIndex = today % allPhotos.length;
-          const photo = allPhotos[photoIndex];
-          const content = document.getElementById("photoOfDayContent");
-          if(content){
-            content.innerHTML = `
-              <img src="${photo.src}" alt="Photo of the day" style="width: 100%; max-width: 400px; border-radius: 16px; margin-bottom: 12px; cursor: pointer;" onclick="openPhotoOfDay('${photo.src.replace(/'/g, "\\'")}')" />
-              <p style="font-size: 13px; color: var(--text); font-weight: 600;">${titleizeAlbum(photo.album)}</p>
-              <p style="font-size: 12px; color: var(--sub); margin-top: 4px;">${photo.event.toUpperCase()}</p>
-            `;
-          }
-        }
-      }
-    }, 1000);
-  }
-  
-  window.openPhotoOfDay = function(src){
-    const pins = document.querySelectorAll('.pin[data-src]');
-    for(let pin of pins){
-      if(pin.dataset.src === src){
-        pin.click();
-        return;
-      }
-    }
-    showToast("Opening photo...");
-  };
+  // Photo of the Day - REMOVED (user requested removal)
   
   // My Likes section
   function initMostLiked(){
@@ -4603,13 +4922,19 @@ setInterval(updateLikesCount, 2000);
           Your liked photos will appear here
         </div>
       </div>
+      <div style="padding: 12px; margin-top: 12px; border-top: 1px solid var(--border); background: color-mix(in srgb, var(--bg-elev) 95%, transparent); font-size: 12px; color: var(--sub); line-height: 1.5; border-radius: 0 0 12px 12px;">
+        <i class="fa-solid fa-lightbulb" style="color: var(--accent); margin-right: 6px;"></i>
+        <strong>Tip:</strong> Like photos from multiple albums, then download them all at once!
+      </div>
     `;
     
     const galleryShell = document.querySelector(".gallery-shell");
     if(galleryShell){
-      const photoOfDay = document.querySelector(".photo-of-day");
-      if(photoOfDay){
-        galleryShell.insertBefore(mostLiked, photoOfDay.nextSibling);
+      const searchBar = document.querySelector(".search-bar");
+      if(searchBar){
+        galleryShell.insertBefore(mostLiked, searchBar.nextSibling);
+      } else {
+        galleryShell.insertBefore(mostLiked, galleryShell.firstChild);
       }
     }
     
@@ -4674,7 +4999,7 @@ setInterval(updateLikesCount, 2000);
       <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">${month} ${day}</h3>
       <div id="memoriesGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
         ${matchingPhotos.slice(0, 4).map(photo => `
-          <div onclick="openPhotoOfDay('${photo.src.replace(/'/g, "\\'")}')" style="cursor: pointer; border-radius: 12px; overflow: hidden;">
+          <div onclick="openLikedPhoto('${photo.src.replace(/'/g, "\\'")}')" style="cursor: pointer; border-radius: 12px; overflow: hidden;">
             <img src="${photo.src}" alt="Memory" loading="lazy" style="width: 100%; height: auto; display: block;" />
           </div>
         `).join("")}
@@ -4691,9 +5016,16 @@ setInterval(updateLikesCount, 2000);
   }
   
   setTimeout(() => {
-    initPhotoOfDay();
+    // initPhotoOfDay(); // REMOVED
     initMostLiked();
     initMemories();
+    initLikedPhotosCarousel(); // Initialize liked photos carousel
+    
+    // Remove any existing photo-of-day elements from DOM
+    const existingPhotoOfDay = document.querySelector('.photo-of-day');
+    if (existingPhotoOfDay) {
+      existingPhotoOfDay.remove();
+    }
   }, 500);
 })();
 
