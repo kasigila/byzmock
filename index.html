@@ -8386,6 +8386,9 @@ IMPORTANT:
         <button class="suggestion-btn">Contact</button>
       </div>
       <div class="chat-input-wrapper">
+        <button class="keyboard-toggle-btn" id="keyboardToggle" aria-label="Toggle keyboard">
+          <i class="fa-solid fa-keyboard"></i>
+        </button>
         <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." autocomplete="off" readonly>
         <button class="chat-send" id="chatSend" aria-label="Send message">
           <i class="fa-solid fa-paper-plane"></i>
@@ -8880,8 +8883,45 @@ IMPORTANT:
     /* ========== CHAT INPUT ========== */
     .chat-input-wrapper {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
+    }
+    
+    .keyboard-toggle-btn {
+      background: none;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s var(--ease);
+      flex-shrink: 0;
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+    }
+    
+    .keyboard-toggle-btn:hover {
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      transform: scale(1.1);
+    }
+    
+    .keyboard-toggle-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .keyboard-toggle-btn.active {
+      background: color-mix(in srgb, var(--accent) 20%, transparent);
+      color: var(--accent);
+    }
+    
+    @media (min-width: 768px) {
+      .keyboard-toggle-btn {
+        display: none;
+      }
     }
     
     .chat-input {
@@ -8889,6 +8929,13 @@ IMPORTANT:
       padding: 10px 14px;
       border-radius: 20px;
       border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      caret-color: transparent;
+      cursor: pointer;
+    }
+    
+    .chat-input[data-focused="true"] {
+      cursor: text;
+    }
       background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
       color: var(--text);
       font-size: 16px;
@@ -9046,19 +9093,22 @@ IMPORTANT:
       border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
       padding: 8px 4px;
       padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-      display: none;
+      display: flex;
       flex-direction: column;
       gap: 6px;
-      z-index: 10001;
+      z-index: 10001 !important;
       box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
       transform: translateY(100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       max-height: 220px;
       overflow-y: auto;
+      visibility: hidden;
+      opacity: 0;
     }
     
     .custom-keyboard.show {
-      display: flex;
+      visibility: visible;
+      opacity: 1;
       transform: translateY(0);
     }
     
@@ -9216,19 +9266,37 @@ IMPORTANT:
   
   // ========== CUSTOM MOBILE KEYBOARD IMPLEMENTATION ==========
   const customKeyboard = document.getElementById('customKeyboard');
+  const keyboardToggle = document.getElementById('keyboardToggle');
   let isShiftPressed = false;
   let isNumbersMode = false;
   
-  // Show custom keyboard on mobile when input is clicked/tapped
-  input.addEventListener('focus', function(e) {
-    if (window.innerWidth <= 767) {
+  // Toggle custom keyboard with button
+  if (keyboardToggle && customKeyboard) {
+    keyboardToggle.addEventListener('click', function(e) {
       e.preventDefault();
-      // Prevent system keyboard
-      input.setAttribute('readonly', 'true');
+      e.stopPropagation();
       
-      // Show custom keyboard
-      if (customKeyboard) {
+      const isVisible = customKeyboard.classList.contains('show');
+      
+      if (isVisible) {
+        // Hide keyboard
+        customKeyboard.classList.remove('show');
+        keyboardToggle.classList.remove('active');
+        input.removeAttribute('readonly');
+        input.removeAttribute('data-focused');
+        
+        // Reset messages height
+        const messages = document.getElementById('chatMessages');
+        if (messages) {
+          messages.style.height = '';
+          messages.style.maxHeight = '';
+        }
+      } else {
+        // Show keyboard
         customKeyboard.classList.add('show');
+        keyboardToggle.classList.add('active');
+        input.setAttribute('readonly', 'true');
+        input.setAttribute('data-focused', 'true');
         
         // Adjust messages height to accommodate keyboard
         setTimeout(() => {
@@ -9250,6 +9318,21 @@ IMPORTANT:
           }
         }, 100);
       }
+    });
+  }
+  
+  // Block system keyboard from appearing
+  input.addEventListener('focus', function(e) {
+    if (window.innerWidth <= 767) {
+      e.preventDefault();
+      input.blur();
+      
+      // Open custom keyboard if not already open
+      if (customKeyboard && !customKeyboard.classList.contains('show')) {
+        if (keyboardToggle) {
+          keyboardToggle.click();
+        }
+      }
     }
   });
   
@@ -9257,17 +9340,26 @@ IMPORTANT:
   input.addEventListener('click', function(e) {
     if (window.innerWidth <= 767) {
       e.preventDefault();
-      input.setAttribute('readonly', 'true');
-      if (customKeyboard) {
-        customKeyboard.classList.add('show');
+      input.blur();
+      
+      // Open custom keyboard if not already open
+      if (customKeyboard && !customKeyboard.classList.contains('show')) {
+        if (keyboardToggle) {
+          keyboardToggle.click();
+        }
       }
     }
   });
   
-  // Hide custom keyboard when clicking close button or outside
+  // Hide custom keyboard when clicking close button
   close.addEventListener('click', function() {
     if (customKeyboard) {
       customKeyboard.classList.remove('show');
+      if (keyboardToggle) {
+        keyboardToggle.classList.remove('active');
+      }
+      input.removeAttribute('readonly');
+      input.removeAttribute('data-focused');
     }
   });
   
@@ -9349,12 +9441,19 @@ IMPORTANT:
     }
   }
   
-  // Close keyboard when clicking outside
+  // Close keyboard when clicking outside (but not on keyboard toggle or input)
   document.addEventListener('click', function(e) {
     if (window.innerWidth <= 767 && customKeyboard && customKeyboard.classList.contains('show')) {
-      if (!customKeyboard.contains(e.target) && e.target !== input) {
+      if (!customKeyboard.contains(e.target) && 
+          e.target !== input && 
+          e.target !== keyboardToggle && 
+          !keyboardToggle.contains(e.target)) {
         customKeyboard.classList.remove('show');
+        if (keyboardToggle) {
+          keyboardToggle.classList.remove('active');
+        }
         input.removeAttribute('readonly');
+        input.removeAttribute('data-focused');
         const messages = document.getElementById('chatMessages');
         if (messages) {
           messages.style.height = '';
