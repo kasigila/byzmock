@@ -9,7 +9,7 @@
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="admin-manifest.json">
-  <link rel="apple-touch-icon" href="assets/byz-logo-white.png">
+  <link rel="apple-touch-icon" href="assets/byz-logo-black.png">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
@@ -132,25 +132,9 @@
     .card-head p{margin-top:8px;color:var(--sub);font-size:14px}
     .card-body{padding: 18px}
 
-    /* Gen Z Login Page - Modern & Sleek */
+    /* Login Page - Match Site Aesthetic */
     body.login-page{
-      background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-      position: relative;
-      overflow: hidden;
-    }
-    body.login-page::before{
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: 
-        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-    }
-    body.login-page main{
-      position: relative;
-      z-index: 1;
+      background: var(--bg);
     }
     
     .login-wrap{
@@ -159,172 +143,154 @@
       place-items:center;
       padding: 40px 20px;
     }
+    @media (max-width: 560px){
+      .login-wrap{
+        padding: 20px 16px;
+      }
+    }
+    
     .login-box{
-      width: min(440px, 100%);
+      width: 100%;
+      max-width: 420px;
       border-radius: var(--radius-lg);
-      border: 1px solid rgba(255,255,255,0.1);
-      background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.05) 0%,
-        rgba(255,255,255,0.02) 100%
-      );
-      backdrop-filter: blur(20px) saturate(180%);
-      box-shadow: 
-        0 20px 60px rgba(0,0,0,0.4),
-        0 0 0 1px rgba(255,255,255,0.05),
-        inset 0 1px 0 rgba(255,255,255,0.1);
-      padding: 32px;
-      animation: loginSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow);
+      padding: 24px;
     }
-    @keyframes loginSlideUp{
-      from{opacity:0;transform:translateY(30px);}
-      to{opacity:1;transform:translateY(0);}
-    }
-    .login-box::before{
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      animation: shimmer 3s infinite;
-    }
-    @keyframes shimmer{
-      0%, 100%{opacity:0.3;}
-      50%{opacity:1;}
+    @media (max-width: 560px){
+      .login-box{
+        padding: 20px;
+        max-width: 100%;
+      }
     }
     
     .login-inner{
-      border-radius: 24px;
-      background: rgba(0,0,0,0.3);
-      backdrop-filter: blur(10px);
-      padding: 32px 28px;
-      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      background: var(--bg-elev);
+      padding: 24px;
+      border: 1px solid var(--border);
     }
+    @media (max-width: 560px){
+      .login-inner{
+        padding: 20px;
+      }
+    }
+    
     .lock-row{
       display:flex;
       align-items:flex-start;
-      gap:16px;
-      margin-bottom: 28px;
+      gap:14px;
+      margin-bottom: 24px;
     }
+    @media (max-width: 560px){
+      .lock-row{
+        gap:12px;
+        margin-bottom: 20px;
+      }
+    }
+    
     .lock-icon{
-      width:56px;
-      height:56px;
-      border-radius:18px;
-      border: 1px solid rgba(255,255,255,0.15);
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      border: 1px solid var(--border);
       display:grid;
       place-items:center;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-      box-shadow: 
-        0 8px 24px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.1);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
       flex-shrink: 0;
-      position: relative;
     }
-    .lock-icon::after{
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 18px;
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
+    @media (max-width: 560px){
+      .lock-icon{
+        width:44px;
+        height:44px;
+      }
     }
+    
     .lock-icon i{
-      font-size:22px;
+      font-size:20px;
       color:var(--text);
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
+    
     .login-inner h2{
-      font-size:24px;
-      letter-spacing:-0.5px;
+      font-size:20px;
+      letter-spacing:-0.4px;
       font-weight:900;
       margin-bottom:6px;
-      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
+    @media (max-width: 560px){
+      .login-inner h2{
+        font-size:18px;
+      }
+    }
+    
     .login-inner .sub{
       color:var(--sub);
       font-size:14px;
       margin-top:4px;
       line-height:1.5;
     }
+    @media (max-width: 560px){
+      .login-inner .sub{
+        font-size:13px;
+      }
+    }
 
     input, select{
       width:100%;
-      padding:16px 18px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(10px);
+      padding:14px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
       color: var(--text);
       outline: none;
-      font-size:15px;
+      font-size:14px;
       font-weight:500;
-      transition: all 0.3s var(--ease);
-      box-shadow: 
-        0 4px 12px rgba(0,0,0,0.2),
-        inset 0 1px 0 rgba(255,255,255,0.05);
+      transition: all 0.25s var(--ease);
+      box-shadow: var(--shadow-soft);
+    }
+    @media (max-width: 560px){
+      input, select{
+        padding:16px 18px;
+        font-size:16px; /* Prevents zoom on iOS */
+      }
     }
     input:focus, select:focus{
-      border-color: rgba(255,255,255,0.3);
-      background: rgba(0,0,0,0.5);
-      box-shadow: 
-        0 6px 20px rgba(0,0,0,0.3),
-        0 0 0 3px rgba(255,255,255,0.1),
-        inset 0 1px 0 rgba(255,255,255,0.1);
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
       transform: translateY(-1px);
     }
     input::placeholder{
-      color: rgba(255,255,255,0.4);
+      color: var(--sub);
     }
     button, .btn{
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      padding:16px 24px;
+      padding:14px 20px;
       border-radius:999px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
       color: var(--text);
       font-weight:800;
-      font-size:15px;
-      letter-spacing:0.3px;
+      font-size:14px;
       cursor:pointer;
-      transition: all 0.3s var(--ease);
-      box-shadow: 
-        0 8px 24px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.1);
+      transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+      box-shadow: var(--shadow-soft);
       text-decoration:none;
-      position: relative;
-      overflow: hidden;
     }
-    button::before, .btn::before{
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
-      opacity: 0;
-      transition: opacity 0.3s var(--ease);
-    }
-    button:hover::before, .btn:hover::before{
-      opacity: 1;
+    @media (max-width: 560px){
+      button, .btn{
+        padding:16px 24px;
+        font-size:15px;
+        min-height: 48px; /* Better touch target */
+      }
     }
     button:hover, .btn:hover{
       transform: translateY(-2px);
-      box-shadow: 
-        0 12px 32px rgba(0,0,0,0.4),
-        inset 0 1px 0 rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.3);
+      box-shadow: var(--shadow);
     }
     button:active, .btn:active{
       transform: translateY(0);
@@ -335,22 +301,19 @@
       transform:none;
     }
     .primary{
-      background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-      color: #000000;
+      background: var(--accent);
+      color: var(--bg);
       border-color: transparent;
-      box-shadow: 
-        0 8px 24px rgba(255,255,255,0.2),
-        0 0 0 1px rgba(255,255,255,0.1),
-        inset 0 1px 0 rgba(255,255,255,0.3);
     }
     .primary:hover{
-      background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
-      box-shadow: 
-        0 12px 32px rgba(255,255,255,0.3),
-        0 0 0 1px rgba(255,255,255,0.2),
-        inset 0 1px 0 rgba(255,255,255,0.4);
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
     }
-    .full{width:100%; margin-top: 20px;}
+    .full{width:100%; margin-top: 18px;}
+    @media (max-width: 560px){
+      .full{
+        margin-top: 20px;
+      }
+    }
     .hidden{display:none !important}
 
     .dash-grid{display:grid;grid-template-columns:1fr;gap:16px;}
@@ -965,9 +928,10 @@
         load();
         
         // Show install prompt after successful login (only if not already installed)
+        // Delay to ensure dashboard is loaded
         setTimeout(() => {
           showInstallPrompt();
-        }, 1500);
+        }, 2000);
       } else {
         showToast("Incorrect password", "error");
         // Shake animation on error
@@ -1698,27 +1662,58 @@
     function showInstallPrompt() {
       // Don't show if already installed
       if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        console.log('Already installed, skipping prompt');
         return;
       }
       
       // Don't show if already shown in this session
       if (installPromptShown) {
+        console.log('Prompt already shown this session');
         return;
       }
       
-      // Don't show if no install prompt available
+      // Check if deferredPrompt is available
       if (!deferredPrompt) {
+        console.log('No install prompt available (deferredPrompt is null)');
+        // For iOS, show manual instructions
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+          installPromptShown = true;
+          showInstallModal(true); // Pass true for iOS
+        }
         return;
       }
       
+      console.log('Showing install prompt');
       installPromptShown = true;
-      showInstallModal();
+      showInstallModal(false); // Pass false for Android/other
     }
     
-    function showInstallModal() {
+    function showInstallModal(isIOS = false) {
       const modal = document.createElement('div');
       modal.id = 'installModal';
       modal.className = 'modal-backdrop';
+      
+      const installButton = isIOS 
+        ? `<button class="primary" onclick="closeInstallModal()" style="min-width: 140px;">
+             <i class="fa-solid fa-check"></i>
+             Got It
+           </button>`
+        : `<button class="primary" onclick="installPWA()" style="min-width: 140px;">
+             <i class="fa-solid fa-plus"></i>
+             Add to Home Screen
+           </button>`;
+      
+      const iosInstructions = isIOS ? `
+        <div style="margin-top: 16px; padding: 16px; background: var(--bg-alt); border-radius: 16px; border: 1px solid var(--border); text-align: left;">
+          <div style="font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--text);">How to add:</div>
+          <ol style="margin: 0; padding-left: 20px; font-size: 12px; color: var(--sub); line-height: 1.8;">
+            <li>Tap the <strong>Share</strong> button <i class="fa-solid fa-share"></i> at the bottom</li>
+            <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+            <li>Tap <strong>"Add"</strong> to confirm</li>
+          </ol>
+        </div>
+      ` : '';
+      
       modal.innerHTML = `
         <div class="modal" style="max-width: 400px; text-align: center;">
           <div class="modal-header" style="justify-content: center;">
@@ -1734,15 +1729,13 @@
                 Add BYZ Admin to your home screen for one-tap login
               </span>
             </div>
+            ${iosInstructions}
           </div>
           <div class="modal-actions" style="justify-content: center; gap: 12px;">
-            <button onclick="closeInstallModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+            <button onclick="closeInstallModal()" style="background: var(--bg-elev); border: 1px solid var(--border);">
               Maybe Later
             </button>
-            <button class="primary" onclick="installPWA()" style="min-width: 140px;">
-              <i class="fa-solid fa-plus"></i>
-              Add to Home Screen
-            </button>
+            ${installButton}
           </div>
         </div>
       `;
@@ -1791,7 +1784,7 @@
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/admin-sw.js')
+        navigator.serviceWorker.register('./admin-sw.js')
           .then((registration) => {
             console.log('Service Worker registered:', registration);
           })
