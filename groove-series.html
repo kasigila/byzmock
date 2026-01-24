@@ -630,7 +630,7 @@
             </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=caribbean" onclick="event.stopPropagation(); return true;">
+              <a class="btn primary" href="booking.html?type=caribbean" onclick="event.stopPropagation(); event.stopImmediatePropagation(); return true;">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
@@ -681,7 +681,7 @@
       </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=rnb" onclick="event.stopPropagation(); return true;">
+              <a class="btn primary" href="booking.html?type=rnb" onclick="event.stopPropagation(); event.stopImmediatePropagation(); return true;">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
@@ -732,7 +732,7 @@
             </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=afrobeats" onclick="event.stopPropagation(); return true;">
+              <a class="btn primary" href="booking.html?type=afrobeats" onclick="event.stopPropagation(); event.stopImmediatePropagation(); return true;">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
@@ -912,6 +912,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     images.forEach(img => imageObserver.observe(img));
   }
+
+  // Prevent card clicks from interfering with button clicks
+  // Only allow clicks on buttons/links inside cards
+  document.querySelectorAll('.card[data-event]').forEach(card => {
+    // Prevent any default click behavior on the card itself
+    card.addEventListener('click', function(e) {
+      // If the click is NOT on a button or link, prevent default behavior
+      const clickedElement = e.target;
+      const isButton = clickedElement.closest('a, button, .btn');
+      if (!isButton) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+      }
+    }, true); // Use capture phase to intercept early
+  });
+
+  // Ensure all "Book Now" buttons work correctly - force navigation to booking.html
+  document.querySelectorAll('.card-actions .btn.primary').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      // If href points to booking.html, ensure it navigates there
+      if (href && href.includes('booking.html')) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        // Explicitly navigate to prevent any interference
+        window.location.href = href;
+        e.preventDefault(); // Prevent default since we're handling it
+        return false;
+      }
+    }, true);
+  });
 });
 
 // Smooth Scroll Animation on Load
