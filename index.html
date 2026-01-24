@@ -42,16 +42,19 @@ body{
 
 /* ===================== iOS KEYBOARD: LOCK PAGE SCROLLING WHEN CHAT OPEN (Mobile Only) ===================== */
 @media (max-width: 767px) {
-  body.chat-open {
+  html.chat-open,
+  html.chat-open body {
     height: 100%;
     overflow: hidden;
     position: fixed;
     width: 100%;
   }
   
-  html.chat-open {
+  body.chat-open {
     height: 100%;
     overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
 }
 a{color:inherit;text-decoration:none}
@@ -8635,11 +8638,7 @@ IMPORTANT:
         box-shadow: 0 -2px 10px rgba(0,0,0,0.05) !important;
       }
       
-      /* Adjust input wrapper when custom keyboard is open */
-      .custom-keyboard.show ~ .chat-input-wrapper,
-      .chat-window:has(.custom-keyboard.show) .chat-input-wrapper {
-        padding-bottom: 12px;
-      }
+      /* Remove custom keyboard adjustments - using system keyboard now */
       
       .chat-suggestions {
         display: none !important;
@@ -9102,8 +9101,7 @@ IMPORTANT:
     @media (max-width: 767px) {
       .chat-input {
         font-size: 16px !important;
-        /* Prevent system keyboard */
-        readonly: true;
+        /* System keyboard will work naturally */
       }
     }
     
@@ -9222,10 +9220,11 @@ IMPORTANT:
   
   let isOpen = false;
   
-  // ========== iOS KEYBOARD HANDLING: Visual Viewport API ==========
+  // ========== CROSS-PLATFORM KEYBOARD HANDLING: Visual Viewport API (Progressive Enhancement) ==========
   let keyboardAdjustHandler = null;
   
   function setupIOSKeyboardHandling() {
+    // Only use Visual Viewport API if available (progressive enhancement)
     if (!window.visualViewport) return;
     
     function adjustForKeyboard() {
@@ -9239,10 +9238,10 @@ IMPORTANT:
         // Keyboard is open - adjust padding to keep input above keyboard
         chatWindow.style.paddingBottom = keyboardHeight + 'px';
         
-        // Ensure messages area scrolls properly
+        // Ensure messages area scrolls properly and header stays visible
         const messagesEl = document.getElementById('chatMessages');
         if (messagesEl) {
-          // Scroll to bottom to show input area
+          // Scroll to bottom to show latest messages
           setTimeout(() => {
             messagesEl.scrollTop = messagesEl.scrollHeight;
           }, 100);
@@ -9303,23 +9302,19 @@ IMPORTANT:
       setupIOSKeyboardHandling();
     }
     
-    // On mobile, delay focusing input to prevent keyboard from opening immediately
-    // This allows the chat window to fully render first
-    if (isMobileDevice) {
-      // Wait for chat window to be visible before focusing
+    // On mobile, allow system keyboard to work naturally
+    // Scroll messages to show header and first message
+    setTimeout(() => {
+      if (messages.scrollTop > 0) {
+        messages.scrollTop = 0;
+      }
+      // Don't auto-focus on mobile - let user tap input when ready
+      // System keyboard will work naturally
+    }, 300);
+    
+    // On desktop, focus after a short delay
+    if (!isMobileDevice) {
       setTimeout(() => {
-        // Scroll messages to top to show header and first message
-        if (messages.scrollTop > 0) {
-          messages.scrollTop = 0;
-        }
-        // Don't auto-focus on mobile - let user tap input when ready
-        // Input will be readonly on mobile to prevent system keyboard
-        input.setAttribute('readonly', 'true');
-      }, 300);
-    } else {
-      // On desktop, focus after a short delay and allow system keyboard
-      setTimeout(() => {
-        input.removeAttribute('readonly'); // Ensure readonly is removed on desktop
         input.focus();
       }, 200);
     }
@@ -9381,22 +9376,18 @@ IMPORTANT:
     return window.innerWidth <= 767;
   }
   
-  // Initialize input based on screen size
+  // Initialize input - allow system keyboard on all devices
   function initializeInput() {
-    if (isMobile()) {
-      // Mobile: Set readonly to prevent system keyboard
-      input.setAttribute('readonly', 'true');
-    } else {
-      // Desktop: Remove readonly to allow system keyboard
-      input.removeAttribute('readonly');
-      input.removeAttribute('data-focused');
-      // Hide custom keyboard on desktop
-      if (customKeyboard) {
-        customKeyboard.classList.remove('show');
-      }
-      if (keyboardToggle) {
-        keyboardToggle.classList.remove('active');
-      }
+    // Remove readonly to allow system keyboard on all devices
+    input.removeAttribute('readonly');
+    input.removeAttribute('data-focused');
+    
+    // Hide custom keyboard (not using it anymore)
+    if (customKeyboard) {
+      customKeyboard.classList.remove('show');
+    }
+    if (keyboardToggle) {
+      keyboardToggle.classList.remove('active');
     }
   }
   
@@ -9422,11 +9413,13 @@ IMPORTANT:
       
       const isVisible = customKeyboard.classList.contains('show');
       
+      // Custom keyboard toggle disabled - using system keyboard now
+      // This code is kept but won't interfere with system keyboard
       if (isVisible) {
         // Hide keyboard
         customKeyboard.classList.remove('show');
         keyboardToggle.classList.remove('active');
-        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
+        // Don't set readonly - allow system keyboard
         input.removeAttribute('data-focused');
         
         // Reset messages height
@@ -9439,7 +9432,7 @@ IMPORTANT:
         // Show keyboard
         customKeyboard.classList.add('show');
         keyboardToggle.classList.add('active');
-        input.setAttribute('readonly', 'true');
+        // Don't set readonly - allow system keyboard
         input.setAttribute('data-focused', 'true');
         
         // Force display
@@ -9468,133 +9461,23 @@ IMPORTANT:
     });
   }
   
-  // Block system keyboard from appearing (Mobile Only)
-  input.addEventListener('focus', function(e) {
-    if (isMobile()) {
-      e.preventDefault();
-      e.stopPropagation();
-      input.blur();
-      
-      // Ensure readonly is set
-      input.setAttribute('readonly', 'true');
-      
-      // Open custom keyboard if not already open
-      if (customKeyboard && !customKeyboard.classList.contains('show')) {
-        if (keyboardToggle) {
-          keyboardToggle.click();
-        }
+  // Allow system keyboard to work naturally on all devices
+  // Scroll messages to bottom when input is focused
+  input.addEventListener('focus', function() {
+    setTimeout(() => {
+      const messagesEl = document.getElementById('chatMessages');
+      if (messagesEl) {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
       }
-    } else {
-      // Desktop: Allow normal focus, scroll messages to bottom when input is focused
-      setTimeout(() => {
-        const messagesEl = document.getElementById('chatMessages');
-        if (messagesEl) {
-          messagesEl.scrollTop = messagesEl.scrollHeight;
-        }
-      }, 300);
-    }
+    }, 300);
   });
   
-  // Also handle click/tap on input (Mobile Only) - STRONGER BLOCK
-  input.addEventListener('click', function(e) {
-    if (isMobile()) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      input.blur();
-      
-      // Ensure readonly is set
-      input.setAttribute('readonly', 'true');
-      
-      // Open custom keyboard if not already open
-      if (customKeyboard && !customKeyboard.classList.contains('show')) {
-        if (keyboardToggle) {
-          keyboardToggle.click();
-        }
-      }
-      return false;
-    }
-    // Desktop: Allow normal click (system keyboard works)
-  });
-  
-  // Also block touchstart on mobile
-  input.addEventListener('touchstart', function(e) {
-    if (isMobile()) {
-      e.preventDefault();
-      e.stopPropagation();
-      input.blur();
-      input.setAttribute('readonly', 'true');
-      
-      if (customKeyboard && !customKeyboard.classList.contains('show')) {
-        if (keyboardToggle) {
-          keyboardToggle.click();
-        }
-      }
-      return false;
-    }
-  }, { passive: false });
-  
-  // Hide custom keyboard when clicking close button
-  close.addEventListener('click', function() {
-    if (customKeyboard) {
-      customKeyboard.classList.remove('show');
-      if (keyboardToggle) {
-        keyboardToggle.classList.remove('active');
-      }
-      if (isMobile()) {
-        input.setAttribute('readonly', 'true');
-      } else {
-        input.removeAttribute('readonly');
-      }
-      input.removeAttribute('data-focused');
-    }
-  });
+  // Clean up when closing chat (keyboard handling cleanup is in closeChat function)
   
   // Keyboard key handlers
   if (customKeyboard) {
-    // Letter keys (Mobile Only)
-    customKeyboard.querySelectorAll('.keyboard-key[data-key]').forEach(key => {
-      key.addEventListener('click', function() {
-        if (!isMobile()) return; // Only work on mobile
-        
-        const letter = isShiftPressed ? this.dataset.key.toUpperCase() : this.dataset.key;
-        input.value += letter;
-        input.setAttribute('data-focused', 'true');
-        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
-        updateSendButton();
-        
-        // Haptic feedback
-        if (navigator.vibrate) {
-          navigator.vibrate(10);
-        }
-      });
-    });
-    
-    // Space key (Mobile Only)
-    const spaceKey = document.getElementById('keyboardSpace');
-    if (spaceKey) {
-      spaceKey.addEventListener('click', function() {
-        if (!isMobile()) return; // Only work on mobile
-        
-        input.value += ' ';
-        input.setAttribute('data-focused', 'true');
-        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
-        updateSendButton();
-      });
-    }
-    
-    // Backspace key (Mobile Only)
-    const backspaceKey = document.getElementById('keyboardBackspace');
-    if (backspaceKey) {
-      backspaceKey.addEventListener('click', function() {
-        if (!isMobile()) return; // Only work on mobile
-        
-        input.value = input.value.slice(0, -1);
-        input.setAttribute('data-focused', 'true');
-        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
-        updateSendButton();
-      });
-    }
+    // Custom keyboard handlers disabled - using system keyboard now
+    // These handlers are kept for potential future use but won't interfere
     
     // Shift key
     const shiftKey = document.getElementById('keyboardShift');
@@ -9630,64 +9513,10 @@ IMPORTANT:
       });
     }
     
-    // Close keyboard button (Mobile Only)
-    const closeKey = document.getElementById('keyboardClose');
-    if (closeKey) {
-      closeKey.addEventListener('click', function() {
-        if (!isMobile()) return; // Only work on mobile
-        
-        if (customKeyboard) {
-          customKeyboard.classList.remove('show');
-          if (keyboardToggle) {
-            keyboardToggle.classList.remove('active');
-          }
-          input.setAttribute('readonly', 'true'); // Keep readonly on mobile
-          input.removeAttribute('data-focused');
-          
-          // Reset messages height
-          const messages = document.getElementById('chatMessages');
-          if (messages) {
-            messages.style.height = '';
-            messages.style.maxHeight = '';
-          }
-        }
-      });
-    }
+    // Custom keyboard close handlers disabled - using system keyboard now
   }
   
-  // Close keyboard when clicking outside (Mobile Only)
-  document.addEventListener('click', function(e) {
-    if (isMobile() && customKeyboard && customKeyboard.classList.contains('show')) {
-      if (!customKeyboard.contains(e.target) && 
-          e.target !== input && 
-          e.target !== keyboardToggle && 
-          !keyboardToggle.contains(e.target)) {
-        customKeyboard.classList.remove('show');
-        if (keyboardToggle) {
-          keyboardToggle.classList.remove('active');
-        }
-        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
-        input.removeAttribute('data-focused');
-        const messages = document.getElementById('chatMessages');
-        if (messages) {
-          messages.style.height = '';
-          messages.style.maxHeight = '';
-        }
-      }
-    }
-  });
-  
-  // Also handle when input loses focus (keyboard closes)
-  input.addEventListener('blur', function() {
-    if (window.innerWidth <= 767) {
-      // When keyboard closes, scroll to bottom to show latest messages
-      setTimeout(() => {
-        if (messages) {
-          messages.scrollTop = messages.scrollHeight;
-        }
-      }, 200);
-    }
-  });
+  // Removed blur handler - input should retain focus after send (iMessage-style)
   
   // Main response function - uses AI with fallback
   async function findResponse(text) {
@@ -9817,6 +9646,9 @@ IMPORTANT:
     input.value = '';
     updateSendButton();
     
+    // IMPORTANT: Do NOT blur input - keep keyboard open (iMessage-style)
+    // Input will retain focus automatically
+    
     // Show typing indicator
     const typingIndicator = document.createElement('div');
     typingIndicator.className = 'chat-message bot';
@@ -9835,16 +9667,10 @@ IMPORTANT:
     `;
     messages.appendChild(typingIndicator);
     
-    // On mobile, when keyboard opens, ensure first message is visible
-    if (window.innerWidth <= 640 && document.activeElement === input) {
-      // Scroll to top to show first message when typing
-      setTimeout(() => {
-        messages.scrollTop = 0;
-      }, 100);
-    } else {
-      // Desktop or keyboard not open: scroll to bottom
+    // Scroll to bottom to show latest messages
+    setTimeout(() => {
       messages.scrollTop = messages.scrollHeight;
-    }
+    }, 100);
     
     try {
       // Get AI response
