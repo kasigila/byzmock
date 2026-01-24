@@ -8386,10 +8386,58 @@ IMPORTANT:
         <button class="suggestion-btn">Contact</button>
       </div>
       <div class="chat-input-wrapper">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." autocomplete="off">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." autocomplete="off" readonly>
         <button class="chat-send" id="chatSend" aria-label="Send message">
           <i class="fa-solid fa-paper-plane"></i>
         </button>
+      </div>
+      <!-- Custom Mobile Keyboard -->
+      <div class="custom-keyboard" id="customKeyboard">
+        <div class="keyboard-row">
+          <button class="keyboard-key" data-key="q">Q</button>
+          <button class="keyboard-key" data-key="w">W</button>
+          <button class="keyboard-key" data-key="e">E</button>
+          <button class="keyboard-key" data-key="r">R</button>
+          <button class="keyboard-key" data-key="t">T</button>
+          <button class="keyboard-key" data-key="y">Y</button>
+          <button class="keyboard-key" data-key="u">U</button>
+          <button class="keyboard-key" data-key="i">I</button>
+          <button class="keyboard-key" data-key="o">O</button>
+          <button class="keyboard-key" data-key="p">P</button>
+        </div>
+        <div class="keyboard-row">
+          <button class="keyboard-key" data-key="a">A</button>
+          <button class="keyboard-key" data-key="s">S</button>
+          <button class="keyboard-key" data-key="d">D</button>
+          <button class="keyboard-key" data-key="f">F</button>
+          <button class="keyboard-key" data-key="g">G</button>
+          <button class="keyboard-key" data-key="h">H</button>
+          <button class="keyboard-key" data-key="j">J</button>
+          <button class="keyboard-key" data-key="k">K</button>
+          <button class="keyboard-key" data-key="l">L</button>
+        </div>
+        <div class="keyboard-row">
+          <button class="keyboard-key keyboard-key-special" id="keyboardShift" data-action="shift">
+            <i class="fa-solid fa-arrow-up"></i>
+          </button>
+          <button class="keyboard-key" data-key="z">Z</button>
+          <button class="keyboard-key" data-key="x">X</button>
+          <button class="keyboard-key" data-key="c">C</button>
+          <button class="keyboard-key" data-key="v">V</button>
+          <button class="keyboard-key" data-key="b">B</button>
+          <button class="keyboard-key" data-key="n">N</button>
+          <button class="keyboard-key" data-key="m">M</button>
+          <button class="keyboard-key keyboard-key-special" id="keyboardBackspace" data-action="backspace">
+            <i class="fa-solid fa-delete-left"></i>
+          </button>
+        </div>
+        <div class="keyboard-row keyboard-row-bottom">
+          <button class="keyboard-key keyboard-key-special" id="keyboardNumbers" data-action="numbers">123</button>
+          <button class="keyboard-key keyboard-key-space" id="keyboardSpace" data-action="space">Space</button>
+          <button class="keyboard-key keyboard-key-special keyboard-key-send" id="keyboardSend" data-action="send">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -8547,7 +8595,7 @@ IMPORTANT:
         z-index: 1 !important;
       }
       
-      /* Input: Sticky at bottom - stays above keyboard */
+      /* Input: Sticky at bottom - stays above custom keyboard */
       .chat-input-wrapper {
         position: sticky !important;
         bottom: 0 !important;
@@ -8555,7 +8603,7 @@ IMPORTANT:
         right: 0 !important;
         width: 100% !important;
         padding: 12px 16px;
-        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: 12px;
         border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
         background: color-mix(in srgb, var(--bg) 95%, transparent);
         backdrop-filter: blur(40px) saturate(180%);
@@ -8563,8 +8611,13 @@ IMPORTANT:
         flex-shrink: 0 !important; /* Prevents crushing */
         margin: 0 !important;
         transform: none !important;
-        /* Optional: subtle border to distinguish from messages */
         box-shadow: 0 -2px 10px rgba(0,0,0,0.05) !important;
+      }
+      
+      /* Adjust input wrapper when custom keyboard is open */
+      .custom-keyboard.show ~ .chat-input-wrapper,
+      .chat-window:has(.custom-keyboard.show) .chat-input-wrapper {
+        padding-bottom: 12px;
       }
       
       .chat-suggestions {
@@ -8976,6 +9029,109 @@ IMPORTANT:
     @media (max-width: 767px) {
       .chat-input {
         font-size: 16px !important;
+        /* Prevent system keyboard */
+        readonly: true;
+      }
+    }
+    
+    /* ========== CUSTOM MOBILE KEYBOARD ========== */
+    .custom-keyboard {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      background: color-mix(in srgb, var(--bg) 98%, transparent);
+      backdrop-filter: blur(40px) saturate(180%);
+      border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+      padding: 8px 4px;
+      padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10001;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    
+    .custom-keyboard.show {
+      display: flex;
+      transform: translateY(0);
+    }
+    
+    @media (max-width: 767px) {
+      .chat-window:not(.byz-hidden) {
+        padding-bottom: 0 !important;
+      }
+      
+      .chat-input-wrapper {
+        position: relative !important;
+        bottom: auto !important;
+      }
+      
+      .custom-keyboard.show ~ .chat-input-wrapper {
+        margin-bottom: 0;
+      }
+    }
+    
+    .keyboard-row {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .keyboard-key {
+      flex: 1;
+      min-width: 32px;
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.1s var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .keyboard-key:active {
+      background: color-mix(in srgb, var(--accent) 20%, var(--bg-elev));
+      transform: scale(0.95);
+    }
+    
+    .keyboard-key-special {
+      flex: 0 0 auto;
+      min-width: 48px;
+      background: color-mix(in srgb, var(--bg-alt) 90%, transparent);
+    }
+    
+    .keyboard-key-space {
+      flex: 3;
+      min-width: 120px;
+    }
+    
+    .keyboard-key-send {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: transparent;
+    }
+    
+    .keyboard-key-send:active {
+      background: color-mix(in srgb, var(--accent) 90%, transparent);
+    }
+    
+    @media (min-width: 768px) {
+      .custom-keyboard {
+        display: none !important;
       }
     }
   `;
@@ -9058,78 +9214,154 @@ IMPORTANT:
   input.addEventListener('input', updateSendButton);
   input.addEventListener('keyup', updateSendButton);
   
-  // Mobile keyboard handling - header is absolute, so it stays visible automatically
-  // LOCK HEADER IN PLACE WHEN KEYBOARD OPENS (Guaranteed Fix)
-  let isKeyboardOpen = false;
+  // ========== CUSTOM MOBILE KEYBOARD IMPLEMENTATION ==========
+  const customKeyboard = document.getElementById('customKeyboard');
+  let isShiftPressed = false;
+  let isNumbersMode = false;
   
-  // Detect keyboard open/close on mobile using Visual Viewport API
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', function() {
-      const viewportHeight = window.visualViewport.height;
-      const windowHeight = window.innerHeight;
+  // Show custom keyboard on mobile when input is clicked/tapped
+  input.addEventListener('focus', function(e) {
+    if (window.innerWidth <= 767) {
+      e.preventDefault();
+      // Prevent system keyboard
+      input.setAttribute('readonly', 'true');
       
-      // If viewport is significantly smaller, keyboard is open
-      if (viewportHeight < windowHeight * 0.7) {
-        isKeyboardOpen = true;
+      // Show custom keyboard
+      if (customKeyboard) {
+        customKeyboard.classList.add('show');
         
-        // FORCE header to stay visible
-        const header = document.querySelector('.chat-header');
-        const messages = document.getElementById('chatMessages');
-        const inputArea = document.querySelector('.chat-input-wrapper');
+        // Adjust messages height to accommodate keyboard
+        setTimeout(() => {
+          const header = document.querySelector('.chat-header');
+          const messages = document.getElementById('chatMessages');
+          const inputWrapper = document.querySelector('.chat-input-wrapper');
+          if (header && messages && inputWrapper) {
+            const headerHeight = header.offsetHeight;
+            const inputHeight = inputWrapper.offsetHeight;
+            const keyboardHeight = customKeyboard.offsetHeight || 220;
+            const availableHeight = window.innerHeight - headerHeight - inputHeight - keyboardHeight;
+            messages.style.height = availableHeight + 'px';
+            messages.style.maxHeight = availableHeight + 'px';
+            
+            // Scroll to latest message
+            setTimeout(() => {
+              messages.scrollTop = messages.scrollHeight;
+            }, 150);
+          }
+        }, 100);
+      }
+    }
+  });
+  
+  // Also handle click/tap on input
+  input.addEventListener('click', function(e) {
+    if (window.innerWidth <= 767) {
+      e.preventDefault();
+      input.setAttribute('readonly', 'true');
+      if (customKeyboard) {
+        customKeyboard.classList.add('show');
+      }
+    }
+  });
+  
+  // Hide custom keyboard when clicking close button or outside
+  close.addEventListener('click', function() {
+    if (customKeyboard) {
+      customKeyboard.classList.remove('show');
+    }
+  });
+  
+  // Keyboard key handlers
+  if (customKeyboard) {
+    // Letter keys
+    customKeyboard.querySelectorAll('.keyboard-key[data-key]').forEach(key => {
+      key.addEventListener('click', function() {
+        const letter = isShiftPressed ? this.dataset.key.toUpperCase() : this.dataset.key;
+        input.value += letter;
+        input.removeAttribute('readonly');
+        input.focus();
+        input.setAttribute('readonly', 'true');
+        updateSendButton();
         
-        if (header && messages && inputArea && isOpen) {
-          // Set messages container height to fill available space
-          const headerHeight = header.offsetHeight;
-          const inputHeight = inputArea.offsetHeight;
-          const availableHeight = viewportHeight - headerHeight - inputHeight;
-          
-          messages.style.height = availableHeight + 'px';
-          messages.style.maxHeight = availableHeight + 'px';
-          messages.scrollTop = messages.scrollHeight; // Auto-scroll to input
-          
-          // Visually indicate header is "stuck"
-          header.style.boxShadow = '0 2px 15px rgba(0,0,0,0.2)';
+        // Haptic feedback
+        if (navigator.vibrate) {
+          navigator.vibrate(10);
         }
-      } else {
-        isKeyboardOpen = false;
-        // Reset when keyboard closes
+      });
+    });
+    
+    // Space key
+    const spaceKey = document.getElementById('keyboardSpace');
+    if (spaceKey) {
+      spaceKey.addEventListener('click', function() {
+        input.value += ' ';
+        input.removeAttribute('readonly');
+        input.focus();
+        input.setAttribute('readonly', 'true');
+        updateSendButton();
+      });
+    }
+    
+    // Backspace key
+    const backspaceKey = document.getElementById('keyboardBackspace');
+    if (backspaceKey) {
+      backspaceKey.addEventListener('click', function() {
+        input.value = input.value.slice(0, -1);
+        input.removeAttribute('readonly');
+        input.focus();
+        input.setAttribute('readonly', 'true');
+        updateSendButton();
+      });
+    }
+    
+    // Shift key
+    const shiftKey = document.getElementById('keyboardShift');
+    if (shiftKey) {
+      shiftKey.addEventListener('click', function() {
+        isShiftPressed = !isShiftPressed;
+        this.classList.toggle('active', isShiftPressed);
+        
+        // Update all letter keys
+        customKeyboard.querySelectorAll('.keyboard-key[data-key]').forEach(key => {
+          key.textContent = isShiftPressed ? key.dataset.key.toUpperCase() : key.dataset.key;
+        });
+      });
+    }
+    
+    // Send key
+    const sendKey = document.getElementById('keyboardSend');
+    if (sendKey) {
+      sendKey.addEventListener('click', function() {
+        if (input.value.trim()) {
+          sendMessage();
+        }
+      });
+    }
+    
+    // Numbers mode (placeholder - can be expanded)
+    const numbersKey = document.getElementById('keyboardNumbers');
+    if (numbersKey) {
+      numbersKey.addEventListener('click', function() {
+        // Toggle numbers mode (can be expanded to show number keys)
+        isNumbersMode = !isNumbersMode;
+        this.classList.toggle('active', isNumbersMode);
+      });
+    }
+  }
+  
+  // Close keyboard when clicking outside
+  document.addEventListener('click', function(e) {
+    if (window.innerWidth <= 767 && customKeyboard && customKeyboard.classList.contains('show')) {
+      if (!customKeyboard.contains(e.target) && e.target !== input) {
+        customKeyboard.classList.remove('show');
+        input.removeAttribute('readonly');
         const messages = document.getElementById('chatMessages');
-        const header = document.querySelector('.chat-header');
         if (messages) {
           messages.style.height = '';
           messages.style.maxHeight = '';
         }
-        if (header) {
-          header.style.boxShadow = '';
-        }
       }
-    });
-  }
-  
-  // Also handle input focus directly
-  input.addEventListener('focus', function() {
-    if (window.innerWidth <= 767) {
-      // Ensure header stays visible
-      const header = document.querySelector('.chat-header');
-      if (header) {
-        header.style.position = 'sticky';
-        header.style.top = '0';
-        header.style.zIndex = '1000';
-      }
-      
-      // Scroll messages so input is just above keyboard
-      setTimeout(() => {
-        if (messages) {
-          messages.scrollTop = messages.scrollHeight;
-        }
-      }, 300);
     }
-    // Prevent auto-zoom on iOS
-    setTimeout(() => {
-      if (document.activeElement === input) {
-        window.scrollTo(0, 0);
-      }
-    }, 100);
   });
   
   // Also handle when input loses focus (keyboard closes)
