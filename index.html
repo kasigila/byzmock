@@ -8932,23 +8932,22 @@ IMPORTANT:
       padding: 10px 14px;
       border-radius: 20px;
       border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-      caret-color: var(--text) !important; /* Show cursor when typing */
-      cursor: text !important; /* Always show text cursor */
-      color: var(--text) !important; /* Ensure text is visible */
-    }
-    
-    .chat-input[data-focused="true"] {
-      cursor: text;
-      caret-color: var(--text);
-    }
       background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
-      color: var(--text);
+      color: var(--text) !important; /* Ensure text is visible on all devices */
       font-size: 16px;
       outline: none;
       transition: all 0.2s var(--ease);
       -webkit-appearance: none;
       appearance: none;
       touch-action: manipulation;
+      caret-color: var(--text) !important; /* Show cursor when typing */
+      cursor: text !important; /* Always show text cursor */
+    }
+    
+    .chat-input[data-focused="true"] {
+      cursor: text;
+      caret-color: var(--text);
+      color: var(--text) !important;
     }
     
     .chat-input:focus {
@@ -9098,7 +9097,7 @@ IMPORTANT:
       border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
       padding: 8px 4px;
       padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 6px;
       z-index: 10001 !important;
@@ -9107,13 +9106,10 @@ IMPORTANT:
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       max-height: 220px;
       overflow-y: auto;
-      visibility: hidden;
-      opacity: 0;
     }
     
     .custom-keyboard.show {
-      visibility: visible;
-      opacity: 1;
+      display: flex !important;
       transform: translateY(0);
     }
     
@@ -9318,9 +9314,12 @@ IMPORTANT:
     keyboardToggle.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
+      e.stopImmediatePropagation();
       
       // Only work on mobile
-      if (!isMobile()) return;
+      if (!isMobile()) {
+        return;
+      }
       
       const isVisible = customKeyboard.classList.contains('show');
       
@@ -9328,7 +9327,7 @@ IMPORTANT:
         // Hide keyboard
         customKeyboard.classList.remove('show');
         keyboardToggle.classList.remove('active');
-        input.removeAttribute('readonly');
+        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
         input.removeAttribute('data-focused');
         
         // Reset messages height
@@ -9343,6 +9342,9 @@ IMPORTANT:
         keyboardToggle.classList.add('active');
         input.setAttribute('readonly', 'true');
         input.setAttribute('data-focused', 'true');
+        
+        // Force display
+        customKeyboard.style.display = 'flex';
         
         // Adjust messages height to accommodate keyboard
         setTimeout(() => {
@@ -9371,7 +9373,11 @@ IMPORTANT:
   input.addEventListener('focus', function(e) {
     if (isMobile()) {
       e.preventDefault();
+      e.stopPropagation();
       input.blur();
+      
+      // Ensure readonly is set
+      input.setAttribute('readonly', 'true');
       
       // Open custom keyboard if not already open
       if (customKeyboard && !customKeyboard.classList.contains('show')) {
@@ -9383,11 +9389,16 @@ IMPORTANT:
     // Desktop: Allow normal focus (system keyboard works)
   });
   
-  // Also handle click/tap on input (Mobile Only)
+  // Also handle click/tap on input (Mobile Only) - STRONGER BLOCK
   input.addEventListener('click', function(e) {
     if (isMobile()) {
       e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       input.blur();
+      
+      // Ensure readonly is set
+      input.setAttribute('readonly', 'true');
       
       // Open custom keyboard if not already open
       if (customKeyboard && !customKeyboard.classList.contains('show')) {
@@ -9395,9 +9406,27 @@ IMPORTANT:
           keyboardToggle.click();
         }
       }
+      return false;
     }
     // Desktop: Allow normal click (system keyboard works)
   });
+  
+  // Also block touchstart on mobile
+  input.addEventListener('touchstart', function(e) {
+    if (isMobile()) {
+      e.preventDefault();
+      e.stopPropagation();
+      input.blur();
+      input.setAttribute('readonly', 'true');
+      
+      if (customKeyboard && !customKeyboard.classList.contains('show')) {
+        if (keyboardToggle) {
+          keyboardToggle.click();
+        }
+      }
+      return false;
+    }
+  }, { passive: false });
   
   // Hide custom keyboard when clicking close button
   close.addEventListener('click', function() {
