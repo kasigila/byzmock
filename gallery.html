@@ -919,6 +919,18 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   50%{transform:translate(-50%,-50%) scale(1.2);}
   100%{transform:translate(-50%,-50%) scale(1);}
 }
+
+/* Heart animation for double-tap feedback overlay */
+@keyframes fadeOutHeart {
+  0% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(2); 
+  }
+}
 .pin-heart i{
   font-size:80px;
   color:#fff;
@@ -3479,48 +3491,57 @@ console.log("✅ Script file loaded!");
       const src = pin.dataset.src;
       if(!src || selectMode) return;
       
-      // CLEAN REWRITE: Simplified double-tap handler
+      // SIMPLE, FOOLPROOF DOUBLE-TAP (as specified)
       let tapData = pinTapData.get(pin);
       if(!tapData) {
-        tapData = { lastTap: 0, tapTimeout: null };
+        tapData = { lastTap: 0 };
         pinTapData.set(pin, tapData);
       }
       
       const currentTime = new Date().getTime();
       const tapLength = currentTime - tapData.lastTap;
       
-      if (tapLength < 500 && tapLength > 0 && tapData.lastTap > 0) {
-        // DOUBLE TAP DETECTED - LIKE THE PHOTO
-        if(tapData.tapTimeout) {
-          clearTimeout(tapData.tapTimeout);
-          tapData.tapTimeout = null;
-        }
+      if (tapLength < 600 && tapLength > 0 && tapData.lastTap > 0) {
+        // DOUBLE-TAP DETECTED
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
         
-        // Call like function - ensure it exists
+        // Visual feedback - heart animation overlay
+        const heart = document.createElement('div');
+        heart.innerHTML = '❤️';
+        heart.style.position = 'absolute';
+        heart.style.top = '50%';
+        heart.style.left = '50%';
+        heart.style.transform = 'translate(-50%, -50%)';
+        heart.style.fontSize = '40px';
+        heart.style.zIndex = '1000';
+        heart.style.pointerEvents = 'none';
+        heart.style.animation = 'fadeOutHeart 1s forwards';
+        
+        // Ensure pin has position relative
+        if(getComputedStyle(pin).position === 'static') {
+          pin.style.position = 'relative';
+        }
+        pin.appendChild(heart);
+        
+        // Remove heart after animation
+        setTimeout(() => {
+          if(heart.parentNode) heart.remove();
+        }, 1000);
+        
+        // Call like function - MAKE SURE THIS EXISTS
         if(typeof handleDoubleTap === 'function') {
           handleDoubleTap(pin, src);
         } else {
-          console.error('handleDoubleTap function not found');
+          console.error('handleDoubleTap function not found!');
         }
         
         tapData.lastTap = 0;
         return false;
       } else {
-        // Single tap - wait to see if it becomes double-tap
+        // Single tap - record time
         tapData.lastTap = currentTime;
-        if(tapData.tapTimeout) clearTimeout(tapData.tapTimeout);
-        tapData.tapTimeout = setTimeout(() => {
-          // Single tap confirmed - open lightbox
-          const idx = currentList.indexOf(src);
-          if(idx >= 0) {
-            openLightboxByIndex(idx);
-          }
-          tapData.lastTap = 0;
-          tapData.tapTimeout = null;
-        }, 500);
       }
     };
     
