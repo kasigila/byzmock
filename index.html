@@ -8389,7 +8389,7 @@ IMPORTANT:
         <button class="keyboard-toggle-btn" id="keyboardToggle" aria-label="Toggle keyboard">
           <i class="fa-solid fa-keyboard"></i>
         </button>
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." autocomplete="off" readonly>
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." autocomplete="off">
         <button class="chat-send" id="chatSend" aria-label="Send message">
           <i class="fa-solid fa-paper-plane"></i>
         </button>
@@ -8439,6 +8439,9 @@ IMPORTANT:
           <button class="keyboard-key keyboard-key-space" id="keyboardSpace" data-action="space">Space</button>
           <button class="keyboard-key keyboard-key-special keyboard-key-send" id="keyboardSend" data-action="send">
             <i class="fa-solid fa-paper-plane"></i>
+          </button>
+          <button class="keyboard-key keyboard-key-special" id="keyboardClose" data-action="close" style="background: color-mix(in srgb, var(--bg-alt) 90%, transparent);">
+            <i class="fa-solid fa-chevron-down"></i>
           </button>
         </div>
       </div>
@@ -8929,12 +8932,14 @@ IMPORTANT:
       padding: 10px 14px;
       border-radius: 20px;
       border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-      caret-color: transparent;
-      cursor: pointer;
+      caret-color: var(--text) !important; /* Show cursor when typing */
+      cursor: text !important; /* Always show text cursor */
+      color: var(--text) !important; /* Ensure text is visible */
     }
     
     .chat-input[data-focused="true"] {
       cursor: text;
+      caret-color: var(--text);
     }
       background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
       color: var(--text);
@@ -9213,8 +9218,8 @@ IMPORTANT:
     
     // On mobile, delay focusing input to prevent keyboard from opening immediately
     // This allows the chat window to fully render first
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
+    const isMobileDevice = window.innerWidth <= 768;
+    if (isMobileDevice) {
       // Wait for chat window to be visible before focusing
       setTimeout(() => {
         // Scroll messages to top to show header and first message
@@ -9222,10 +9227,13 @@ IMPORTANT:
           messages.scrollTop = 0;
         }
         // Don't auto-focus on mobile - let user tap input when ready
+        // Input will be readonly on mobile to prevent system keyboard
+        input.setAttribute('readonly', 'true');
       }, 300);
     } else {
-      // On desktop, focus after a short delay
+      // On desktop, focus after a short delay and allow system keyboard
       setTimeout(() => {
+        input.removeAttribute('readonly'); // Ensure readonly is removed on desktop
         input.focus();
       }, 200);
     }
@@ -9264,17 +9272,55 @@ IMPORTANT:
   input.addEventListener('input', updateSendButton);
   input.addEventListener('keyup', updateSendButton);
   
-  // ========== CUSTOM MOBILE KEYBOARD IMPLEMENTATION ==========
+  // ========== CUSTOM MOBILE KEYBOARD IMPLEMENTATION (Mobile Only) ==========
   const customKeyboard = document.getElementById('customKeyboard');
   const keyboardToggle = document.getElementById('keyboardToggle');
   let isShiftPressed = false;
   let isNumbersMode = false;
   
-  // Toggle custom keyboard with button
+  // On desktop: Use system keyboard normally (no readonly, no custom keyboard)
+  // On mobile: Use custom keyboard to prevent header push issues
+  
+  // Function to check if mobile
+  function isMobile() {
+    return window.innerWidth <= 767;
+  }
+  
+  // Initialize input based on screen size
+  function initializeInput() {
+    if (isMobile()) {
+      // Mobile: Set readonly to prevent system keyboard
+      input.setAttribute('readonly', 'true');
+    } else {
+      // Desktop: Remove readonly to allow system keyboard
+      input.removeAttribute('readonly');
+      input.removeAttribute('data-focused');
+      // Hide custom keyboard on desktop
+      if (customKeyboard) {
+        customKeyboard.classList.remove('show');
+      }
+      if (keyboardToggle) {
+        keyboardToggle.classList.remove('active');
+      }
+    }
+  }
+  
+  // Initialize on load
+  initializeInput();
+  
+  // Re-initialize on resize
+  window.addEventListener('resize', function() {
+    initializeInput();
+  });
+  
+  // Toggle custom keyboard with button (Mobile Only)
   if (keyboardToggle && customKeyboard) {
     keyboardToggle.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
+      
+      // Only work on mobile
+      if (!isMobile()) return;
       
       const isVisible = customKeyboard.classList.contains('show');
       
@@ -9321,9 +9367,9 @@ IMPORTANT:
     });
   }
   
-  // Block system keyboard from appearing
+  // Block system keyboard from appearing (Mobile Only)
   input.addEventListener('focus', function(e) {
-    if (window.innerWidth <= 767) {
+    if (isMobile()) {
       e.preventDefault();
       input.blur();
       
@@ -9334,11 +9380,12 @@ IMPORTANT:
         }
       }
     }
+    // Desktop: Allow normal focus (system keyboard works)
   });
   
-  // Also handle click/tap on input
+  // Also handle click/tap on input (Mobile Only)
   input.addEventListener('click', function(e) {
-    if (window.innerWidth <= 767) {
+    if (isMobile()) {
       e.preventDefault();
       input.blur();
       
@@ -9349,6 +9396,7 @@ IMPORTANT:
         }
       }
     }
+    // Desktop: Allow normal click (system keyboard works)
   });
   
   // Hide custom keyboard when clicking close button
@@ -9358,21 +9406,26 @@ IMPORTANT:
       if (keyboardToggle) {
         keyboardToggle.classList.remove('active');
       }
-      input.removeAttribute('readonly');
+      if (isMobile()) {
+        input.setAttribute('readonly', 'true');
+      } else {
+        input.removeAttribute('readonly');
+      }
       input.removeAttribute('data-focused');
     }
   });
   
   // Keyboard key handlers
   if (customKeyboard) {
-    // Letter keys
+    // Letter keys (Mobile Only)
     customKeyboard.querySelectorAll('.keyboard-key[data-key]').forEach(key => {
       key.addEventListener('click', function() {
+        if (!isMobile()) return; // Only work on mobile
+        
         const letter = isShiftPressed ? this.dataset.key.toUpperCase() : this.dataset.key;
         input.value += letter;
-        input.removeAttribute('readonly');
-        input.focus();
-        input.setAttribute('readonly', 'true');
+        input.setAttribute('data-focused', 'true');
+        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
         updateSendButton();
         
         // Haptic feedback
@@ -9382,26 +9435,28 @@ IMPORTANT:
       });
     });
     
-    // Space key
+    // Space key (Mobile Only)
     const spaceKey = document.getElementById('keyboardSpace');
     if (spaceKey) {
       spaceKey.addEventListener('click', function() {
+        if (!isMobile()) return; // Only work on mobile
+        
         input.value += ' ';
-        input.removeAttribute('readonly');
-        input.focus();
-        input.setAttribute('readonly', 'true');
+        input.setAttribute('data-focused', 'true');
+        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
         updateSendButton();
       });
     }
     
-    // Backspace key
+    // Backspace key (Mobile Only)
     const backspaceKey = document.getElementById('keyboardBackspace');
     if (backspaceKey) {
       backspaceKey.addEventListener('click', function() {
+        if (!isMobile()) return; // Only work on mobile
+        
         input.value = input.value.slice(0, -1);
-        input.removeAttribute('readonly');
-        input.focus();
-        input.setAttribute('readonly', 'true');
+        input.setAttribute('data-focused', 'true');
+        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
         updateSendButton();
       });
     }
@@ -9439,11 +9494,35 @@ IMPORTANT:
         this.classList.toggle('active', isNumbersMode);
       });
     }
+    
+    // Close keyboard button (Mobile Only)
+    const closeKey = document.getElementById('keyboardClose');
+    if (closeKey) {
+      closeKey.addEventListener('click', function() {
+        if (!isMobile()) return; // Only work on mobile
+        
+        if (customKeyboard) {
+          customKeyboard.classList.remove('show');
+          if (keyboardToggle) {
+            keyboardToggle.classList.remove('active');
+          }
+          input.setAttribute('readonly', 'true'); // Keep readonly on mobile
+          input.removeAttribute('data-focused');
+          
+          // Reset messages height
+          const messages = document.getElementById('chatMessages');
+          if (messages) {
+            messages.style.height = '';
+            messages.style.maxHeight = '';
+          }
+        }
+      });
+    }
   }
   
-  // Close keyboard when clicking outside (but not on keyboard toggle or input)
+  // Close keyboard when clicking outside (Mobile Only)
   document.addEventListener('click', function(e) {
-    if (window.innerWidth <= 767 && customKeyboard && customKeyboard.classList.contains('show')) {
+    if (isMobile() && customKeyboard && customKeyboard.classList.contains('show')) {
       if (!customKeyboard.contains(e.target) && 
           e.target !== input && 
           e.target !== keyboardToggle && 
@@ -9452,7 +9531,7 @@ IMPORTANT:
         if (keyboardToggle) {
           keyboardToggle.classList.remove('active');
         }
-        input.removeAttribute('readonly');
+        input.setAttribute('readonly', 'true'); // Keep readonly on mobile
         input.removeAttribute('data-focused');
         const messages = document.getElementById('chatMessages');
         if (messages) {
