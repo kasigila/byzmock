@@ -39,6 +39,21 @@ body{
   transition: background .35s var(--ease), color .35s var(--ease);
   overflow-x:hidden;
 }
+
+/* ===================== iOS KEYBOARD: LOCK PAGE SCROLLING WHEN CHAT OPEN (Mobile Only) ===================== */
+@media (max-width: 767px) {
+  body.chat-open {
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+  
+  html.chat-open {
+    height: 100%;
+    overflow: hidden;
+  }
+}
 a{color:inherit;text-decoration:none}
 .container{max-width:var(--max);margin:0 auto;padding:0 24px}
 
@@ -8601,7 +8616,7 @@ IMPORTANT:
         z-index: 1 !important;
       }
       
-      /* Input: Sticky at bottom - stays above custom keyboard */
+      /* Input: Sticky at bottom - stays above keyboard */
       .chat-input-wrapper {
         position: sticky !important;
         bottom: 0 !important;
@@ -8609,7 +8624,7 @@ IMPORTANT:
         right: 0 !important;
         width: 100% !important;
         padding: 12px 16px;
-        padding-bottom: 12px;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
         border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
         background: color-mix(in srgb, var(--bg) 95%, transparent);
         backdrop-filter: blur(40px) saturate(180%);
@@ -8927,6 +8942,13 @@ IMPORTANT:
       }
     }
     
+    /* Hide keyboard toggle button on mobile while testing iOS keyboard fix */
+    @media (max-width: 767px) {
+      .keyboard-toggle-btn {
+        display: none !important;
+      }
+    }
+    
     .chat-input {
       flex: 1;
       padding: 10px 14px;
@@ -9200,11 +9222,75 @@ IMPORTANT:
   
   let isOpen = false;
   
+  // ========== iOS KEYBOARD HANDLING: Visual Viewport API ==========
+  let keyboardAdjustHandler = null;
+  
+  function setupIOSKeyboardHandling() {
+    if (!window.visualViewport) return;
+    
+    function adjustForKeyboard() {
+      const vv = window.visualViewport;
+      if (!vv || !isOpen) return;
+      
+      const keyboardHeight = window.innerHeight - vv.height;
+      const chatWindow = document.getElementById('chatWindow');
+      
+      if (chatWindow && keyboardHeight > 50) {
+        // Keyboard is open - adjust padding to keep input above keyboard
+        chatWindow.style.paddingBottom = keyboardHeight + 'px';
+        
+        // Ensure messages area scrolls properly
+        const messagesEl = document.getElementById('chatMessages');
+        if (messagesEl) {
+          // Scroll to bottom to show input area
+          setTimeout(() => {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          }, 100);
+        }
+      } else {
+        // Keyboard is closed - remove padding
+        if (chatWindow) {
+          chatWindow.style.paddingBottom = '';
+        }
+      }
+    }
+    
+    // Listen for viewport resize (keyboard open/close)
+    keyboardAdjustHandler = adjustForKeyboard;
+    window.visualViewport.addEventListener('resize', keyboardAdjustHandler);
+    window.visualViewport.addEventListener('scroll', keyboardAdjustHandler);
+    
+    // Initial adjustment
+    adjustForKeyboard();
+  }
+  
+  function cleanupIOSKeyboardHandling() {
+    if (!window.visualViewport || !keyboardAdjustHandler) return;
+    
+    window.visualViewport.removeEventListener('resize', keyboardAdjustHandler);
+    window.visualViewport.removeEventListener('scroll', keyboardAdjustHandler);
+    
+    keyboardAdjustHandler = null;
+    
+    // Reset padding
+    const chatWindow = document.getElementById('chatWindow');
+    if (chatWindow) {
+      chatWindow.style.paddingBottom = '';
+    }
+  }
+  
   function openChat() {
     window.classList.remove('byz-hidden');
     window.setAttribute('aria-hidden', 'false');
     isOpen = true;
     badge.style.display = 'none';
+    
+    // Lock page scrolling on mobile when chat opens (iOS keyboard fix)
+    const isMobileDevice = window.innerWidth <= 767;
+    if (isMobileDevice) {
+      document.documentElement.classList.add('chat-open');
+      document.body.classList.add('chat-open');
+    }
     
     // Hide social dock when chat opens
     const socialDock = document.getElementById('socialDock');
@@ -9212,9 +9298,13 @@ IMPORTANT:
       socialDock.classList.add('chat-open');
     }
     
+    // Initialize iOS keyboard handling
+    if (isMobileDevice && window.visualViewport) {
+      setupIOSKeyboardHandling();
+    }
+    
     // On mobile, delay focusing input to prevent keyboard from opening immediately
     // This allows the chat window to fully render first
-    const isMobileDevice = window.innerWidth <= 768;
     if (isMobileDevice) {
       // Wait for chat window to be visible before focusing
       setTimeout(() => {
@@ -9239,6 +9329,15 @@ IMPORTANT:
     window.classList.add('byz-hidden');
     window.setAttribute('aria-hidden', 'true');
     isOpen = false;
+    
+    // Unlock page scrolling on mobile when chat closes
+    document.documentElement.classList.remove('chat-open');
+    document.body.classList.remove('chat-open');
+    
+    // Clean up iOS keyboard handling
+    if (window.visualViewport) {
+      cleanupIOSKeyboardHandling();
+    }
     
     // Show social dock when chat closes
     const socialDock = document.getElementById('socialDock');
@@ -9385,8 +9484,15 @@ IMPORTANT:
           keyboardToggle.click();
         }
       }
+    } else {
+      // Desktop: Allow normal focus, scroll messages to bottom when input is focused
+      setTimeout(() => {
+        const messagesEl = document.getElementById('chatMessages');
+        if (messagesEl) {
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+      }, 300);
     }
-    // Desktop: Allow normal focus (system keyboard works)
   });
   
   // Also handle click/tap on input (Mobile Only) - STRONGER BLOCK
