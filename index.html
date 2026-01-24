@@ -724,7 +724,7 @@ section{padding: 92px 0}
 /* ===================== SOCIAL FLOATING DOCK (IG / TIKTOK / WHATSAPP / ADMIN) - COLLAPSIBLE ===================== */
 .social-dock{
   position: fixed !important;
-  bottom: auto; /* Will be set by JavaScript */
+  bottom: 120px !important; /* FORCED POSITION - NO OVERLAP */
   right: 16px !important;
   z-index: 1001 !important;
   display: flex !important;
@@ -732,7 +732,7 @@ section{padding: 92px 0}
   gap: 12px !important;
   align-items: flex-end !important;
   pointer-events: none;
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), bottom 0.3s var(--ease);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
 }
 
 /* On mobile, ensure social dock is always above chat widget */
@@ -7028,63 +7028,11 @@ boardGrid.innerHTML = boardItems.map(item => {
     });
   }
   
-  // COMPLETE REWRITE: Mathematical positioning guarantee - NO OVERLAP
+  // DISABLED: Using fixed CSS positions instead
   function updateDockPosition() {
-    if(!dock) return;
-    
-    const MIN_GAP = 24; // Minimum gap between elements (increased for safety)
-    const CHAT_TOGGLE_HEIGHT = 56;
-    const DOCK_TOGGLE_HEIGHT = 52;
-    const ICON_HEIGHT = 52;
-    const ICON_GAP = 12;
-    const ICON_COUNT = 3; // Instagram, TikTok, Facebook
-    
-    let bottomOffset = 16; // Base offset from bottom
-    
-    // 1. Check for footer overlap
-    if(footer) {
-      const footerRect = footer.getBoundingClientRect();
-      const footerTop = footerRect.top;
-      const footerOverlap = Math.max(0, window.innerHeight - footerTop + MIN_GAP);
-      if(footerOverlap > 0) {
-        bottomOffset = Math.max(bottomOffset, footerOverlap);
-      }
-    }
-    
-    // 2. Check for chat widget overlap - MATHEMATICAL CALCULATION
-    if(chatWidget) {
-      const chatRect = chatWidget.getBoundingClientRect();
-      const chatWindow = document.getElementById("chatWindow");
-      const isChatOpen = chatWindow && !chatWindow.classList.contains("byz-hidden");
-      
-      if (isChatOpen) {
-        // Chat window is open - position dock away from it
-        if (window.innerWidth <= 640) {
-          bottomOffset = window.innerHeight - 120; // Top area on mobile
-        } else {
-          bottomOffset = 24; // Desktop: chat is centered, dock stays bottom-right
-        }
-      } else if (chatRect.width > 0 && chatRect.height > 0) {
-        // Chat toggle is visible - calculate exact position needed
-        const chatBottom = window.innerHeight - chatRect.bottom;
-        const isExpanded = !dock.classList.contains("collapsed");
-        const dockHeight = isExpanded 
-          ? DOCK_TOGGLE_HEIGHT + (ICON_COUNT * ICON_HEIGHT) + ((ICON_COUNT - 1) * ICON_GAP)
-          : DOCK_TOGGLE_HEIGHT;
-        
-        // Required bottom = chat toggle height + space below chat + dock height + gap
-        const requiredBottom = CHAT_TOGGLE_HEIGHT + chatBottom + dockHeight + MIN_GAP;
-        
-        if(requiredBottom > bottomOffset) {
-          bottomOffset = requiredBottom;
-        }
-      }
-    }
-    
-    // 3. Apply position with validation
-    const maxBottom = window.innerHeight - 16; // Never go above viewport
-    bottomOffset = Math.min(bottomOffset, maxBottom);
-    dock.style.bottom = `${Math.max(16, bottomOffset)}px`;
+    // Position is now fixed via CSS: .social-dock { bottom: 120px !important; }
+    // No JavaScript positioning needed - prevents overlap conflicts
+    return;
   }
   
   // Update position on scroll, resize, and when chat opens/closes
@@ -8597,7 +8545,7 @@ IMPORTANT:
     /* ========== CHAT WIDGET CONTAINER ========== */
     #byzChatWidget {
       position: fixed !important;
-      bottom: 16px !important;
+      bottom: 30px !important; /* FORCED POSITION - NO OVERLAP */
       right: 16px !important;
       z-index: 1000 !important;
       font-family: inherit;
@@ -8605,8 +8553,8 @@ IMPORTANT:
     
     @media (min-width: 768px) {
       #byzChatWidget {
-        bottom: 24px !important;
-        right: 24px !important;
+        bottom: 30px !important; /* FORCED POSITION - NO OVERLAP */
+        right: 30px !important;
       }
     }
     
@@ -8682,7 +8630,7 @@ IMPORTANT:
       opacity: 1 !important;
     }
     
-    /* ========== MOBILE: FULL SCREEN WITH ABSOLUTE HEADER ========== */
+    /* ========== MOBILE: FULL SCREEN WITH STICKY HEADER ========== */
     @media (max-width: 767px) {
       .chat-window:not(.byz-hidden) {
         top: 0 !important;
@@ -8702,11 +8650,13 @@ IMPORTANT:
         overflow: hidden !important;
         transform: none !important;
         will-change: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
       }
       
-      /* Header: ABSOLUTE positioning at top - never scrolls */
+      /* Header: STICKY positioning - stays visible when keyboard opens */
       .chat-header {
-        position: absolute !important;
+        position: sticky !important;
         top: 0 !important;
         left: 0 !important;
         right: 0 !important;
@@ -8719,33 +8669,28 @@ IMPORTANT:
         justify-content: space-between;
         background: color-mix(in srgb, var(--bg) 95%, transparent);
         backdrop-filter: blur(40px) saturate(180%);
-        z-index: 10002 !important;
+        z-index: 100 !important;
         flex-shrink: 0;
         min-height: 60px;
-        max-height: 60px;
         margin: 0 !important;
         transform: none !important;
       }
       
-      /* Messages: Scrollable area between header and input */
+      /* Messages: Scrollable area - header is sticky so it stays visible */
       .chat-messages {
-        position: absolute !important;
-        top: 60px !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 80px !important;
-        padding: 16px;
+        flex: 1 1 auto !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
-        -webkit-overflow-scrolling: touch !important;
-        flex: none !important;
+        padding: 16px;
         min-height: 0 !important;
+        -webkit-overflow-scrolling: touch !important;
+        position: relative !important;
         z-index: 1 !important;
       }
       
-      /* Input: ABSOLUTE positioning at bottom */
+      /* Input: Sticky at bottom */
       .chat-input-wrapper {
-        position: absolute !important;
+        position: sticky !important;
         bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
@@ -8755,7 +8700,7 @@ IMPORTANT:
         border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
         background: color-mix(in srgb, var(--bg) 95%, transparent);
         backdrop-filter: blur(40px) saturate(180%);
-        z-index: 10002 !important;
+        z-index: 100 !important;
         flex-shrink: 0;
         margin: 0 !important;
         transform: none !important;
@@ -8766,23 +8711,24 @@ IMPORTANT:
       }
     }
     
-    /* ========== DESKTOP: CENTERED MODAL ========== */
+    /* ========== DESKTOP: iPhone-Style Screen on Right Side ========== */
     @media (min-width: 768px) {
       .chat-window:not(.byz-hidden) {
+        position: fixed !important;
+        right: 30px !important;
         top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        width: min(400px, calc(100vw - 48px)) !important;
-        height: auto !important;
-        min-height: 500px !important;
-        max-height: min(80vh, calc(100vh - 48px)) !important;
-        border-radius: 24px !important;
-        border: 1px solid color-mix(in srgb, var(--border) 50%, transparent) !important;
-        box-shadow: 
-          0 20px 60px rgba(0,0,0,.4),
-          0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent) !important;
+        transform: translateY(-50%) !important;
+        width: 380px !important;
+        max-height: 700px !important;
+        height: 80vh !important;
+        border-radius: 40px !important;
+        border: 10px solid #000 !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
         margin: 0 !important;
         overflow: hidden !important;
+        left: auto !important;
+        bottom: auto !important;
+        padding: 0 !important;
       }
       
       .chat-header {
