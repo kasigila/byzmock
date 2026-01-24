@@ -752,21 +752,14 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   transform: translateY(20px) !important;
 }
 
-.social-dock.collapsed .soc {
-  opacity: 0;
-  transform: translateY(20px) scale(0) rotate(180deg);
-  pointer-events: none;
-  margin: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.social-dock:not(.collapsed) .soc {
-  opacity: 1;
-  transform: translateY(0) scale(1) rotate(0deg);
-  pointer-events: auto;
-  animation: popOut 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Social dock icons - ALWAYS VISIBLE */
+.social-dock .soc {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) rotate(0deg) !important;
+  pointer-events: auto !important;
+  margin: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 @keyframes popOut {
@@ -786,89 +779,10 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   }
 }
 
-.social-dock.collapsed .soc:nth-child(2) { animation-delay: 0s; }
-.social-dock.collapsed .soc:nth-child(3) { animation-delay: 0s; }
-.social-dock.collapsed .soc:nth-child(4) { animation-delay: 0s; }
-.social-dock.collapsed .soc:nth-child(5) { animation-delay: 0s; }
-
-.social-dock:not(.collapsed) .soc:nth-child(2) { animation-delay: 0.05s; }
-.social-dock:not(.collapsed) .soc:nth-child(3) { animation-delay: 0.1s; }
-.social-dock:not(.collapsed) .soc:nth-child(4) { animation-delay: 0.15s; }
-.social-dock:not(.collapsed) .soc:nth-child(5) { animation-delay: 0.2s; }
-
+/* Social dock toggle - HIDDEN (permanently open) */
 .social-dock-toggle {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(12px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-soft);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  pointer-events: auto;
-  z-index: 1002 !important; /* Above chat widget (1000) and chat window (10000 when open) */
-  position: relative;
+  display: none !important;
 }
-
-.social-dock-toggle:hover {
-  transform: translateY(-2px) scale(1.05);
-  background: color-mix(in srgb, var(--accent) 15%, var(--bg) 85%);
-  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
-}
-
-.social-dock-toggle i {
-  font-size: 22px;
-  color: var(--text);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.social-dock-toggle .fa-ellipsis {
-  display: block;
-}
-
-.social-dock-toggle .fa-xmark {
-  display: none;
-}
-
-.social-dock:not(.collapsed) .social-dock-toggle .fa-ellipsis {
-  display: none;
-}
-
-.social-dock:not(.collapsed) .social-dock-toggle .fa-xmark {
-  display: block;
-}
-
-.social-dock.collapsed {
-  pointer-events: auto;
-}
-
-/* Closing animation - icons twist into minus */
-.social-dock.closing .soc {
-  animation: twistIn 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
-}
-
-@keyframes twistIn {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
-  }
-  50% {
-    transform: translateY(10px) scale(0.5) rotate(360deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(20px) scale(0) rotate(540deg);
-  }
-}
-
-.social-dock.closing .soc:nth-child(5) { animation-delay: 0s; }
-.social-dock.closing .soc:nth-child(4) { animation-delay: 0.05s; }
-.social-dock.closing .soc:nth-child(3) { animation-delay: 0.1s; }
-.social-dock.closing .soc:nth-child(2) { animation-delay: 0.15s; }
 
 .soc{
   width:52px;height:52px;border-radius:18px;
@@ -4843,12 +4757,8 @@ body.bulkbar-active .social-dock{
   </div>
 </div>
 
-<!-- Floating Social Dock - Collapsible -->
-<div class="social-dock collapsed" id="socialDock" aria-label="Social links">
-  <button class="social-dock-toggle" id="socialDockToggle" aria-label="Toggle social links" aria-expanded="false">
-    <i class="fa-solid fa-ellipsis"></i>
-    <i class="fa-solid fa-xmark"></i>
-  </button>
+<!-- Floating Social Dock - Always Open -->
+<div class="social-dock" id="socialDock" aria-label="Social links">
   <a class="soc instagram" href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" aria-label="Instagram">
     <i class="fa-brands fa-instagram"></i>
   </a>
@@ -6990,88 +6900,21 @@ boardGrid.innerHTML = boardItems.map(item => {
   // Gallery is always visible now (no toggle functionality)
 })();
   /* =========================================================
-   FLOATING SOCIAL DOCK - COLLAPSIBLE FUNCTIONALITY
+   FLOATING SOCIAL DOCK - PERMANENTLY OPEN (NO TOGGLE)
 ========================================================= */
 (function(){
+  // Remove collapsed class if present
   const dock = document.getElementById("socialDock");
+  if(dock) {
+    dock.classList.remove("collapsed", "closing");
+  }
+  
+  // Remove toggle button event listeners if they exist
   const dockToggle = document.getElementById("socialDockToggle");
-  const footer = document.querySelector("footer");
-  const chatWidget = document.getElementById("byzChatWidget");
-  const root = document.documentElement;
-  
-  if(dock && dockToggle) {
-    dockToggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const isCollapsed = dock.classList.contains("collapsed");
-      
-      if(isCollapsed) {
-        // Opening - pop out animation
-        dock.classList.remove("collapsed", "closing");
-        dockToggle.setAttribute("aria-expanded", "true");
-      } else {
-        // Closing - twist in animation
-        dock.classList.add("closing");
-        setTimeout(() => {
-          dock.classList.add("collapsed");
-          dock.classList.remove("closing");
-          dockToggle.setAttribute("aria-expanded", "false");
-        }, 400); // Match animation duration
-      }
-      
-      // Update position after state change
-      updateDockPosition();
-      
-      // Trigger haptic feedback if available
-      if(navigator.vibrate) {
-        navigator.vibrate(10);
-      }
-    });
-  }
-  
-  // DISABLED: Using fixed CSS positions instead
-  function updateDockPosition() {
-    // Position is now fixed via CSS: .social-dock { bottom: 120px !important; }
-    // No JavaScript positioning needed - prevents overlap conflicts
-    return;
-  }
-  
-  // Update position on scroll, resize, and when chat opens/closes
-  let ticking = false;
-  function onUpdate() {
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      updateDockPosition();
-      ticking = false;
-    });
-  }
-  
-  // Initial position
-  updateDockPosition();
-  
-  // Watch for changes
-  window.addEventListener("scroll", onUpdate, { passive: true });
-  window.addEventListener("resize", onUpdate);
-  
-  // Watch for chat widget changes
-  if(chatWidget) {
-    const chatObserver = new MutationObserver(onUpdate);
-    chatObserver.observe(chatWidget, { 
-      attributes: true, 
-      attributeFilter: ['class', 'style'],
-      childList: false,
-      subtree: false
-    });
-    
-    // Also watch for chat window open/close
-    const chatWindow = document.getElementById("chatWindow");
-    if(chatWindow) {
-      const chatWindowObserver = new MutationObserver(onUpdate);
-      chatWindowObserver.observe(chatWindow, {
-        attributes: true,
-        attributeFilter: ['class']
-      });
-    }
+  if(dockToggle) {
+    // Clone and replace to remove all event listeners
+    const newToggle = dockToggle.cloneNode(true);
+    dockToggle.parentNode.replaceChild(newToggle, dockToggle);
   }
 })();
 
@@ -8114,7 +7957,20 @@ document.addEventListener('keydown', (e) => {
   let conversationHistory = [];
   
   // BYZ Information Context for AI
-  const byzContext = `You are ByzBot, the AI assistant for BYZ Entertainment, a nightlife and entertainment company in Dar es Salaam, Tanzania.
+  const byzContext = `You are ByzBot, the AI assistant for BYZ Entertainment (BYZ in the Hood), a nightlife and entertainment company in Dar es Salaam, Tanzania.
+
+You have access to all information about BYZ and the website. You can answer questions about:
+- Services and offerings (events, parties, bookings)
+- Contact information and business details
+- Social media links (Instagram, TikTok, Facebook)
+- Website navigation and features
+- Business hours, location, and venue information
+- Event schedules (Groove and Tempo series)
+- Booking procedures and pricing
+- Memory galleries and photo albums
+- Any other BYZ-related topics
+
+When providing information, include tappable links/icons where appropriate (e.g., social media icons that link to pages). Be accurate, helpful, and enthusiastic about BYZ events.
 
 COMPANY INFORMATION:
 - BYZ Entertainment creates legendary nightlife experiences in Dar es Salaam
@@ -8630,15 +8486,17 @@ IMPORTANT:
       opacity: 1 !important;
     }
     
-    /* ========== MOBILE: FULL SCREEN WITH STICKY HEADER ========== */
+    /* ========== MOBILE: iMessage-Like Layout ========== */
     @media (max-width: 767px) {
       .chat-window:not(.byz-hidden) {
+        position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
+        height: -webkit-fill-available !important; /* Mobile Safari */
         height: 100dvh !important;
         max-width: 100vw !important;
         max-height: 100vh !important;
@@ -8654,7 +8512,7 @@ IMPORTANT:
         flex-direction: column !important;
       }
       
-      /* Header: STICKY positioning - stays visible when keyboard opens */
+      /* Header: STICKY - MUST REMAIN VISIBLE (iMessage style) */
       .chat-header {
         position: sticky !important;
         top: 0 !important;
@@ -8669,16 +8527,17 @@ IMPORTANT:
         justify-content: space-between;
         background: color-mix(in srgb, var(--bg) 95%, transparent);
         backdrop-filter: blur(40px) saturate(180%);
-        z-index: 100 !important;
-        flex-shrink: 0;
+        z-index: 1000 !important;
+        flex-shrink: 0 !important; /* Prevents crushing */
         min-height: 60px;
         margin: 0 !important;
         transform: none !important;
       }
       
-      /* Messages: Scrollable area - header is sticky so it stays visible */
+      /* Messages: Scrollable area - grows to fill space */
       .chat-messages {
-        flex: 1 1 auto !important;
+        flex-grow: 1 !important;
+        flex-shrink: 1 !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
         padding: 16px;
@@ -8688,7 +8547,7 @@ IMPORTANT:
         z-index: 1 !important;
       }
       
-      /* Input: Sticky at bottom */
+      /* Input: Sticky at bottom - stays above keyboard */
       .chat-input-wrapper {
         position: sticky !important;
         bottom: 0 !important;
@@ -8700,8 +8559,8 @@ IMPORTANT:
         border-top: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
         background: color-mix(in srgb, var(--bg) 95%, transparent);
         backdrop-filter: blur(40px) saturate(180%);
-        z-index: 100 !important;
-        flex-shrink: 0;
+        z-index: 1000 !important;
+        flex-shrink: 0 !important; /* Prevents crushing */
         margin: 0 !important;
         transform: none !important;
       }
@@ -8812,22 +8671,30 @@ IMPORTANT:
     }
     
     .chat-close {
-      width: 32px;
-      height: 32px;
-      border-radius: 16px;
-      border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-      background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+      width: 30px !important;
+      height: 30px !important;
+      border-radius: 50% !important;
+      border: 2px solid #ffffff !important;
+      background-color: #555555 !important;
+      color: #ffffff !important;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s var(--ease);
       z-index: 10003 !important;
+      font-weight: bold !important;
+    }
+    
+    .chat-close i {
+      color: #ffffff !important;
+      fill: #ffffff !important;
     }
     
     .chat-close:hover {
       transform: scale(1.1);
-      background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+      background-color: #666666 !important;
+      border-color: #ffffff !important;
     }
     
     /* ========== CHAT MESSAGES ========== */
@@ -9190,15 +9057,49 @@ IMPORTANT:
   input.addEventListener('keyup', updateSendButton);
   
   // Mobile keyboard handling - header is absolute, so it stays visible automatically
-  input.addEventListener('focus', function() {
-    if (window.innerWidth <= 640) {
-      // On mobile: Header is absolute at top, so it's always visible
-      // Just ensure messages scroll to show first message
-      setTimeout(() => {
-        if (messages && messages.scrollTop > 50) {
-          messages.scrollTop = 0;
+  // Mobile keyboard handling - iMessage-like behavior with Visual Viewport API
+  if (window.visualViewport) {
+    // Use Visual Viewport API for accurate keyboard detection
+    window.visualViewport.addEventListener('resize', function() {
+      if (window.innerWidth <= 767 && isOpen) {
+        const header = document.querySelector('.chat-header');
+        const inputArea = document.querySelector('.chat-input-wrapper');
+        const messages = document.getElementById('chatMessages');
+        
+        if (header && inputArea && messages) {
+          const viewportHeight = window.visualViewport.height;
+          const headerHeight = header.offsetHeight;
+          const inputHeight = inputArea.offsetHeight;
+          
+          // Set messages height to fill space between header and input
+          messages.style.height = (viewportHeight - headerHeight - inputHeight) + 'px';
+          messages.style.maxHeight = (viewportHeight - headerHeight - inputHeight) + 'px';
+          
+          // Scroll to latest message
+          setTimeout(() => {
+            messages.scrollTop = messages.scrollHeight;
+          }, 100);
         }
-      }, 150);
+      }
+    });
+  }
+  
+  input.addEventListener('focus', function() {
+    if (window.innerWidth <= 767) {
+      // Ensure header stays visible (it's sticky, but double-check)
+      const header = document.querySelector('.chat-header');
+      if (header) {
+        header.style.position = 'sticky';
+        header.style.top = '0';
+        header.style.zIndex = '1000';
+      }
+      
+      // Scroll messages to show latest
+      setTimeout(() => {
+        if (messages) {
+          messages.scrollTop = messages.scrollHeight;
+        }
+      }, 200);
     }
     // Prevent auto-zoom on iOS
     setTimeout(() => {
@@ -9210,7 +9111,7 @@ IMPORTANT:
   
   // Also handle when input loses focus (keyboard closes)
   input.addEventListener('blur', function() {
-    if (window.innerWidth <= 640) {
+    if (window.innerWidth <= 767) {
       // When keyboard closes, scroll to bottom to show latest messages
       setTimeout(() => {
         if (messages) {
@@ -9445,17 +9346,7 @@ IMPORTANT:
     if (e.key === 'Enter') sendMessage();
   });
   
-  // On mobile, when input is focused (keyboard opens), ensure header is visible
-  input.addEventListener('focus', () => {
-    if (window.innerWidth <= 640) {
-      setTimeout(() => {
-        const messages = document.getElementById('chatMessages');
-        if (messages && messages.scrollTop > 100) {
-          messages.scrollTop = 0;
-        }
-      }, 300);
-    }
-  });
+  // Duplicate handler removed - using the one above with visualViewport API
   
   // Initialize send button state
   updateSendButton();
