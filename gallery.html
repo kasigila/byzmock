@@ -3375,38 +3375,36 @@ console.log("✅ Script file loaded!");
   // Make handleDoubleTap available globally
   window.handleDoubleTap = handleDoubleTap;
 
-  /* ===================== BIND MASONRY EVENTS ===================== */
-  // Store event handlers to allow removal before re-binding
-  let clickHandler = null;
-  let touchHandler = null;
-  let keydownHandler = null;
+  /* ===================== BIND MASONRY EVENTS - COMPLETE REWRITE ===================== */
+  // COMPLETELY ISOLATED EVENT HANDLERS - NO CONFLICTS
+  let masonryEventHandlers = {
+    click: null,
+    touchstart: null,
+    touchend: null,
+    keydown: null
+  };
+  
+  // Per-pin tap tracking to avoid conflicts
+  const pinTapData = new WeakMap();
   
   function bindMasonryEvents(){
-    // Remove existing event listeners if they exist
-    if(clickHandler) {
-      masonry.removeEventListener("click", clickHandler);
-    }
-    if(touchHandler) {
-      masonry.removeEventListener("touchend", touchHandler);
-    }
-    if(keydownHandler) {
-      masonry.removeEventListener("keydown", keydownHandler);
-    }
+    // Remove ALL existing event listeners
+    Object.keys(masonryEventHandlers).forEach(eventType => {
+      if(masonryEventHandlers[eventType]) {
+        masonry.removeEventListener(eventType, masonryEventHandlers[eventType]);
+        masonryEventHandlers[eventType] = null;
+      }
+    });
     
-    // Separate tap tracking for mouse clicks and touch events
-    let lastClickTap = 0;
-    let lastTouchTap = 0;
-    let clickTapTimeout = null;
-    let touchTapTimeout = null;
-    
-    // Click handler for desktop double-click
-    clickHandler = (e) => {
+    // ========== CLICK HANDLER (Desktop) ==========
+    masonryEventHandlers.click = (e) => {
       const pin = e.target.closest(".pin");
       if(!pin) return;
-
+      
       const src = pin.dataset.src;
       if(!src) return;
-
+      
+      // Select mode handling
       if(selectMode){
         if(selected.has(src)){
           selected.delete(src);
@@ -3420,73 +3418,115 @@ console.log("✅ Script file loaded!");
         updateBulkUI();
         return;
       }
-
-      // Double-click detection for Instagram-style like
+      
+      // Get or create tap data for this pin
+      let tapData = pinTapData.get(pin);
+      if(!tapData) {
+        tapData = { lastClick: 0, timeout: null };
+        pinTapData.set(pin, tapData);
+      }
+      
       const now = Date.now();
-      const timeDiff = now - lastClickTap;
-      if(timeDiff < 300 && timeDiff > 0){
-        // Double click detected - like the photo
-        if(clickTapTimeout) clearTimeout(clickTapTimeout);
+      const timeDiff = now - tapData.lastClick;
+      
+      // Double-click detection (300ms window)
+      if(timeDiff < 300 && timeDiff > 0 && tapData.lastClick > 0){
+        // DOUBLE CLICK DETECTED - LIKE THE PHOTO
+        if(tapData.timeout) {
+          clearTimeout(tapData.timeout);
+          tapData.timeout = null;
+        }
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
         handleDoubleTap(pin, src);
-        lastClickTap = 0;
-        return false; // Prevent lightbox from opening on double-click
-      }else{
-        // Single click - wait to see if it becomes a double click
-        lastClickTap = now;
-        if(clickTapTimeout) clearTimeout(clickTapTimeout);
-        clickTapTimeout = setTimeout(() => {
-          const idx = currentList.indexOf(src);
-          if(idx >= 0) openLightboxByIndex(idx);
-        }, 300);
+        tapData.lastClick = 0;
+        return false;
+      }
+      
+      // Single click - wait to see if it becomes double-click
+      tapData.lastClick = now;
+      if(tapData.timeout) clearTimeout(tapData.timeout);
+      tapData.timeout = setTimeout(() => {
+        // Single click confirmed - open lightbox
+        const idx = currentList.indexOf(src);
+        if(idx >= 0) {
+          openLightboxByIndex(idx);
+        }
+        tapData.lastClick = 0;
+        tapData.timeout = null;
+      }, 300);
+    };
+    
+    // ========== TOUCH HANDLERS (Mobile) ==========
+    masonryEventHandlers.touchstart = (e) => {
+      // Store touch start time for double-tap detection
+      const pin = e.target.closest(".pin");
+      if(pin) {
+        let tapData = pinTapData.get(pin);
+        if(!tapData) {
+          tapData = { lastTouch: 0, timeout: null, touchStart: 0 };
+          pinTapData.set(pin, tapData);
+        }
+        tapData.touchStart = Date.now();
       }
     };
     
-    masonry.addEventListener("click", clickHandler);
-
-    // Touch double-tap for mobile - separate from click events
-    touchHandler = (e) => {
+    masonryEventHandlers.touchend = (e) => {
       const pin = e.target.closest(".pin");
       if(!pin) return;
       
       const src = pin.dataset.src;
       if(!src || selectMode) return;
       
-      // Check if this is a double-tap (within 300ms)
-      const now = Date.now();
-      const timeDiff = now - lastTouchTap;
+      // Get tap data
+      let tapData = pinTapData.get(pin);
+      if(!tapData) {
+        tapData = { lastTouch: 0, timeout: null, touchStart: 0 };
+        pinTapData.set(pin, tapData);
+      }
       
-      if(timeDiff < 300 && timeDiff > 0){
-        // Double tap detected - like the photo
-        if(touchTapTimeout) clearTimeout(touchTapTimeout);
+      const now = Date.now();
+      const timeDiff = now - tapData.lastTouch;
+      
+      // Double-tap detection (300ms window)
+      if(timeDiff < 300 && timeDiff > 0 && tapData.lastTouch > 0){
+        // DOUBLE TAP DETECTED - LIKE THE PHOTO
+        if(tapData.timeout) {
+          clearTimeout(tapData.timeout);
+          tapData.timeout = null;
+        }
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
         handleDoubleTap(pin, src);
-        lastTouchTap = 0;
-        return false; // Prevent lightbox from opening on double-tap
-      }else{
-        // Single tap - wait to see if it becomes a double tap
-        lastTouchTap = now;
-        if(touchTapTimeout) clearTimeout(touchTapTimeout);
-        touchTapTimeout = setTimeout(() => {
-          const idx = currentList.indexOf(src);
-          if(idx >= 0) openLightboxByIndex(idx);
-        }, 300);
+        tapData.lastTouch = 0;
+        return false;
       }
+      
+      // Single tap - wait to see if it becomes double-tap
+      tapData.lastTouch = now;
+      if(tapData.timeout) clearTimeout(tapData.timeout);
+      tapData.timeout = setTimeout(() => {
+        // Single tap confirmed - open lightbox
+        const idx = currentList.indexOf(src);
+        if(idx >= 0) {
+          openLightboxByIndex(idx);
+        }
+        tapData.lastTouch = 0;
+        tapData.timeout = null;
+      }, 300);
     };
     
-    masonry.addEventListener("touchend", touchHandler, { passive: false }); // Must be false to allow preventDefault
-
-    // Keyboard handler
-    keydownHandler = (e) => {
+    // ========== KEYBOARD HANDLER ==========
+    masonryEventHandlers.keydown = (e) => {
       if(e.key !== "Enter") return;
       const pin = e.target.closest(".pin");
       if(!pin) return;
-
+      
       const src = pin.dataset.src;
       if(!src) return;
-
+      
       if(selectMode){
         if(selected.has(src)){
           selected.delete(src);
@@ -3498,12 +3538,16 @@ console.log("✅ Script file loaded!");
         updateBulkUI();
         return;
       }
-
+      
       const idx = currentList.indexOf(src);
       openLightboxByIndex(idx >= 0 ? idx : 0);
     };
     
-    masonry.addEventListener("keydown", keydownHandler);
+    // ========== BIND ALL EVENT LISTENERS ==========
+    masonry.addEventListener("click", masonryEventHandlers.click, { passive: false });
+    masonry.addEventListener("touchstart", masonryEventHandlers.touchstart, { passive: true });
+    masonry.addEventListener("touchend", masonryEventHandlers.touchend, { passive: false });
+    masonry.addEventListener("keydown", masonryEventHandlers.keydown);
   }
 
   /* ===================== SEARCH FUNCTIONALITY (4) ===================== */
