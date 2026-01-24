@@ -920,16 +920,45 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   100%{transform:translate(-50%,-50%) scale(1);}
 }
 
-/* Heart animation for double-tap feedback overlay */
-@keyframes fadeOutHeart {
+/* Heartbeat animation - aesthetic heart icon animation */
+@keyframes heartbeat {
   0% { 
+    transform: translate(-50%, -50%) scale(0.5); 
+    opacity: 0.8; 
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.2); 
     opacity: 1; 
-    transform: translate(-50%, -50%) scale(1); 
   }
   100% { 
+    transform: translate(-50%, -50%) scale(1); 
     opacity: 0; 
-    transform: translate(-50%, -50%) scale(2); 
   }
+}
+
+/* Liked state styling */
+.pin.liked::after {
+  content: '';
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: #ff3b30;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(255,59,48,0.4);
+}
+
+.pin.liked::after {
+  content: '❤';
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 .pin-heart i{
   font-size:80px;
@@ -3191,6 +3220,9 @@ console.log("✅ Script file loaded!");
         </div>
       `;
     }).join("");
+    
+    // Re-bind event listeners after rendering
+    bindMasonryEvents();
   }
 
   /* ===================== OPEN ALBUM ===================== */
@@ -3387,29 +3419,22 @@ console.log("✅ Script file loaded!");
   // Make handleDoubleTap available globally
   window.handleDoubleTap = handleDoubleTap;
 
-  /* ===================== BIND MASONRY EVENTS - COMPLETE REWRITE ===================== */
-  // COMPLETELY ISOLATED EVENT HANDLERS - NO CONFLICTS
-  let masonryEventHandlers = {
-    click: null,
-    touchstart: null,
-    touchend: null,
-    keydown: null
-  };
-  
-  // Per-pin tap tracking to avoid conflicts
-  const pinTapData = new WeakMap();
+  /* ===================== GALLERY INTERACTIONS - COMPLETE OVERHAUL ===================== */
+  // REMOVED ALL OLD EVENT LISTENERS - FRESH IMPLEMENTATION
   
   function bindMasonryEvents(){
-    // Remove ALL existing event listeners
-    Object.keys(masonryEventHandlers).forEach(eventType => {
-      if(masonryEventHandlers[eventType]) {
-        masonry.removeEventListener(eventType, masonryEventHandlers[eventType]);
-        masonryEventHandlers[eventType] = null;
-      }
-    });
+    // Get fresh reference to masonry (in case it was re-rendered)
+    const freshMasonry = document.getElementById("masonry");
+    if(!freshMasonry) return;
     
-    // ========== CLICK HANDLER (Desktop) ==========
-    masonryEventHandlers.click = (e) => {
+    // Remove all existing event listeners by cloning (clean slate)
+    const newMasonry = freshMasonry.cloneNode(true);
+    freshMasonry.parentNode.replaceChild(newMasonry, freshMasonry);
+    const cleanMasonry = document.getElementById("masonry");
+    if(!cleanMasonry) return;
+    
+    // ========== SINGLE TAP = PREVIEW (Clean Implementation) ==========
+    cleanMasonry.addEventListener('click', function(e) {
       const pin = e.target.closest(".pin");
       if(!pin) return;
       
@@ -3431,71 +3456,91 @@ console.log("✅ Script file loaded!");
         return;
       }
       
-      // Get or create tap data for this pin
-      let tapData = pinTapData.get(pin);
-      if(!tapData) {
-        tapData = { lastClick: 0, timeout: null };
-        pinTapData.set(pin, tapData);
+      // Only handle single taps (not double-taps)
+      if (e.detail === 1) {
+        const tapTimer = setTimeout(() => {
+          // Open fullscreen preview
+          const idx = currentList.indexOf(src);
+          if(idx >= 0) {
+            openLightboxByIndex(idx);
+          }
+        }, 300);
+        
+        // Store timer on pin for cancellation
+        pin._tapTimer = tapTimer;
       }
-      
-      const now = Date.now();
-      const timeDiff = now - tapData.lastClick;
-      
-      // Double-click detection (300ms window)
-      if(timeDiff < 300 && timeDiff > 0 && tapData.lastClick > 0){
-        // DOUBLE CLICK DETECTED - LIKE THE PHOTO
-        if(tapData.timeout) {
-          clearTimeout(tapData.timeout);
-          tapData.timeout = null;
-        }
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        handleDoubleTap(pin, src);
-        tapData.lastClick = 0;
-        return false;
-      }
-      
-      // Single click - wait to see if it becomes double-click
-      tapData.lastClick = now;
-      if(tapData.timeout) clearTimeout(tapData.timeout);
-      tapData.timeout = setTimeout(() => {
-        // Single click confirmed - open lightbox
-        const idx = currentList.indexOf(src);
-        if(idx >= 0) {
-          openLightboxByIndex(idx);
-        }
-        tapData.lastClick = 0;
-        tapData.timeout = null;
-      }, 300);
-    };
+    });
     
-    // ========== TOUCH HANDLERS (Mobile) ==========
-    masonryEventHandlers.touchstart = (e) => {
-      // Store touch start time for double-tap detection
-      const pin = e.target.closest(".pin");
-      if(pin) {
-        let tapData = pinTapData.get(pin);
-        if(!tapData) {
-          tapData = { lastTouch: 0, timeout: null, touchStart: 0 };
-          pinTapData.set(pin, tapData);
-        }
-        tapData.touchStart = Date.now();
-      }
-    };
-    
-    masonryEventHandlers.touchend = (e) => {
+    // ========== DOUBLE TAP = LIKE (Clean Implementation) ==========
+    cleanMasonry.addEventListener('dblclick', function(e) {
       const pin = e.target.closest(".pin");
       if(!pin) return;
       
       const src = pin.dataset.src;
       if(!src || selectMode) return;
       
-      // SIMPLE, FOOLPROOF DOUBLE-TAP (as specified)
-      let tapData = pinTapData.get(pin);
+      // Cancel single tap timer
+      if(pin._tapTimer) {
+        clearTimeout(pin._tapTimer);
+        pin._tapTimer = null;
+      }
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // 1. VISUAL HEART ANIMATION (Aesthetic - using heart icon, not emoji)
+      const heart = document.createElement('div');
+      heart.className = 'heart-animation-overlay';
+      heart.innerHTML = '<i class="fa-solid fa-heart"></i>';
+      
+      const rect = pin.getBoundingClientRect();
+      const pinRect = pin.getBoundingClientRect();
+      heart.style.cssText = `
+        position: absolute;
+        top: ${pinRect.height / 2}px;
+        left: ${pinRect.width / 2}px;
+        font-size: 60px;
+        color: #ff3b30;
+        transform: translate(-50%, -50%);
+        animation: heartbeat 0.8s ease-out;
+        z-index: 10000;
+        pointer-events: none;
+        filter: drop-shadow(0 4px 12px rgba(255,59,48,0.4));
+      `;
+      
+      // Ensure pin has position relative
+      if(getComputedStyle(pin).position === 'static') {
+        pin.style.position = 'relative';
+      }
+      pin.appendChild(heart);
+      
+      // Remove after animation
+      setTimeout(() => {
+        if(heart.parentNode) heart.remove();
+      }, 800);
+      
+      // 2. CALL LIKE FUNCTION
+      if(typeof handleDoubleTap === 'function') {
+        handleDoubleTap(pin, src);
+      } else {
+        console.error('handleDoubleTap function not found!');
+      }
+    });
+    
+    // ========== TOUCH DOUBLE TAP (Mobile) ==========
+    const touchTapData = new WeakMap();
+    
+    cleanMasonry.addEventListener('touchend', function(e) {
+      const pin = e.target.closest(".pin");
+      if(!pin) return;
+      
+      const src = pin.dataset.src;
+      if(!src || selectMode) return;
+      
+      let tapData = touchTapData.get(pin);
       if(!tapData) {
         tapData = { lastTap: 0 };
-        pinTapData.set(pin, tapData);
+        touchTapData.set(pin, tapData);
       }
       
       const currentTime = new Date().getTime();
@@ -3505,48 +3550,63 @@ console.log("✅ Script file loaded!");
         // DOUBLE-TAP DETECTED
         e.preventDefault();
         e.stopPropagation();
-        e.stopImmediatePropagation();
         
-        // Visual feedback - heart animation overlay
+        // Cancel single tap if any
+        if(pin._tapTimer) {
+          clearTimeout(pin._tapTimer);
+          pin._tapTimer = null;
+        }
+        
+        // Visual heart animation
         const heart = document.createElement('div');
-        heart.innerHTML = '❤️';
-        heart.style.position = 'absolute';
-        heart.style.top = '50%';
-        heart.style.left = '50%';
-        heart.style.transform = 'translate(-50%, -50%)';
-        heart.style.fontSize = '40px';
-        heart.style.zIndex = '1000';
-        heart.style.pointerEvents = 'none';
-        heart.style.animation = 'fadeOutHeart 1s forwards';
+        heart.className = 'heart-animation-overlay';
+        heart.innerHTML = '<i class="fa-solid fa-heart"></i>';
         
-        // Ensure pin has position relative
+        const pinRect = pin.getBoundingClientRect();
+        heart.style.cssText = `
+          position: absolute;
+          top: ${pinRect.height / 2}px;
+          left: ${pinRect.width / 2}px;
+          font-size: 60px;
+          color: #ff3b30;
+          transform: translate(-50%, -50%);
+          animation: heartbeat 0.8s ease-out;
+          z-index: 10000;
+          pointer-events: none;
+          filter: drop-shadow(0 4px 12px rgba(255,59,48,0.4));
+        `;
+        
         if(getComputedStyle(pin).position === 'static') {
           pin.style.position = 'relative';
         }
         pin.appendChild(heart);
         
-        // Remove heart after animation
         setTimeout(() => {
           if(heart.parentNode) heart.remove();
-        }, 1000);
+        }, 800);
         
-        // Call like function - MAKE SURE THIS EXISTS
+        // Call like function
         if(typeof handleDoubleTap === 'function') {
           handleDoubleTap(pin, src);
-        } else {
-          console.error('handleDoubleTap function not found!');
         }
         
         tapData.lastTap = 0;
         return false;
       } else {
-        // Single tap - record time
+        // Single tap - record time and set timer for preview
         tapData.lastTap = currentTime;
+        pin._tapTimer = setTimeout(() => {
+          const idx = currentList.indexOf(src);
+          if(idx >= 0) {
+            openLightboxByIndex(idx);
+          }
+          pin._tapTimer = null;
+        }, 600);
       }
-    };
+    }, { passive: false });
     
     // ========== KEYBOARD HANDLER ==========
-    masonryEventHandlers.keydown = (e) => {
+    cleanMasonry.addEventListener('keydown', function(e) {
       if(e.key !== "Enter") return;
       const pin = e.target.closest(".pin");
       if(!pin) return;
@@ -3568,13 +3628,7 @@ console.log("✅ Script file loaded!");
       
       const idx = currentList.indexOf(src);
       openLightboxByIndex(idx >= 0 ? idx : 0);
-    };
-    
-    // ========== BIND ALL EVENT LISTENERS ==========
-    masonry.addEventListener("click", masonryEventHandlers.click, { passive: false });
-    masonry.addEventListener("touchstart", masonryEventHandlers.touchstart, { passive: true });
-    masonry.addEventListener("touchend", masonryEventHandlers.touchend, { passive: false });
-    masonry.addEventListener("keydown", masonryEventHandlers.keydown);
+    });
   }
 
   /* ===================== SEARCH FUNCTIONALITY (4) ===================== */
