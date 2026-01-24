@@ -732,7 +732,14 @@ section{padding: 92px 0}
   gap: 12px !important;
   align-items: flex-end !important;
   pointer-events: none;
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), bottom 0.3s var(--ease);
+}
+
+/* On mobile, ensure social dock is always above chat widget */
+@media (max-width: 767px) {
+  .social-dock {
+    z-index: 1003 !important;
+  }
 }
 
 /* Hide social dock when chat window is open */
@@ -871,6 +878,15 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   display:flex;align-items:center;justify-content:center;
   box-shadow: var(--shadow-soft);
   transition: transform .2s var(--ease), background .2s var(--ease);
+  position: relative;
+  z-index: 1001;
+}
+
+/* On mobile, ensure social icons are above chat widget */
+@media (max-width: 767px) {
+  .soc {
+    z-index: 1003 !important;
+  }
 }
 
 .soc:hover{transform: translateY(-2px)}
@@ -7047,11 +7063,12 @@ boardGrid.innerHTML = boardItems.map(item => {
         ? toggleHeight + (iconCount * iconHeight) + ((iconCount - 1) * iconGap)
         : toggleHeight;
       
-      // Ensure dock stays above chat icon with gap
-      const minGap = 12; // Minimum gap between dock and chat
+      // Ensure dock stays above chat icon with gap - increased gap for better separation
+      const minGap = 16; // Minimum gap between dock and chat (increased from 12)
       
       // If chat is visible (not hidden), position dock above it
       if (chatRect.width > 0 && chatRect.height > 0 && !isChatOpen) {
+        // Calculate required bottom position to be above chat widget
         const requiredBottom = chatHeight + chatBottom + dockHeight + minGap;
         if(requiredBottom > bottomOffset) {
           bottomOffset = requiredBottom;
@@ -8586,11 +8603,28 @@ IMPORTANT:
       z-index: 1000 !important;
     }
     
+    /* Invisible lock/reserved space around chat widget to prevent overlap */
+    #byzChatWidget::before {
+      content: '';
+      position: absolute;
+      top: -80px; /* Space above for social dock */
+      left: -16px;
+      right: -16px;
+      height: 80px;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
     /* Ensure chat doesn't overlap social dock */
     @media (min-width: 768px) {
       #byzChatWidget {
         bottom: 24px !important;
         right: 24px !important;
+      }
+      
+      #byzChatWidget::before {
+        top: -100px;
+        height: 100px;
       }
     }
     
@@ -8602,6 +8636,21 @@ IMPORTANT:
     /* Social dock toggle should always be above chat toggle */
     .social-dock-toggle {
       z-index: 1002 !important;
+    }
+    
+    /* On mobile, ensure social dock is always above chat widget */
+    @media (max-width: 767px) {
+      .social-dock {
+        z-index: 1003 !important;
+      }
+      
+      .social-dock-toggle {
+        z-index: 1004 !important;
+      }
+      
+      .social-dock .soc {
+        z-index: 1003 !important;
+      }
     }
     
     /* When chat window is open, it should be above everything */
@@ -8627,6 +8676,9 @@ IMPORTANT:
       cursor: pointer;
       transition: all 0.3s var(--ease);
       position: relative;
+      border: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     
     .chat-toggle:hover {
@@ -8677,14 +8729,17 @@ IMPORTANT:
       margin: 0 auto;
       z-index: 10000;
       touch-action: pan-y;
+      visibility: visible;
+      opacity: 1;
     }
     
-    /* Desktop/Laptop View - Floating Phone Screen on Left Side */
+    /* Desktop/Laptop View - Floating Phone Screen on Right Side */
     @media (min-width: 1024px) {
       .chat-window {
         position: fixed !important;
         top: 50% !important;
-        left: 24px !important;
+        right: 24px !important;
+        left: auto !important;
         transform: translateY(-50%) !important;
         width: 380px !important;
         max-width: 380px !important;
@@ -8695,7 +8750,6 @@ IMPORTANT:
         border: 1px solid color-mix(in srgb, var(--border) 50%, transparent) !important;
         inset: auto !important;
         bottom: auto !important;
-        right: auto !important;
         margin: 0 !important;
         box-shadow: 
           0 20px 60px rgba(0,0,0,.4),
@@ -8704,6 +8758,9 @@ IMPORTANT:
         background: color-mix(in srgb, var(--bg) 95%, transparent) !important;
         backdrop-filter: blur(40px) saturate(180%) !important;
         z-index: 10000 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: flex !important;
       }
       
       /* Chat toggle button remains visible and clickable above chat window */
@@ -9252,14 +9309,24 @@ IMPORTANT:
       socialDock.classList.add('chat-open');
     }
     
-    // On mobile, ensure header and first message are visible when keyboard opens
-    setTimeout(() => {
-      input.focus();
-      // Scroll messages to top to show header and first message
-      if (messages.scrollTop > 0) {
-        messages.scrollTop = 0;
-      }
-    }, 100);
+    // On mobile, delay focusing input to prevent keyboard from opening immediately
+    // This allows the chat window to fully render first
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      // Wait for chat window to be visible before focusing
+      setTimeout(() => {
+        // Scroll messages to top to show header and first message
+        if (messages.scrollTop > 0) {
+          messages.scrollTop = 0;
+        }
+        // Don't auto-focus on mobile - let user tap input when ready
+      }, 300);
+    } else {
+      // On desktop, focus after a short delay
+      setTimeout(() => {
+        input.focus();
+      }, 200);
+    }
   }
   
   function closeChat() {
@@ -9274,7 +9341,9 @@ IMPORTANT:
     }
   }
   
-  toggle.addEventListener('click', () => {
+  toggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (isOpen) closeChat();
     else openChat();
   });
