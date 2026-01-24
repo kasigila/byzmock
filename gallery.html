@@ -3479,43 +3479,27 @@ console.log("✅ Script file loaded!");
       const src = pin.dataset.src;
       if(!src || selectMode) return;
       
-      // Get tap data
+      // SIMPLIFIED DOUBLE-TAP LOGIC (as specified)
+      const currentTime = new Date().getTime();
       let tapData = pinTapData.get(pin);
       if(!tapData) {
-        tapData = { lastTouch: 0, timeout: null, touchStart: 0 };
+        tapData = { lastTap: 0 };
         pinTapData.set(pin, tapData);
       }
       
-      const now = Date.now();
-      const timeDiff = now - tapData.lastTouch;
+      const tapLength = currentTime - tapData.lastTap;
       
-      // Double-tap detection (300ms window)
-      if(timeDiff < 300 && timeDiff > 0 && tapData.lastTouch > 0){
+      if (tapLength < 500 && tapLength > 0) {
         // DOUBLE TAP DETECTED - LIKE THE PHOTO
-        if(tapData.timeout) {
-          clearTimeout(tapData.timeout);
-          tapData.timeout = null;
-        }
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
         handleDoubleTap(pin, src);
-        tapData.lastTouch = 0;
+        tapData.lastTap = 0;
         return false;
       }
       
-      // Single tap - wait to see if it becomes double-tap
-      tapData.lastTouch = now;
-      if(tapData.timeout) clearTimeout(tapData.timeout);
-      tapData.timeout = setTimeout(() => {
-        // Single tap confirmed - open lightbox
-        const idx = currentList.indexOf(src);
-        if(idx >= 0) {
-          openLightboxByIndex(idx);
-        }
-        tapData.lastTouch = 0;
-        tapData.timeout = null;
-      }, 300);
+      tapData.lastTap = currentTime;
     };
     
     // ========== KEYBOARD HANDLER ==========
