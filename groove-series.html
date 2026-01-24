@@ -235,6 +235,7 @@
     position:relative;
     transition: all 0.3s var(--ease);
     will-change: transform;
+    cursor: default; /* Cards are not clickable - only buttons are */
   }
   .card.active{
     border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
@@ -629,7 +630,7 @@
             </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=caribbean">
+              <a class="btn primary" href="booking.html?type=caribbean" onclick="event.stopPropagation(); return true;">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
@@ -680,7 +681,7 @@
       </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=rnb">
+              <a class="btn primary" href="booking.html?type=rnb" onclick="event.stopPropagation(); return true;">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
@@ -731,7 +732,7 @@
             </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=afrobeats">
+              <a class="btn primary" href="booking.html?type=afrobeats" onclick="event.stopPropagation(); return true;">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
