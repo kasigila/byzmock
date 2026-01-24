@@ -630,7 +630,7 @@
             </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=caribbean" onclick="event.stopPropagation(); event.stopImmediatePropagation(); return true;">
+              <a class="btn primary" href="booking.html?type=caribbean">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
@@ -681,7 +681,7 @@
       </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=rnb" onclick="event.stopPropagation(); event.stopImmediatePropagation(); return true;">
+              <a class="btn primary" href="booking.html?type=rnb">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
@@ -732,7 +732,7 @@
             </div>
 
           <div class="card-actions">
-              <a class="btn primary" href="booking.html?type=afrobeats" onclick="event.stopPropagation(); event.stopImmediatePropagation(); return true;">
+              <a class="btn primary" href="booking.html?type=afrobeats">
                 <i class="fa-solid fa-ticket"></i> Book Now
               </a>
               <div class="card-actions-secondary">
@@ -913,37 +913,79 @@ document.addEventListener('DOMContentLoaded', () => {
     images.forEach(img => imageObserver.observe(img));
   }
 
-  // Prevent card clicks from interfering with button clicks
-  // Only allow clicks on buttons/links inside cards
+  // CRITICAL FIX: Prevent any card-level navigation to gallery
+  // Remove data-event clickability completely - cards should NOT be clickable
   document.querySelectorAll('.card[data-event]').forEach(card => {
-    // Prevent any default click behavior on the card itself
+    // Make card completely non-clickable except for buttons/links inside
+    card.style.pointerEvents = 'auto'; // Allow clicks to pass through to children
     card.addEventListener('click', function(e) {
-      // If the click is NOT on a button or link, prevent default behavior
       const clickedElement = e.target;
-      const isButton = clickedElement.closest('a, button, .btn');
-      if (!isButton) {
+      const isInteractive = clickedElement.closest('a, button, .btn, input, select, textarea');
+      if (!isInteractive) {
+        // If clicking on card itself (not a button), do nothing
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
         return false;
       }
-    }, true); // Use capture phase to intercept early
+    }, true); // Capture phase - intercept early
   });
 
-  // Ensure all "Book Now" buttons work correctly - force navigation to booking.html
-  document.querySelectorAll('.card-actions .btn.primary').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      const href = this.getAttribute('href');
-      // If href points to booking.html, ensure it navigates there
+  // CRITICAL FIX: Force "Book Now" buttons to navigate to booking.html
+  // Try multiple selectors to ensure we catch all buttons
+  const selectors = [
+    '.card-actions .btn.primary[href*="booking.html"]',
+    '.btn.primary[href*="booking.html"]',
+    'a.btn.primary[href*="booking.html"]'
+  ];
+  
+  let bookNowButtons = [];
+  selectors.forEach(sel => {
+    const found = document.querySelectorAll(sel);
+    found.forEach(btn => {
+      if (!bookNowButtons.includes(btn)) {
+        bookNowButtons.push(btn);
+      }
+    });
+  });
+  
+  console.log('Book Now buttons found:', bookNowButtons.length); // Debug log
+  
+  bookNowButtons.forEach((btn, index) => {
+    // Remove any inline onclick handlers
+    btn.removeAttribute('onclick');
+    
+    // Store original href
+    const originalHref = btn.getAttribute('href');
+    console.log(`Button ${index} href:`, originalHref);
+    
+    // Add handler in CAPTURE phase (runs FIRST, before bubble phase)
+    // Use named function so we can remove it if needed
+    function handleBookNowClick(e) {
+      const href = this.getAttribute('href') || originalHref;
+      console.log('Book Now clicked, href:', href, 'target:', e.target); // Debug log
+      
       if (href && href.includes('booking.html')) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        // Explicitly navigate to prevent any interference
+        // IMMEDIATELY stop all event propagation
+        e.stopImmediatePropagation(); // Stops other handlers on same element
+        e.stopPropagation(); // Stops bubbling to parent elements
+        
+        // Prevent default link behavior
+        e.preventDefault();
+        
+        // Navigate directly - this will override any other navigation
+        console.log('Navigating to:', href);
         window.location.href = href;
-        e.preventDefault(); // Prevent default since we're handling it
+        
         return false;
       }
-    }, true);
+    }
+    
+    // Add in capture phase (runs BEFORE any bubble phase handlers)
+    btn.addEventListener('click', handleBookNowClick, true);
+    
+    // Also add in bubble phase as backup (but capture should handle it)
+    btn.addEventListener('click', handleBookNowClick, false);
   });
 });
 
