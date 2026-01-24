@@ -522,6 +522,13 @@
       border:none;background:none;color:var(--sub);
       cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
     }
+    .toast-undo{
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .toast-undo:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
 
     /* Modal */
     .modal-backdrop{
@@ -900,6 +907,7 @@
     let autoRefreshInterval = null;
     let activityLog = JSON.parse(localStorage.getItem("byz_activity") || "[]");
     let lastLoadTime = null;
+    let recentRejections = JSON.parse(localStorage.getItem("byz_recent_rejections") || "{}"); // Track rejections for undo
 
     (function initTheme(){
       document.body.setAttribute("data-theme", "dark");
@@ -1355,6 +1363,7 @@
       `;
       document.getElementById("confirmActionBtn").className = "primary approve";
       document.getElementById("confirmActionBtn").innerHTML = '<i class="fa-solid fa-check"></i> Approve';
+      document.getElementById("confirmActionBtn").onclick = confirmAction;
       document.getElementById("confirmModal").classList.remove("hidden");
     }
 
@@ -1362,31 +1371,117 @@
       const booking = bookings.find(b => b.bookingId === id);
       if(!booking) return;
 
+      const expectedAmount = calculateExpectedAmount(booking);
+      const bookingDate = booking.timestamp || booking.createdAt || booking.date;
+      const formattedDate = bookingDate ? new Date(bookingDate).toLocaleDateString() : "N/A";
+
       pendingConfirm = { action: "reject", id, eventKey };
       document.getElementById("confirmTitle").textContent = "Reject Booking";
       document.getElementById("confirmBody").innerHTML = `
-        <div style="margin-bottom:12px;"><b>Booking ID:</b> ${booking.bookingId}</div>
-        <div style="margin-bottom:12px;"><b>Name:</b> ${booking.name}</div>
-        <div style="margin-top:16px;color:var(--sub);font-size:13px;">This action cannot be undone. Are you sure?</div>
+        <div style="margin-bottom:16px;padding:16px;background:color-mix(in srgb, var(--bg-alt) 60%, transparent);border-radius:16px;border:1px solid var(--border);">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;margin-bottom:12px;">
+            <div><b>Booking ID:</b><br><span style="font-family:monospace;font-size:13px;">${booking.bookingId}</span></div>
+            <div><b>Name:</b><br>${booking.name}</div>
+            <div><b>Phone:</b><br>${booking.phone || "N/A"}</div>
+            <div><b>Event:</b><br>${(booking.eventKey || "").toUpperCase()}</div>
+            <div><b>Type:</b><br>${booking.bookingType}</div>
+            <div><b>Amount:</b><br>${expectedAmount.toLocaleString()} TZS</div>
+            <div><b>Transaction Code:</b><br><span style="font-family:monospace;font-size:12px;word-break:break-all;">${booking.transactionCode || "N/A"}</span></div>
+            <div><b>Date:</b><br>${formattedDate}</div>
+          </div>
+        </div>
+        
+        <div style="margin-top:20px;margin-bottom:16px;">
+          <label style="display:block;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);">
+            Reason for Rejection <span style="color:var(--bad);">*</span>
+          </label>
+          <select id="rejectionReason" required style="width:100%;margin-bottom:12px;" onchange="toggleRejectionNotes()">
+            <option value="">-- Select a reason --</option>
+            <option value="transaction_amount_mismatch">Transaction Amount Mismatch</option>
+            <option value="invalid_transaction_code">Invalid Transaction Code</option>
+            <option value="duplicate_booking">Duplicate Booking</option>
+            <option value="fraudulent_activity">Fraudulent Activity</option>
+            <option value="other">Other</option>
+          </select>
+          <div id="rejectionNotesWrapper" style="display:none;margin-top:12px;">
+            <label style="display:block;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);">
+              Additional Notes
+            </label>
+            <textarea id="rejectionNotes" placeholder="Please provide additional details..." style="width:100%;min-height:80px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--bg-elev);color:var(--text);font-size:13px;font-family:inherit;resize:vertical;" maxlength="500"></textarea>
+            <div style="font-size:11px;color:var(--sub);margin-top:4px;">Optional: Provide more context about the rejection</div>
+          </div>
+        </div>
+        
+        <div style="margin-top:16px;padding:12px;border-radius:12px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));color:var(--text);font-size:12px;">
+          <i class="fa-solid fa-circle-info"></i> <b>Note:</b> The customer will be notified via email (if provided). You can undo this action within 5 minutes.
+        </div>
       `;
       document.getElementById("confirmActionBtn").className = "primary reject";
       document.getElementById("confirmActionBtn").innerHTML = '<i class="fa-solid fa-xmark"></i> Reject';
+      document.getElementById("confirmActionBtn").onclick = validateAndReject;
       document.getElementById("confirmModal").classList.remove("hidden");
+      
+      // Focus on reason dropdown
+      setTimeout(() => {
+        const reasonSelect = document.getElementById("rejectionReason");
+        if(reasonSelect) reasonSelect.focus();
+      }, 100);
+    }
+
+    function toggleRejectionNotes(){
+      const reason = document.getElementById("rejectionReason").value;
+      const notesWrapper = document.getElementById("rejectionNotesWrapper");
+      const notesField = document.getElementById("rejectionNotes");
+      if(reason === "other"){
+        notesWrapper.style.display = "block";
+        setTimeout(() => notesField?.focus(), 100);
+      } else {
+        notesWrapper.style.display = "none";
+        if(notesField) notesField.value = "";
+      }
+    }
+
+    function validateAndReject(){
+      const reason = document.getElementById("rejectionReason")?.value;
+      if(!reason){
+        showToast("Please select a reason for rejection", "error");
+        document.getElementById("rejectionReason")?.focus();
+        return;
+      }
+      const notes = reason === "other" ? (document.getElementById("rejectionNotes")?.value || "").trim() : "";
+      if(reason === "other" && !notes){
+        showToast("Please provide additional notes when selecting 'Other'", "error");
+        document.getElementById("rejectionNotes")?.focus();
+        return;
+      }
+      confirmAction();
     }
 
     function closeConfirmModal(){
       document.getElementById("confirmModal").classList.add("hidden");
       pendingConfirm = null;
+      // Clear rejection form fields
+      const reasonSelect = document.getElementById("rejectionReason");
+      const notesField = document.getElementById("rejectionNotes");
+      const notesWrapper = document.getElementById("rejectionNotesWrapper");
+      if(reasonSelect) reasonSelect.value = "";
+      if(notesField) notesField.value = "";
+      if(notesWrapper) notesWrapper.style.display = "none";
     }
 
     function confirmAction(){
       if(!pendingConfirm) return;
       const { action, id, eventKey } = pendingConfirm;
-      closeConfirmModal();
       if(action === "approve"){
+        closeConfirmModal();
         approve(id, eventKey);
       } else {
-        rejectBooking(id, eventKey);
+        // Rejection validation is handled in validateAndReject
+        // This function is only called after validation passes
+        const reason = document.getElementById("rejectionReason")?.value;
+        const notes = reason === "other" ? (document.getElementById("rejectionNotes")?.value || "").trim() : "";
+        closeConfirmModal();
+        rejectBooking(id, eventKey, reason, notes);
       }
     }
 
@@ -1457,7 +1552,7 @@
       }
     }
 
-    async function rejectBooking(id, eventKey){
+    async function rejectBooking(id, eventKey, rejectionReason, rejectionNotes = ""){
       const btn = event.target.closest("button");
       const originalHTML = btn ? btn.innerHTML : "";
       if(btn){
@@ -1466,10 +1561,22 @@
       }
 
       try{
+        const payload = {
+          action: "rejectBooking",
+          bookingId: id,
+          pin: ADMIN_PASSWORD,
+          eventKey: eventKey,
+          rejectionReason: rejectionReason
+        };
+        
+        if(rejectionNotes){
+          payload.rejectionNotes = rejectionNotes;
+        }
+
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action:"rejectBooking", bookingId:id, pin: ADMIN_PASSWORD, eventKey })
+          body: JSON.stringify(payload)
         }).then(r=>r.json());
 
         if(!res.success){
@@ -1481,8 +1588,27 @@
           return;
         }
 
-        addActivity("Rejected", id, "Booking rejected");
-        showToast("Booking rejected", "success");
+        // Store rejection info for undo (5 minute window)
+        const rejectionKey = `${id}_${Date.now()}`;
+        recentRejections[rejectionKey] = {
+          bookingId: id,
+          eventKey: eventKey,
+          rejectionReason: rejectionReason,
+          rejectionNotes: rejectionNotes,
+          timestamp: Date.now(),
+          expiresAt: Date.now() + (5 * 60 * 1000) // 5 minutes
+        };
+        localStorage.setItem("byz_recent_rejections", JSON.stringify(recentRejections));
+
+        // Clean up expired rejections
+        cleanupExpiredRejections();
+
+        const reasonText = getRejectionReasonText(rejectionReason);
+        const activityDetails = rejectionNotes ? `${reasonText} - ${rejectionNotes}` : reasonText;
+        addActivity("Rejected", id, activityDetails);
+        
+        // Show toast with undo option
+        showRejectionToast(id, eventKey, rejectionKey);
         await load();
         highlightRow(id);
       }catch(err){
@@ -1492,6 +1618,118 @@
           btn.disabled = false;
           btn.innerHTML = originalHTML;
         }
+      }
+    }
+
+    function getRejectionReasonText(reason){
+      const reasons = {
+        "transaction_amount_mismatch": "Transaction amount mismatch",
+        "invalid_transaction_code": "Invalid transaction code",
+        "duplicate_booking": "Duplicate booking",
+        "fraudulent_activity": "Fraudulent activity",
+        "other": "Other reason"
+      };
+      return reasons[reason] || reason;
+    }
+
+    function cleanupExpiredRejections(){
+      const now = Date.now();
+      Object.keys(recentRejections).forEach(key => {
+        if(recentRejections[key].expiresAt < now){
+          delete recentRejections[key];
+        }
+      });
+      localStorage.setItem("byz_recent_rejections", JSON.stringify(recentRejections));
+    }
+
+    function showRejectionToast(bookingId, eventKey, rejectionKey){
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast-item success";
+      toast.id = `rejection-toast-${rejectionKey}`;
+      
+      const canUndo = recentRejections[rejectionKey] && recentRejections[rejectionKey].expiresAt > Date.now();
+      const timeLeft = canUndo ? Math.ceil((recentRejections[rejectionKey].expiresAt - Date.now()) / 1000) : 0;
+      
+      toast.innerHTML = `
+        <i class="fa-solid fa-circle-check toast-icon success"></i>
+        <div class="toast-content">
+          <div class="toast-title">Booking Rejected</div>
+          <div class="toast-message">Booking ${bookingId} has been rejected${canUndo ? `. You can undo within ${timeLeft}s.` : "."}</div>
+        </div>
+        ${canUndo ? `<button class="toast-undo" onclick="undoRejection('${rejectionKey}')" style="margin-left:8px;padding:6px 12px;border-radius:8px;background:var(--bg-elev);border:1px solid var(--border);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">
+          <i class="fa-solid fa-rotate-left"></i> Undo
+        </button>` : ""}
+        <button class="toast-close" onclick="this.closest('.toast-item').remove()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+      container.appendChild(toast);
+      
+      // Update countdown if undo is available
+      if(canUndo){
+        const updateCountdown = setInterval(() => {
+          const remaining = Math.ceil((recentRejections[rejectionKey].expiresAt - Date.now()) / 1000);
+          const messageEl = toast.querySelector(".toast-message");
+          if(remaining > 0 && messageEl){
+            messageEl.textContent = `Booking ${bookingId} has been rejected. You can undo within ${remaining}s.`;
+          } else {
+            clearInterval(updateCountdown);
+            const undoBtn = toast.querySelector(".toast-undo");
+            if(undoBtn) undoBtn.remove();
+            if(messageEl) messageEl.textContent = `Booking ${bookingId} has been rejected.`;
+          }
+        }, 1000);
+      }
+      
+      // Auto-remove after 10 seconds (or when undo expires)
+      setTimeout(() => {
+        if(toast.parentElement){
+          toast.style.animation = "toastSlideIn .3s var(--ease) reverse";
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, Math.max(10000, timeLeft * 1000));
+    }
+
+    async function undoRejection(rejectionKey){
+      const rejection = recentRejections[rejectionKey];
+      if(!rejection || rejection.expiresAt < Date.now()){
+        showToast("Undo window has expired", "error");
+        return;
+      }
+
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "undoRejection",
+            bookingId: rejection.bookingId,
+            pin: ADMIN_PASSWORD,
+            eventKey: rejection.eventKey
+          })
+        }).then(r=>r.json());
+
+        if(!res.success){
+          showToast("Undo failed: " + (res.error || "Unknown"), "error");
+          return;
+        }
+
+        // Remove from recent rejections
+        delete recentRejections[rejectionKey];
+        localStorage.setItem("byz_recent_rejections", JSON.stringify(recentRejections));
+
+        // Remove toast
+        const toast = document.getElementById(`rejection-toast-${rejectionKey}`);
+        if(toast) toast.remove();
+
+        addActivity("Undone", rejection.bookingId, "Rejection undone");
+        showToast("Rejection undone - booking restored to pending", "success");
+        await load();
+        highlightRow(rejection.bookingId);
+      }catch(err){
+        console.error(err);
+        showToast("Undo failed. Check connection.", "error");
       }
     }
 
@@ -1643,6 +1881,9 @@
     });
 
     updateActivityLog();
+    
+    // Clean up expired rejections on load
+    cleanupExpiredRejections();
     
     // PWA Install Functionality - Only show after successful login
     let deferredPrompt;
