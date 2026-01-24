@@ -7064,12 +7064,14 @@ boardGrid.innerHTML = boardItems.map(item => {
         : toggleHeight;
       
       // Ensure dock stays above chat icon with gap - increased gap for better separation
-      const minGap = 16; // Minimum gap between dock and chat (increased from 12)
+      const minGap = 20; // Minimum gap between dock and chat (increased for better separation)
       
       // If chat is visible (not hidden), position dock above it
       if (chatRect.width > 0 && chatRect.height > 0 && !isChatOpen) {
         // Calculate required bottom position to be above chat widget
-        const requiredBottom = chatHeight + chatBottom + dockHeight + minGap;
+        // Account for chat toggle button height (56px) plus gap
+        const chatToggleHeight = 56;
+        const requiredBottom = chatToggleHeight + chatBottom + dockHeight + minGap;
         if(requiredBottom > bottomOffset) {
           bottomOffset = requiredBottom;
         }
@@ -8605,29 +8607,11 @@ IMPORTANT:
       z-index: 1000 !important;
     }
     
-    /* Invisible lock/reserved space around chat widget to prevent overlap */
-    /* Space above for social dock */
-    #byzChatWidget::before {
-      content: '';
-      position: absolute;
-      top: -80px;
-      left: -16px;
-      right: -16px;
-      height: 80px;
-      pointer-events: none;
-      z-index: -1;
-    }
-    
     /* Ensure chat doesn't overlap social dock */
     @media (min-width: 768px) {
       #byzChatWidget {
         bottom: 24px !important;
         right: 24px !important;
-      }
-      
-      #byzChatWidget::before {
-        top: -100px;
-        height: 100px;
       }
     }
     
@@ -8778,6 +8762,9 @@ IMPORTANT:
         box-shadow: 
           0 20px 60px rgba(0,0,0,.4),
           0 0 0 0.5px color-mix(in srgb, var(--border) 20%, transparent) !important;
+        /* Ensure window is fully within viewport */
+        max-width: min(400px, calc(100vw - 48px)) !important;
+        max-height: min(80vh, calc(100vh - 48px)) !important;
       }
       
       /* Chat toggle button remains visible and clickable above chat window */
@@ -8810,16 +8797,29 @@ IMPORTANT:
       .chat-window:not(.byz-hidden) {
         display: flex !important;
         flex-direction: column !important;
+        position: fixed !important;
+        inset: 0 !important;
+        overflow: hidden !important;
       }
       
       .chat-header {
-        position: relative !important;
+        position: sticky !important;
         top: 0 !important;
         flex-shrink: 0 !important;
-        z-index: 100 !important;
+        z-index: 10001 !important;
         width: 100% !important;
         min-height: 60px !important;
         max-height: none !important;
+        /* Ensure header stays visible even when keyboard opens */
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+      }
+      
+      /* Ensure chat window container doesn't create new stacking context that breaks sticky */
+      .chat-window:not(.byz-hidden) {
+        transform: none !important;
+        will-change: auto !important;
+        overflow: hidden !important;
       }
     }
     
@@ -8919,6 +8919,16 @@ IMPORTANT:
         max-height: none !important;
         -webkit-overflow-scrolling: touch !important;
         height: 0 !important;
+        /* Ensure messages area doesn't interfere with header visibility */
+        position: relative !important;
+        z-index: 1 !important;
+      }
+      
+      /* Ensure header stays above messages when scrolling */
+      .chat-header {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10001 !important;
       }
     }
     
@@ -9301,15 +9311,21 @@ IMPORTANT:
   // Prevent auto-zoom on iOS and ensure first message is visible
   input.addEventListener('focus', function() {
     if (window.innerWidth <= 640) {
-      // On mobile, scroll messages to top to show first message when keyboard opens
+      // On mobile, ensure header stays visible when keyboard opens
+      // The header is sticky, so it should stay at top, but we ensure messages scroll correctly
       setTimeout(() => {
+        // Scroll messages to top to show first message (header is sticky, so it stays visible)
         if (messages && messages.scrollTop > 50) {
           messages.scrollTop = 0; // Show first message
         }
-        // Ensure header is visible (it's sticky, but double-check)
+        // Ensure header is at the top of the viewport
         const header = document.querySelector('.chat-header');
         if (header) {
-          header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Header is sticky, so it should already be visible, but ensure it's at top
+          const chatWindow = document.getElementById('chatWindow');
+          if (chatWindow) {
+            chatWindow.scrollTop = 0;
+          }
         }
       }, 150);
     }
