@@ -3479,27 +3479,49 @@ console.log("✅ Script file loaded!");
       const src = pin.dataset.src;
       if(!src || selectMode) return;
       
-      // SIMPLIFIED DOUBLE-TAP LOGIC (as specified)
-      const currentTime = new Date().getTime();
+      // CLEAN REWRITE: Simplified double-tap handler
       let tapData = pinTapData.get(pin);
       if(!tapData) {
-        tapData = { lastTap: 0 };
+        tapData = { lastTap: 0, tapTimeout: null };
         pinTapData.set(pin, tapData);
       }
       
+      const currentTime = new Date().getTime();
       const tapLength = currentTime - tapData.lastTap;
       
-      if (tapLength < 500 && tapLength > 0) {
+      if (tapLength < 500 && tapLength > 0 && tapData.lastTap > 0) {
         // DOUBLE TAP DETECTED - LIKE THE PHOTO
+        if(tapData.tapTimeout) {
+          clearTimeout(tapData.tapTimeout);
+          tapData.tapTimeout = null;
+        }
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        handleDoubleTap(pin, src);
+        
+        // Call like function - ensure it exists
+        if(typeof handleDoubleTap === 'function') {
+          handleDoubleTap(pin, src);
+        } else {
+          console.error('handleDoubleTap function not found');
+        }
+        
         tapData.lastTap = 0;
         return false;
+      } else {
+        // Single tap - wait to see if it becomes double-tap
+        tapData.lastTap = currentTime;
+        if(tapData.tapTimeout) clearTimeout(tapData.tapTimeout);
+        tapData.tapTimeout = setTimeout(() => {
+          // Single tap confirmed - open lightbox
+          const idx = currentList.indexOf(src);
+          if(idx >= 0) {
+            openLightboxByIndex(idx);
+          }
+          tapData.lastTap = 0;
+          tapData.tapTimeout = null;
+        }, 500);
       }
-      
-      tapData.lastTap = currentTime;
     };
     
     // ========== KEYBOARD HANDLER ==========
