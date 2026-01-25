@@ -1437,13 +1437,8 @@
     });
 
     function showVerifyPanel(bookingId, event){
-      console.log("🔵 showVerifyPanel called with bookingId:", bookingId);
       const booking = bookings.find(b => b.bookingId === bookingId);
-      if(!booking) {
-        console.error("❌ Booking not found:", bookingId);
-        return;
-      }
-      console.log("✅ Booking found, opening modal for:", booking.bookingId);
+      if(!booking) return;
 
       // Get all pending bookings with transaction codes for navigation
       pendingBookingsForVerify = filteredBookings.filter(b => 
@@ -1463,21 +1458,13 @@
       const amountMatch = expectedAmount === enteredAmount && enteredAmount > 0 && expectedAmount > 0;
       
       // Add glow effect to the row/card
-      console.log("Adding glow effect to booking row/card for:", bookingId);
       document.querySelectorAll("tr.verify-active, .booking-card.verify-active").forEach(el => {
         el.classList.remove("verify-active");
       });
       const row = document.querySelector(`tr[data-booking-id="${bookingId}"]`);
       const card = document.querySelector(`.booking-card[data-booking-id="${bookingId}"]`);
-      console.log("Found row:", row, "Found card:", card);
-      if(row) {
-        row.classList.add("verify-active");
-        console.log("✓ Glow effect added to row");
-      }
-      if(card) {
-        card.classList.add("verify-active");
-        console.log("✓ Glow effect added to card");
-      }
+      if(row) row.classList.add("verify-active");
+      if(card) card.classList.add("verify-active");
       
       // Get the button position for animation
       let buttonRect = null;
@@ -1605,32 +1592,14 @@
       // Hide navigation arrows initially (will show after approve/reject)
       document.getElementById("verifyNavArrows").classList.remove("show");
       
-      // Show approve/reject buttons - FORCE VISIBILITY
+      // Show approve/reject buttons
       const actionsEl = document.getElementById("verifyModalActions");
-      console.log("🔵 Actions element:", actionsEl);
       if(actionsEl){
         actionsEl.style.display = "flex";
-        actionsEl.style.visibility = "visible";
-        actionsEl.style.opacity = "1";
         const approveBtn = document.getElementById("verifyModalApprove");
         const rejectBtn = document.getElementById("verifyModalReject");
-        console.log("🔵 Approve button:", approveBtn, "Reject button:", rejectBtn);
-        if(approveBtn) {
-          approveBtn.disabled = false;
-          approveBtn.style.display = "block";
-          approveBtn.style.visibility = "visible";
-          approveBtn.style.opacity = "1";
-          console.log("✅ Approve button enabled and visible");
-        }
-        if(rejectBtn) {
-          rejectBtn.disabled = false;
-          rejectBtn.style.display = "block";
-          rejectBtn.style.visibility = "visible";
-          rejectBtn.style.opacity = "1";
-          console.log("✅ Reject button enabled and visible");
-        }
-      } else {
-        console.error("❌ Actions element not found!");
+        if(approveBtn) approveBtn.disabled = false;
+        if(rejectBtn) rejectBtn.disabled = false;
       }
 
       // Show the modal with animation from button position
@@ -1643,17 +1612,10 @@
       modalContent.style.opacity = "0";
       
       // Ensure modal backdrop is visible
-      console.log("Showing modal, backdrop should be visible");
       modal.classList.remove("hidden");
       modal.style.display = "grid";
-      modal.style.zIndex = "9998";
-      
-      // Force backdrop visibility
-      const backdrop = document.getElementById("verifyModal");
-      if(backdrop) {
-        backdrop.style.background = "rgba(0,0,0,.65)";
-        backdrop.style.backdropFilter = "blur(10px)";
-      }
+      modal.style.background = "rgba(0,0,0,.65)";
+      modal.style.backdropFilter = "blur(10px)";
       
       // Animate in - modal appears to come out of the button
       requestAnimationFrame(() => {
@@ -1740,10 +1702,7 @@
     }
     
     async function approveFromVerifyModal(){
-      if(!currentVerifyBooking) {
-        console.error("No current booking to approve");
-        return;
-      }
+      if(!currentVerifyBooking) return;
       const bookingId = currentVerifyBooking.bookingId;
       const eventKey = currentVerifyBooking.eventKey;
       
@@ -1758,11 +1717,7 @@
     }
     
     function showRejectModalFromVerify(){
-      if(!currentVerifyBooking) {
-        console.error("No current booking to reject");
-        return;
-      }
-      // Store current booking before closing
+      if(!currentVerifyBooking) return;
       const bookingId = currentVerifyBooking.bookingId;
       const eventKey = currentVerifyBooking.eventKey;
       
@@ -1838,15 +1793,7 @@
       });
     }
     
-    // Make ALL verify modal functions globally accessible for onclick handlers
-    // This MUST be after all function definitions are complete
-    (function makeFunctionsGlobal(){
-      window.navigateVerifyModal = navigateVerifyModal;
-      window.approveFromVerifyModal = approveFromVerifyModal;
-      window.showRejectModalFromVerify = showRejectModalFromVerify;
-      window.showVerifyPanel = showVerifyPanel;
-      window.closeVerifyModal = closeVerifyModal;
-    })();
+    // Verify modal functions will be made globally accessible at the end of script
 
     function showApproveModal(id, eventKey){
       const booking = bookings.find(b => b.bookingId === id);
@@ -2600,6 +2547,28 @@
         deferredPrompt = null;
         closeInstallModal();
       });
+    }
+    
+    // Make ALL verify modal functions globally accessible for onclick handlers
+    // Assign immediately and also on DOMContentLoaded to ensure they're available
+    function assignVerifyModalFunctions(){
+      window.navigateVerifyModal = navigateVerifyModal;
+      window.approveFromVerifyModal = approveFromVerifyModal;
+      window.showRejectModalFromVerify = showRejectModalFromVerify;
+      window.showVerifyPanel = showVerifyPanel;
+      window.closeVerifyModal = closeVerifyModal;
+      window.copyToClipboard = copyToClipboard;
+    }
+    
+    // Assign immediately
+    assignVerifyModalFunctions();
+    
+    // Also assign on DOMContentLoaded as backup
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', assignVerifyModalFunctions);
+    } else {
+      // DOM already loaded, assign immediately
+      assignVerifyModalFunctions();
     }
     
     // Register Service Worker for PWA
