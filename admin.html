@@ -2,11 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BYZ Admin Dashboard v2.0</title>
-  <!-- 
-    ADMIN DASHBOARD v2.0 - Clean Rebuild
-    All functionality preserved with enhanced verify modal features
-  -->
+  <title>BYZ Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="BYZ Entertainment Admin Dashboard - Manage bookings and events">
   <meta name="theme-color" content="#000000">
@@ -746,36 +742,6 @@
       font-size:12px;cursor:pointer;
     }
     .refresh-toggle.active{background:var(--accent);color:var(--bg);border-color:transparent}
-
-    /* Premium Features Styling */
-    #quickActionsPanel button:hover{
-      transform:scale(1.1) !important;
-    }
-    #quickActionsMenu button:hover{
-      background:color-mix(in srgb, var(--accent) 10%, transparent) !important;
-      transform:translateX(4px);
-    }
-    #bulkActionsBar{
-      animation: slideDown 0.3s var(--ease);
-    }
-    @keyframes slideDown{
-      from{opacity:0;transform:translateY(-10px);}
-      to{opacity:1;transform:translateY(0);}
-    }
-    #analyticsPanel{
-      animation: fadeIn 0.3s var(--ease);
-    }
-    #todayStats{
-      animation: fadeIn 0.3s var(--ease);
-    }
-    .bulk-checkbox{
-      width:18px;height:18px;cursor:pointer;
-      accent-color:var(--accent);
-    }
-    kbd{
-      font-family:monospace;
-      font-size:11px;
-    }
   </style>
 </head>
 
@@ -831,41 +797,6 @@
           <h1>BYZ Admin Control Center</h1>
           <p>Approvals, check‑ins, and live activity by event.</p>
 
-          <!-- Quick Stats Toggle -->
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <div style="display:flex;gap:8px;align-items:center;">
-              <button onclick="toggleQuickStats()" style="padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elev);cursor:pointer;">
-                <i class="fa-solid fa-chart-line"></i> <span id="quickStatsToggleText">Show</span> Analytics
-              </button>
-              <button onclick="toggleBulkMode()" style="padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elev);cursor:pointer;">
-                <i class="fa-solid fa-check-square"></i> <span id="bulkModeToggleText">Bulk</span> Mode
-              </button>
-            </div>
-            <div style="font-size:11px;color:var(--sub);">
-              <i class="fa-solid fa-keyboard"></i> Press <kbd style="padding:2px 6px;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);font-size:10px;">?</kbd> for shortcuts
-            </div>
-          </div>
-
-          <!-- Today's Quick Stats -->
-          <div id="todayStats" style="display:none;grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));gap:10px;margin-bottom:14px;padding:12px;border-radius:16px;background:color-mix(in srgb, var(--accent) 8%, transparent);border:1px solid color-mix(in srgb, var(--accent) 20%, var(--border));">
-            <div style="text-align:center;">
-              <div style="font-size:10px;color:var(--sub);font-weight:700;margin-bottom:4px;">Today's Revenue</div>
-              <div style="font-size:20px;font-weight:900;color:var(--accent);" id="todayRevenue">—</div>
-            </div>
-            <div style="text-align:center;">
-              <div style="font-size:10px;color:var(--sub);font-weight:700;margin-bottom:4px;">Today's Bookings</div>
-              <div style="font-size:20px;font-weight:900;color:var(--accent);" id="todayBookings">—</div>
-            </div>
-            <div style="text-align:center;">
-              <div style="font-size:10px;color:var(--sub);font-weight:700;margin-bottom:4px;">Pending Now</div>
-              <div style="font-size:20px;font-weight:900;color:var(--warn);" id="pendingNow">—</div>
-            </div>
-            <div style="text-align:center;">
-              <div style="font-size:10px;color:var(--sub);font-weight:700;margin-bottom:4px;">Avg Today</div>
-              <div style="font-size:20px;font-weight:900;color:var(--accent);" id="avgToday">—</div>
-            </div>
-          </div>
-
           <div class="stats">
             <div class="stat">
               <div class="k">Total Bookings</div>
@@ -894,63 +825,11 @@
             </div>
           </div>
 
-          <!-- Business Intelligence Panel -->
-          <div id="analyticsPanel" class="hidden" style="margin-top:16px;padding:16px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--bg-elev);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-              <h3 style="font-size:16px;font-weight:900;display:flex;align-items:center;gap:8px;">
-                <i class="fa-solid fa-chart-pie"></i> Business Intelligence
-              </h3>
-              <button onclick="toggleQuickStats()" style="padding:6px 10px;font-size:11px;border-radius:8px;border:1px solid var(--border);background:var(--bg-alt);cursor:pointer;">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;margin-bottom:16px;">
-              <div style="padding:12px;border-radius:12px;background:var(--bg-alt);border:1px solid var(--border);">
-                <div style="font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px;">Revenue by Event</div>
-                <div id="revenueByEvent" style="font-size:13px;color:var(--text);line-height:1.6;"></div>
-              </div>
-              <div style="padding:12px;border-radius:12px;background:var(--bg-alt);border:1px solid var(--border);">
-                <div style="font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px;">Booking Type Split</div>
-                <div id="bookingTypeSplit" style="font-size:13px;color:var(--text);line-height:1.6;"></div>
-              </div>
-              <div style="padding:12px;border-radius:12px;background:var(--bg-alt);border:1px solid var(--border);">
-                <div style="font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px;">Top Customers</div>
-                <div id="topCustomers" style="font-size:13px;color:var(--text);line-height:1.6;"></div>
-              </div>
-              <div style="padding:12px;border-radius:12px;background:var(--bg-alt);border:1px solid var(--border);">
-                <div style="font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px;">Peak Booking Times</div>
-                <div id="peakTimes" style="font-size:13px;color:var(--text);line-height:1.6;"></div>
-              </div>
-            </div>
-          </div>
-
           <div class="tabs">
             <button class="tab-btn active" data-event="">All</button>
             <button class="tab-btn" data-event="groove">Groove</button>
             <button class="tab-btn" data-event="tempo">Tempo</button>
             <button class="tab-btn" data-event="apt">APT</button>
-          </div>
-
-          <!-- Smart Filter Presets -->
-          <div id="filterPresets" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;margin-bottom:8px;">
-            <button onclick="applyFilterPreset('urgent')" style="padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid var(--warn);background:color-mix(in srgb, var(--warn) 15%, transparent);color:var(--warn);font-weight:700;cursor:pointer;">
-              <i class="fa-solid fa-fire"></i> Urgent (Pending >24h)
-            </button>
-            <button onclick="applyFilterPreset('today')" style="padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elev);color:var(--text);font-weight:700;cursor:pointer;">
-              <i class="fa-solid fa-calendar-day"></i> Today
-            </button>
-            <button onclick="applyFilterPreset('highvalue')" style="padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid var(--ok);background:color-mix(in srgb, var(--ok) 15%, transparent);color:var(--ok);font-weight:700;cursor:pointer;">
-              <i class="fa-solid fa-star"></i> High Value (1M+)
-            </button>
-            <button onclick="applyFilterPreset('flagged')" style="padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid var(--bad);background:color-mix(in srgb, var(--bad) 15%, transparent);color:var(--bad);font-weight:700;cursor:pointer;">
-              <i class="fa-solid fa-flag"></i> Flagged Issues
-            </button>
-            <button onclick="applyFilterPreset('vip')" style="padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid var(--accent);background:color-mix(in srgb, var(--accent) 15%, transparent);color:var(--accent);font-weight:700;cursor:pointer;">
-              <i class="fa-solid fa-crown"></i> VIP Tables Only
-            </button>
-            <button onclick="clearFilters()" style="padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elev);color:var(--sub);font-weight:700;cursor:pointer;">
-              <i class="fa-solid fa-times"></i> Clear All
-            </button>
           </div>
 
           <div class="toolbar">
@@ -1037,36 +916,11 @@
             <div id="activityItems"></div>
           </div>
 
-          <!-- Bulk Actions Bar -->
-          <div id="bulkActionsBar" class="hidden" style="margin-bottom:12px;padding:12px;border-radius:12px;background:color-mix(in srgb, var(--accent) 10%, transparent);border:1px solid color-mix(in srgb, var(--accent) 30%, var(--border));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-            <div style="display:flex;align-items:center;gap:12px;">
-              <strong style="color:var(--accent);" id="bulkSelectionCount">0</strong>
-              <span style="color:var(--text);font-size:13px;">selected</span>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button onclick="bulkApprove()" class="approve" style="padding:8px 14px;font-size:12px;">
-                <i class="fa-solid fa-check-double"></i> Approve All
-              </button>
-              <button onclick="bulkReject()" class="reject" style="padding:8px 14px;font-size:12px;">
-                <i class="fa-solid fa-xmark"></i> Reject All
-              </button>
-              <button onclick="bulkExport()" style="padding:8px 14px;font-size:12px;border:1px solid var(--border);background:var(--bg-elev);">
-                <i class="fa-solid fa-download"></i> Export Selected
-              </button>
-              <button onclick="toggleBulkMode()" style="padding:8px 14px;font-size:12px;border:1px solid var(--border);background:var(--bg-elev);">
-                <i class="fa-solid fa-times"></i> Cancel
-              </button>
-            </div>
-          </div>
-
           <div class="table-wrap">
             <div class="scroll">
               <table>
                 <thead>
                   <tr>
-                    <th id="bulkSelectHeader" class="hidden" style="width:40px;">
-                      <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor:pointer;">
-                    </th>
                     <th class="sortable" data-sort="eventKey">Event</th>
                     <th class="sortable" data-sort="bookingId">Booking ID</th>
                     <th class="sortable" data-sort="bookingType">Type</th>
@@ -1099,27 +953,6 @@
 
   <!-- Toast Container -->
   <div class="toast" id="toastContainer"></div>
-
-  <!-- Quick Actions Floating Panel -->
-  <div id="quickActionsPanel" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:none;">
-    <button onclick="toggleQuickActions()" style="width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--bg);border:none;box-shadow:var(--shadow);cursor:pointer;display:grid;place-items:center;font-size:20px;transition:transform 0.2s var(--ease);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-      <i class="fa-solid fa-bolt"></i>
-    </button>
-    <div id="quickActionsMenu" class="hidden" style="position:absolute;bottom:70px;right:0;min-width:200px;background:var(--bg-elev);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:8px;display:flex;flex-direction:column;gap:4px;">
-      <button onclick="quickAction('verifyAll')" style="padding:12px;text-align:left;border-radius:8px;border:none;background:var(--bg-alt);color:var(--text);cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;">
-        <i class="fa-solid fa-shield-halved"></i> Verify All Pending
-      </button>
-      <button onclick="quickAction('exportToday')" style="padding:12px;text-align:left;border-radius:8px;border:none;background:var(--bg-alt);color:var(--text);cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;">
-        <i class="fa-solid fa-file-export"></i> Export Today
-      </button>
-      <button onclick="quickAction('viewUrgent')" style="padding:12px;text-align:left;border-radius:8px;border:none;background:var(--bg-alt);color:var(--text);cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;">
-        <i class="fa-solid fa-fire"></i> View Urgent
-      </button>
-      <button onclick="quickAction('analytics')" style="padding:12px;text-align:left;border-radius:8px;border:none;background:var(--bg-alt);color:var(--text);cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;">
-        <i class="fa-solid fa-chart-line"></i> Show Analytics
-      </button>
-    </div>
-  </div>
 
   <!-- Confirmation Modal -->
   <div id="confirmModal" class="modal-backdrop hidden" aria-hidden="true" role="dialog" aria-modal="true">
@@ -1504,16 +1337,7 @@
         const tr = document.createElement("tr");
         tr.dataset.bookingId = b.bookingId;
         tr.dataset.bookingIndex = idx;
-        const bulkCheckbox = bulkMode ? `
-          <td style="width:40px;">
-            <input type="checkbox" class="bulk-checkbox" data-booking-id="${b.bookingId}" 
-                   onchange="toggleBookingSelection('${b.bookingId}')" 
-                   ${selectedBookings.has(b.bookingId) ? 'checked' : ''}
-                   style="cursor:pointer;">
-          </td>
-        ` : '';
         tr.innerHTML = `
-          ${bulkCheckbox}
           <td>${(b.eventKey||"").toUpperCase()}</td>
           <td>
             ${b.bookingId}
@@ -1521,12 +1345,7 @@
           </td>
           <td>${b.bookingType}</td>
           <td>${b.description}</td>
-          <td>
-            ${b.name}
-            ${getRepeatCustomerCount(b.phone) > 1 ? `<span style="margin-left:6px;padding:2px 6px;border-radius:4px;background:color-mix(in srgb, var(--ok) 15%, transparent);color:var(--ok);font-size:10px;font-weight:700;" title="Repeat customer - ${getRepeatCustomerCount(b.phone)} bookings">
-              <i class="fa-solid fa-repeat"></i> ${getRepeatCustomerCount(b.phone)}
-            </span>` : ''}
-          </td>
+          <td>${b.name}</td>
           <td>${b.phone}</td>
           <td>
             ${b.amount ? (Number(b.amount).toLocaleString() + " TZS") : "-"}
@@ -1593,12 +1412,6 @@
       });
 
       updateSortIndicators();
-      
-      // Update today's stats if visible
-      if(quickStatsVisible){
-        calculateTodayStats();
-        calculateBusinessIntelligence();
-      }
     }
 
     function updateSortIndicators(){
@@ -1623,70 +1436,56 @@
       });
     });
 
-    // ============================================
-    // VERIFY MODAL FUNCTIONS - CLEAN IMPLEMENTATION
-    // ============================================
-    
     function showVerifyPanel(bookingId, event){
-      // Find booking
       const booking = bookings.find(b => b.bookingId === bookingId);
-      if(!booking) {
-        showToast("Booking not found", "error");
-        return;
-      }
+      if(!booking) return;
 
-      // Build pending bookings list for navigation
+      // Get all pending bookings with transaction codes for navigation
       pendingBookingsForVerify = filteredBookings.filter(b => 
         b.status === "PENDING" && 
         b.transactionCode && 
         String(b.transactionCode).trim()
       );
       
-      // Find current index in pending list
+      // Find current index
       currentVerifyIndex = pendingBookingsForVerify.findIndex(b => b.bookingId === bookingId);
       if(currentVerifyIndex === -1) currentVerifyIndex = 0;
       
-      // Store current booking
       currentVerifyBooking = booking;
-      
-      // Calculate amounts
       const expectedAmount = calculateExpectedAmount(booking);
       const storedAmount = Number(booking.amount) || 0;
       const enteredAmount = storedAmount;
       const amountMatch = expectedAmount === enteredAmount && enteredAmount > 0 && expectedAmount > 0;
       
-      // ===== GLOW EFFECT =====
-      // Remove glow from all rows/cards
+      // Add glow effect to the row/card
       document.querySelectorAll("tr.verify-active, .booking-card.verify-active").forEach(el => {
         el.classList.remove("verify-active");
       });
-      // Add glow to current booking row/card
       const row = document.querySelector(`tr[data-booking-id="${bookingId}"]`);
       const card = document.querySelector(`.booking-card[data-booking-id="${bookingId}"]`);
       if(row) row.classList.add("verify-active");
       if(card) card.classList.add("verify-active");
       
-      // ===== BUTTON POSITION FOR ANIMATION =====
+      // Get the button position for animation
+      let buttonRect = null;
       let centerX = window.innerWidth / 2;
       let centerY = window.innerHeight / 2;
       
       if(event && event.target){
         const button = event.target.closest('button');
         if(button){
-          const rect = button.getBoundingClientRect();
-          centerX = rect.left + rect.width / 2;
-          centerY = rect.top + rect.height / 2;
+          buttonRect = button.getBoundingClientRect();
+          centerX = buttonRect.left + buttonRect.width / 2;
+          centerY = buttonRect.top + buttonRect.height / 2;
         }
       }
       
-      // ===== POPULATE MODAL CONTENT =====
-      const modalGrid = document.getElementById("verifyModalGrid");
-      if(!modalGrid) {
-        showToast("Verify modal not found", "error");
-        return;
-      }
-      
-      modalGrid.innerHTML = `
+      // Amount is calculated automatically in booking.html (not entered by user)
+      // Admin workflow: Use transaction code to look up M-Pesa transaction on BYZ phone
+      // Verify the M-Pesa transaction amount matches the expected amount
+
+      // Show modal instead of inline panel
+      document.getElementById("verifyModalGrid").innerHTML = `
         <div class="verify-item" style="grid-column: 1 / -1;">
           <div class="verify-label">Transaction Code (Look up in M-Pesa)</div>
           <div class="verify-value" style="font-size:24px;font-weight:900;word-break:break-all;letter-spacing:.15em;margin-top:12px;padding:16px;background:color-mix(in srgb, var(--primary) 8%, transparent);border-radius:12px;border:2px solid color-mix(in srgb, var(--primary) 20%, transparent);">
@@ -2750,531 +2549,15 @@
       });
     }
     
-    // ============================================
-    // PREMIUM FEATURES - BUSINESS INTELLIGENCE & WORKFLOW ENHANCEMENTS
-    // ============================================
-    
-    let bulkMode = false;
-    let selectedBookings = new Set();
-    let quickStatsVisible = false;
-
-    // Toggle Quick Stats / Analytics
-    function toggleQuickStats(){
-      quickStatsVisible = !quickStatsVisible;
-      const panel = document.getElementById("analyticsPanel");
-      const todayStats = document.getElementById("todayStats");
-      const toggleText = document.getElementById("quickStatsToggleText");
-      
-      if(quickStatsVisible){
-        panel.classList.remove("hidden");
-        todayStats.style.display = "grid";
-        toggleText.textContent = "Hide";
-        calculateTodayStats();
-        calculateBusinessIntelligence();
-      } else {
-        panel.classList.add("hidden");
-        todayStats.style.display = "none";
-        toggleText.textContent = "Show";
-      }
-    }
-
-    // Calculate Today's Stats
-    function calculateTodayStats(){
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const todayEnd = new Date(today);
-      todayEnd.setHours(23,59,59,999);
-      
-      const todayBookings = filteredBookings.filter(b => {
-        const bookingDate = b.timestamp ? new Date(b.timestamp) : null;
-        if(!bookingDate) return false;
-        return bookingDate >= today && bookingDate <= todayEnd;
-      });
-      
-      const todayRevenue = todayBookings
-        .filter(b => b.status === "CONFIRMED")
-        .reduce((s,b) => s + (Number(b.amount)||0), 0);
-      
-      const todayPending = todayBookings.filter(b => b.status === "PENDING").length;
-      const avgToday = todayBookings.length > 0 
-        ? Math.round(todayRevenue / todayBookings.filter(b => b.status === "CONFIRMED").length) 
-        : 0;
-      
-      document.getElementById("todayRevenue").textContent = formatCurrency(todayRevenue);
-      document.getElementById("todayBookings").textContent = todayBookings.length;
-      document.getElementById("pendingNow").textContent = todayPending;
-      document.getElementById("avgToday").textContent = formatCurrency(avgToday);
-    }
-
-    // Calculate Business Intelligence
-    function calculateBusinessIntelligence(){
-      // Revenue by Event
-      const revenueByEvent = {};
-      const bookingTypeCount = {TICKET: 0, TABLE: 0};
-      const customerSpend = {};
-      const hourCounts = {};
-      
-      filteredBookings.filter(b => b.status === "CONFIRMED").forEach(b => {
-        const amount = Number(b.amount) || 0;
-        const event = (b.eventKey || "UNKNOWN").toUpperCase();
-        revenueByEvent[event] = (revenueByEvent[event] || 0) + amount;
-        
-        bookingTypeCount[b.bookingType] = (bookingTypeCount[b.bookingType] || 0) + 1;
-        
-        if(b.phone){
-          customerSpend[b.phone] = (customerSpend[b.phone] || 0) + amount;
-        }
-        
-        if(b.timestamp){
-          const date = new Date(b.timestamp);
-          const hour = date.getHours();
-          hourCounts[hour] = (hourCounts[hour] || 0) + 1;
-        }
-      });
-      
-      // Display Revenue by Event
-      const eventEl = document.getElementById("revenueByEvent");
-      if(eventEl){
-        const eventEntries = Object.entries(revenueByEvent)
-          .sort((a,b) => b[1] - a[1])
-          .slice(0, 4)
-          .map(([event, rev]) => 
-            `<div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-              <span>${event}:</span>
-              <strong>${formatCurrency(rev)}</strong>
-            </div>`
-          ).join("");
-        eventEl.innerHTML = eventEntries || "<div style='color:var(--sub);font-size:11px;'>No data</div>";
-      }
-      
-      // Display Booking Type Split
-      const typeEl = document.getElementById("bookingTypeSplit");
-      if(typeEl){
-        const total = bookingTypeCount.TICKET + bookingTypeCount.TABLE;
-        const ticketPct = total > 0 ? Math.round((bookingTypeCount.TICKET / total) * 100) : 0;
-        const tablePct = total > 0 ? Math.round((bookingTypeCount.TABLE / total) * 100) : 0;
-        typeEl.innerHTML = `
-          <div style="margin-bottom:4px;">Tickets: <strong>${bookingTypeCount.TICKET}</strong> (${ticketPct}%)</div>
-          <div>VIP Tables: <strong>${bookingTypeCount.TABLE}</strong> (${tablePct}%)</div>
-        `;
-      }
-      
-      // Top Customers
-      const topCustomersEl = document.getElementById("topCustomers");
-      if(topCustomersEl){
-        const topCustomers = Object.entries(customerSpend)
-          .sort((a,b) => b[1] - a[1])
-          .slice(0, 3)
-          .map(([phone, spend]) => {
-            const customer = filteredBookings.find(b => b.phone === phone);
-            const name = customer ? customer.name : "Unknown";
-            return `<div style="margin-bottom:4px;">
-              <div style="font-weight:700;">${name.substring(0, 15)}</div>
-              <div style="font-size:11px;color:var(--sub);">${formatCurrency(spend)}</div>
-            </div>`;
-          }).join("");
-        topCustomersEl.innerHTML = topCustomers || "<div style='color:var(--sub);font-size:11px;'>No repeat customers</div>";
-      }
-      
-      // Peak Times
-      const peakEl = document.getElementById("peakTimes");
-      if(peakEl){
-        const peakHours = Object.entries(hourCounts)
-          .sort((a,b) => b[1] - a[1])
-          .slice(0, 3)
-          .map(([hour, count]) => {
-            const hour12 = hour % 12 || 12;
-            const ampm = hour < 12 ? "AM" : "PM";
-            return `<div style="margin-bottom:4px;">${hour12}:00 ${ampm}: <strong>${count}</strong></div>`;
-          }).join("");
-        peakEl.innerHTML = peakHours || "<div style='color:var(--sub);font-size:11px;'>No data</div>";
-      }
-    }
-
-    // Format Currency Helper
-    function formatCurrency(amount){
-      if(!amount || amount === 0) return "—";
-      if(amount >= 1000000) return (amount / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
-      if(amount >= 1000) return (amount / 1000).toFixed(0) + "K";
-      return amount.toLocaleString();
-    }
-
-    // Get Repeat Customer Count
-    function getRepeatCustomerCount(phone){
-      if(!phone) return 0;
-      return bookings.filter(b => b.phone === phone && b.status === "CONFIRMED").length;
-    }
-
-    // Filter Presets
-    function applyFilterPreset(preset){
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const todayStr = today.toISOString().split('T')[0];
-      
-      switch(preset){
-        case 'urgent':
-          document.getElementById("statusFilter").value = "PENDING";
-          document.getElementById("dateFrom").value = "";
-          document.getElementById("dateTo").value = "";
-          document.getElementById("amountFilter").value = "";
-          // Filter will be applied in render() based on old pending detection
-          break;
-        case 'today':
-          document.getElementById("statusFilter").value = "";
-          document.getElementById("dateFrom").value = todayStr;
-          document.getElementById("dateTo").value = todayStr;
-          document.getElementById("amountFilter").value = "";
-          break;
-        case 'highvalue':
-          document.getElementById("statusFilter").value = "";
-          document.getElementById("dateFrom").value = "";
-          document.getElementById("dateTo").value = "";
-          document.getElementById("amountFilter").value = "1000000-999999999";
-          break;
-        case 'flagged':
-          document.getElementById("statusFilter").value = "PENDING";
-          document.getElementById("dateFrom").value = "";
-          document.getElementById("dateTo").value = "";
-          document.getElementById("amountFilter").value = "";
-          break;
-        case 'vip':
-          document.getElementById("statusFilter").value = "";
-          document.getElementById("dateFrom").value = "";
-          document.getElementById("dateTo").value = "";
-          document.getElementById("amountFilter").value = "1000000-999999999";
-          break;
-      }
-      render();
-    }
-
-    function clearFilters(){
-      document.getElementById("search").value = "";
-      document.getElementById("statusFilter").value = "";
-      document.getElementById("dateFrom").value = "";
-      document.getElementById("dateTo").value = "";
-      document.getElementById("amountFilter").value = "";
-      render();
-    }
-
-    // Bulk Mode Functions
-    function toggleBulkMode(){
-      bulkMode = !bulkMode;
-      selectedBookings.clear();
-      
-      const header = document.getElementById("bulkSelectHeader");
-      const bar = document.getElementById("bulkActionsBar");
-      const toggleText = document.getElementById("bulkModeToggleText");
-      
-      if(bulkMode){
-        header.classList.remove("hidden");
-        bar.classList.remove("hidden");
-        toggleText.textContent = "Exit";
-      } else {
-        header.classList.add("hidden");
-        bar.classList.add("hidden");
-        toggleText.textContent = "Bulk";
-        // Remove all checkboxes
-        document.querySelectorAll('.bulk-checkbox').forEach(cb => cb.remove());
-      }
-      render();
-    }
-
-    function toggleSelectAll(){
-      const selectAll = document.getElementById("selectAll");
-      const checkboxes = document.querySelectorAll('.bulk-checkbox');
-      
-      checkboxes.forEach(cb => {
-        cb.checked = selectAll.checked;
-        const bookingId = cb.dataset.bookingId;
-        if(selectAll.checked){
-          selectedBookings.add(bookingId);
-        } else {
-          selectedBookings.delete(bookingId);
-        }
-      });
-      updateBulkSelectionCount();
-    }
-
-    function toggleBookingSelection(bookingId){
-      if(selectedBookings.has(bookingId)){
-        selectedBookings.delete(bookingId);
-      } else {
-        selectedBookings.add(bookingId);
-      }
-      updateBulkSelectionCount();
-      
-      // Update select all checkbox
-      const checkboxes = document.querySelectorAll('.bulk-checkbox');
-      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-      document.getElementById("selectAll").checked = allChecked;
-    }
-
-    function updateBulkSelectionCount(){
-      document.getElementById("bulkSelectionCount").textContent = selectedBookings.size;
-    }
-
-    async function bulkApprove(){
-      if(selectedBookings.size === 0){
-        showToast("No bookings selected", "error");
-        return;
-      }
-      
-      if(!confirm(`Approve ${selectedBookings.size} booking(s)?`)) return;
-      
-      const bookingIds = Array.from(selectedBookings);
-      let successCount = 0;
-      let failCount = 0;
-      
-      for(const bookingId of bookingIds){
-        const booking = bookings.find(b => b.bookingId === bookingId);
-        if(!booking) continue;
-        
-        try{
-          const res = await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ 
-              action:"approvePayment", 
-              bookingId: bookingId, 
-              pin: ADMIN_PASSWORD, 
-              eventKey: booking.eventKey 
-            })
-          }).then(r=>r.json());
-          
-          if(res.success){
-            successCount++;
-            addActivity("Approved", bookingId, "Bulk approval");
-          } else {
-            failCount++;
-          }
-        } catch(err){
-          failCount++;
-        }
-      }
-      
-      showToast(`Bulk approval: ${successCount} succeeded, ${failCount} failed`, successCount > 0 ? "success" : "error");
-      selectedBookings.clear();
-      await load();
-      toggleBulkMode();
-    }
-
-    async function bulkReject(){
-      if(selectedBookings.size === 0){
-        showToast("No bookings selected", "error");
-        return;
-      }
-      
-      const reason = prompt("Enter rejection reason (or leave blank for 'Other'):");
-      if(reason === null) return;
-      
-      const bookingIds = Array.from(selectedBookings);
-      let successCount = 0;
-      let failCount = 0;
-      
-      for(const bookingId of bookingIds){
-        const booking = bookings.find(b => b.bookingId === bookingId);
-        if(!booking) continue;
-        
-        try{
-          const res = await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ 
-              action: "rejectBooking",
-              bookingId: bookingId,
-              pin: ADMIN_PASSWORD,
-              eventKey: booking.eventKey,
-              rejectionReason: reason || "other"
-            })
-          }).then(r=>r.json());
-          
-          if(res.success){
-            successCount++;
-            addActivity("Rejected", bookingId, `Bulk rejection: ${reason || "Other"}`);
-          } else {
-            failCount++;
-          }
-        } catch(err){
-          failCount++;
-        }
-      }
-      
-      showToast(`Bulk rejection: ${successCount} succeeded, ${failCount} failed`, successCount > 0 ? "success" : "error");
-      selectedBookings.clear();
-      await load();
-      toggleBulkMode();
-    }
-
-    function bulkExport(){
-      if(selectedBookings.size === 0){
-        showToast("No bookings selected", "error");
-        return;
-      }
-      
-      const selected = filteredBookings.filter(b => selectedBookings.has(b.bookingId));
-      const rows = [["Event","Booking ID","Type","Description","Name","Phone","Amount","Transaction Code","Status","Checked In"]];
-      
-      selected.forEach(b => {
-        rows.push([
-          b.eventKey || "",
-          b.bookingId || "",
-          b.bookingType || "",
-          b.description || "",
-          b.name || "",
-          b.phone || "",
-          b.amount || "",
-          b.transactionCode || "",
-          b.status || "",
-          b.checkedInCount || 0
-        ]);
-      });
-      
-      const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `byz-selected-export-${new Date().toISOString().split("T")[0]}.csv`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-      showToast(`Exported ${selected.length} booking(s)`, "success");
-    }
-
-    // Keyboard Shortcuts
-    document.addEventListener("keydown", (e) => {
-      // Don't trigger if typing in input
-      if(e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
-      
-      // ? - Show shortcuts help
-      if(e.key === "?" && !e.shiftKey && !e.ctrlKey && !e.metaKey){
-        e.preventDefault();
-        showKeyboardShortcuts();
-      }
-      
-      // / - Focus search
-      if(e.key === "/" && !e.shiftKey && !e.ctrlKey && !e.metaKey){
-        e.preventDefault();
-        document.getElementById("search").focus();
-      }
-      
-      // r - Refresh
-      if(e.key === "r" && !e.shiftKey && !e.ctrlKey && !e.metaKey){
-        e.preventDefault();
-        load();
-      }
-      
-      // Escape - Close modals
-      if(e.key === "Escape"){
-        if(!document.getElementById("confirmModal").classList.contains("hidden")){
-          closeConfirmModal();
-        }
-        if(!document.getElementById("verifyModal").classList.contains("hidden")){
-          closeVerifyModal();
-        }
-      }
-    });
-
-    // Quick Actions
-    function toggleQuickActions(){
-      const panel = document.getElementById("quickActionsPanel");
-      const menu = document.getElementById("quickActionsMenu");
-      if(menu.classList.contains("hidden")){
-        menu.classList.remove("hidden");
-        panel.style.display = "block";
-      } else {
-        menu.classList.add("hidden");
-      }
-    }
-
-    function quickAction(action){
-      toggleQuickActions();
-      switch(action){
-        case 'verifyAll':
-          const pendingWithTxn = filteredBookings.filter(b => 
-            b.status === "PENDING" && b.transactionCode && String(b.transactionCode).trim()
-          );
-          if(pendingWithTxn.length > 0){
-            showVerifyPanel(pendingWithTxn[0].bookingId, null);
-          } else {
-            showToast("No pending bookings with transaction codes", "error");
-          }
-          break;
-        case 'exportToday':
-          const today = new Date().toISOString().split('T')[0];
-          document.getElementById("dateFrom").value = today;
-          document.getElementById("dateTo").value = today;
-          render();
-          setTimeout(() => exportCsv(), 500);
-          break;
-        case 'viewUrgent':
-          applyFilterPreset('urgent');
-          break;
-        case 'analytics':
-          if(!quickStatsVisible) toggleQuickStats();
-          break;
-      }
-    }
-
-    // Show quick actions panel after login
-    setTimeout(() => {
-      const panel = document.getElementById("quickActionsPanel");
-      if(panel) panel.style.display = "block";
-    }, 3000);
-
-    function showKeyboardShortcuts(){
-      const shortcuts = [
-        {key: "/", desc: "Focus search"},
-        {key: "r", desc: "Refresh data"},
-        {key: "?", desc: "Show shortcuts"},
-        {key: "Esc", desc: "Close modals"},
-      ];
-      
-      const html = `
-        <div style="padding:20px;">
-          <h3 style="margin-bottom:16px;font-size:18px;font-weight:900;">Keyboard Shortcuts</h3>
-          <div style="display:grid;gap:12px;">
-            ${shortcuts.map(s => `
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:var(--bg-alt);">
-                <span>${s.desc}</span>
-                <kbd style="padding:4px 8px;border-radius:6px;background:var(--bg-elev);border:1px solid var(--border);font-size:12px;font-weight:700;">${s.key}</kbd>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      `;
-      
-      const modal = document.createElement("div");
-      modal.className = "modal-backdrop";
-      modal.innerHTML = `
-        <div class="modal" style="max-width:400px;">
-          <div class="modal-header">
-            <div class="modal-title">Keyboard Shortcuts</div>
-            <button class="modal-close" onclick="this.closest('.modal-backdrop').remove()">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          <div class="modal-body">${html}</div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      modal.addEventListener("click", (e) => {
-        if(e.target === modal) modal.remove();
-      });
-    }
-
-    // Update render to include bulk checkboxes and today stats
-    // This will be done by modifying the existing render function
-
-    // ============================================
-    // GLOBAL FUNCTION ASSIGNMENTS - MUST BE LAST
-    // ============================================
     // Make ALL verify modal functions globally accessible for onclick handlers
+    // Assign immediately and also on DOMContentLoaded to ensure they're available
     function assignVerifyModalFunctions(){
-      if(typeof navigateVerifyModal !== 'undefined') window.navigateVerifyModal = navigateVerifyModal;
-      if(typeof approveFromVerifyModal !== 'undefined') window.approveFromVerifyModal = approveFromVerifyModal;
-      if(typeof showRejectModalFromVerify !== 'undefined') window.showRejectModalFromVerify = showRejectModalFromVerify;
-      if(typeof showVerifyPanel !== 'undefined') window.showVerifyPanel = showVerifyPanel;
-      if(typeof closeVerifyModal !== 'undefined') window.closeVerifyModal = closeVerifyModal;
-      if(typeof copyToClipboard !== 'undefined') window.copyToClipboard = copyToClipboard;
+      window.navigateVerifyModal = navigateVerifyModal;
+      window.approveFromVerifyModal = approveFromVerifyModal;
+      window.showRejectModalFromVerify = showRejectModalFromVerify;
+      window.showVerifyPanel = showVerifyPanel;
+      window.closeVerifyModal = closeVerifyModal;
+      window.copyToClipboard = copyToClipboard;
     }
     
     // Assign immediately
@@ -3284,6 +2567,7 @@
     if(document.readyState === 'loading'){
       document.addEventListener('DOMContentLoaded', assignVerifyModalFunctions);
     } else {
+      // DOM already loaded, assign immediately
       assignVerifyModalFunctions();
     }
     
