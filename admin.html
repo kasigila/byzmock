@@ -602,6 +602,79 @@
       display:flex;align-items:center;gap:8px;
     }
 
+    /* Glow effect for active verification */
+    tr.verify-active, .booking-card.verify-active{
+      position:relative;
+      animation: verifyGlow 2s ease-in-out infinite;
+    }
+    @keyframes verifyGlow{
+      0%, 100%{
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+      }
+      50%{
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent),
+                    0 0 0 6px color-mix(in srgb, var(--accent) 20%, transparent),
+                    0 0 0 9px color-mix(in srgb, var(--accent) 10%, transparent);
+      }
+    }
+    tr.verify-active{
+      outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+      outline-offset: -2px;
+    }
+    .booking-card.verify-active{
+      border: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+
+    /* Smart suggestion flags */
+    .suggestion-flag{
+      display:inline-flex;align-items:center;gap:4px;
+      padding:3px 8px;border-radius:8px;
+      font-size:10px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    .suggestion-flag.amount-mismatch{
+      background:color-mix(in srgb, var(--bad) 15%, transparent);
+      color:var(--bad);
+      border:1px solid color-mix(in srgb, var(--bad) 30%, var(--border));
+    }
+    .suggestion-flag.duplicate-txn{
+      background:color-mix(in srgb, var(--warn) 15%, transparent);
+      color:var(--warn);
+      border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));
+    }
+    .suggestion-flag.old-pending{
+      background:color-mix(in srgb, var(--warn) 12%, transparent);
+      color:var(--warn);
+      border:1px solid color-mix(in srgb, var(--warn) 25%, var(--border));
+    }
+
+    /* Verify modal navigation arrows */
+    .verify-nav-arrows{
+      position:absolute;top:50%;left:0;right:0;
+      transform:translateY(-50%);
+      display:none;justify-content:space-between;padding:0 12px;
+      pointer-events:none;z-index:10;
+    }
+    .verify-nav-arrows.show{display:flex;}
+    .verify-nav-arrow{
+      width:44px;height:44px;border-radius:12px;
+      border:1px solid var(--border);background:var(--bg-elev);
+      display:grid;place-items:center;cursor:pointer;
+      box-shadow:var(--shadow);
+      transition:transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+      pointer-events:auto;
+      color:var(--text);
+    }
+    .verify-nav-arrow:hover:not(:disabled){
+      transform:scale(1.1);
+      box-shadow:var(--shadow-soft);
+      background:var(--bg-alt);
+    }
+    .verify-nav-arrow:disabled{
+      opacity:0.3;cursor:not-allowed;
+    }
+    .verify-nav-arrow:disabled:hover{transform:scale(1);}
+
     /* Loading States */
     .loading{opacity:.6;pointer-events:none;position:relative;}
     .loading::after{
@@ -895,11 +968,22 @@
 
   <!-- Verify Modal -->
   <div id="verifyModal" class="modal-backdrop hidden" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="modal" style="width: min(700px, 90%); max-height: 90vh; overflow-y: auto;">
+    <div class="modal" style="width: min(500px, 90%); max-height: 85vh; overflow-y: auto; position:relative;">
+      <!-- Navigation Arrows -->
+      <div class="verify-nav-arrows" id="verifyNavArrows">
+        <button class="verify-nav-arrow prev" id="verifyNavPrev" onclick="navigateVerifyModal(-1)" aria-label="Previous booking">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="verify-nav-arrow next" id="verifyNavNext" onclick="navigateVerifyModal(1)" aria-label="Next booking">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+      
       <div class="modal-header">
         <div class="modal-title" style="display:flex;align-items:center;gap:10px;">
           <i class="fa-solid fa-shield-halved"></i>
           <span>Transaction Verification</span>
+          <span id="verifyModalBadge" style="margin-left:auto;font-size:11px;padding:4px 8px;border-radius:8px;background:color-mix(in srgb, var(--sub) 15%, transparent);color:var(--sub);font-weight:600;"></span>
         </div>
         <button class="modal-close" onclick="closeVerifyModal()" aria-label="Close modal">
           <i class="fa-solid fa-xmark"></i>
@@ -907,31 +991,31 @@
       </div>
       <div class="modal-body" style="padding:0;">
         <div class="verify-grid" id="verifyModalGrid"></div>
-        <div id="verifyModalWarning" class="verify-warning hidden" style="margin-top:16px;">
+        <div id="verifyModalWarning" class="verify-warning hidden" style="margin-top:12px;">
           <i class="fa-solid fa-triangle-exclamation"></i>
           <span></span>
         </div>
-        <div style="margin-top:16px;padding:16px;border-radius:16px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--warn);font-size:13px;font-weight:700;margin-bottom:12px;">
+        <div id="verifyModalSuggestions" style="margin-top:12px;"></div>
+        <div style="margin-top:12px;padding:12px;border-radius:12px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));">
+          <div style="display:flex;align-items:center;gap:6px;color:var(--warn);font-size:12px;font-weight:700;margin-bottom:8px;">
             <i class="fa-solid fa-circle-info"></i>
-            <span>M-Pesa Verification Steps:</span>
+            <span>Quick Steps:</span>
           </div>
-          <ol style="margin:0;padding-left:20px;font-size:12px;color:var(--text);line-height:2;">
-            <li>Copy the transaction code above</li>
-            <li>Open M-Pesa on the BYZ phone</li>
-            <li>Search for the transaction using the code</li>
-            <li><b>Verify the M-Pesa transaction amount matches the expected amount shown above</b></li>
-            <li>Only approve if the amounts match exactly</li>
+          <ol style="margin:0;padding-left:18px;font-size:11px;color:var(--text);line-height:1.6;">
+            <li>Copy transaction code</li>
+            <li>Check M-Pesa on BYZ phone</li>
+            <li><b>Verify amount matches the expected amount shown above</b></li>
           </ol>
-          <div style="margin-top:12px;padding:10px;background:color-mix(in srgb, var(--bad) 8%, transparent);border-radius:8px;border-left:3px solid var(--bad);">
-            <div style="font-size:11px;color:var(--bad);font-weight:600;">
-              <i class="fa-solid fa-shield-halved"></i> Fraud Prevention: Always verify the M-Pesa transaction amount before approving.
-            </div>
-          </div>
         </div>
       </div>
-      <div class="modal-actions" style="margin-top:20px;">
-        <button onclick="closeVerifyModal()">Close</button>
+      <div class="modal-actions" id="verifyModalActions" style="margin-top:20px;display:flex;gap:10px;justify-content:space-between;">
+        <button onclick="closeVerifyModal()" style="flex:1;">Close</button>
+        <button class="approve" id="verifyModalApprove" onclick="approveFromVerifyModal()" style="flex:1;">
+          <i class="fa-solid fa-check"></i> Approve
+        </button>
+        <button class="reject" id="verifyModalReject" onclick="showRejectModalFromVerify()" style="flex:1;">
+          <i class="fa-solid fa-xmark"></i> Reject
+        </button>
       </div>
     </div>
   </div>
@@ -946,6 +1030,8 @@
     let sortColumn = "";
     let sortDirection = "asc";
     let currentVerifyBooking = null;
+    let currentVerifyIndex = -1; // Index in pending bookings array
+    let pendingBookingsForVerify = []; // Array of pending bookings with transaction codes
     let pendingConfirm = null;
     let autoRefreshInterval = null;
     let activityLog = JSON.parse(localStorage.getItem("byz_activity") || "[]");
@@ -1199,17 +1285,59 @@
       }
       emptyState.classList.add("hidden");
 
+      // Get pending bookings for navigation
+      const pendingBookings = filteredBookings.filter(b => b.status === "PENDING" && b.transactionCode && String(b.transactionCode).trim());
+      
       filteredBookings.forEach((b, idx) => {
         const expectedAmount = calculateExpectedAmount(b);
         const enteredAmount = Number(b.amount) || 0;
         const amountMatch = expectedAmount === enteredAmount;
         const hasTransactionCode = b.transactionCode && String(b.transactionCode).trim();
+        
+        // Smart suggestions detection
+        const suggestions = [];
+        if(b.status === "PENDING" && enteredAmount > 0 && expectedAmount > 0 && !amountMatch){
+          suggestions.push({type: "amount-mismatch", label: "Amount Mismatch", icon: "fa-exclamation-triangle"});
+        }
+        
+        // Check for duplicate transaction codes
+        if(hasTransactionCode && b.status === "PENDING"){
+          const duplicateCount = filteredBookings.filter(bb => 
+            bb.transactionCode && 
+            String(bb.transactionCode).trim() === String(b.transactionCode).trim() &&
+            bb.bookingId !== b.bookingId
+          ).length;
+          if(duplicateCount > 0){
+            suggestions.push({type: "duplicate-txn", label: "Duplicate Txn", icon: "fa-copy"});
+          }
+        }
+        
+        // Check for old pending bookings (older than 24 hours)
+        if(b.status === "PENDING"){
+          const bookingDate = b.timestamp ? new Date(b.timestamp) : null;
+          if(bookingDate && !isNaN(bookingDate.getTime())){
+            const hoursOld = (Date.now() - bookingDate.getTime()) / (1000 * 60 * 60);
+            if(hoursOld > 24){
+              suggestions.push({type: "old-pending", label: "Old Pending", icon: "fa-clock"});
+            }
+          }
+        }
+        
+        const suggestionFlags = suggestions.length > 0 ? suggestions.map(s => 
+          `<span class="suggestion-flag ${s.type}" title="${s.label}">
+            <i class="fa-solid ${s.icon}"></i> ${s.label}
+          </span>`
+        ).join(" ") : "";
 
         const tr = document.createElement("tr");
         tr.dataset.bookingId = b.bookingId;
+        tr.dataset.bookingIndex = idx;
         tr.innerHTML = `
           <td>${(b.eventKey||"").toUpperCase()}</td>
-          <td>${b.bookingId}</td>
+          <td>
+            ${b.bookingId}
+            ${suggestionFlags ? `<div style="margin-top:4px;">${suggestionFlags}</div>` : ""}
+          </td>
           <td>${b.bookingType}</td>
           <td>${b.description}</td>
           <td>${b.name}</td>
@@ -1226,7 +1354,7 @@
                  <button class="reject" onclick="showRejectModal('${b.bookingId}','${b.eventKey}')">
                    <i class="fa-solid fa-xmark"></i> Reject
                  </button>
-                 ${hasTransactionCode ? `<button onclick="showVerifyPanel('${b.bookingId}')" style="margin-top:6px;width:100%;font-size:12px;padding:8px;">
+                 ${hasTransactionCode ? `<button onclick="showVerifyPanel('${b.bookingId}', event)" style="margin-top:6px;width:100%;font-size:12px;padding:8px;">
                    <i class="fa-solid fa-shield-halved"></i> Verify
                  </button>` : ""}`
               : `<button onclick="resend('${b.bookingId}','${b.eventKey}')">
@@ -1240,9 +1368,13 @@
         const card = document.createElement("div");
         card.className = "booking-card";
         card.dataset.bookingId = b.bookingId;
+        card.dataset.bookingIndex = idx;
         card.innerHTML = `
           <div class="card-header">
-            <div class="card-title">${b.bookingId}</div>
+            <div class="card-title">
+              ${b.bookingId}
+              ${suggestionFlags ? `<div style="margin-top:4px;">${suggestionFlags}</div>` : ""}
+            </div>
             <span class="status ${b.status}">${b.status}</span>
           </div>
           <div class="card-meta">
@@ -1261,7 +1393,10 @@
                  </button>
                  <button class="reject" onclick="showRejectModal('${b.bookingId}','${b.eventKey}')">
                    <i class="fa-solid fa-xmark"></i> Reject
-                 </button>`
+                 </button>
+                 ${hasTransactionCode ? `<button onclick="showVerifyPanel('${b.bookingId}', event)" style="margin-top:6px;width:100%;font-size:12px;padding:8px;">
+                   <i class="fa-solid fa-shield-halved"></i> Verify
+                 </button>` : ""}`
               : `<button onclick="resend('${b.bookingId}','${b.eventKey}')">
                    <i class="fa-solid fa-paper-plane"></i> Resend
                  </button>`
@@ -1296,13 +1431,49 @@
       });
     });
 
-    function showVerifyPanel(bookingId){
+    function showVerifyPanel(bookingId, event){
       const booking = bookings.find(b => b.bookingId === bookingId);
       if(!booking) return;
 
+      // Get all pending bookings with transaction codes for navigation
+      pendingBookingsForVerify = filteredBookings.filter(b => 
+        b.status === "PENDING" && 
+        b.transactionCode && 
+        String(b.transactionCode).trim()
+      );
+      
+      // Find current index
+      currentVerifyIndex = pendingBookingsForVerify.findIndex(b => b.bookingId === bookingId);
+      if(currentVerifyIndex === -1) currentVerifyIndex = 0;
+      
       currentVerifyBooking = booking;
       const expectedAmount = calculateExpectedAmount(booking);
       const storedAmount = Number(booking.amount) || 0;
+      const enteredAmount = storedAmount;
+      const amountMatch = expectedAmount === enteredAmount && enteredAmount > 0 && expectedAmount > 0;
+      
+      // Add glow effect to the row/card
+      document.querySelectorAll("tr.verify-active, .booking-card.verify-active").forEach(el => {
+        el.classList.remove("verify-active");
+      });
+      const row = document.querySelector(`tr[data-booking-id="${bookingId}"]`);
+      const card = document.querySelector(`.booking-card[data-booking-id="${bookingId}"]`);
+      if(row) row.classList.add("verify-active");
+      if(card) card.classList.add("verify-active");
+      
+      // Get the button position for animation
+      let buttonRect = null;
+      let centerX = window.innerWidth / 2;
+      let centerY = window.innerHeight / 2;
+      
+      if(event && event.target){
+        const button = event.target.closest('button');
+        if(button){
+          buttonRect = button.getBoundingClientRect();
+          centerX = buttonRect.left + buttonRect.width / 2;
+          centerY = buttonRect.top + buttonRect.height / 2;
+        }
+      }
       
       // Amount is calculated automatically in booking.html (not entered by user)
       // Admin workflow: Use transaction code to look up M-Pesa transaction on BYZ phone
@@ -1361,14 +1532,242 @@
           <span>Data inconsistency: Stored amount (${storedAmount.toLocaleString()}) doesn't match calculated amount (${expectedAmount.toLocaleString()}). Please verify against M-Pesa.</span>
         `;
       }
+      
+      // Smart suggestions
+      const suggestions = [];
+      if(enteredAmount > 0 && expectedAmount > 0 && !amountMatch){
+        suggestions.push({type: "amount-mismatch", label: "Amount Mismatch", icon: "fa-exclamation-triangle", message: `Expected ${expectedAmount.toLocaleString()} TZS but stored ${storedAmount.toLocaleString()} TZS`});
+      }
+      
+      // Check for duplicate transaction codes
+      if(booking.transactionCode){
+        const duplicateCount = filteredBookings.filter(bb => 
+          bb.transactionCode && 
+          String(bb.transactionCode).trim() === String(booking.transactionCode).trim() &&
+          bb.bookingId !== booking.bookingId &&
+          bb.status === "PENDING"
+        ).length;
+        if(duplicateCount > 0){
+          suggestions.push({type: "duplicate-txn", label: "Duplicate Transaction", icon: "fa-copy", message: `This transaction code is used by ${duplicateCount} other pending booking(s)`});
+        }
+      }
+      
+      // Check for old pending bookings
+      const bookingDate = booking.timestamp ? new Date(booking.timestamp) : null;
+      if(bookingDate && !isNaN(bookingDate.getTime())){
+        const hoursOld = (Date.now() - bookingDate.getTime()) / (1000 * 60 * 60);
+        if(hoursOld > 24){
+          suggestions.push({type: "old-pending", label: "Old Pending", icon: "fa-clock", message: `This booking has been pending for ${Math.round(hoursOld)} hours`});
+        }
+      }
+      
+      const suggestionsEl = document.getElementById("verifyModalSuggestions");
+      if(suggestions.length > 0){
+        suggestionsEl.innerHTML = suggestions.map(s => `
+          <div class="suggestion-flag ${s.type}" style="margin-bottom:8px;padding:10px;display:flex;align-items:center;gap:8px;">
+            <i class="fa-solid ${s.icon}"></i>
+            <span style="flex:1;">${s.message}</span>
+          </div>
+        `).join("");
+        suggestionsEl.style.display = "block";
+      } else {
+        suggestionsEl.style.display = "none";
+        suggestionsEl.innerHTML = "";
+      }
+      
+      // Update badge with position info
+      const badgeEl = document.getElementById("verifyModalBadge");
+      if(pendingBookingsForVerify.length > 1){
+        badgeEl.textContent = `${currentVerifyIndex + 1} of ${pendingBookingsForVerify.length}`;
+        badgeEl.style.display = "inline-block";
+      } else {
+        badgeEl.style.display = "none";
+      }
+      
+      // Hide navigation arrows initially (will show after approve/reject)
+      document.getElementById("verifyNavArrows").classList.remove("show");
+      
+      // Show approve/reject buttons
+      const actionsEl = document.getElementById("verifyModalActions");
+      if(actionsEl){
+        actionsEl.style.display = "flex";
+        const approveBtn = document.getElementById("verifyModalApprove");
+        const rejectBtn = document.getElementById("verifyModalReject");
+        if(approveBtn) approveBtn.disabled = false;
+        if(rejectBtn) rejectBtn.disabled = false;
+      }
 
-      // Show the modal
-      document.getElementById("verifyModal").classList.remove("hidden");
+      // Show the modal with animation from button position
+      const modal = document.getElementById("verifyModal");
+      const modalContent = modal.querySelector(".modal");
+      
+      // Set initial position to button location
+      modalContent.style.transformOrigin = `${centerX}px ${centerY}px`;
+      modalContent.style.transform = `scale(0) translate(${centerX - window.innerWidth/2}px, ${centerY - window.innerHeight/2}px)`;
+      modalContent.style.opacity = "0";
+      
+      modal.classList.remove("hidden");
+      
+      // Animate in - modal appears to come out of the button
+      requestAnimationFrame(() => {
+        modalContent.style.transition = "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease";
+        modalContent.style.transform = "scale(1) translate(0, 0)";
+        modalContent.style.opacity = "1";
+        modalContent.style.transformOrigin = "center center";
+      });
+      
+      // Store button position for close animation
+      modal.dataset.buttonX = centerX;
+      modal.dataset.buttonY = centerY;
     }
 
-    function closeVerifyModal(){
-      document.getElementById("verifyModal").classList.add("hidden");
-      currentVerifyBooking = null;
+    function closeVerifyModal(event){
+      const modal = document.getElementById("verifyModal");
+      const modalContent = modal.querySelector(".modal");
+      
+      // Get stored button position
+      const buttonX = parseFloat(modal.dataset.buttonX) || window.innerWidth / 2;
+      const buttonY = parseFloat(modal.dataset.buttonY) || window.innerHeight / 2;
+      
+      // Animate out - modal gets sucked back into button
+      modalContent.style.transition = "transform 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 0.3s ease";
+      modalContent.style.transformOrigin = `${buttonX}px ${buttonY}px`;
+      modalContent.style.transform = `scale(0) translate(${buttonX - window.innerWidth/2}px, ${buttonY - window.innerHeight/2}px)`;
+      modalContent.style.opacity = "0";
+      
+      setTimeout(() => {
+        modal.classList.add("hidden");
+        modalContent.style.transform = "";
+        modalContent.style.transformOrigin = "";
+        modalContent.style.transition = "";
+        currentVerifyBooking = null;
+        currentVerifyIndex = -1;
+        // Remove glow effect
+        document.querySelectorAll("tr.verify-active, .booking-card.verify-active").forEach(el => {
+          el.classList.remove("verify-active");
+        });
+      }, 300);
+    }
+    
+    function navigateVerifyModal(direction){
+      if(pendingBookingsForVerify.length === 0) return;
+      
+      const newIndex = currentVerifyIndex + direction;
+      if(newIndex < 0 || newIndex >= pendingBookingsForVerify.length) return;
+      
+      const nextBooking = pendingBookingsForVerify[newIndex];
+      if(!nextBooking) return;
+      
+      // Find the verify button for this booking to get position
+      const row = document.querySelector(`tr[data-booking-id="${nextBooking.bookingId}"]`);
+      const card = document.querySelector(`.booking-card[data-booking-id="${nextBooking.bookingId}"]`);
+      const verifyButton = row?.querySelector('button[onclick*="showVerifyPanel"]') || 
+                          card?.querySelector('button[onclick*="showVerifyPanel"]');
+      
+      let centerX = window.innerWidth / 2;
+      let centerY = window.innerHeight / 2;
+      if(verifyButton){
+        const rect = verifyButton.getBoundingClientRect();
+        centerX = rect.left + rect.width / 2;
+        centerY = rect.top + rect.height / 2;
+      }
+      
+      // Update modal position for animation
+      const modal = document.getElementById("verifyModal");
+      const modalContent = modal.querySelector(".modal");
+      modal.dataset.buttonX = centerX;
+      modal.dataset.buttonY = centerY;
+      
+      // Update current index before showing panel
+      currentVerifyIndex = newIndex;
+      
+      // Show verify panel for next booking (without event, so it uses center)
+      showVerifyPanel(nextBooking.bookingId, null);
+      
+      // Update navigation arrow states
+      const prevBtn = document.getElementById("verifyNavPrev");
+      const nextBtn = document.getElementById("verifyNavNext");
+      if(prevBtn) prevBtn.disabled = newIndex === 0;
+      if(nextBtn) nextBtn.disabled = newIndex >= pendingBookingsForVerify.length - 1;
+    }
+    
+    async function approveFromVerifyModal(){
+      if(!currentVerifyBooking) return;
+      const bookingId = currentVerifyBooking.bookingId;
+      const eventKey = currentVerifyBooking.eventKey;
+      
+      // Disable buttons during processing
+      const approveBtn = document.getElementById("verifyModalApprove");
+      const rejectBtn = document.getElementById("verifyModalReject");
+      if(approveBtn) approveBtn.disabled = true;
+      if(rejectBtn) rejectBtn.disabled = true;
+      
+      // Call approve (it will handle showing navigation)
+      await approve(bookingId, eventKey);
+    }
+    
+    function showRejectModalFromVerify(){
+      if(!currentVerifyBooking) return;
+      // Store current booking before closing
+      const bookingId = currentVerifyBooking.bookingId;
+      const eventKey = currentVerifyBooking.eventKey;
+      
+      // Close verify modal and show reject modal
+      closeVerifyModal();
+      setTimeout(() => {
+        showRejectModal(bookingId, eventKey);
+      }, 100);
+    }
+    
+    async function showVerifyNavigationAfterAction(){
+      // Reload bookings to get updated status
+      await load();
+      
+      // Rebuild pending bookings list
+      pendingBookingsForVerify = filteredBookings.filter(b => 
+        b.status === "PENDING" && 
+        b.transactionCode && 
+        String(b.transactionCode).trim()
+      );
+      
+      // Remove current booking from list (it's no longer pending)
+      pendingBookingsForVerify = pendingBookingsForVerify.filter(b => 
+        b.bookingId !== currentVerifyBooking.bookingId
+      );
+      
+      if(pendingBookingsForVerify.length === 0){
+        // No more pending bookings, close modal
+        closeVerifyModal();
+        return;
+      }
+      
+      // Find next booking (same index or next available)
+      let nextIndex = currentVerifyIndex;
+      if(nextIndex >= pendingBookingsForVerify.length){
+        nextIndex = pendingBookingsForVerify.length - 1;
+      }
+      if(nextIndex < 0) nextIndex = 0;
+      
+      const nextBooking = pendingBookingsForVerify[nextIndex];
+      if(!nextBooking){
+        closeVerifyModal();
+        return;
+      }
+      
+      // Show navigation arrows
+      const navArrows = document.getElementById("verifyNavArrows");
+      const prevBtn = document.getElementById("verifyNavPrev");
+      const nextBtn = document.getElementById("verifyNavNext");
+      
+      navArrows.classList.add("show");
+      prevBtn.disabled = nextIndex === 0;
+      nextBtn.disabled = nextIndex >= pendingBookingsForVerify.length - 1;
+      
+      // Update current index
+      currentVerifyIndex = nextIndex;
+      
+      // Show next booking in verify modal
+      showVerifyPanel(nextBooking.bookingId, null);
     }
 
     function copyToClipboard(text){
@@ -1600,9 +1999,15 @@
 
         addActivity("Approved", id, "Payment approved");
         showToast("Payment approved successfully", "success");
-        await load();
-        highlightRow(id);
-        autoAdvanceToNextPending();
+        
+        // If we were in verify modal, show navigation arrows
+        if(currentVerifyBooking && currentVerifyBooking.bookingId === id){
+          showVerifyNavigationAfterAction();
+        } else {
+          await load();
+          highlightRow(id);
+          autoAdvanceToNextPending();
+        }
       }catch(err){
         console.error(err);
         showToast("Approve failed. Check connection.", "error");
@@ -1682,8 +2087,14 @@
         
         // Show toast with undo option
         showRejectionToast(id, eventKey, rejectionKey);
-        await load();
-        highlightRow(id);
+        
+        // If we were in verify modal, show navigation arrows
+        if(currentVerifyBooking && currentVerifyBooking.bookingId === id){
+          showVerifyNavigationAfterAction();
+        } else {
+          await load();
+          highlightRow(id);
+        }
       }catch(err){
         console.error(err);
         showToast("Reject failed. Check connection.", "error");
