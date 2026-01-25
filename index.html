@@ -8369,6 +8369,7 @@ IMPORTANT:
       <i class="fa-solid fa-comments"></i>
       <span class="chat-badge" id="chatBadge">1</span>
     </div>
+    <div class="chat-backdrop" id="chatBackdrop"></div>
     <div class="chat-window byz-hidden" id="chatWindow" aria-hidden="true">
       <div class="chat-header">
         <div class="chat-header-content">
@@ -8383,9 +8384,14 @@ IMPORTANT:
             </div>
           </div>
         </div>
-        <button class="chat-close" id="chatClose" aria-label="Close chat">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <div class="chat-header-actions">
+          <button class="chat-expand" id="chatExpand" aria-label="Expand to full screen">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+          <button class="chat-close" id="chatClose" aria-label="Close chat">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
       <div class="chat-messages" id="chatMessages">
         <div class="chat-message bot">
@@ -8558,17 +8564,69 @@ IMPORTANT:
       opacity: 1 !important;
     }
     
-    /* ========== MOBILE: iMessage-Like Layout ========== */
+    /* ========== MOBILE: Half-Screen Layout with Fullscreen Toggle ========== */
     @media (max-width: 767px) {
-      .chat-window:not(.byz-hidden) {
+      /* Backdrop overlay for half-screen mode */
+      .chat-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s var(--ease);
+      }
+      
+      .chat-backdrop.show {
+        display: block;
+        opacity: 1;
+      }
+      
+      /* Hide backdrop on desktop */
+      @media (min-width: 768px) {
+        .chat-backdrop {
+          display: none !important;
+        }
+      }
+      
+      /* Half-screen mode (default) */
+      .chat-window:not(.byz-hidden):not(.chat-fullscreen) {
+        position: fixed !important;
+        bottom: 50vh !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 50vw !important;
+        min-width: 90vw !important;
+        height: 50vh !important;
+        min-height: 400px !important;
+        max-width: 100vw !important;
+        max-height: 90vh !important;
+        border-radius: 28px 28px 0 0 !important;
+        border: 1px solid var(--border) !important;
+        border-bottom: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        will-change: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.2) !important;
+      }
+      
+      /* Fullscreen mode */
+      .chat-window:not(.byz-hidden).chat-fullscreen {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
         width: 100% !important;
-        height: 100% !important; /* NOT 100vh - prevents keyboard issues */
-        height: -webkit-fill-available !important; /* Critical for iOS */
+        height: 100% !important;
+        height: -webkit-fill-available !important;
         max-width: 100vw !important;
         border-radius: 0 !important;
         border: none !important;
@@ -8579,9 +8637,10 @@ IMPORTANT:
         will-change: auto !important;
         display: flex !important;
         flex-direction: column !important;
+        box-shadow: none !important;
       }
       
-      /* Header: STICKY - MUST REMAIN VISIBLE (iMessage style) */
+      /* Header: STICKY - MUST REMAIN VISIBLE */
       .chat-header {
         position: sticky !important;
         top: 0 !important;
@@ -8597,12 +8656,45 @@ IMPORTANT:
         background: color-mix(in srgb, var(--bg) 95%, transparent);
         backdrop-filter: blur(40px) saturate(180%);
         z-index: 1000 !important;
-        flex-shrink: 0 !important; /* Prevents crushing */
+        flex-shrink: 0 !important;
         min-height: 60px;
         margin: 0 !important;
         transform: none !important;
-        /* ADD subtle shadow so it's clear it's "stuck" */
         box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+      }
+      
+      .chat-header-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      
+      .chat-expand {
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: 50% !important;
+        border: 2px solid var(--border) !important;
+        background-color: var(--bg-elev) !important;
+        color: var(--text) !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s var(--ease);
+        z-index: 10003 !important;
+        font-size: 12px !important;
+      }
+      
+      .chat-expand:hover {
+        transform: scale(1.1);
+        background-color: var(--bg-alt) !important;
+      }
+      
+      /* Hide expand button on desktop */
+      @media (min-width: 768px) {
+        .chat-expand {
+          display: none !important;
+        }
       }
       
       /* Messages: Scrollable area - grows to fill space */
@@ -9212,6 +9304,8 @@ IMPORTANT:
   const toggle = document.getElementById('chatToggle');
   const window = document.getElementById('chatWindow');
   const close = document.getElementById('chatClose');
+  const expand = document.getElementById('chatExpand');
+  const backdrop = document.getElementById('chatBackdrop');
   const messages = document.getElementById('chatMessages');
   const input = document.getElementById('chatInput');
   const send = document.getElementById('chatSend');
@@ -9219,6 +9313,7 @@ IMPORTANT:
   const badge = document.getElementById('chatBadge');
   
   let isOpen = false;
+  let isFullscreen = false;
   
   // ========== CROSS-PLATFORM KEYBOARD HANDLING: Visual Viewport API (Progressive Enhancement) ==========
   let keyboardAdjustHandler = null;
@@ -9289,6 +9384,10 @@ IMPORTANT:
     if (isMobileDevice) {
       document.documentElement.classList.add('chat-open');
       document.body.classList.add('chat-open');
+      // Show backdrop on mobile (half-screen mode)
+      if (backdrop && !isFullscreen) {
+        backdrop.classList.add('show');
+      }
     }
     
     // Hide social dock when chat opens
@@ -9324,6 +9423,13 @@ IMPORTANT:
     window.classList.add('byz-hidden');
     window.setAttribute('aria-hidden', 'true');
     isOpen = false;
+    isFullscreen = false;
+    window.classList.remove('chat-fullscreen');
+    
+    // Hide backdrop
+    if (backdrop) {
+      backdrop.classList.remove('show');
+    }
     
     // Unlock page scrolling on mobile when chat closes
     document.documentElement.classList.remove('chat-open');
@@ -9339,6 +9445,37 @@ IMPORTANT:
     if (socialDock) {
       socialDock.classList.remove('chat-open');
     }
+    
+    // Update expand icon
+    updateExpandIcon();
+  }
+  
+  function toggleFullscreen() {
+    const isMobileDevice = window.innerWidth <= 767;
+    if (!isMobileDevice) return; // Only on mobile
+    
+    isFullscreen = !isFullscreen;
+    window.classList.toggle('chat-fullscreen', isFullscreen);
+    
+    // Show/hide backdrop based on fullscreen state
+    if (backdrop) {
+      if (isFullscreen) {
+        backdrop.classList.remove('show');
+      } else {
+        backdrop.classList.add('show');
+      }
+    }
+    
+    updateExpandIcon();
+  }
+  
+  function updateExpandIcon() {
+    if (!expand) return;
+    const icon = expand.querySelector('i');
+    if (icon) {
+      icon.className = isFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+    }
+    expand.setAttribute('aria-label', isFullscreen ? 'Exit full screen' : 'Expand to full screen');
   }
   
   toggle.addEventListener('click', (e) => {
@@ -9349,6 +9486,26 @@ IMPORTANT:
   });
   
   close.addEventListener('click', closeChat);
+  
+  // Fullscreen toggle (mobile only)
+  if (expand) {
+    expand.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFullscreen();
+    });
+  }
+  
+  // Close chat when clicking backdrop (mobile only)
+  if (backdrop) {
+    backdrop.addEventListener('click', () => {
+      if (isOpen && !isFullscreen) {
+        closeChat();
+      }
+    });
+  }
+  
+  // Initialize expand icon
+  updateExpandIcon();
   
   // Update send button visibility based on input content
   function updateSendButton() {
