@@ -2025,11 +2025,43 @@ function downloadReceipt(bookingId) {
   `;
   
   receiptContainer.innerHTML = `
-    <div style="text-align: center; margin-bottom: 28px; border-bottom: 3px solid #000; padding-bottom: 24px; position: relative;">
-      <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 4px; background: #000;"></div>
-      <div style="font-size: 32px; font-weight: 900; letter-spacing: 3px; margin-bottom: 6px; font-family: 'Courier New', monospace;">BYZ</div>
-      <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700;">ENTERTAINMENT</div>
-      <div style="font-size: 9px; color: #333; margin-top: 10px; letter-spacing: 1px;">━━━━━━━━━━━━━━━━━━━━━━━━</div>
+    <div style="text-align: center; margin-bottom: 32px; border-bottom: 4px solid #000; padding-bottom: 28px; position: relative;">
+      <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 5px; background: #000;"></div>
+      <div style="position: relative; min-height: 60px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
+        <img 
+          src="assets/byz-logo-black.png" 
+          alt="BYZ Entertainment" 
+          id="receipt-logo-img"
+          style="
+            height: 60px;
+            width: auto;
+            max-width: 200px;
+            display: block;
+            object-fit: contain;
+          "
+          onload="
+            const fallback = document.getElementById('receipt-logo-fallback');
+            if(fallback) fallback.style.display='none';
+          "
+          onerror="
+            this.style.display='none';
+            const fallback = document.getElementById('receipt-logo-fallback');
+            if(fallback) fallback.style.display='block';
+          "
+        />
+        <div 
+          id="receipt-logo-fallback"
+          style="
+            display: none;
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            font-family: 'Courier New', monospace;
+            line-height: 60px;
+          "
+        >BYZ</div>
+      </div>
+      <div style="font-size: 9px; color: #333; margin-top: 12px; letter-spacing: 1px;">━━━━━━━━━━━━━━━━━━━━━━━━</div>
     </div>
     
     <div style="margin-bottom: 24px;">
@@ -2087,22 +2119,31 @@ function downloadReceipt(bookingId) {
       </div>
     </div>
     
-    <div style="text-align: center; margin: 24px 0; padding: 14px; background: #000; color: #fff;">
-      <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; opacity: 0.8;">Status</div>
-      <div style="font-size: 12px; font-weight: 900; letter-spacing: 2px;">✓ CONFIRMED</div>
+    <div style="text-align: center; margin: 24px 0; padding: 16px; background: #000; color: #fff; border: 1px solid #333;">
+      <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; opacity: 0.8;">Transaction</div>
+      <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px;">
+        Code: <span style="font-family: 'Courier New', monospace; letter-spacing: 1.5px; font-weight: 700;">${formData.transactionCode || 'N/A'}</span>
+      </div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.5px;">Method: M-Pesa</div>
     </div>
     
-    <div style="text-align: center; margin: 20px 0; padding: 14px; background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%); border: 2px dashed #999; border-radius: 4px;">
-      <div style="font-size: 8px; color: #555; line-height: 1.6; letter-spacing: 0.3px;">
-        <div style="margin-bottom: 4px;">📧 QR code will be sent via email</div>
-        <div>🚪 Present QR code at door for entry</div>
+    <div style="text-align: center; margin: 20px 0; padding: 16px; background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%); border: 2px dashed #777; border-radius: 6px;">
+      <div style="font-size: 8px; color: #555; line-height: 1.8; letter-spacing: 0.3px;">
+        <div style="margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-solid fa-envelope" style="font-size: 10px;"></i>
+          <span>QR code will be sent via email</span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-solid fa-door-open" style="font-size: 10px;"></i>
+          <span>Present QR code at door for entry</span>
+        </div>
       </div>
     </div>
     
-    <div id="barcode-container" style="text-align: center; margin: 28px 0; padding: 24px 0; border-top: 3px solid #000; border-bottom: 3px solid #000; background: #ffffff;">
-      <div style="font-size: 8px; color: #666; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Booking Reference</div>
-      <svg id="barcode-svg" style="max-width: 100%; height: 70px; margin: 8px 0;"></svg>
-      <div style="font-size: 10px; color: #000; margin-top: 12px; letter-spacing: 2px; font-weight: 700; font-family: 'Courier New', monospace;">${barcodeData}</div>
+    <div id="barcode-container" style="display: grid; place-items: center; width: 100%; max-width: 320px; margin: 32px auto; padding: 28px 20px; border-top: 3px solid #000; border-bottom: 3px solid #000; background: #ffffff;">
+      <div style="font-size: 8px; color: #666; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600;">Booking Reference</div>
+      <svg id="barcode-svg" style="width: min(90%, 280px); max-width: 280px; height: 70px; margin: 0 auto; display: block;"></svg>
+      <div style="font-size: 11px; color: #000; margin-top: 14px; letter-spacing: 2.5px; font-weight: 700; font-family: 'Courier New', monospace; text-align: center; word-break: break-all; padding: 0 10px;">${barcodeData}</div>
     </div>
     
     <div style="text-align: center; margin-top: 28px; padding-top: 20px; border-top: 2px dashed #ccc;">
@@ -2114,25 +2155,39 @@ function downloadReceipt(bookingId) {
   
   document.body.appendChild(receiptContainer);
   
-  // Generate barcode using JsBarcode
+  // Wait for logo and icons to load, then generate barcode
   setTimeout(() => {
-    try {
-      if (typeof JsBarcode !== 'undefined') {
-        JsBarcode("#barcode-svg", barcodeData, {
-          format: "CODE128",
-          width: 2,
-          height: 50,
-          displayValue: false,
-          background: "#ffffff",
-          lineColor: "#000000"
-        });
-      }
-    } catch(e) {
-      console.error("Barcode generation error:", e);
+    // Ensure logo loads or shows fallback
+    const logoImg = document.getElementById('receipt-logo-img');
+    if(logoImg && !logoImg.complete) {
+      logoImg.onload = () => generateReceiptCanvas();
+      logoImg.onerror = () => {
+        const fallback = document.getElementById('receipt-logo-fallback');
+        if(fallback) fallback.style.display = 'block';
+        generateReceiptCanvas();
+      };
+    } else {
+      generateReceiptCanvas();
     }
     
-    // Convert to image using html2canvas
-    setTimeout(() => {
+    function generateReceiptCanvas() {
+      try {
+        if (typeof JsBarcode !== 'undefined') {
+          JsBarcode("#barcode-svg", barcodeData, {
+            format: "CODE128",
+            width: 2,
+            height: 50,
+            displayValue: false,
+            background: "#ffffff",
+            lineColor: "#000000"
+          });
+        }
+      } catch(e) {
+        console.error("Barcode generation error:", e);
+      }
+      
+      // Convert to image using html2canvas (wait a bit for icons to render)
+      setTimeout(() => {
       if (typeof html2canvas !== 'undefined') {
         html2canvas(receiptContainer, {
           backgroundColor: '#ffffff',
