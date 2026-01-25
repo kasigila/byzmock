@@ -1331,32 +1331,43 @@
 
     function selectType(type, el){
       bookingType = type;
+      
+      // Remove active class from all choices
       document.querySelectorAll(".choice").forEach(c => c.classList.remove("active"));
-      if(el) el.classList.add("active");
+      
+      // Add active class to clicked choice
+      if(el && el.classList) {
+        el.classList.add("active");
+      }
 
+      // Get step elements
       const ticketStep = document.getElementById("ticketStep");
       const tablesStep = document.getElementById("tablesStep");
       const paymentStep = document.getElementById("paymentStep");
       const formStep = document.getElementById("formStep");
       
+      // Hide both step options first
       if(ticketStep) ticketStep.classList.remove("active");
       if(tablesStep) tablesStep.classList.remove("active");
 
-      if(type === "TICKET"){
-        if(ticketStep) ticketStep.classList.add("active");
-      } else if(type === "TABLE"){
-        if(tablesStep) tablesStep.classList.add("active");
+      // Show the appropriate step based on selection
+      if(type === "TICKET" && ticketStep){
+        ticketStep.classList.add("active");
+      } else if(type === "TABLE" && tablesStep){
+        tablesStep.classList.add("active");
       }
 
+      // Show payment and form steps
       if(paymentStep) paymentStep.classList.add("active");
       if(formStep) formStep.classList.add("active");
 
+      // Update progress
       setProgress(66);
       updateStepIndicator(2);
       saveFormData();
     }
     
-    // Make selectType globally accessible
+    // Make selectType globally accessible (for onclick handlers)
     window.selectType = selectType;
 
     function updateTicketPrice(){
@@ -1789,7 +1800,8 @@ Txn: ${data.transactionCode}`;
           amount: amount,
           bookingType: bookingType,
           tier: tier || "",
-          grooveType: grooveType || ""
+          grooveType: grooveType || "",
+          transactionCode: data.transactionCode || ""
         }));
         
         // Clear saved form data
@@ -1999,7 +2011,8 @@ function downloadReceipt(bookingId) {
       amount: calculateTotal() || 0,
       bookingType: bookingType || "",
       tier: tier || "",
-      grooveType: grooveType || ""
+      grooveType: grooveType || "",
+      transactionCode: document.getElementById("txn")?.value || ""
     };
   }
   
@@ -2033,17 +2046,16 @@ function downloadReceipt(bookingId) {
   `;
   
   receiptContainer.innerHTML = `
-    <div style="text-align: center; margin-bottom: 32px; border-bottom: 4px solid #000; padding-bottom: 28px; position: relative;">
-      <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 5px; background: #000;"></div>
-      <div style="position: relative; min-height: 60px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
+    <div style="text-align: center; margin-bottom: 32px; padding-bottom: 28px; position: relative;">
+      <div style="position: relative; min-height: 120px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center;">
         <img 
           src="assets/byz-logo-black.png" 
           alt="BYZ Entertainment" 
           id="receipt-logo-img"
           style="
-            height: 60px;
+            height: 120px;
             width: auto;
-            max-width: 200px;
+            max-width: 300px;
             display: block;
             object-fit: contain;
           "
@@ -2061,15 +2073,15 @@ function downloadReceipt(bookingId) {
           id="receipt-logo-fallback"
           style="
             display: none;
-            font-size: 36px;
+            font-size: 72px;
             font-weight: 900;
             letter-spacing: 4px;
             font-family: 'Courier New', monospace;
-            line-height: 60px;
+            line-height: 120px;
           "
         >BYZ</div>
       </div>
-      <div style="font-size: 9px; color: #333; margin-top: 12px; letter-spacing: 1px;">━━━━━━━━━━━━━━━━━━━━━━━━</div>
+      <div style="font-size: 9px; color: #333; letter-spacing: 1px;">━━━━━━━━━━━━━━━━━━━━━━━━</div>
     </div>
     
     <div style="margin-bottom: 24px;">
@@ -2083,7 +2095,7 @@ function downloadReceipt(bookingId) {
         <span style="font-size: 11px; font-weight: 600;">${timestamp}</span>
       </div>
       
-      <div style="margin: 16px 0; padding: 12px; background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%); border-left: 3px solid #000;">
+      <div style="margin: 16px 0; padding: 12px; background: linear-gradient(135deg, #e0e0e0 0%, #d5d5d5 100%); border-left: 3px solid #000;">
         <div style="font-size: 9px; color: #666; margin-bottom: 4px; text-transform: uppercase;">Event</div>
         <div style="font-size: 14px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 8px;">${eventName}</div>
         <div style="font-size: 9px; color: #666; margin-bottom: 4px; text-transform: uppercase; margin-top: 12px;">Type</div>
@@ -2148,10 +2160,10 @@ function downloadReceipt(bookingId) {
       </div>
     </div>
     
-    <div id="barcode-container" style="display: grid; place-items: center; width: 100%; max-width: 320px; margin: 32px auto; padding: 28px 20px; border-top: 3px solid #000; border-bottom: 3px solid #000; background: #ffffff;">
-      <div style="font-size: 8px; color: #666; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600;">Booking Reference</div>
+    <div id="barcode-container" style="display: grid; place-items: center; width: 100%; max-width: 320px; margin: 32px auto; padding: 28px 20px; border-top: 3px solid #000; border-bottom: 3px solid #000; background: #ffffff; text-align: center;">
+      <div style="font-size: 8px; color: #666; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; text-align: center; width: 100%;">Booking Reference</div>
       <svg id="barcode-svg" style="width: 100%; height: 70px; margin: 0 auto; display: block;"></svg>
-      <div style="font-size: 11px; color: #000; margin-top: 14px; letter-spacing: 2.5px; font-weight: 700; font-family: 'Courier New', monospace; text-align: center; word-break: break-all; padding: 0 10px;">${barcodeData}</div>
+      <div style="font-size: 11px; color: #000; margin-top: 14px; letter-spacing: 2.5px; font-weight: 700; font-family: 'Courier New', monospace; text-align: center; word-break: break-all; padding: 0 10px; width: 100%;">${barcodeData}</div>
     </div>
     
     <div style="text-align: center; margin-top: 28px; padding-top: 20px; border-top: 2px dashed #ccc;">
