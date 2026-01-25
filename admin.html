@@ -533,13 +533,18 @@
     /* Modal */
     .modal-backdrop{
       position:fixed;inset:0;z-index:9998;
-      background: rgba(0,0,0,.45);
-      backdrop-filter: blur(12px);
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(8px);
       display:none;place-items:center;padding:20px;
       animation: fadeIn .2s var(--ease);
     }
     .modal-backdrop:not(.hidden){
       display:grid;
+    }
+    /* Enhanced backdrop for verify modal */
+    #verifyModal.modal-backdrop{
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(10px);
     }
     @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
     .modal{
@@ -1606,7 +1611,9 @@
       modalContent.style.transform = `scale(0) translate(${centerX - window.innerWidth/2}px, ${centerY - window.innerHeight/2}px)`;
       modalContent.style.opacity = "0";
       
+      // Ensure modal backdrop is visible
       modal.classList.remove("hidden");
+      modal.style.display = "grid";
       
       // Animate in - modal appears to come out of the button
       requestAnimationFrame(() => {
@@ -1637,6 +1644,7 @@
       
       setTimeout(() => {
         modal.classList.add("hidden");
+        modal.style.display = "none";
         modalContent.style.transform = "";
         modalContent.style.transformOrigin = "";
         modalContent.style.transition = "";
@@ -1692,7 +1700,10 @@
     }
     
     async function approveFromVerifyModal(){
-      if(!currentVerifyBooking) return;
+      if(!currentVerifyBooking) {
+        console.error("No current booking to approve");
+        return;
+      }
       const bookingId = currentVerifyBooking.bookingId;
       const eventKey = currentVerifyBooking.eventKey;
       
@@ -1707,7 +1718,10 @@
     }
     
     function showRejectModalFromVerify(){
-      if(!currentVerifyBooking) return;
+      if(!currentVerifyBooking) {
+        console.error("No current booking to reject");
+        return;
+      }
       // Store current booking before closing
       const bookingId = currentVerifyBooking.bookingId;
       const eventKey = currentVerifyBooking.eventKey;
@@ -1719,7 +1733,11 @@
       }, 100);
     }
     
+    // Make functions globally accessible for onclick handlers - MUST be after function definitions
     async function showVerifyNavigationAfterAction(){
+      // Store the old booking ID before reload
+      const oldBookingId = currentVerifyBooking ? currentVerifyBooking.bookingId : null;
+      
       // Reload bookings to get updated status
       await load();
       
@@ -1731,9 +1749,11 @@
       );
       
       // Remove current booking from list (it's no longer pending)
-      pendingBookingsForVerify = pendingBookingsForVerify.filter(b => 
-        b.bookingId !== currentVerifyBooking.bookingId
-      );
+      if(oldBookingId){
+        pendingBookingsForVerify = pendingBookingsForVerify.filter(b => 
+          b.bookingId !== oldBookingId
+        );
+      }
       
       if(pendingBookingsForVerify.length === 0){
         // No more pending bookings, close modal
@@ -1754,19 +1774,21 @@
         return;
       }
       
-      // Show navigation arrows
+      // Show navigation arrows BEFORE showing next booking
       const navArrows = document.getElementById("verifyNavArrows");
       const prevBtn = document.getElementById("verifyNavPrev");
       const nextBtn = document.getElementById("verifyNavNext");
       
-      navArrows.classList.add("show");
-      prevBtn.disabled = nextIndex === 0;
-      nextBtn.disabled = nextIndex >= pendingBookingsForVerify.length - 1;
+      if(navArrows){
+        navArrows.classList.add("show");
+        if(prevBtn) prevBtn.disabled = nextIndex === 0;
+        if(nextBtn) nextBtn.disabled = nextIndex >= pendingBookingsForVerify.length - 1;
+      }
       
       // Update current index
       currentVerifyIndex = nextIndex;
       
-      // Show next booking in verify modal
+      // Show next booking in verify modal (this will update the content but keep modal open)
       showVerifyPanel(nextBooking.bookingId, null);
     }
 
@@ -1775,6 +1797,16 @@
         showToast("Copied to clipboard", "success");
       });
     }
+    
+    // Make ALL verify modal functions globally accessible for onclick handlers
+    // This MUST be after all function definitions are complete
+    (function makeFunctionsGlobal(){
+      window.navigateVerifyModal = navigateVerifyModal;
+      window.approveFromVerifyModal = approveFromVerifyModal;
+      window.showRejectModalFromVerify = showRejectModalFromVerify;
+      window.showVerifyPanel = showVerifyPanel;
+      window.closeVerifyModal = closeVerifyModal;
+    })();
 
     function showApproveModal(id, eventKey){
       const booking = bookings.find(b => b.bookingId === id);
@@ -2001,12 +2033,22 @@
         showToast("Payment approved successfully", "success");
         
         // If we were in verify modal, show navigation arrows
-        if(currentVerifyBooking && currentVerifyBooking.bookingId === id){
-          showVerifyNavigationAfterAction();
+        const wasInVerifyModal = currentVerifyBooking && currentVerifyBooking.bookingId === id;
+        if(wasInVerifyModal){
+          // Keep modal open and show navigation
+          await showVerifyNavigationAfterAction();
         } else {
           await load();
           highlightRow(id);
           autoAdvanceToNextPending();
+        }
+        
+        // Re-enable buttons if modal is still open
+        if(wasInVerifyModal){
+          const approveBtn = document.getElementById("verifyModalApprove");
+          const rejectBtn = document.getElementById("verifyModalReject");
+          if(approveBtn) approveBtn.disabled = false;
+          if(rejectBtn) rejectBtn.disabled = false;
         }
       }catch(err){
         console.error(err);
@@ -2089,8 +2131,10 @@
         showRejectionToast(id, eventKey, rejectionKey);
         
         // If we were in verify modal, show navigation arrows
-        if(currentVerifyBooking && currentVerifyBooking.bookingId === id){
-          showVerifyNavigationAfterAction();
+        const wasInVerifyModal = currentVerifyBooking && currentVerifyBooking.bookingId === id;
+        if(wasInVerifyModal){
+          // Keep modal open and show navigation
+          await showVerifyNavigationAfterAction();
         } else {
           await load();
           highlightRow(id);
