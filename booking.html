@@ -1332,24 +1332,32 @@
     function selectType(type, el){
       bookingType = type;
       document.querySelectorAll(".choice").forEach(c => c.classList.remove("active"));
-      el.classList.add("active");
+      if(el) el.classList.add("active");
 
-      document.getElementById("ticketStep").classList.remove("active");
-      document.getElementById("tablesStep").classList.remove("active");
+      const ticketStep = document.getElementById("ticketStep");
+      const tablesStep = document.getElementById("tablesStep");
+      const paymentStep = document.getElementById("paymentStep");
+      const formStep = document.getElementById("formStep");
+      
+      if(ticketStep) ticketStep.classList.remove("active");
+      if(tablesStep) tablesStep.classList.remove("active");
 
       if(type === "TICKET"){
-        document.getElementById("ticketStep").classList.add("active");
-      } else {
-        document.getElementById("tablesStep").classList.add("active");
+        if(ticketStep) ticketStep.classList.add("active");
+      } else if(type === "TABLE"){
+        if(tablesStep) tablesStep.classList.add("active");
       }
 
-      document.getElementById("paymentStep").classList.add("active");
-      document.getElementById("formStep").classList.add("active");
+      if(paymentStep) paymentStep.classList.add("active");
+      if(formStep) formStep.classList.add("active");
 
       setProgress(66);
       updateStepIndicator(2);
       saveFormData();
     }
+    
+    // Make selectType globally accessible
+    window.selectType = selectType;
 
     function updateTicketPrice(){
       const qtyEl = document.getElementById("ticketQty");
@@ -2142,7 +2150,7 @@ function downloadReceipt(bookingId) {
     
     <div id="barcode-container" style="display: grid; place-items: center; width: 100%; max-width: 320px; margin: 32px auto; padding: 28px 20px; border-top: 3px solid #000; border-bottom: 3px solid #000; background: #ffffff;">
       <div style="font-size: 8px; color: #666; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600;">Booking Reference</div>
-      <svg id="barcode-svg" style="width: min(90%, 280px); max-width: 280px; height: 70px; margin: 0 auto; display: block;"></svg>
+      <svg id="barcode-svg" style="width: 100%; height: 70px; margin: 0 auto; display: block;"></svg>
       <div style="font-size: 11px; color: #000; margin-top: 14px; letter-spacing: 2.5px; font-weight: 700; font-family: 'Courier New', monospace; text-align: center; word-break: break-all; padding: 0 10px;">${barcodeData}</div>
     </div>
     
