@@ -6,6 +6,8 @@
   <title>BYZ Tempo Booking</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
   <style>
     /* same CSS as booking.html */
@@ -1600,8 +1602,11 @@ document.addEventListener("visibilitychange", () => {
   if(!document.hidden) handleReturnFromWhatsApp();
 });
 
-// Download Receipt Function (Gen Z Feature - Social Media Ready)
+// Download Receipt Function (Receiptify-Style - Image Download)
 function downloadReceipt(bookingId) {
+  // Show loading toast
+  showToast(`<div><i class="fa-solid fa-spinner fa-spin"></i> <b>Generating receipt...</b></div>`, 2000);
+  
   // Get form data from session storage or form fields
   const savedData = sessionStorage.getItem("byz_last_booking_data");
   let formData = {};
@@ -1615,250 +1620,247 @@ function downloadReceipt(bookingId) {
   if(!formData.name){
     formData = {
       name: document.getElementById("fullName")?.value || "",
-      phone: document.getElementById("phone")?.value || "",
+      phone: (document.getElementById("phoneCountryCode")?.value || "+255") + (document.getElementById("phone")?.value || "").replace(/\D/g, ""),
       email: document.getElementById("email")?.value || "",
       quantity: ticketQty || 1,
       amount: calculateTotal() || 0,
       bookingType: bookingType || "",
-      tier: tier || ""
+      tier: tier || "",
+      transactionCode: document.getElementById("txn")?.value || ""
     };
   }
   
   const eventName = "Tempo";
   const bookingTypeLabel = formData.bookingType === "TICKET" ? "Ticket" : formData.bookingType === "TABLE" ? `Table (${formData.tier || "Standard"})` : "Booking";
   
-  const receiptHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>BYZ Booking Receipt - ${bookingId}</title>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-          background: linear-gradient(135deg, #000000 0%, #1c1c1e 100%);
-          color: #fff;
-          padding: 40px 20px;
-          line-height: 1.6;
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .receipt {
-          max-width: 420px;
-          width: 100%;
-          margin: 0 auto;
-          background: linear-gradient(135deg, #1c1c1e 0%, #0b0b0c 100%);
-          border-radius: 28px;
-          padding: 40px 32px;
-          box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05);
-          position: relative;
-          overflow: hidden;
-        }
-        .receipt::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 4px;
-          background: linear-gradient(90deg, #25D366, #E1306C, #1DB954);
-        }
-        .header {
-          text-align: center;
-          margin-bottom: 32px;
-          border-bottom: 1px solid rgba(255,255,255,.1);
-          padding-bottom: 24px;
-        }
-        .header h1 {
-          font-size: 32px;
-          font-weight: 900;
-          letter-spacing: -0.8px;
-          margin-bottom: 8px;
-          background: linear-gradient(135deg, #fff 0%, #a1a1a6 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        .header p {
-          color: #a1a1a6;
-          font-size: 14px;
-          font-weight: 500;
-        }
-        .status-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 12px;
-          border-radius: 12px;
-          background: rgba(37,211,102,.15);
-          color: #25D366;
-          font-size: 12px;
-          font-weight: 700;
-          margin-top: 12px;
-        }
-        .details {
-          margin-bottom: 24px;
-        }
-        .detail-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 14px 0;
-          border-bottom: 1px solid rgba(255,255,255,.05);
-        }
-        .detail-row:last-child {
-          border-bottom: none;
-        }
-        .label {
-          color: #a1a1a6;
-          font-size: 13px;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-        .value {
-          font-weight: 700;
-          font-size: 15px;
-          text-align: right;
-        }
-        .qr-note {
-          background: linear-gradient(135deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.03) 100%);
-          border-radius: 16px;
-          padding: 20px;
-          margin-top: 24px;
-          font-size: 13px;
-          text-align: center;
-          border: 1px solid rgba(255,255,255,.1);
-        }
-        .qr-note-item {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          margin-bottom: 12px;
-        }
-        .qr-note-item:last-child {
-          margin-bottom: 0;
-        }
-        .qr-note-item i {
-          color: #25D366;
-          font-size: 16px;
-        }
-        .footer {
-          text-align: center;
-          margin-top: 32px;
-          padding-top: 24px;
-          border-top: 1px solid rgba(255,255,255,.1);
-        }
-        .footer-text {
-          color: #a1a1a6;
-          font-size: 12px;
-          margin-bottom: 8px;
-        }
-        .footer-url {
-          color: #fff;
-          font-weight: 700;
-          font-size: 13px;
-          text-decoration: none;
-        }
-        .logo-img {
-          width: 80px;
-          height: 80px;
-          margin: 0 auto 16px;
-          display: block;
-          opacity: 0.95;
-        }
-        .watermark {
-          position: absolute;
-          bottom: 20px;
-          right: 20px;
-          font-size: 10px;
-          color: rgba(255,255,255,.15);
-          font-weight: 500;
-          pointer-events: none;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="receipt">
-        <div class="watermark">For personal use only</div>
-        <div class="header">
-          <img src="https://byzentertainment.com/assets/byz-logo-white.png" alt="BYZ Logo" class="logo-img" onerror="this.style.display='none'">
-          <h1>BYZ Entertainment</h1>
-          <p>Booking Receipt</p>
-          <div class="status-badge">
-            <i class="fa-solid fa-circle-check"></i> Confirmed
-          </div>
-        </div>
-        <div class="details">
-          <div class="detail-row">
-            <span class="label"><i class="fa-solid fa-hashtag"></i> Booking ID</span>
-            <span class="value">${bookingId || "Pending"}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label"><i class="fa-solid fa-calendar-star"></i> Event</span>
-            <span class="value">${eventName}</span>
-          </div>
-          ${formData.name ? `<div class="detail-row">
-            <span class="label"><i class="fa-solid fa-user"></i> Name</span>
-            <span class="value">${formData.name}</span>
-          </div>` : ''}
-          ${formData.phone ? `<div class="detail-row">
-            <span class="label"><i class="fa-solid fa-phone"></i> Phone</span>
-            <span class="value">${formData.phone}</span>
-          </div>` : ''}
-          <div class="detail-row">
-            <span class="label"><i class="fa-solid fa-ticket"></i> Type</span>
-            <span class="value">${bookingTypeLabel}</span>
-          </div>
-          ${formData.quantity ? `<div class="detail-row">
-            <span class="label"><i class="fa-solid fa-users"></i> Quantity</span>
-            <span class="value">${formData.quantity}</span>
-          </div>` : ''}
-          ${formData.amount ? `<div class="detail-row">
-            <span class="label"><i class="fa-solid fa-money-bill-wave"></i> Amount</span>
-            <span class="value">${Number(formData.amount).toLocaleString()} TZS</span>
-          </div>` : ''}
-          <div class="detail-row">
-            <span class="label"><i class="fa-solid fa-clock"></i> Date</span>
-            <span class="value">${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-          </div>
-        </div>
-        <div class="qr-note">
-          <div class="qr-note-item">
-            <i class="fa-solid fa-envelope"></i>
-            <span>Your QR code will be sent via email</span>
-          </div>
-          <div class="qr-note-item">
-            <i class="fa-solid fa-door-open"></i>
-            <span>Present QR code at door for entry</span>
-          </div>
-        </div>
-        <div class="footer">
-          <p class="footer-text">See you at the event!</p>
-          <a href="https://byzentertainment.com" class="footer-url">byzentertainment.com</a>
-        </div>
-      </div>
-    </body>
-    </html>
+  // Generate barcode data
+  const barcodeData = bookingId || `BYZ${Date.now()}`;
+  const timestamp = new Date().toLocaleString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+  // Create receipt container (hidden)
+  const receiptContainer = document.createElement('div');
+  receiptContainer.id = 'receipt-container-temp';
+  receiptContainer.style.cssText = `
+    position: fixed;
+    left: -9999px;
+    top: 0;
+    width: 400px;
+    background: #ffffff;
+    padding: 32px 24px;
+    font-family: 'Courier New', 'Monaco', monospace;
+    color: #000;
+    line-height: 1.4;
   `;
   
-  const blob = new Blob([receiptHtml], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `BYZ-Booking-${bookingId || 'Receipt'}.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  receiptContainer.innerHTML = `
+    <div style="text-align: center; margin-bottom: 32px; border-bottom: 4px solid #000; padding-bottom: 28px; position: relative;">
+      <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 5px; background: #000;"></div>
+      <div style="position: relative; min-height: 60px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
+        <img 
+          src="assets/byz-logo-black.png" 
+          alt="BYZ Entertainment" 
+          id="receipt-logo-img"
+          style="
+            height: 60px;
+            width: auto;
+            max-width: 200px;
+            display: block;
+            object-fit: contain;
+          "
+          onload="
+            const fallback = document.getElementById('receipt-logo-fallback');
+            if(fallback) fallback.style.display='none';
+          "
+          onerror="
+            this.style.display='none';
+            const fallback = document.getElementById('receipt-logo-fallback');
+            if(fallback) fallback.style.display='block';
+          "
+        />
+        <div 
+          id="receipt-logo-fallback"
+          style="
+            display: none;
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            font-family: 'Courier New', monospace;
+            line-height: 60px;
+          "
+        >BYZ</div>
+      </div>
+      <div style="font-size: 9px; color: #333; margin-top: 12px; letter-spacing: 1px;">━━━━━━━━━━━━━━━━━━━━━━━━</div>
+    </div>
+    
+    <div style="margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dotted #ccc;">
+        <span style="font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Receipt #</span>
+        <span style="font-size: 13px; font-weight: 900; letter-spacing: 1.5px; font-family: 'Courier New', monospace;">${barcodeData}</span>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <span style="font-size: 9px; color: #666; text-transform: uppercase;">Date</span>
+        <span style="font-size: 11px; font-weight: 600;">${timestamp}</span>
+      </div>
+      
+      <div style="margin: 16px 0; padding: 12px; background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%); border-left: 3px solid #000;">
+        <div style="font-size: 9px; color: #666; margin-bottom: 4px; text-transform: uppercase;">Event</div>
+        <div style="font-size: 14px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 8px;">${eventName}</div>
+        <div style="font-size: 9px; color: #666; margin-bottom: 4px; text-transform: uppercase; margin-top: 12px;">Type</div>
+        <div style="font-size: 12px; font-weight: 700;">${bookingTypeLabel}</div>
+      </div>
+      
+      ${formData.name ? `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px dotted #ddd;">
+        <span style="font-size: 9px; color: #666; text-transform: uppercase;">Customer</span>
+        <span style="font-size: 11px; font-weight: 600; text-align: right; max-width: 60%;">${formData.name}</span>
+      </div>
+      ` : ''}
+      
+      ${formData.phone ? `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px dotted #ddd;">
+        <span style="font-size: 9px; color: #666; text-transform: uppercase;">Phone</span>
+        <span style="font-size: 11px; font-weight: 600; font-family: 'Courier New', monospace;">${formData.phone}</span>
+      </div>
+      ` : ''}
+      
+      ${formData.quantity ? `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px dotted #ddd;">
+        <span style="font-size: 9px; color: #666; text-transform: uppercase;">Quantity</span>
+        <span style="font-size: 11px; font-weight: 600;">${formData.quantity}</span>
+      </div>
+      ` : ''}
+    </div>
+    
+    <div style="border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 18px 0; margin: 24px 0; background: linear-gradient(to bottom, #ffffff 0%, #f9f9f9 100%);">
+      ${formData.amount ? `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding: 0 4px;">
+        <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Subtotal</span>
+        <span style="font-size: 12px; font-weight: 700; font-family: 'Courier New', monospace;">${Number(formData.amount).toLocaleString()} TZS</span>
+      </div>
+      <div style="border-top: 1px dotted #999; padding-top: 12px; margin-top: 12px;">
+      ` : '<div>'}
+      <div style="display: flex; justify-content: space-between; padding: 0 4px;">
+        <span style="font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">TOTAL</span>
+        <span style="font-size: 18px; font-weight: 900; letter-spacing: 1.5px; font-family: 'Courier New', monospace;">${formData.amount ? Number(formData.amount).toLocaleString() : '0'} TZS</span>
+      </div>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin: 24px 0; padding: 16px; background: #000; color: #fff; border: 1px solid #333;">
+      <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; opacity: 0.8;">Transaction</div>
+      <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px;">
+        Code: <span style="font-family: 'Courier New', monospace; letter-spacing: 1.5px; font-weight: 700;">${formData.transactionCode || 'N/A'}</span>
+      </div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.5px;">Method: M-Pesa</div>
+    </div>
+    
+    <div style="text-align: center; margin: 20px 0; padding: 16px; background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%); border: 2px dashed #777; border-radius: 6px;">
+      <div style="font-size: 8px; color: #555; line-height: 1.8; letter-spacing: 0.3px;">
+        <div style="margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-solid fa-envelope" style="font-size: 10px;"></i>
+          <span>QR code will be sent via email</span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-solid fa-door-open" style="font-size: 10px;"></i>
+          <span>Present QR code at door for entry</span>
+        </div>
+      </div>
+    </div>
+    
+    <div id="barcode-container" style="display: grid; place-items: center; width: 100%; max-width: 320px; margin: 32px auto; padding: 28px 20px; border-top: 3px solid #000; border-bottom: 3px solid #000; background: #ffffff;">
+      <div style="font-size: 8px; color: #666; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600;">Booking Reference</div>
+      <svg id="barcode-svg" style="width: min(90%, 280px); max-width: 280px; height: 70px; margin: 0 auto; display: block;"></svg>
+      <div style="font-size: 11px; color: #000; margin-top: 14px; letter-spacing: 2.5px; font-weight: 700; font-family: 'Courier New', monospace; text-align: center; word-break: break-all; padding: 0 10px;">${barcodeData}</div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 28px; padding-top: 20px; border-top: 2px dashed #ccc;">
+      <div style="font-size: 10px; color: #333; margin-bottom: 6px; font-weight: 600;">Thank you for your booking!</div>
+      <div style="font-size: 8px; color: #999; letter-spacing: 0.5px;">byzentertainment.com</div>
+      <div style="font-size: 7px; color: #bbb; margin-top: 12px; font-style: italic;">This is your official receipt. Keep it safe.</div>
+    </div>
+  `;
   
-  // Receipt downloaded - no social sharing prompt
+  document.body.appendChild(receiptContainer);
+  
+  // Wait for logo and icons to load, then generate barcode
+  setTimeout(() => {
+    // Ensure logo loads or shows fallback
+    const logoImg = document.getElementById('receipt-logo-img');
+    if(logoImg && !logoImg.complete) {
+      logoImg.onload = () => generateReceiptCanvas();
+      logoImg.onerror = () => {
+        const fallback = document.getElementById('receipt-logo-fallback');
+        if(fallback) fallback.style.display = 'block';
+        generateReceiptCanvas();
+      };
+    } else {
+      generateReceiptCanvas();
+    }
+    
+    function generateReceiptCanvas() {
+      try {
+        if (typeof JsBarcode !== 'undefined') {
+          JsBarcode("#barcode-svg", barcodeData, {
+            format: "CODE128",
+            width: 2,
+            height: 50,
+            displayValue: false,
+            background: "#ffffff",
+            lineColor: "#000000"
+          });
+        }
+      } catch(e) {
+        console.error("Barcode generation error:", e);
+      }
+      
+      // Convert to image using html2canvas (wait a bit for icons to render)
+      setTimeout(() => {
+      if (typeof html2canvas !== 'undefined') {
+        html2canvas(receiptContainer, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+          width: 400,
+          height: receiptContainer.scrollHeight
+        }).then(canvas => {
+          // Convert canvas to blob and download
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BYZ-Receipt-${barcodeData}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Clean up
+            document.body.removeChild(receiptContainer);
+            
+            // Show success toast
+            showToast(`<div><i class="fa-solid fa-circle-check"></i> <b>Receipt downloaded!</b></div><div class="toast-sub">Saved as image to your device</div>`, 3000);
+          }, 'image/png');
+        }).catch(err => {
+          console.error("Canvas generation error:", err);
+          document.body.removeChild(receiptContainer);
+          showToast(`<div><i class="fa-solid fa-circle-xmark"></i> <b>Error generating receipt</b></div>`, 3000);
+        });
+      } else {
+        // Fallback if html2canvas not loaded
+        document.body.removeChild(receiptContainer);
+        showToast(`<div><i class="fa-solid fa-circle-xmark"></i> <b>Receipt generator not loaded</b></div>`, 3000);
+      }
+      }, 500);
+    }
+  }, 300);
 }
   </script>
 </body>
