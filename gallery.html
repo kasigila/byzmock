@@ -3575,6 +3575,9 @@ console.log("✅ Script file loaded!");
     if(isLiked){
       delete photoLikes[src];
       pin.dataset.liked = "false";
+      // Remove heart badge
+      const likedBadge = pin.querySelector('.pin-liked');
+      if(likedBadge) likedBadge.style.opacity = "0";
       showToast("Unliked");
     }else{
       photoLikes[src] = true;
@@ -3584,6 +3587,9 @@ console.log("✅ Script file loaded!");
         heart.classList.add("show");
         setTimeout(() => heart.classList.remove("show"), 600);
       }
+      // Show heart badge
+      const likedBadge = pin.querySelector('.pin-liked');
+      if(likedBadge) likedBadge.style.opacity = "1";
       showToast("Liked");
       pin.dataset.hasLiked = "true";
       localStorage.setItem("byz_has_liked_any", "true");
@@ -3596,6 +3602,32 @@ console.log("✅ Script file loaded!");
     
     // Update likes count if function exists
     if(typeof updateLikesCount === "function") updateLikesCount();
+    
+    // Update liked photos sidebar
+    if(typeof renderLikedPhotos === "function") renderLikedPhotos();
+    
+    // Update most liked grid under search bar
+    if(typeof updateMostLikedGrid === "function") {
+      updateMostLikedGrid();
+    } else {
+      const mostLikedGrid = document.getElementById("mostLikedGrid");
+      if(mostLikedGrid) {
+        const likedUrls = Object.keys(photoLikes).filter(url => photoLikes[url] === true);
+        if(likedUrls.length > 0){
+          mostLikedGrid.innerHTML = likedUrls.slice(0, 6).map(url => `
+            <div class="liked-photo-item" onclick="openLikedPhoto('${url.replace(/'/g, "\\'")}')">
+              <img src="${url}" alt="Liked photo" loading="lazy" />
+            </div>
+          `).join("");
+        } else {
+          mostLikedGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
+              Double-tap photos to like them
+            </div>
+          `;
+        }
+      }
+    }
   }
   
   // Make handleDoubleTap available globally
@@ -3623,22 +3655,26 @@ console.log("✅ Script file loaded!");
       if(typeof renderLikedPhotos === "function") renderLikedPhotos();
       
       // Update most liked grid
-      const mostLikedGrid = document.getElementById("mostLikedGrid");
-      if(mostLikedGrid) {
-        const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
-        const likedUrls = Object.keys(photoLikes).filter(url => photoLikes[url] === true);
-        if(likedUrls.length > 0){
-          mostLikedGrid.innerHTML = likedUrls.slice(0, 6).map(url => `
-            <div class="liked-photo-item" onclick="openLikedPhoto('${url.replace(/'/g, "\\'")}')">
-              <img src="${url}" alt="Liked photo" loading="lazy" />
-            </div>
-          `).join("");
-        } else {
-          mostLikedGrid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
-              Double-tap photos to like them
-            </div>
-          `;
+      if(typeof updateMostLikedGrid === "function") {
+        updateMostLikedGrid();
+      } else {
+        const mostLikedGrid = document.getElementById("mostLikedGrid");
+        if(mostLikedGrid) {
+          const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+          const likedUrls = Object.keys(photoLikes).filter(url => photoLikes[url] === true);
+          if(likedUrls.length > 0){
+            mostLikedGrid.innerHTML = likedUrls.slice(0, 6).map(url => `
+              <div class="liked-photo-item" onclick="openLikedPhoto('${url.replace(/'/g, "\\'")}')">
+                <img src="${url}" alt="Liked photo" loading="lazy" />
+              </div>
+            `).join("");
+          } else {
+            mostLikedGrid.innerHTML = `
+              <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
+                Double-tap photos to like them
+              </div>
+            `;
+          }
         }
       }
     }
@@ -3757,6 +3793,7 @@ console.log("✅ Script file loaded!");
       const currentTime = new Date().getTime();
       const tapLength = currentTime - tapData.lastTap;
       
+      // More lenient timing - handle fast double-taps (up to 500ms) and slower ones (up to 800ms)
       if (tapLength < 800 && tapLength > 0 && tapData.lastTap > 0) {
         // DOUBLE-TAP DETECTED
         e.preventDefault();
@@ -4734,11 +4771,32 @@ function clearAllLikes(){
   renderLikedPhotos();
   showToast("All likes cleared");
   
+  // Clear all pin states - both data-liked and data-has-liked
   document.querySelectorAll('.pin[data-liked="true"]').forEach(pin => {
     pin.dataset.liked = "false";
+    pin.dataset.hasLiked = "false";
     const likedBadge = pin.querySelector('.pin-liked');
     if(likedBadge) likedBadge.style.opacity = "0";
   });
+  
+  // Also clear any pins with data-has-liked
+  document.querySelectorAll('.pin[data-has-liked="true"]').forEach(pin => {
+    pin.dataset.hasLiked = "false";
+  });
+  
+  // Update most liked grid under search bar
+  if(typeof updateMostLikedGrid === "function") {
+    updateMostLikedGrid();
+  } else {
+    const mostLikedGrid = document.getElementById("mostLikedGrid");
+    if(mostLikedGrid) {
+      mostLikedGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
+          Double-tap photos to like them
+        </div>
+      `;
+    }
+  }
 }
 
 // My Likes button handlers
@@ -4939,7 +4997,7 @@ setInterval(updateLikesCount, 2000);
     }
     
     // Update my likes (shows user's liked photos from localStorage)
-    setTimeout(() => {
+    function updateMostLikedGrid(){
       const grid = document.getElementById("mostLikedGrid");
       if(grid){
         const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
@@ -4958,7 +5016,18 @@ setInterval(updateLikesCount, 2000);
           `;
         }
       }
+    }
+    
+    // Make it globally accessible
+    window.updateMostLikedGrid = updateMostLikedGrid;
+    
+    // Initial update
+    setTimeout(() => {
+      updateMostLikedGrid();
     }, 1500);
+    
+    // Also update periodically to catch changes
+    setInterval(updateMostLikedGrid, 2000);
   }
   
   // Memories (On This Day)
