@@ -8564,6 +8564,32 @@ IMPORTANT:
       opacity: 1 !important;
     }
     
+    /* ========== BACKGROUND BLUR WHEN CHATBOT IS OPEN ========== */
+    body.chatbot-modal-open::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.2);
+      z-index: 998;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s var(--ease);
+    }
+    
+    body.chatbot-modal-open::before {
+      opacity: 1;
+    }
+    
+    /* Ensure chatbot sits above blur */
+    .chat-window {
+      z-index: 999;
+    }
+    
     /* ========== MOBILE: Half-Screen Layout with Fullscreen Toggle ========== */
     @media (max-width: 767px) {
       /* Backdrop overlay for half-screen mode */
@@ -8616,6 +8642,14 @@ IMPORTANT:
       
       /* Fullscreen mode - fills entire screen */
       .chat-window:not(.byz-hidden).chat-fullscreen {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        z-index: 10000 !important;
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -9415,6 +9449,9 @@ IMPORTANT:
     isOpen = true;
     badge.style.display = 'none';
     
+    // Add background blur class
+    document.body.classList.add('chatbot-modal-open');
+    
     const isMobileDevice = window.innerWidth <= 767;
     
     if (isMobileDevice) {
@@ -9465,6 +9502,9 @@ IMPORTANT:
     isFullscreen = false;
     window.classList.remove('chat-fullscreen');
     
+    // Remove background blur
+    document.body.classList.remove('chatbot-modal-open');
+    
     // Hide backdrop
     if (backdrop) {
       backdrop.classList.remove('show');
@@ -9473,6 +9513,23 @@ IMPORTANT:
     // Unlock page scrolling on mobile when chat closes
     document.documentElement.classList.remove('chat-open');
     document.body.classList.remove('chat-open');
+    
+    // Reset fullscreen styles
+    window.style.position = '';
+    window.style.top = '';
+    window.style.left = '';
+    window.style.width = '';
+    window.style.height = '';
+    window.style.zIndex = '';
+    window.style.borderRadius = '';
+    window.style.boxShadow = '';
+    document.body.style.overflow = '';
+    
+    // Remove fullscreen close button if exists
+    const fullscreenCloseBtn = window.querySelector('.fullscreen-close-btn');
+    if (fullscreenCloseBtn) {
+      fullscreenCloseBtn.remove();
+    }
     
     // Clean up iOS keyboard handling
     if (window.visualViewport) {
@@ -9491,7 +9548,6 @@ IMPORTANT:
   
   function toggleFullscreen() {
     const isMobileDevice = window.innerWidth <= 767;
-    if (!isMobileDevice) return; // Only on mobile
     
     // Force close keyboard immediately
     if (input) {
@@ -9510,11 +9566,81 @@ IMPORTANT:
     isFullscreen = !isFullscreen;
     window.classList.toggle('chat-fullscreen', isFullscreen);
     
-    // Show/hide backdrop based on fullscreen state
-    if (backdrop) {
-      if (isFullscreen) {
+    // Maximize to viewport when entering fullscreen
+    if (isFullscreen) {
+      window.style.position = 'fixed';
+      window.style.top = '0';
+      window.style.left = '0';
+      window.style.width = '100vw';
+      window.style.height = '100vh';
+      window.style.zIndex = '10000';
+      window.style.borderRadius = '0';
+      window.style.boxShadow = 'none';
+      document.body.style.overflow = 'hidden';
+      
+      // Hide backdrop in fullscreen
+      if (backdrop) {
         backdrop.classList.remove('show');
-      } else {
+      }
+      
+      // Add fullscreen close button if it doesn't exist
+      if (!window.querySelector('.fullscreen-close-btn')) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'fullscreen-close-btn';
+        closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        closeBtn.setAttribute('aria-label', 'Exit fullscreen');
+        closeBtn.style.cssText = `
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(0,0,0,0.1);
+          border: 1px solid var(--border);
+          color: var(--text);
+          font-size: 16px;
+          cursor: pointer;
+          z-index: 10001;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s var(--ease);
+        `;
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFullscreen();
+        });
+        closeBtn.addEventListener('mouseenter', () => {
+          closeBtn.style.background = 'rgba(0,0,0,0.2)';
+          closeBtn.style.transform = 'scale(1.1)';
+        });
+        closeBtn.addEventListener('mouseleave', () => {
+          closeBtn.style.background = 'rgba(0,0,0,0.1)';
+          closeBtn.style.transform = 'scale(1)';
+        });
+        window.appendChild(closeBtn);
+      }
+    } else {
+      // Exit fullscreen - restore original styles
+      window.style.position = '';
+      window.style.top = '';
+      window.style.left = '';
+      window.style.width = '';
+      window.style.height = '';
+      window.style.zIndex = '';
+      window.style.borderRadius = '';
+      window.style.boxShadow = '';
+      document.body.style.overflow = '';
+      
+      // Remove fullscreen close button
+      const fullscreenCloseBtn = window.querySelector('.fullscreen-close-btn');
+      if (fullscreenCloseBtn) {
+        fullscreenCloseBtn.remove();
+      }
+      
+      // Show backdrop in half-screen mode (mobile only)
+      if (backdrop && isMobileDevice) {
         backdrop.classList.add('show');
       }
     }
@@ -9522,8 +9648,8 @@ IMPORTANT:
     // Update expand icon
     updateExpandIcon();
     
-    // Setup keyboard handling for fullscreen mode only
-    if (isFullscreen && isMobileDevice && window.visualViewport) {
+    // Setup keyboard handling for fullscreen mode
+    if (isFullscreen && window.visualViewport) {
       setTimeout(() => {
         setupIOSKeyboardHandling();
       }, 200);
@@ -10013,6 +10139,56 @@ function shareEvent(title, description, url) {
         alert('Link copied to clipboard!');
       }
     });
+  }
+}
+
+/* =========================================================
+   QR CODE GENERATION FUNCTION
+   PRESERVED: User can generate QR codes for event sharing
+   INTEGRATED: Uses same API pattern as backend (api.qrserver.com)
+========================================================= */
+function generateQRCode(url) {
+  const targetUrl = url || window.location.href;
+  
+  // Generate QR code using same API as backend
+  const qrSize = 420;
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(targetUrl)}`;
+  
+  // Open QR code in new window/tab for user to save or share
+  const qrWindow = window.open(qrApiUrl, '_blank', 'width=500,height=500');
+  
+  if (!qrWindow) {
+    // Popup blocked - fallback: show QR code in modal or copy URL
+    if (typeof showToast !== 'undefined') {
+      showToast(`QR code URL: ${qrApiUrl}`);
+    } else {
+      // Create temporary modal to display QR
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed; inset: 0; z-index: 10000;
+        background: rgba(0,0,0,0.8); display: grid; place-items: center;
+        padding: 20px;
+      `;
+      modal.innerHTML = `
+        <div style="background: white; padding: 24px; border-radius: 20px; text-align: center; max-width: 500px;">
+          <h3 style="margin-bottom: 16px;">QR Code</h3>
+          <img src="${qrApiUrl}" alt="QR Code" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;">
+          <p style="margin-top: 16px; font-size: 12px; color: #666;">Right-click image to save</p>
+          <button onclick="this.closest('div').parentElement.remove(); document.body.style.overflow='';" 
+                  style="margin-top: 16px; padding: 10px 20px; border: none; background: #000; color: white; border-radius: 8px; cursor: pointer;">
+            Close
+          </button>
+        </div>
+      `;
+      document.body.style.overflow = 'hidden';
+      document.body.appendChild(modal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+          document.body.style.overflow = '';
+        }
+      });
+    }
   }
 }
 
