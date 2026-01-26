@@ -3575,29 +3575,46 @@ console.log("✅ Script file loaded!");
     if(isLiked){
       delete photoLikes[src];
       pin.dataset.liked = "false";
-      // Remove heart badge
+      pin.dataset.hasLiked = "false";
+      // Remove heart badge - ensure it's hidden
       const likedBadge = pin.querySelector('.pin-liked');
-      if(likedBadge) likedBadge.style.opacity = "0";
+      if(likedBadge) {
+        likedBadge.style.opacity = "0";
+        likedBadge.style.display = "none";
+      }
       showToast("Unliked");
     }else{
       photoLikes[src] = true;
       pin.dataset.liked = "true";
+      pin.dataset.hasLiked = "true";
       const heart = pin.querySelector(".pin-heart");
       if(heart){
         heart.classList.add("show");
         setTimeout(() => heart.classList.remove("show"), 600);
       }
-      // Show heart badge
+      // Show heart badge - ensure it's visible
       const likedBadge = pin.querySelector('.pin-liked');
-      if(likedBadge) likedBadge.style.opacity = "1";
+      if(likedBadge) {
+        likedBadge.style.opacity = "1";
+        likedBadge.style.display = "block";
+      }
       showToast("Liked");
-      pin.dataset.hasLiked = "true";
       localStorage.setItem("byz_has_liked_any", "true");
       // Hide double-tap badge on this photo
       const badge = pin.querySelector(".pin-double-tap-badge");
       if(badge) badge.style.opacity = "0";
     }
     localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
+    
+    // Update photoLikes object in memory if it exists
+    if(typeof photoLikes !== 'undefined') {
+      if(isLiked) {
+        delete photoLikes[src];
+      } else {
+        photoLikes[src] = true;
+      }
+    }
+    
     trackEvent("photo_liked", isLiked ? "unliked" : "liked");
     
     // Update likes count if function exists
@@ -3640,11 +3657,24 @@ console.log("✅ Script file loaded!");
       delete photoLikes[src];
       localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
       
+      // Update photoLikes object in memory
+      if(typeof photoLikes !== 'undefined' && photoLikes[src]) {
+        delete photoLikes[src];
+      }
+      
       // Update pin state
       const pin = element.closest(".pin");
       if(pin) {
         pin.dataset.liked = "false";
+        pin.dataset.hasLiked = "false";
         pin.classList.remove("liked");
+        
+        // Hide heart badge
+        const likedBadge = pin.querySelector('.pin-liked');
+        if(likedBadge) {
+          likedBadge.style.opacity = "0";
+          likedBadge.style.display = "none";
+        }
       }
       
       showToast("Unliked");
@@ -3774,8 +3804,11 @@ console.log("✅ Script file loaded!");
       }
     });
     
-    // ========== TOUCH DOUBLE TAP (Mobile) ==========
+    // ========== TOUCH DOUBLE TAP (Mobile) - IMPROVED DETECTION ==========
     const touchTapData = new WeakMap();
+    let lastTapTime = 0;
+    let lastTapPin = null;
+    let tapTimeout = null;
     
     cleanMasonry.addEventListener('touchend', function(e) {
       const pin = e.target.closest(".pin");
@@ -3784,17 +3817,17 @@ console.log("✅ Script file loaded!");
       const src = pin.dataset.src;
       if(!src || selectMode) return;
       
-      let tapData = touchTapData.get(pin);
-      if(!tapData) {
-        tapData = { lastTap: 0 };
-        touchTapData.set(pin, tapData);
+      const currentTime = Date.now();
+      const timeSinceLastTap = currentTime - lastTapTime;
+      
+      // Clear any existing timeout
+      if(tapTimeout) {
+        clearTimeout(tapTimeout);
+        tapTimeout = null;
       }
       
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - tapData.lastTap;
-      
-      // More lenient timing - handle fast double-taps (up to 500ms) and slower ones (up to 800ms)
-      if (tapLength < 800 && tapLength > 0 && tapData.lastTap > 0) {
+      // Double-tap detected (works for fast OR slow taps)
+      if(timeSinceLastTap < 500 && lastTapPin === pin && lastTapTime > 0) {
         // DOUBLE-TAP DETECTED
         e.preventDefault();
         e.stopPropagation();
@@ -3837,11 +3870,20 @@ console.log("✅ Script file loaded!");
           handleDoubleTap(pin, src);
         }
         
-        tapData.lastTap = 0;
+        // Reset tap tracking
+        lastTapTime = 0;
+        lastTapPin = null;
         return false;
       } else {
-        // Single tap - just record time, no preview
-        tapData.lastTap = currentTime;
+        // Single tap - wait for possible second tap
+        lastTapTime = currentTime;
+        lastTapPin = pin;
+        tapTimeout = setTimeout(() => {
+          // Single tap timeout - no second tap detected
+          lastTapTime = 0;
+          lastTapPin = null;
+          tapTimeout = null;
+        }, 500);
       }
     }, { passive: false });
     
@@ -4427,11 +4469,53 @@ window.clearSearch = function(){
 };
 
 window.clearRecentActivity = function(){
+  if(!confirm("Clear all liked photos? This cannot be undone.")) return;
+  
+  // Clear recent activity
   localStorage.removeItem("byz_recent");
   const container = document.getElementById("recentItems");
   if(container){
     container.innerHTML = "<div style='color:var(--sub);font-size:13px;padding:12px 0;'>No recent activity</div>";
   }
+  
+  // Clear all photo likes - CRITICAL FIX
+  localStorage.removeItem("byz_photo_likes");
+  localStorage.removeItem("byz_has_liked_any");
+  
+  // Update photoLikes object in memory
+  if(typeof photoLikes !== 'undefined') {
+    Object.keys(photoLikes).forEach(key => {
+      delete photoLikes[key];
+    });
+  }
+  
+  // Update all pin states in DOM
+  document.querySelectorAll('.pin[data-liked="true"]').forEach(pin => {
+    pin.dataset.liked = "false";
+    pin.dataset.hasLiked = "false";
+    const likedBadge = pin.querySelector('.pin-liked');
+    if(likedBadge) {
+      likedBadge.style.opacity = "0";
+      likedBadge.style.display = "none";
+    }
+  });
+  
+  // Update liked photos sidebar
+  if(typeof renderLikedPhotos === "function") {
+    renderLikedPhotos();
+  }
+  
+  // Update most liked grid
+  const mostLikedGrid = document.getElementById("mostLikedGrid");
+  if(mostLikedGrid) {
+    mostLikedGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
+        Double-tap photos to like them
+      </div>
+    `;
+  }
+  
+  showToast("All likes cleared successfully");
 };
 
 window.closeShortcutsHelp = function(){
