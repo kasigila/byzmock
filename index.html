@@ -8586,10 +8586,10 @@ IMPORTANT:
         opacity: 1;
       }
       
-      /* Half-screen mode (default) - smaller chat box positioned lower on screen */
+      /* Half-screen mode (default) - smaller chat box positioned lower on screen - MOBILE ONLY */
       .chat-window:not(.byz-hidden):not(.chat-fullscreen) {
         position: fixed !important;
-        top: 60vh !important;
+        top: 55vh !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: 90vw !important;
@@ -8772,22 +8772,26 @@ IMPORTANT:
     
     /* ========== DESKTOP: iPhone-Style Screen on Right Side ========== */
     @media (min-width: 768px) {
-      .chat-window:not(.byz-hidden) {
+      /* Override mobile styles - ensure desktop positioning */
+      .chat-window:not(.byz-hidden):not(.chat-fullscreen) {
         position: fixed !important;
         right: 30px !important;
         top: 50% !important;
+        left: auto !important;
+        bottom: auto !important;
         transform: translateY(-50%) !important;
         width: 380px !important;
-        max-height: 700px !important;
         height: 80vh !important;
+        max-height: 700px !important;
+        min-height: auto !important;
+        max-width: 380px !important;
         border-radius: 40px !important;
         border: 10px solid #000 !important;
         box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
         margin: 0 !important;
-        overflow: hidden !important;
-        left: auto !important;
-        bottom: auto !important;
         padding: 0 !important;
+        overflow: hidden !important;
+        z-index: 10001 !important;
       }
       
       .chat-header {
