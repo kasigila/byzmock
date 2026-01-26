@@ -8586,18 +8586,17 @@ IMPORTANT:
         opacity: 1;
       }
       
-      /* Half-screen mode (default) - middle of chat at screen equator (50vh) */
-      /* Chat is 50vh tall, positioned so its center aligns with screen center (50vh) */
+      /* Half-screen mode (default) - smaller chat box positioned lower on screen */
       .chat-window:not(.byz-hidden):not(.chat-fullscreen) {
         position: fixed !important;
-        top: 25vh !important;
+        top: 60vh !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: 90vw !important;
-        height: 50vh !important;
-        min-height: 400px !important;
+        height: 35vh !important;
+        min-height: 300px !important;
         max-width: 100vw !important;
-        max-height: 75vh !important;
+        max-height: 40vh !important;
         border-radius: 28px !important;
         border: 1px solid var(--border) !important;
         margin: 0 !important;
@@ -8615,7 +8614,7 @@ IMPORTANT:
         margin-top: 0 !important;
       }
       
-      /* Fullscreen mode */
+      /* Fullscreen mode - fills entire screen */
       .chat-window:not(.byz-hidden).chat-fullscreen {
         position: fixed !important;
         top: 0 !important;
@@ -8623,8 +8622,12 @@ IMPORTANT:
         right: 0 !important;
         bottom: 0 !important;
         width: 100vw !important;
+        width: 100% !important;
         height: 100vh !important;
+        height: 100% !important;
         height: -webkit-fill-available !important;
+        min-width: 100vw !important;
+        min-height: 100vh !important;
         max-width: 100vw !important;
         max-height: 100vh !important;
         border-radius: 0 !important;
