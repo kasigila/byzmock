@@ -1213,36 +1213,59 @@
     }
 
     // Allow keyboard navigation for accordions
-    document.addEventListener("DOMContentLoaded", () => {
-      // Add click event listeners to choice buttons using data-type attribute
-      document.querySelectorAll(".choice[data-type]").forEach(choice => {
+    // Initialize choice button handlers - ensure this runs after selectType is defined
+    function initChoiceButtons() {
+      // Remove any existing handlers by querying fresh
+      const choices = document.querySelectorAll(".choice[data-type]");
+      choices.forEach(choice => {
         const type = choice.getAttribute("data-type");
         if(type && (type === "TICKET" || type === "TABLE")) {
           // Remove any existing onclick handlers
           choice.removeAttribute("onclick");
           
+          // Remove existing event listeners by cloning (clean slate)
+          const newChoice = choice.cloneNode(true);
+          choice.parentNode.replaceChild(newChoice, choice);
+          
+          // Ensure pointer events and cursor are set
+          newChoice.style.pointerEvents = 'auto';
+          newChoice.style.cursor = 'pointer';
+          newChoice.style.userSelect = 'none';
+          
           // Add click event listener
-          choice.addEventListener("click", function(e) {
+          newChoice.addEventListener("click", function handleChoiceClick(e) {
             e.preventDefault();
             e.stopPropagation();
-            if(window.selectType) {
-              window.selectType(type, this);
+            e.stopImmediatePropagation();
+            
+            const choiceType = this.getAttribute("data-type");
+            if(typeof window.selectType === 'function' && choiceType) {
+              window.selectType(choiceType, this);
             } else {
-              console.error("selectType function not available!");
+              console.error("selectType function not available or invalid type!");
             }
-          });
+          }, false);
           
           // Add keyboard support
-          choice.addEventListener("keydown", function(e) {
+          newChoice.addEventListener("keydown", function handleChoiceKeydown(e) {
             if(e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              if(window.selectType) {
-                window.selectType(type, this);
+              e.stopPropagation();
+              const choiceType = this.getAttribute("data-type");
+              if(typeof window.selectType === 'function' && choiceType) {
+                window.selectType(choiceType, this);
               }
             }
-          });
+          }, false);
         }
       });
+    }
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      // Initialize choice buttons after DOM is ready and selectType is available
+      if(typeof initChoiceButtons === 'function') {
+        initChoiceButtons();
+      }
       
       document.querySelectorAll(".guidance-card").forEach(card => {
         card.addEventListener("keydown", (e) => {
@@ -1597,19 +1620,25 @@
           if(txnEl && data.txn) txnEl.value = data.txn;
           if(grooveTypeEl && data.grooveType) grooveTypeEl.value = data.grooveType;
 
-          // Restore booking type selection
-          if(bookingType === "TICKET"){
-            const ticketChoice = document.querySelector('.choice[data-type="TICKET"]');
-            if(ticketChoice) selectType("TICKET", ticketChoice);
-          } else if(bookingType === "TABLE" && tier){
-            const tableChoice = document.querySelector('.choice[data-type="TABLE"]');
-            if(tableChoice) selectType("TABLE", tableChoice);
-            // Restore tier selection after a delay to ensure packages are rendered
-            setTimeout(() => {
-              const tierPackage = document.querySelector(`.package[data-tier="${tier}"]`);
-              if(tierPackage) tierPackage.click();
-            }, 500);
-          }
+          // Restore booking type selection - use setTimeout to ensure DOM is ready
+          setTimeout(() => {
+            if(bookingType === "TICKET"){
+              const ticketChoice = document.querySelector('.choice[data-type="TICKET"]');
+              if(ticketChoice && typeof window.selectType === 'function') {
+                window.selectType("TICKET", ticketChoice);
+              }
+            } else if(bookingType === "TABLE" && tier){
+              const tableChoice = document.querySelector('.choice[data-type="TABLE"]');
+              if(tableChoice && typeof window.selectType === 'function') {
+                window.selectType("TABLE", tableChoice);
+              }
+              // Restore tier selection after a delay to ensure packages are rendered
+              setTimeout(() => {
+                const tierPackage = document.querySelector(`.package[data-tier="${tier}"]`);
+                if(tierPackage) tierPackage.click();
+              }, 500);
+            }
+          }, 100);
 
           updateTicketPrice();
           showToast(`<div><i class="fa-solid fa-rotate-left"></i> <b>Form restored</b></div><div class="toast-sub">Your previous booking data has been restored</div>`, 3000);
