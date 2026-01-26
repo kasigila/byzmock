@@ -814,7 +814,7 @@
           </div>
 
           <div class="choice-grid">
-            <div class="choice" data-type="TICKET" role="button" tabindex="0">
+            <div class="choice" onclick="selectType('TICKET', this)" role="button" tabindex="0">
               <div class="row">
                 <div>
                   <h3>Tickets</h3>
@@ -824,7 +824,7 @@
               </div>
             </div>
 
-            <div class="choice" data-type="TABLE" role="button" tabindex="0">
+            <div class="choice" onclick="selectType('TABLE', this)" role="button" tabindex="0">
               <div class="row">
                 <div>
                   <h3>VIP Table</h3>
@@ -1213,60 +1213,7 @@
     }
 
     // Allow keyboard navigation for accordions
-    // Initialize choice button handlers - ensure this runs after selectType is defined
-    function initChoiceButtons() {
-      // Remove any existing handlers by querying fresh
-      const choices = document.querySelectorAll(".choice[data-type]");
-      choices.forEach(choice => {
-        const type = choice.getAttribute("data-type");
-        if(type && (type === "TICKET" || type === "TABLE")) {
-          // Remove any existing onclick handlers
-          choice.removeAttribute("onclick");
-          
-          // Remove existing event listeners by cloning (clean slate)
-          const newChoice = choice.cloneNode(true);
-          choice.parentNode.replaceChild(newChoice, choice);
-          
-          // Ensure pointer events and cursor are set
-          newChoice.style.pointerEvents = 'auto';
-          newChoice.style.cursor = 'pointer';
-          newChoice.style.userSelect = 'none';
-          
-          // Add click event listener
-          newChoice.addEventListener("click", function handleChoiceClick(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            
-            const choiceType = this.getAttribute("data-type");
-            if(typeof window.selectType === 'function' && choiceType) {
-              window.selectType(choiceType, this);
-            } else {
-              console.error("selectType function not available or invalid type!");
-            }
-          }, false);
-          
-          // Add keyboard support
-          newChoice.addEventListener("keydown", function handleChoiceKeydown(e) {
-            if(e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              e.stopPropagation();
-              const choiceType = this.getAttribute("data-type");
-              if(typeof window.selectType === 'function' && choiceType) {
-                window.selectType(choiceType, this);
-              }
-            }
-          }, false);
-        }
-      });
-    }
-    
     document.addEventListener("DOMContentLoaded", () => {
-      // Initialize choice buttons after DOM is ready and selectType is available
-      if(typeof initChoiceButtons === 'function') {
-        initChoiceButtons();
-      }
-      
       document.querySelectorAll(".guidance-card").forEach(card => {
         card.addEventListener("keydown", (e) => {
           if(e.key === "Enter" || e.key === " "){
@@ -1383,86 +1330,26 @@
     }
 
     function selectType(type, el){
-      // Validate input
-      if(!type || (type !== "TICKET" && type !== "TABLE")) {
-        console.error("selectType: Invalid type. Must be 'TICKET' or 'TABLE'");
-        return;
-      }
-      
-      // Set booking type
       bookingType = type;
-      
-      // Remove active class from all choices
       document.querySelectorAll(".choice").forEach(c => c.classList.remove("active"));
-      
-      // Add active class to clicked choice
-      if(el && el.classList) {
-        el.classList.add("active");
+      el.classList.add("active");
+
+      document.getElementById("ticketStep").classList.remove("active");
+      document.getElementById("tablesStep").classList.remove("active");
+
+      if(type === "TICKET"){
+        document.getElementById("ticketStep").classList.add("active");
       } else {
-        // Fallback: find the choice element by checking data attributes or content
-        const allChoices = document.querySelectorAll(".choice");
-        allChoices.forEach(choice => {
-          const text = choice.textContent || "";
-          if((type === "TICKET" && text.includes("Tickets")) || 
-             (type === "TABLE" && text.includes("VIP Table"))) {
-            choice.classList.add("active");
-          }
-        });
+        document.getElementById("tablesStep").classList.add("active");
       }
 
-      // Get step elements
-      const ticketStep = document.getElementById("ticketStep");
-      const tablesStep = document.getElementById("tablesStep");
-      const paymentStep = document.getElementById("paymentStep");
-      const formStep = document.getElementById("formStep");
-      
-      // Hide both step options first
-      if(ticketStep) {
-        ticketStep.classList.remove("active");
-        ticketStep.style.display = "none";
-      }
-      if(tablesStep) {
-        tablesStep.classList.remove("active");
-        tablesStep.style.display = "none";
-      }
+      document.getElementById("paymentStep").classList.add("active");
+      document.getElementById("formStep").classList.add("active");
 
-      // Show the appropriate step based on selection
-      if(type === "TICKET" && ticketStep){
-        ticketStep.classList.add("active");
-        ticketStep.style.display = "block";
-      } else if(type === "TABLE" && tablesStep){
-        tablesStep.classList.add("active");
-        tablesStep.style.display = "block";
-      }
-
-      // Show payment and form steps
-      if(paymentStep) {
-        paymentStep.classList.add("active");
-        paymentStep.style.display = "block";
-      }
-      if(formStep) {
-        formStep.classList.add("active");
-        formStep.style.display = "block";
-      }
-
-      // Update progress
-      try {
-        if(typeof setProgress === 'function') {
-          setProgress(66);
-        }
-        if(typeof updateStepIndicator === 'function') {
-          updateStepIndicator(2);
-        }
-        if(typeof saveFormData === 'function') {
-          saveFormData();
-        }
-      } catch(err) {
-        console.error("Error updating progress:", err);
-      }
+      setProgress(66);
+      updateStepIndicator(2);
+      saveFormData();
     }
-    
-    // Make selectType globally accessible immediately - BEFORE DOMContentLoaded
-    window.selectType = selectType;
 
     function updateTicketPrice(){
       const qtyEl = document.getElementById("ticketQty");
@@ -1623,15 +1510,11 @@
           // Restore booking type selection - use setTimeout to ensure DOM is ready
           setTimeout(() => {
             if(bookingType === "TICKET"){
-              const ticketChoice = document.querySelector('.choice[data-type="TICKET"]');
-              if(ticketChoice && typeof window.selectType === 'function') {
-                window.selectType("TICKET", ticketChoice);
-              }
+              const ticketChoice = document.querySelector('.choice[onclick*="TICKET"]');
+              if(ticketChoice) selectType("TICKET", ticketChoice);
             } else if(bookingType === "TABLE" && tier){
-              const tableChoice = document.querySelector('.choice[data-type="TABLE"]');
-              if(tableChoice && typeof window.selectType === 'function') {
-                window.selectType("TABLE", tableChoice);
-              }
+              const tableChoice = document.querySelector('.choice[onclick*="TABLE"]');
+              if(tableChoice) selectType("TABLE", tableChoice);
               // Restore tier selection after a delay to ensure packages are rendered
               setTimeout(() => {
                 const tierPackage = document.querySelector(`.package[data-tier="${tier}"]`);
@@ -1821,10 +1704,10 @@
         quantity,
         checkedInCount: 0,
         amount,
-        name: fullName.value,
-        phone: (document.getElementById("phoneCountryCode")?.value || "+255") + phone.value.replace(/\D/g, ""),
-        email: email.value,
-        transactionCode: txn.value,
+        name: document.getElementById("fullName")?.value || "",
+        phone: (document.getElementById("phoneCountryCode")?.value || "+255") + (document.getElementById("phone")?.value || "").replace(/\D/g, ""),
+        email: document.getElementById("email")?.value || "",
+        transactionCode: document.getElementById("txn")?.value || "",
         requestId: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2))
       };
 
@@ -2108,7 +1991,7 @@ function downloadReceipt(bookingId) {
       phone: (document.getElementById("phoneCountryCode")?.value || "+255") + (document.getElementById("phone")?.value || "").replace(/\D/g, ""),
       email: document.getElementById("email")?.value || "",
       quantity: ticketQty || 1,
-      amount: calculateTotal() || 0,
+      amount: bookingType === "TICKET" ? (ticketQty || 1) * TICKET_PRICE : (tier === "700K" ? 700000 : tier === "1.2M" ? 1200000 : tier === "1.8M" ? 1800000 : 0),
       bookingType: bookingType || "",
       tier: tier || "",
       grooveType: grooveType || "",
@@ -2344,7 +2227,10 @@ function downloadReceipt(bookingId) {
         document.body.removeChild(receiptContainer);
         showToast(`<div><i class="fa-solid fa-circle-xmark"></i> <b>Receipt generator not loaded</b></div>`, 3000);
       }
-    }, 500);
+      }, 500);
+    }
+    
+    generateReceiptCanvas();
   }, 100);
 }
 
