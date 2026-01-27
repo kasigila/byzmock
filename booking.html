@@ -570,6 +570,10 @@
       0%, 100%{ transform: scale(1); }
       50%{ transform: scale(1.05); }
     }
+    @keyframes pulse{
+      0%, 100%{ opacity: 1; transform: scale(1); }
+      50%{ opacity: 0.8; transform: scale(1.02); }
+    }
     .success-animation{
       animation: successPulse .6s var(--ease);
     }
@@ -805,16 +809,13 @@
           </div>
           <div class="tag"><i class="fa-solid fa-location-dot"></i> Dar es Salaam</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
-            <a class="btn ghost" href="gallery.html?event=groove" style="font-size: 12px; padding: 8px 12px;">
-              <i class="fa-solid fa-images"></i> Peep Past Events
+            <a class="btn primary" href="gallery.html?event=groove" style="font-size: 12px; padding: 8px 12px; transition: transform .2s var(--ease), box-shadow .2s var(--ease);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(255,255,255,.2)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+              <i class="fa-solid fa-images"></i> Check Out Memories
             </a>
-            <a class="btn ghost" href="groove-series.html" style="font-size: 12px; padding: 8px 12px;">
-              <i class="fa-solid fa-circle-info"></i> See Series
-            </a>
-            <a class="btn ghost" href="venue.html" style="font-size: 12px; padding: 8px 12px;">
+            <a class="btn primary" href="venue.html" style="font-size: 12px; padding: 8px 12px; transition: transform .2s var(--ease), box-shadow .2s var(--ease);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(255,255,255,.2)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
               <i class="fa-solid fa-map-location-dot"></i> Venue Info
             </a>
-            <a class="btn ghost" href="faq.html" style="font-size: 12px; padding: 8px 12px;">
+            <a class="btn primary" href="faq.html" style="font-size: 12px; padding: 8px 12px; transition: transform .2s var(--ease), box-shadow .2s var(--ease);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(255,255,255,.2)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
               <i class="fa-solid fa-circle-question"></i> FAQ
             </a>
           </div>
@@ -1214,14 +1215,8 @@
 
             <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
               <span style="font-size: 12px; color: var(--sub);">Need help?</span>
-              <a class="btn ghost" href="venue.html" style="font-size: 12px; padding: 8px 12px;">
-                <i class="fa-solid fa-map-location-dot"></i> Venue Info
-              </a>
-              <a class="btn ghost" href="faq.html" style="font-size: 12px; padding: 8px 12px;">
+              <a class="btn primary" href="faq.html" style="font-size: 12px; padding: 8px 12px; transition: transform .2s var(--ease), box-shadow .2s var(--ease);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(255,255,255,.2)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
                 <i class="fa-solid fa-circle-question"></i> FAQ
-              </a>
-              <a class="btn ghost" href="events.html" style="font-size: 12px; padding: 8px 12px;">
-                <i class="fa-solid fa-calendar-days"></i> All Events
               </a>
             </div>
 
