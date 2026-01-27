@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Bookings | BYZ Entertainment</title>
+  <meta name="description" content="View your BYZ booking history, QR codes, and upcoming events." />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- QR Code Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1100px;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --header-h: 64px;
+      --ok:#0a7f3f;
+      --bad:#b42318;
+      --warn:#b45309;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+    @media (max-width: 560px){
+      .container{padding:0 28px}
+    }
+
+    /* Header */
+    header{
+      position:fixed;top:0;left:0;right:0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:52px;height:52px;border-radius:14px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-light{display:none;}
+    .logo-dark{display:block;}
+
+    nav ul{display:flex;gap:26px;list-style:none;align-items:center}
+    nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
+    nav a:hover{color:var(--text)}
+    .header-actions{display:flex;align-items:center;gap:12px}
+
+    /* Mobile menu */
+    .mobile-btn{
+      display:none;
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      align-items:center;justify-content:center;
+      cursor:pointer;
+      transition: transform .2s var(--ease), background .2s var(--ease);
+    }
+    .mobile-btn:hover{transform: translateY(-1px)}
+    .mobile-panel{
+      display:none;
+      position:fixed;
+      top:var(--header-h);
+      right:16px;
+      width:min(360px, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:14px;
+      z-index:998;
+    }
+    .mobile-panel a{
+      display:flex;
+      padding:12px 12px;
+      border-radius:14px;
+      color:var(--sub);
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .mobile-panel a:hover{
+      background: color-mix(in srgb, var(--border) 22%, transparent);
+      color:var(--text);
+    }
+    @media (max-width: 980px){
+      nav ul{display:none}
+      .mobile-btn{display:flex}
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:10px;padding:12px 18px;border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      font-size:14px;font-weight:600;
+      cursor:pointer;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+    .btn.primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--bg);
+    }
+    .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
+    .btn.ghost{background: transparent}
+
+    /* Main */
+    main{padding-top:var(--header-h)}
+    .hero{
+      padding: 78px 0 48px;
+      background:
+        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
+    }
+    @media (max-width: 560px){
+      .hero{padding: 48px 0 32px}
+    }
+    .hero h1{
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      letter-spacing:-1px;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .hero p{
+      margin-top:14px;
+      color:var(--sub);
+      max-width:60ch;
+      font-size:15px;
+    }
+    @media (max-width: 560px){
+      .hero p{font-size:14px;max-width:100%}
+    }
+
+    /* Lookup Form */
+    .lookup-form{
+      margin-top:32px;
+      padding:24px;
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
+    }
+    @media (max-width: 560px){
+      .lookup-form{padding:20px}
+    }
+    .lookup-form h2{
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+    .lookup-form p{
+      font-size:14px;
+      color:var(--sub);
+      margin-bottom:16px;
+    }
+    .form-row{
+      display:flex;
+      gap:12px;
+      align-items:stretch;
+    }
+    @media (max-width: 640px){
+      .form-row{flex-direction:column}
+    }
+    input{
+      flex:1;
+      padding:14px 18px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background:var(--bg-alt);
+      color:var(--text);
+      font-size:15px;
+      outline:none;
+      box-shadow: var(--shadow-soft);
+      transition: all .2s var(--ease);
+    }
+    input:focus{
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
+      border-color:var(--accent);
+    }
+    #verificationCode{
+      font-family:monospace;
+      text-align:center;
+      letter-spacing:8px;
+      font-weight:700;
+      font-size:20px;
+    }
+
+    /* Bookings List */
+    .bookings-list{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+      margin-top:32px;
+    }
+
+    /* Booking Card */
+    .booking-card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      transition: all .2s var(--ease);
+    }
+    .booking-card:hover{
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+    .booking-card-header{
+      padding:20px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    @media (max-width: 560px){
+      .booking-card-header{padding:16px}
+    }
+    .booking-card-title{
+      flex:1;
+    }
+    .booking-card-title h3{
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+    @media (max-width: 560px){
+      .booking-card-title h3{font-size:16px}
+    }
+    .booking-card-title p{
+      font-size:14px;
+      color:var(--sub);
+    }
+    .booking-status{
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+    .booking-status.PENDING{
+      background: color-mix(in srgb, var(--warn) 15%, transparent);
+      color:var(--warn);
+      border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));
+    }
+    .booking-status.CONFIRMED{
+      background: color-mix(in srgb, var(--ok) 15%, transparent);
+      color:var(--ok);
+      border:1px solid color-mix(in srgb, var(--ok) 30%, var(--border));
+    }
+    .booking-status.REJECTED{
+      background: color-mix(in srgb, var(--bad) 15%, transparent);
+      color:var(--bad);
+      border:1px solid color-mix(in srgb, var(--bad) 30%, var(--border));
+    }
+
+    .booking-card-body{
+      padding:20px;
+    }
+    @media (max-width: 560px){
+      .booking-card-body{padding:16px}
+    }
+    .booking-details{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:12px;
+      margin-bottom:16px;
+    }
+    @media (max-width: 640px){
+      .booking-details{grid-template-columns:1fr}
+    }
+    .detail-item{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .detail-label{
+      font-size:12px;
+      color:var(--sub);
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+    .detail-value{
+      font-size:15px;
+      font-weight:700;
+      color:var(--text);
+    }
+
+    /* QR Code Display - Enhanced with Aesthetic Design */
+    .qr-display{
+      margin-top:20px;
+      padding:20px;
+      border-radius:var(--radius-lg);
+      border:1px solid var(--border);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--ok) 8%, transparent), 
+        color-mix(in srgb, var(--bg-alt) 70%, transparent));
+      text-align:center;
+    }
+    @media (max-width: 560px){
+      .qr-display{padding:16px}
+    }
+    .qr-label{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-weight:700;
+      font-size:15px;
+      margin-bottom:16px;
+      color:var(--text);
+    }
+    .qr-code-wrapper{
+      position:relative;
+      display:inline-block;
+      margin:16px 0;
+      padding:16px;
+      background:#ffffff;
+      border-radius:var(--radius);
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    }
+    @media (max-width: 560px){
+      .qr-code-wrapper{padding:12px}
+    }
+    .qr-canvas{
+      display:none;
+      max-width:100%;
+      height:auto;
+    }
+    .qr-loading{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+      padding:40px;
+      color:var(--sub);
+      font-size:14px;
+    }
+    .qr-loading i{
+      font-size:24px;
+    }
+    .qr-booking-id{
+      margin-top:12px;
+      padding:8px 16px;
+      border-radius:999px;
+      background:color-mix(in srgb, var(--bg-alt) 80%, transparent);
+      border:1px solid var(--border);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      font-weight:600;
+      font-family:monospace;
+      letter-spacing:0.5px;
+      color:var(--text);
+    }
+    .qr-instructions{
+      margin-top:16px;
+      font-size:12px;
+      color:var(--sub);
+      line-height:1.5;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      gap:8px;
+      max-width:400px;
+      margin-left:auto;
+      margin-right:auto;
+    }
+    .qr-instructions i{
+      margin-top:2px;
+      flex-shrink:0;
+    }
+    
+    /* Fullscreen QR Modal - Mobile Optimized */
+    .byz-qr-fullscreen-modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.95);
+      backdrop-filter:blur(20px);
+      z-index:10000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      animation:byz-fadeIn 0.3s var(--ease);
+    }
+    .byz-qr-fullscreen-content{
+      position:relative;
+      background:var(--bg-elev);
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      padding:32px;
+      max-width:500px;
+      width:100%;
+      text-align:center;
+      box-shadow:var(--shadow);
+    }
+    @media (max-width: 560px){
+      .byz-qr-fullscreen-content{padding:24px}
+    }
+    .byz-qr-close-btn{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      border:1px solid var(--border);
+      background:var(--bg-alt);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:all 0.2s var(--ease);
+      touch-action:manipulation;
+    }
+    .byz-qr-close-btn:hover,
+    .byz-qr-close-btn:active{
+      background:var(--bg);
+      transform:scale(1.1);
+    }
+    .byz-qr-fullscreen-label{
+      font-size:18px;
+      font-weight:700;
+      margin-bottom:24px;
+      color:var(--text);
+    }
+    .byz-qr-fullscreen-wrapper{
+      padding:20px;
+      background:#ffffff;
+      border-radius:var(--radius);
+      margin:0 auto 20px;
+      display:inline-block;
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    }
+    .byz-qr-fullscreen-wrapper canvas{
+      display:block;
+      max-width:100%;
+      height:auto;
+    }
+    .byz-qr-fullscreen-id{
+      margin-bottom:12px;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:600;
+      color:var(--sub);
+      letter-spacing:0.5px;
+    }
+    .byz-qr-fullscreen-instructions{
+      margin-bottom:20px;
+      font-size:13px;
+      color:var(--sub);
+    }
+    @keyframes byz-fadeIn{
+      from{opacity:0}
+      to{opacity:1}
+    }
+
+    /* Booking Actions */
+    .booking-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .booking-actions .btn{
+      min-height:44px;
+      touch-action:manipulation;
+    }
+    
+    /* Toast Notification System (Reused from booking.html) */
+    .byz-toast{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      z-index:9999;
+      padding:20px;
+    }
+    .byz-toast.show{
+      display:grid;
+    }
+    .byz-toast-card{
+      background:var(--bg-elev);
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      padding:20px;
+      max-width:400px;
+      width:100%;
+      box-shadow:var(--shadow);
+      position:relative;
+    }
+    @media (max-width: 560px){
+      .byz-toast-card{max-width:calc(100vw - 40px);padding:16px}
+    }
+    .byz-toast-body{
+      color:var(--text);
+      font-size:15px;
+      line-height:1.5;
+    }
+    .byz-toast-sub{
+      margin-top:8px;
+      font-size:13px;
+      color:var(--sub);
+    }
+    .byz-toast-close{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      border:1px solid var(--border);
+      background:var(--bg-alt);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:all 0.2s var(--ease);
+      touch-action:manipulation;
+    }
+    .byz-toast-close:hover,
+    .byz-toast-close:active{
+      background:var(--bg);
+      transform:scale(1.1);
+    }
+    
+    /* Loading Spinner */
+    .byz-loading-spinner{
+      display:inline-block;
+      width:20px;
+      height:20px;
+      border:2px solid var(--border);
+      border-top-color:var(--accent);
+      border-radius:50%;
+      animation:byz-spin 0.6s linear infinite;
+    }
+    @keyframes byz-spin{
+      to{transform:rotate(360deg)}
+    }
+    
+    /* Skeleton Loader for Booking Cards */
+    .booking-card-skeleton{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .skeleton{
+      background:linear-gradient(90deg,var(--bg-alt) 25%,var(--bg-elev) 50%,var(--bg-alt) 75%);
+      background-size:200% 100%;
+      animation:loading 1.5s ease-in-out infinite;
+      border-radius:16px;
+    }
+    @keyframes loading{
+      0%{background-position:200% 0}
+      100%{background-position:-200% 0}
+    }
+    .skeleton-line{
+      height:16px;
+      border-radius:8px;
+    }
+    .skeleton-line.short{width:40%}
+    .skeleton-line.medium{width:60%}
+    .skeleton-line.long{width:100%}
+    .skeleton-title{
+      height:24px;
+      width:70%;
+      border-radius:12px;
+      margin-bottom:8px;
+    }
+    .skeleton-qr{
+      width:200px;
+      height:200px;
+      border-radius:var(--radius);
+      margin:0 auto;
+    }
+    
+    /* Enhanced Empty State */
+    .byz-empty-state{
+      text-align:center;
+      padding:48px 24px;
+      color:var(--sub);
+    }
+    .byz-empty-state i{
+      font-size:48px;
+      margin-bottom:16px;
+      opacity:0.5;
+    }
+    .byz-empty-state h3{
+      font-size:20px;
+      font-weight:700;
+      color:var(--text);
+      margin-bottom:8px;
+    }
+    .byz-empty-state p{
+      font-size:14px;
+      margin-bottom:20px;
+      max-width:400px;
+      margin-left:auto;
+      margin-right:auto;
+    }
+    .booking-actions .btn{
+      flex:1;
+      min-width:140px;
+    }
+    @media (max-width: 560px){
+      .booking-actions .btn{width:100%}
+    }
+
+    /* Empty State */
+    .empty-state{
+      text-align:center;
+      padding:80px 20px;
+      color:var(--sub);
+    }
+    .empty-state i{
+      font-size:64px;
+      margin-bottom:20px;
+      opacity:.3;
+    }
+    .empty-state h3{
+      font-size:24px;
+      color:var(--text);
+      margin-bottom:12px;
+    }
+    .empty-state p{
+      font-size:15px;
+      margin-bottom:24px;
+    }
+
+    /* Section */
+    section{
+      padding: 60px 0;
+    }
+    @media (max-width: 560px){
+      section{padding: 40px 0}
+    }
+
+    /* Tabs */
+    .tabs{
+      display:flex;
+      gap:10px;
+      margin-top:32px;
+      border-bottom:1px solid var(--border);
+      padding-bottom:0;
+    }
+    .tab{
+      padding:12px 20px;
+      border:none;
+      background:transparent;
+      color:var(--sub);
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+      border-bottom:2px solid transparent;
+      transition: all .2s var(--ease);
+      position:relative;
+      top:1px;
+    }
+    .tab:hover{
+      color:var(--text);
+    }
+    .tab.active{
+      color:var(--text);
+      border-bottom-color:var(--accent);
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark" src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-btn" id="mobileBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
+        </svg>
+      </button>
+      <a class="btn primary" href="booking.html">
+        <i class="fa-solid fa-ticket"></i> Book Now
+      </a>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="rate.html">Rate Experience</a>
+    <a href="booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>My Bookings</h1>
+      <p>View your booking history, access QR codes, and manage your upcoming events.</p>
+
+      <!-- Lookup Form -->
+      <div class="lookup-form">
+        <h2>Find Your Booking</h2>
+        <p>Enter your email address to view your bookings. We'll send you a verification code for security.</p>
+        
+        <!-- Step 1: Email Entry -->
+        <div id="emailStep">
+          <div class="form-row">
+            <input type="email" id="emailLookup" placeholder="your@email.com" />
+            <button class="btn primary" onclick="requestVerificationCode()">
+              <i class="fa-solid fa-envelope"></i> Send Code
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Code Verification -->
+        <div id="codeStep" style="display:none;">
+          <p style="font-size:13px;color:var(--sub);margin-bottom:12px;">
+            <i class="fa-solid fa-circle-info"></i> Check your email for a 6-digit verification code
+          </p>
+          <div class="form-row">
+            <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" style="text-align:center;font-size:20px;letter-spacing:8px;font-weight:700;" />
+            <button class="btn primary" onclick="verifyAndLoadBookings()">
+              <i class="fa-solid fa-check"></i> Verify
+            </button>
+          </div>
+          <div style="margin-top:12px;text-align:center;">
+            <button class="btn ghost" onclick="resetVerification()" style="font-size:12px;padding:8px 12px;">
+              <i class="fa-solid fa-arrow-left"></i> Use Different Email
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="upcoming" onclick="switchTab('upcoming')">
+          <i class="fa-solid fa-calendar-days"></i> Upcoming
+        </button>
+        <button class="tab" data-tab="past" onclick="switchTab('past')">
+          <i class="fa-solid fa-history"></i> Past Events
+        </button>
+      </div>
+
+      <!-- Upcoming Bookings -->
+      <div id="upcomingBookings" class="bookings-list">
+        <!-- Bookings will be loaded here -->
+      </div>
+
+      <!-- Past Bookings -->
+      <div id="pastBookings" class="bookings-list" style="display:none;">
+        <!-- Past bookings will be loaded here -->
+      </div>
+
+      <!-- Empty State (shown when no bookings) -->
+      <div id="emptyState" class="byz-empty-state" style="display:none;">
+        <i class="fa-solid fa-calendar-xmark"></i>
+        <h3>No bookings found</h3>
+        <p>Enter your email above to find your bookings, or book your first event!</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+          <a class="btn primary" href="events.html">
+            <i class="fa-solid fa-ticket"></i> Browse Events
+          </a>
+          <a class="btn ghost" href="booking.html">
+            <i class="fa-solid fa-calendar-plus"></i> Book Now
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mobile menu toggle
+  (function(){
+    const btn = document.getElementById("mobileBtn");
+    const panel = document.getElementById("mobilePanel");
+    if(btn && panel){
+      btn.addEventListener("click", () => {
+        panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if(!btn.contains(e.target) && !panel.contains(e.target)){
+          panel.style.display = "none";
+        }
+      });
+    }
+  })();
+
+  // Tab switching
+  function switchTab(tab){
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelector(`.tab[data-tab="${tab}"]`).classList.add("active");
+    
+    if(tab === "upcoming"){
+      document.getElementById("upcomingBookings").style.display = "";
+      document.getElementById("pastBookings").style.display = "none";
+    } else {
+      document.getElementById("upcomingBookings").style.display = "none";
+      document.getElementById("pastBookings").style.display = "";
+    }
+    renderBookings();
+  }
+
+  // API Configuration
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+
+  // Request verification code
+  async function requestVerificationCode() {
+    const email = document.getElementById("emailLookup").value.trim();
+    if (!email) {
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Email Required</b></div><div class="byz-toast-sub">Please enter your email address.</div>', 3000);
+      return;
+    }
+
+    // Show loading
+    const btn = event.target.closest("button");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "sendVerificationCode",
+          email: email
+        })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        // Show code input step
+        const emailStep = document.getElementById("emailStep");
+        const codeStep = document.getElementById("codeStep");
+        if(emailStep) emailStep.style.display = "none";
+        if(codeStep) {
+          codeStep.style.display = "block";
+          const codeInput = document.getElementById("verificationCode");
+          if(codeInput) {
+            codeInput.focus();
+            // Mobile: scroll to code input
+            setTimeout(() => codeInput.scrollIntoView({behavior:'smooth',block:'center'}), 100);
+          }
+        }
+        // Store email for verification
+        sessionStorage.setItem("byz_verify_email", email);
+        
+        // Show helpful message about checking email and trying different email if needed
+        const codeStepInfo = document.querySelector("#codeStep p");
+        if (codeStepInfo) {
+          codeStepInfo.innerHTML = `
+            <i class="fa-solid fa-circle-info"></i> 
+            Check your email for a 6-digit verification code. 
+            <br><br>
+            <span style="font-size:12px;color:var(--warn);">
+              <i class="fa-solid fa-lightbulb"></i> 
+              <strong>Tip:</strong> If you don't receive a code, you may have used a different email address for your booking. Try your other email addresses.
+            </span>
+          `;
+        }
+        
+        byzShowToast('<div><i class="fa-solid fa-circle-check"></i> <b>Code Sent!</b></div><div class="byz-toast-sub">Check your email for the verification code</div>', 3000);
+      } else {
+        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">${data.error || "Failed to send verification code"}</div>`, 4000);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    } catch (error) {
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Error sending verification code. Please try again.</div>', 4000);
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  // Show skeleton loaders
+  function showBookingSkeletons(containerId, count = 2) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = Array(count).fill(0).map(() => `
+      <div class="booking-card-skeleton">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-line short"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px;">
+          <div class="skeleton skeleton-line medium"></div>
+          <div class="skeleton skeleton-line medium"></div>
+        </div>
+        <div class="skeleton skeleton-qr" style="margin-top:16px;"></div>
+      </div>
+    `).join("");
+  }
+
+  // Verify code and load bookings
+  async function verifyAndLoadBookings() {
+    const email = sessionStorage.getItem("byz_verify_email");
+    const code = document.getElementById("verificationCode").value.trim();
+
+    if (!email || !code) {
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Code Required</b></div><div class="byz-toast-sub">Please enter the verification code</div>', 3000);
+      return;
+    }
+
+    // Show loading
+    const btn = event.target.closest("button");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="byz-loading-spinner"></span> Verifying...';
+
+    // Hide verification form and show loading skeletons
+    document.querySelector(".lookup-form").style.display = "none";
+    document.getElementById("upcomingBookings").style.display = "";
+    document.getElementById("pastBookings").style.display = "none";
+    showBookingSkeletons("upcomingBookings", 2);
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "getBookingsByEmail",
+          email: email,
+          verificationCode: code
+        })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        // Store email for future lookups
+        localStorage.setItem("byz_lookup_email", email);
+        localStorage.setItem("byz_my_bookings", JSON.stringify(data.bookings));
+        // Process and display bookings
+        processBookings(data.bookings);
+      } else {
+        // Show form again on error
+        document.querySelector(".lookup-form").style.display = "block";
+        document.getElementById("upcomingBookings").innerHTML = "";
+        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Verification Failed</b></div><div class="byz-toast-sub">${data.error || "Invalid verification code. Please try again."}</div>`, 4000);
+        const codeInput = document.getElementById("verificationCode");
+        if(codeInput) {
+          codeInput.value = "";
+          codeInput.focus();
+        }
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    } catch (error) {
+      // Show form again on error
+      document.querySelector(".lookup-form").style.display = "block";
+      document.getElementById("upcomingBookings").innerHTML = "";
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Error verifying code. Please try again.</div>', 4000);
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  // Reset verification flow
+  function resetVerification() {
+    document.getElementById("emailStep").style.display = "block";
+    document.getElementById("codeStep").style.display = "none";
+    document.getElementById("emailLookup").value = "";
+    document.getElementById("verificationCode").value = "";
+    sessionStorage.removeItem("byz_verify_email");
+  }
+
+  // Fetch bookings from API (with verification)
+  async function fetchUserBookings(email, code) {
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "getBookingsByEmail",
+          email: email,
+          verificationCode: code
+        })
+      });
+      const data = await res.json();
+      return data.bookings || [];
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      // Fallback to localStorage if API fails
+      try {
+        const saved = localStorage.getItem("byz_my_bookings");
+        if(saved) return JSON.parse(saved);
+      } catch(e) {}
+      return [];
+    }
+  }
+
+  // Allow Enter key on code input
+  document.getElementById("verificationCode")?.addEventListener("keypress", (e) => {
+    if(e.key === "Enter"){
+      verifyAndLoadBookings();
+    }
+  });
+
+  // Process and render bookings
+  function processBookings(bookings) {
+    // Separate upcoming and past
+    const now = Date.now();
+    const upcoming = bookings.filter(b => {
+      // If booking is confirmed and event hasn't passed (simple check)
+      return b.status === "CONFIRMED" || b.status === "PENDING";
+    });
+    const past = bookings.filter(b => {
+      return b.status === "CONFIRMED" && b.checkedInCount > 0;
+    });
+
+    // Render upcoming
+    const upcomingContainer = document.getElementById("upcomingBookings");
+    if(upcoming.length === 0){
+      upcomingContainer.innerHTML = "";
+      const emptyState = document.getElementById("emptyState");
+      if(emptyState) emptyState.style.display = "";
+    } else {
+      const emptyState = document.getElementById("emptyState");
+      if(emptyState) emptyState.style.display = "none";
+      upcomingContainer.innerHTML = upcoming.map(b => renderBookingCard(b)).join("");
+    }
+
+    // Render past
+    const pastContainer = document.getElementById("pastBookings");
+    if(past.length === 0){
+      pastContainer.innerHTML = '<div class="byz-empty-state"><i class="fa-solid fa-history"></i><h3>No past bookings</h3><p>Your past event bookings will appear here</p><a class="btn primary" href="events.html" style="margin-top:20px;"><i class="fa-solid fa-ticket"></i> Browse Upcoming Events</a></div>';
+    } else {
+      pastContainer.innerHTML = past.map(b => renderBookingCard(b, true)).join("");
+    }
+    
+    // Generate QR codes for confirmed bookings after rendering
+    setTimeout(() => {
+      const allBookings = [...upcoming, ...past];
+      allBookings.forEach(booking => {
+        if (booking.status === "CONFIRMED") {
+          byzGenerateQRCode(booking.bookingId, booking.eventKey || "groove");
+        }
+      });
+    }, 150);
+  }
+
+  // Render bookings (fallback to localStorage if no email entered)
+  async function renderBookings(){
+    // Only show localStorage bookings if user hasn't verified email
+    // This prevents showing unverified data
+    let bookings = [];
+    try {
+      const saved = localStorage.getItem("byz_my_bookings");
+      if(saved) bookings = JSON.parse(saved);
+    } catch(e) {}
+    
+    if(bookings.length > 0){
+      processBookings(bookings);
+    } else {
+      const emptyState = document.getElementById("emptyState");
+      if(emptyState) emptyState.style.display = "";
+    }
+  }
+
+  // Render booking card
+  function renderBookingCard(booking, isPast = false){
+    const statusClass = booking.status || "PENDING";
+    const statusLabel = statusClass === "CONFIRMED" ? "Confirmed" : statusClass === "REJECTED" ? "Rejected" : "Pending";
+    
+    // Handle both API and localStorage data formats
+    const date = booking.date || (booking.timestamp ? new Date(booking.timestamp).toLocaleDateString() : "TBD");
+    const eventName = booking.eventName || booking.description || "Event";
+    const bookingType = booking.bookingType === "TICKET" ? "Ticket" : booking.bookingType === "TABLE" ? "VIP Table" : "Booking";
+    const quantity = booking.quantity || 1;
+    const amount = typeof booking.amount === "number" ? booking.amount.toLocaleString() + " TZS" : (booking.amount ? booking.amount + " TZS" : "N/A");
+    const bookingId = booking.bookingId || "N/A";
+    const eventKey = booking.eventKey || "groove";
+
+    return `
+      <div class="booking-card">
+        <div class="booking-card-header">
+          <div class="booking-card-title">
+            <h3>${eventName}</h3>
+            <p>${date} • ${bookingType}</p>
+          </div>
+          <span class="booking-status ${statusClass}">${statusLabel}</span>
+        </div>
+        <div class="booking-card-body">
+          <div class="booking-details">
+            <div class="detail-item">
+              <span class="detail-label">Booking ID</span>
+              <span class="detail-value">${bookingId}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Quantity</span>
+              <span class="detail-value">${quantity}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Amount</span>
+              <span class="detail-value">${amount}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status</span>
+              <span class="detail-value">${statusLabel}</span>
+            </div>
+          </div>
+
+          ${statusClass === "CONFIRMED" ? `
+          <div class="qr-display">
+            <div class="qr-label">
+              <i class="fa-solid fa-qrcode"></i> Your Entry QR Code
+            </div>
+            <div class="qr-code-wrapper">
+              <canvas id="qr-${bookingId}" class="qr-canvas" aria-label="QR Code for ${bookingId}"></canvas>
+              <div class="qr-loading" id="qr-loading-${bookingId}">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Generating QR code...</span>
+              </div>
+            </div>
+            <div class="qr-booking-id">
+              <i class="fa-solid fa-ticket"></i> ${bookingId}
+            </div>
+            <p class="qr-instructions">
+              <i class="fa-solid fa-circle-info"></i> 
+              Present this QR code at the door for entry. This is the same QR code from your confirmation email.
+            </p>
+          </div>
+          ` : `
+          <div style="padding:16px;border-radius:18px;border:1px solid var(--border);background:color-mix(in srgb, var(--warn) 8%, transparent);">
+            <p style="font-size:13px;color:var(--sub);">
+              <i class="fa-solid fa-circle-info"></i> Your booking is ${statusClass === "PENDING" ? "pending verification" : "not confirmed"}. You'll receive an email once it's approved.
+            </p>
+          </div>
+          `}
+
+          <div class="booking-actions">
+            ${statusClass === "CONFIRMED" ? `
+            <button class="btn" onclick="byzSaveQRCode('${bookingId}')" title="Save QR code to your device" style="min-height:44px;touch-action:manipulation;">
+              <i class="fa-solid fa-download"></i> Save QR Code
+            </button>
+            <button class="btn ghost" onclick="byzShowQRFullscreen('${bookingId}')" title="Show QR code fullscreen for easy scanning" style="min-height:44px;touch-action:manipulation;">
+              <i class="fa-solid fa-expand"></i> Show Fullscreen
+            </button>
+            <button class="btn ghost" onclick="resendQR('${bookingId}')" style="min-height:44px;touch-action:manipulation;">
+              <i class="fa-solid fa-envelope"></i> Resend Email
+            </button>
+            ` : ""}
+            <button class="btn ghost" onclick="viewReceipt('${bookingId}')" style="min-height:44px;touch-action:manipulation;">
+              <i class="fa-solid fa-receipt"></i> View Receipt
+            </button>
+            ${!isPast ? `
+            <a class="btn ghost" href="event-detail.html?event=${encodeURIComponent(eventKey)}">
+              <i class="fa-solid fa-circle-info"></i> Event Details
+            </a>
+            ` : `
+            <a class="btn ghost" href="gallery.html?event=${eventKey}">
+              <i class="fa-solid fa-images"></i> View Photos
+            </a>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Generate QR Code - EXACT SAME FORMAT AS EMAIL (CRITICAL for preventing double booking)
+  function byzGenerateQRCode(bookingId, eventKey) {
+    return new Promise((resolve, reject) => {
+      // CRITICAL: Use EXACT same format as backend email QR code
+      const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+      const qrPayload = WEBAPP_URL + "?event=" + encodeURIComponent(eventKey) + "&bid=" + encodeURIComponent(bookingId);
+      
+      const canvas = document.getElementById(`qr-${bookingId}`);
+      const loadingEl = document.getElementById(`qr-loading-${bookingId}`);
+      
+      if (!canvas) {
+        reject(new Error('Canvas not found'));
+        return;
+      }
+      
+      if (typeof QRCode === 'undefined') {
+        if (loadingEl) loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR library loading...';
+        // Retry after library loads
+        setTimeout(() => byzGenerateQRCode(bookingId, eventKey), 500);
+        return;
+      }
+      
+      QRCode.toCanvas(canvas, qrPayload, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        },
+        errorCorrectionLevel: 'M'
+      }, (error) => {
+        if (error) {
+          console.error('QR code generation error:', error);
+          if (loadingEl) {
+            loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR code unavailable';
+          }
+          reject(error);
+        } else {
+          // Hide loading, show QR
+          if (loadingEl) loadingEl.style.display = 'none';
+          canvas.style.display = 'block';
+          resolve();
+        }
+      });
+    });
+  }
+
+  // Save QR code to device
+  function byzSaveQRCode(bookingId) {
+    const canvas = document.getElementById(`qr-${bookingId}`);
+    if (!canvas || canvas.style.display === 'none') {
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>QR Code Not Ready</b></div><div class="byz-toast-sub">Please wait for QR code to generate</div>', 3000);
+      return;
+    }
+    
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `BYZ-QR-${bookingId}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      byzShowToast(`<div><i class="fa-solid fa-circle-check"></i> <b>QR Code Saved!</b></div><div class="byz-toast-sub">Saved as BYZ-QR-${bookingId}.png</div>`, 3000);
+    }, 'image/png');
+  }
+
+  // Show QR code fullscreen for easy scanning (mobile-optimized)
+  function byzShowQRFullscreen(bookingId) {
+    const canvas = document.getElementById(`qr-${bookingId}`);
+    if (!canvas || canvas.style.display === 'none') {
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>QR Code Not Ready</b></div><div class="byz-toast-sub">Please wait for QR code to generate</div>', 3000);
+      return;
+    }
+    
+    // Create fullscreen modal
+    const modal = document.createElement('div');
+    modal.className = 'byz-qr-fullscreen-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'QR Code Fullscreen');
+    modal.tabIndex = -1;
+    modal.innerHTML = `
+      <div class="byz-qr-fullscreen-content">
+        <button class="byz-qr-close-btn" onclick="this.closest('.byz-qr-fullscreen-modal').remove()" aria-label="Close QR code">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="byz-qr-fullscreen-label">Your Entry QR Code</div>
+        <div class="byz-qr-fullscreen-wrapper">
+          <canvas id="qr-fullscreen-${bookingId}"></canvas>
+        </div>
+        <div class="byz-qr-fullscreen-id">${bookingId}</div>
+        <p class="byz-qr-fullscreen-instructions">Show this to staff at the door</p>
+        <button class="btn primary" onclick="byzSaveQRCode('${bookingId}'); this.closest('.byz-qr-fullscreen-modal').remove();" style="min-height:44px;touch-action:manipulation;">
+          <i class="fa-solid fa-download"></i> Save to Device
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.focus();
+    
+    // Copy canvas to fullscreen (larger size for better scanning)
+    const fullscreenCanvas = document.getElementById(`qr-fullscreen-${bookingId}`);
+    const ctx = fullscreenCanvas.getContext('2d');
+    fullscreenCanvas.width = 400;
+    fullscreenCanvas.height = 400;
+    ctx.drawImage(canvas, 0, 0, 400, 400);
+    
+    // Close on escape key
+    modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') modal.remove();
+    });
+    
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+  }
+
+  // Resend QR code
+  function resendQR(bookingId){
+    byzShowToast(`<div><i class="fa-solid fa-envelope"></i> <b>Resend Requested</b></div><div class="byz-toast-sub">QR code email will be sent shortly</div>`, 3000);
+    // In production: API call to resend QR code email
+  }
+
+  // View receipt
+  function viewReceipt(bookingId){
+    byzShowToast(`<div><i class="fa-solid fa-receipt"></i> <b>Receipt</b></div><div class="byz-toast-sub">Receipt feature coming soon</div>`, 3000);
+    // In production: Open receipt modal or download PDF
+  }
+
+  // Auto-load bookings on page load (localStorage only - requires verification for API)
+  window.addEventListener("DOMContentLoaded", () => {
+    const savedEmail = localStorage.getItem("byz_lookup_email");
+    if(savedEmail){
+      document.getElementById("emailLookup").value = savedEmail;
+    }
+    renderBookings();
+  });
+
+  // Allow Enter key to trigger code request
+  document.getElementById("emailLookup")?.addEventListener("keypress", (e) => {
+    if(e.key === "Enter"){
+      requestVerificationCode();
+    }
+  });
+
+  // Toast Notification System (Reused from booking.html)
+  let __byzToastTimer = null;
+  
+  function ensureByzToast(){
+    if(document.getElementById("byzToast")) return;
+    
+    const wrap = document.createElement("div");
+    wrap.id = "byzToast";
+    wrap.className = "byz-toast";
+    wrap.innerHTML = `
+      <div class="byz-toast-card" role="dialog" aria-modal="true" aria-labelledby="byzToastBody">
+        <button class="byz-toast-close" type="button" aria-label="Close" onclick="byzCloseToast()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="byz-toast-body" id="byzToastBody"></div>
+      </div>
+    `;
+    
+    document.body.appendChild(wrap);
+    
+    wrap.addEventListener("click", (e) => {
+      if(e.target === wrap) byzCloseToast();
+    });
+  }
+  
+  function byzShowToast(html, duration = 3000){
+    ensureByzToast();
+    const toast = document.getElementById("byzToast");
+    const body = document.getElementById("byzToastBody");
+    if(!toast || !body) return;
+    
+    body.innerHTML = html;
+    toast.classList.add("show");
+    document.body.style.overflow = "hidden";
+    
+    if(__byzToastTimer) clearTimeout(__byzToastTimer);
+    __byzToastTimer = setTimeout(() => {
+      byzCloseToast();
+    }, duration);
+  }
+  
+  function byzCloseToast(){
+    const toast = document.getElementById("byzToast");
+    if(toast) toast.classList.remove("show");
+    document.body.style.overflow = "";
+    if(__byzToastTimer) clearTimeout(__byzToastTimer);
+  }
+  
+  // Initialize toast on load
+  ensureByzToast();
+</script>
+
+<!-- Toast Container -->
+<div id="byzToast" class="byz-toast" style="display:none;">
+  <div class="byz-toast-card" role="dialog" aria-modal="true">
+    <button class="byz-toast-close" type="button" aria-label="Close" onclick="byzCloseToast()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="byz-toast-body" id="byzToastBody"></div>
+  </div>
+</div>
+
+</body>
+</html>
+
