@@ -2541,23 +2541,9 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   margin-bottom:16px;
 }
 
-/* Mobile Sticky CTA */
+/* Mobile Sticky CTA - REMOVED per user request */
 .mobile-cta{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  z-index:998;
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  backdrop-filter: blur(18px);
-  border-top:1px solid var(--border);
-  padding:12px 24px;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom));
-  box-shadow: 0 -4px 20px rgba(0,0,0,.15);
-  display:none;
-}
-@media (max-width: 980px){
-  .mobile-cta{display:block}
+  display:none !important;
 }
 .mobile-cta .btn{
   width:100%;
@@ -5562,6 +5548,11 @@ body.bulkbar-active .social-dock{
         </div>
       </div>
 
+      <div style="text-align:center;margin-top:32px;">
+        <a href="about.html" class="btn primary" style="display:inline-flex;align-items:center;gap:10px;">
+          <i class="fa-solid fa-circle-info"></i> Learn More About BYZ
+        </a>
+      </div>
       
     </div>
   </section>
@@ -10247,11 +10238,6 @@ function generateQRCode(url) {
 }
 
 </script>
-  <!-- Mobile Sticky CTA -->
-  <div class="mobile-cta">
-    <a class="btn primary" href="booking.html">
-      <i class="fa-solid fa-ticket"></i> Book Now
-    </a>
-  </div>
+  <!-- Mobile Sticky CTA - REMOVED per user request -->
 </body>
 </html>
