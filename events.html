@@ -88,6 +88,7 @@
     .mobile-btn:hover{transform: translateY(-1px)}
     .mobile-panel{
       display:none;
+      flex-direction:column;
       position:fixed;
       top:var(--header-h);
       right:16px;
@@ -165,9 +166,16 @@
     .filters{
       margin-top:32px;
       display:flex;
+      flex-direction:column;
       gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+      align-items:stretch;
+    }
+    @media (min-width: 640px){
+      .filters{
+        flex-direction:row;
+        flex-wrap:wrap;
+        align-items:center;
+      }
     }
     .filter-btn{
       padding:10px 16px;
@@ -500,9 +508,6 @@
           <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
         </svg>
       </button>
-      <a class="btn primary" href="booking.html">
-        <i class="fa-solid fa-ticket"></i> Book Now
-      </a>
     </div>
   </div>
 
@@ -723,7 +728,18 @@
           <i class="fa-solid fa-calendar-plus"></i>
           <h3>More events coming soon</h3>
           <p>Check back for updates on next month's lineup. Follow us on social media for the latest announcements.</p>
-          <a class="btn primary" href="booking.html" style="margin-top:20px;">
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+            <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+              <i class="fa-brands fa-instagram"></i> Instagram
+            </a>
+            <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+              <i class="fa-brands fa-tiktok"></i> TikTok
+            </a>
+            <a href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+              <i class="fa-brands fa-facebook"></i> Facebook
+            </a>
+          </div>
+          <a class="btn primary" href="booking.html" style="margin-top:16px;font-size:13px;padding:10px 16px;">
             <i class="fa-solid fa-ticket"></i> Book Current Events
           </a>
         </div>
@@ -741,8 +757,9 @@
 
       <div class="events-grid">
         <!-- Groove Series -->
-        <div class="event-card" onclick="window.location.href='groove-series.html'">
+        <div class="event-card" data-event="groove" onclick="window.location.href='groove-series.html'">
           <div class="event-media" style="background:linear-gradient(135deg,#1a1a1a,#2f2f2f)">
+            <img src="assets/assets/events/groove.jpg" alt="Groove Series" loading="lazy" onerror="this.style.display='none';" style="width:100%;height:100%;object-fit:cover;">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
           </div>
           <div class="event-body">
@@ -769,8 +786,9 @@
         </div>
 
         <!-- Tempo -->
-        <div class="event-card" onclick="window.location.href='booking-tempo.html'">
+        <div class="event-card" data-event="tempo" onclick="window.location.href='booking-tempo.html'">
           <div class="event-media" style="background:linear-gradient(135deg,#0b0b0c,#3b2b1f)">
+            <img src="assets/assets/events/tempo.JPG" alt="Tempo" loading="lazy" onerror="this.style.display='none';" style="width:100%;height:100%;object-fit:cover;">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
           </div>
           <div class="event-body">
@@ -797,8 +815,9 @@
         </div>
 
         <!-- APT Sessions -->
-        <div class="event-card" onclick="window.location.href='apt-request.html'">
+        <div class="event-card" data-event="apt" onclick="window.location.href='apt-request.html'">
           <div class="event-media" style="background:linear-gradient(135deg,#1a2233,#0f1623)">
+            <img src="assets/assets/events/apt.jpg" alt="APT Sessions" loading="lazy" onerror="this.style.display='none';" style="width:100%;height:100%;object-fit:cover;">
             <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
           </div>
           <div class="event-body">
@@ -868,13 +887,55 @@
         
         // Filter events with slight delay for smooth transition
         setTimeout(() => {
+          let visibleCount = 0;
           eventCards.forEach(card => {
             if(filter === "all" || card.dataset.event === filter){
               card.style.display = "";
+              visibleCount++;
             } else {
               card.style.display = "none";
             }
           });
+          
+          // Hide section headers if no events visible
+          const sections = document.querySelectorAll("section");
+          sections.forEach(section => {
+            const sectionGrid = section.querySelector(".events-grid");
+            if(sectionGrid){
+              const visibleInSection = sectionGrid.querySelectorAll(".event-card[style=''], .event-card:not([style*='display: none'])").length;
+              const sectionDivider = section.querySelector(".section-divider");
+              if(visibleInSection === 0 && sectionDivider){
+                sectionDivider.style.display = "none";
+                // Show empty state if this is the filtered section
+                if(filter !== "all"){
+                  sectionGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;">
+                      <i class="fa-solid fa-calendar-plus"></i>
+                      <h3>More events coming soon</h3>
+                      <p>Check back for updates on next month's lineup. Follow us on social media for the latest announcements.</p>
+                      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+                        <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+                          <i class="fa-brands fa-instagram"></i> Instagram
+                        </a>
+                        <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+                          <i class="fa-brands fa-tiktok"></i> TikTok
+                        </a>
+                        <a href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+                          <i class="fa-brands fa-facebook"></i> Facebook
+                        </a>
+                      </div>
+                      <a class="btn primary" href="booking.html" style="margin-top:16px;font-size:13px;padding:10px 16px;">
+                        <i class="fa-solid fa-ticket"></i> Book Current Events
+                      </a>
+                    </div>
+                  `;
+                }
+              } else if(sectionDivider){
+                sectionDivider.style.display = "";
+              }
+            }
+          });
+          
           if(grid){
             grid.style.opacity = "1";
             grid.style.pointerEvents = "";
