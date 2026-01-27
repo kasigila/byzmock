@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -333,7 +333,9 @@
           </g>
         </svg>
       </button>
-
+      <a class="btn ghost" href="gallery.html" style="font-size: 13px; padding: 10px 14px;">
+        <i class="fa-solid fa-images"></i> Find Your Pics
+      </a>
       <a class="btn ghost" href="index.html"><i class="fa-solid fa-arrow-left"></i> Back</a>
     </div>
   </div>
@@ -488,6 +490,11 @@
         <div class="k">Tags</div>
         <div class="v" id="summaryTags">—</div>
       </div>
+      <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a class="btn primary" href="gallery.html" style="width: 100%; text-align: center; text-decoration: none;">
+          <i class="fa-solid fa-images"></i> Find Your Pics
+        </a>
+      </div>
     </div>
   </div>
 </div>
@@ -495,18 +502,32 @@
 <script>
 (function(){
   const root = document.documentElement;
-const toggle = document.getElementById("themeToggle");
+  const toggle = document.getElementById("themeToggle");
+  const stored = localStorage.getItem("theme");
 
-// Always force dark mode
-root.setAttribute("data-theme", "dark");
+  function applyTheme(theme) {
+    if (theme === "dark") root.setAttribute("data-theme","dark");
+    else root.setAttribute("data-theme","light");
+    if (toggle){
+      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+      toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+    }
+  }
 
-// Hide/disable toggle button
-if (toggle) {
-  toggle.style.display = "none";
-}
+  if (stored) applyTheme(stored);
+  else {
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(prefersDark ? "dark" : "light");
+  }
 
-// Clear any stored theme preference
-localStorage.removeItem("theme");
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      const next = isDark ? "light" : "dark";
+      applyTheme(next);
+      localStorage.setItem("theme", next);
+    });
+  }
 })();
 
 (function(){
@@ -571,7 +592,22 @@ localStorage.removeItem("theme");
 
   submit.addEventListener("click", ()=>{
     if(score === 0){
-      alert("Pick a rating first.");
+      // Show toast notification
+      if(typeof showToast !== 'undefined'){
+        showToast("Please select a rating first");
+      } else {
+        // Simple inline notification
+        const btn = document.querySelector('button[type="submit"]');
+        if(btn){
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Pick a rating first';
+          btn.style.background = 'var(--warn)';
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+          }, 2000);
+        }
+      }
       return;
     }
     const selectedTags = Array.from(tags).filter(t=>t.classList.contains("active")).map(t=>t.textContent.trim());
