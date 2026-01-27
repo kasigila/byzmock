@@ -86,6 +86,7 @@
     .mobile-btn:hover{transform: translateY(-1px)}
     .mobile-panel{
       display:none;
+      flex-direction:column;
       position:fixed;
       top:var(--header-h);
       right:16px;
@@ -205,7 +206,7 @@
       .story-image{height:280px}
     }
 
-    /* Values Grid */
+    /* Values Grid - Creative Layout */
     .values-grid{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
@@ -216,7 +217,32 @@
       .values-grid{grid-template-columns:repeat(2, 1fr)}
     }
     @media (max-width: 640px){
-      .values-grid{grid-template-columns:1fr}
+      .values-grid{
+        grid-template-columns:1fr;
+        display:flex;
+        flex-direction:column;
+        gap:16px;
+      }
+      .value-card{
+        display:flex;
+        align-items:center;
+        gap:16px;
+        padding:20px;
+      }
+      .value-icon{
+        width:48px;
+        height:48px;
+        min-width:48px;
+        margin-bottom:0;
+      }
+      .value-card h3{
+        font-size:16px;
+        margin-bottom:4px;
+      }
+      .value-card p{
+        font-size:12px;
+        margin:0;
+      }
     }
     .value-card{
       padding:28px;
@@ -347,9 +373,6 @@
           <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
         </svg>
       </button>
-      <a class="btn primary" href="booking.html">
-        <i class="fa-solid fa-ticket"></i> Book Now
-      </a>
     </div>
   </div>
 
@@ -377,7 +400,7 @@
     <div class="container">
       <div class="story-grid">
         <div class="story-content">
-          <h2>Our Story</h2>
+          <h2 style="text-align:center;">Our Story</h2>
           <p>
             BYZ Entertainment was founded in 2018 with a simple vision: to create unforgettable experiences that bring people together through music, culture, and community. Born in the heart of Dar es Salaam, we saw an opportunity to elevate the city's nightlife scene and give people spaces where they could truly connect.
           </p>
