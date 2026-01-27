@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venue Information | BYZ Entertainment</title>
+  <meta name="description" content="Tips Coco venue information. Location, directions, parking, and getting to BYZ events in Dar es Salaam." />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1100px;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --header-h: 64px;
+      --ok:#0a7f3f;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+    @media (max-width: 560px){
+      .container{padding:0 28px}
+    }
+
+    /* Header */
+    header{
+      position:fixed;top:0;left:0;right:0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:52px;height:52px;border-radius:14px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-light{display:none;}
+    .logo-dark{display:block;}
+
+    nav ul{display:flex;gap:26px;list-style:none;align-items:center}
+    nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
+    nav a:hover{color:var(--text)}
+    .header-actions{display:flex;align-items:center;gap:12px}
+
+    /* Mobile menu */
+    .mobile-btn{
+      display:none;
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      align-items:center;justify-content:center;
+      cursor:pointer;
+      transition: transform .2s var(--ease), background .2s var(--ease);
+    }
+    .mobile-btn:hover{transform: translateY(-1px)}
+    .mobile-panel{
+      display:none;
+      position:fixed;
+      top:var(--header-h);
+      right:16px;
+      width:min(360px, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:14px;
+      z-index:998;
+    }
+    .mobile-panel a{
+      display:flex;
+      padding:12px 12px;
+      border-radius:14px;
+      color:var(--sub);
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .mobile-panel a:hover{
+      background: color-mix(in srgb, var(--border) 22%, transparent);
+      color:var(--text);
+    }
+    @media (max-width: 980px){
+      nav ul{display:none}
+      .mobile-btn{display:flex}
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:10px;padding:12px 18px;border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      font-size:14px;font-weight:600;
+      cursor:pointer;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+    .btn.primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--bg);
+    }
+    .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
+    .btn.ghost{background: transparent}
+
+    /* Main */
+    main{padding-top:var(--header-h)}
+    .hero{
+      padding: 78px 0 48px;
+      background:
+        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
+    }
+    @media (max-width: 560px){
+      .hero{padding: 48px 0 32px}
+    }
+    .hero h1{
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      letter-spacing:-1px;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .hero p{
+      margin-top:14px;
+      color:var(--sub);
+      max-width:60ch;
+      font-size:15px;
+    }
+    @media (max-width: 560px){
+      .hero p{font-size:14px;max-width:100%}
+    }
+
+    /* Content Grid */
+    .content-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:24px;
+      margin-top:32px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .content-grid{grid-template-columns:1fr;gap:20px}
+    }
+
+    /* Card */
+    .card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+    .card-head{
+      padding:20px 20px 0;
+    }
+    @media (max-width: 560px){
+      .card-head{padding:16px 16px 0}
+    }
+    .card-head h2{
+      font-size:20px;
+      letter-spacing:-.4px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .card-head p{
+      color:var(--sub);
+      font-size:14px;
+    }
+    .card-body{
+      padding:20px;
+    }
+    @media (max-width: 560px){
+      .card-body{padding:16px}
+    }
+
+    /* Map Container */
+    .map-container{
+      width:100%;
+      height:400px;
+      border-radius: var(--radius);
+      border:1px solid var(--border);
+      overflow:hidden;
+      background:var(--bg-alt);
+      margin-top:16px;
+      position:relative;
+    }
+    @media (max-width: 560px){
+      .map-container{height:300px}
+    }
+    .map-container iframe{
+      width:100%;
+      height:100%;
+      border:none;
+      display:block;
+    }
+
+    /* Info List */
+    .info-list{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .info-item{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+      transition: all .2s var(--ease);
+    }
+    .info-item:hover{
+      background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+      transform: translateY(-2px);
+    }
+    .info-item-icon{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      border:1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+    .info-item-icon i{
+      color:var(--accent);
+      font-size:18px;
+    }
+    .info-item-content{
+      flex:1;
+    }
+    .info-item-label{
+      font-size:13px;
+      color:var(--sub);
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      margin-bottom:4px;
+    }
+    .info-item-value{
+      font-size:16px;
+      font-weight:700;
+      color:var(--text);
+      line-height:1.4;
+    }
+    .info-item-value a{
+      color:var(--accent);
+      text-decoration:underline;
+      text-underline-offset:4px;
+    }
+
+    /* Directions Steps */
+    .directions-steps{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:16px;
+    }
+    .direction-step{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+    }
+    .direction-step-number{
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      background:var(--accent);
+      color:var(--bg);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      font-size:14px;
+      flex-shrink:0;
+    }
+    .direction-step-content{
+      flex:1;
+      font-size:14px;
+      color:var(--text);
+      line-height:1.6;
+    }
+
+    /* Features Grid */
+    .features-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    @media (max-width: 640px){
+      .features-grid{grid-template-columns:1fr}
+    }
+    .feature-item{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .feature-item i{
+      color:var(--accent);
+      font-size:18px;
+      width:24px;
+    }
+    .feature-item span{
+      font-size:14px;
+      font-weight:600;
+      color:var(--text);
+    }
+
+    /* Quick Actions */
+    .quick-actions{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:16px;
+    }
+    .quick-action{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      transition: all .2s var(--ease);
+    }
+    .quick-action:hover{
+      background: var(--bg-alt);
+      transform: translateX(4px);
+    }
+    .quick-action i{
+      color:var(--accent);
+      font-size:16px;
+      width:20px;
+    }
+    .quick-action span{
+      font-size:14px;
+      font-weight:600;
+    }
+
+    /* Section */
+    section{
+      padding: 60px 0;
+    }
+    @media (max-width: 560px){
+      section{padding: 40px 0}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark" src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-btn" id="mobileBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
+        </svg>
+      </button>
+      <a class="btn primary" href="booking.html">
+        <i class="fa-solid fa-ticket"></i> Book Now
+      </a>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="rate.html">Rate Experience</a>
+    <a href="booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>Tips Coco</h1>
+      <p>Our primary venue for BYZ events. Located in the heart of Dar es Salaam, easily accessible and ready to host unforgettable nights.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="content-grid">
+        <div>
+          <!-- Location & Address -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Location & Address</h2>
+              <p>Find us easily</p>
+            </div>
+            <div class="card-body">
+              <div class="info-list">
+                <div class="info-item">
+                  <div class="info-item-icon">
+                    <i class="fa-solid fa-map-pin"></i>
+                  </div>
+                  <div class="info-item-content">
+                    <div class="info-item-label">Address</div>
+                    <div class="info-item-value">
+                      Tips Coco
+                      <br>
+                      Dar es Salaam, Tanzania
+                    </div>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-item-icon">
+                    <i class="fa-solid fa-phone"></i>
+                  </div>
+                  <div class="info-item-content">
+                    <div class="info-item-label">Venue Contact</div>
+                    <div class="info-item-value">
+                      <a href="tel:+255713219518">+255 713 219 518</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.5!2d39.2!3d-6.8!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwNDgnMDAuMCJTIDM5wrAxMicwMC4wIkU!5e0!3m2!1sen!2stz!4v1234567890123!5m2!1sen!2stz" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);">
+                  <a href="https://maps.app.goo.gl/ZcUNLwz82YBjwrA96" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:8px 14px;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);">
+                    <i class="fa-solid fa-external-link"></i> Open in Google Maps
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Getting There -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Getting There</h2>
+              <p>Directions and transportation options</p>
+            </div>
+            <div class="card-body">
+              <div class="directions-steps">
+                <div class="direction-step">
+                  <div class="direction-step-number">1</div>
+                  <div class="direction-step-content">
+                    <strong>By Car:</strong> Tips Coco is a well-known venue in Dar es Salaam. Use your preferred navigation app or follow local directions.
+                  </div>
+                </div>
+                <div class="direction-step">
+                  <div class="direction-step-number">2</div>
+                  <div class="direction-step-content">
+                    <strong>By Public Transport:</strong> Various bus and dala-dala routes serve the area. Ask locals for the best route from your location.
+                  </div>
+                </div>
+                <div class="direction-step">
+                  <div class="direction-step-number">3</div>
+                  <div class="direction-step-content">
+                    <strong>By Ride-Sharing:</strong> Use Uber, Bolt, or local ride-sharing apps. Search for "Tips Coco" or use the address above.
+                  </div>
+                </div>
+                <div class="direction-step">
+                  <div class="direction-step-number">4</div>
+                  <div class="direction-step-content">
+                    <strong>Landmarks Nearby:</strong> Tips Coco is a popular local landmark. Most locals and drivers know the location well.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Parking Information -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Parking Information</h2>
+              <p>Where to park</p>
+            </div>
+            <div class="card-body">
+              <div class="info-list">
+                <div class="info-item">
+                  <div class="info-item-icon">
+                    <i class="fa-solid fa-car"></i>
+                  </div>
+                  <div class="info-item-content">
+                    <div class="info-item-label">On-Site Parking</div>
+                    <div class="info-item-value">
+                      Limited parking available on-site. We recommend arriving early or using alternative parking options.
+                    </div>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <div class="info-item-icon">
+                    <i class="fa-solid fa-parking"></i>
+                  </div>
+                  <div class="info-item-content">
+                    <div class="info-item-label">Nearby Parking</div>
+                    <div class="info-item-value">
+                      Additional parking available opposite Tips Coco. Street parking may also be available depending on the time of day.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p style="margin-top:16px;font-size:13px;color:var(--sub);">
+                <i class="fa-solid fa-circle-info"></i> We recommend arriving early or using ride-sharing services for convenience.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+          <!-- Venue Features -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Venue Features</h2>
+              <p>What to expect</p>
+            </div>
+            <div class="card-body">
+              <div class="features-grid">
+                <div class="feature-item">
+                  <i class="fa-solid fa-users"></i>
+                  <span>Flexible Capacity</span>
+                </div>
+                <div class="feature-item">
+                  <i class="fa-solid fa-music"></i>
+                  <span>Premium Sound System</span>
+                </div>
+                <div class="feature-item">
+                  <i class="fa-solid fa-wine-glass"></i>
+                  <span>Full Bar</span>
+                </div>
+                <div class="feature-item">
+                  <i class="fa-solid fa-utensils"></i>
+                  <span>Food Available</span>
+                </div>
+                <div class="feature-item">
+                  <i class="fa-solid fa-wifi"></i>
+                  <span>Free WiFi</span>
+                </div>
+                <div class="feature-item">
+                  <i class="fa-solid fa-shield-halved"></i>
+                  <span>Secure Venue</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Quick Actions</h2>
+            </div>
+            <div class="card-body">
+              <div class="quick-actions">
+                <a class="quick-action" href="events.html">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <span>View Upcoming Events</span>
+                </a>
+                <a class="quick-action" href="booking.html">
+                  <i class="fa-solid fa-ticket"></i>
+                  <span>Book Your Spot</span>
+                </a>
+                <a class="quick-action" href="contact.html">
+                  <i class="fa-solid fa-envelope"></i>
+                  <span>Contact Us</span>
+                </a>
+                <a class="quick-action" href="faq.html">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span>Frequently Asked Questions</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Venue Vibe -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Venue Vibe</h2>
+              <p>The atmosphere</p>
+            </div>
+            <div class="card-body">
+              <p style="font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:12px;">
+                Tips Coco brings that authentic Dar es Salaam nightlife energy. The venue's intimate yet spacious layout creates the perfect vibe for BYZ events—whether you're vibing to Caribbean Groove, getting lost in RnB nights, or moving to Afrobeats. The sound system hits different, the crowd is always electric, and the atmosphere is unmatched. It's where the city's best nights happen.
+              </p>
+              <a class="btn ghost" href="gallery.html" style="width:100%;justify-content:center;margin-top:12px;">
+                <i class="fa-solid fa-images"></i> See Venue Photos
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mobile menu toggle
+  (function(){
+    const btn = document.getElementById("mobileBtn");
+    const panel = document.getElementById("mobilePanel");
+    if(btn && panel){
+      btn.addEventListener("click", () => {
+        panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if(!btn.contains(e.target) && !panel.contains(e.target)){
+          panel.style.display = "none";
+        }
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
+
