@@ -537,10 +537,19 @@
   const statsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if(entry.isIntersecting){
-        const statNumbers = entry.target.querySelectorAll(".stat-number");
-        statNumbers.forEach(stat => {
+        const statItems = entry.target.querySelectorAll(".stat-item");
+        statItems.forEach(item => {
+          const stat = item.querySelector(".stat-number");
+          const label = item.querySelector(".stat-label");
+          if(!stat || !label) return;
+          
           const target = parseInt(stat.dataset.target);
-          const suffix = stat.textContent.includes("+") ? "+" : (stat.textContent.includes("K") ? "K+" : "");
+          // Determine suffix from label text
+          const labelText = label.textContent.toLowerCase();
+          let suffix = "";
+          if(labelText.includes("(k+)")) suffix = "K+";
+          else if(labelText.includes("events hosted") || labelText.includes("djs featured")) suffix = "+";
+          
           animateCounter(stat, target, suffix);
         });
         statsObserver.unobserve(entry.target);
