@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Confirmed | BYZ Entertainment</title>
+  <meta name="description" content="Your BYZ booking has been confirmed. View booking details and next steps." />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1100px;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --header-h: 64px;
+      --ok:#0a7f3f;
+      --warn:#b45309;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+    @media (max-width: 560px){
+      .container{padding:0 28px}
+    }
+
+    /* Header */
+    header{
+      position:fixed;top:0;left:0;right:0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:52px;height:52px;border-radius:14px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-light{display:none;}
+    .logo-dark{display:block;}
+
+    nav ul{display:flex;gap:26px;list-style:none;align-items:center}
+    nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
+    nav a:hover{color:var(--text)}
+    .header-actions{display:flex;align-items:center;gap:12px}
+
+    /* Mobile menu */
+    .mobile-btn{
+      display:none;
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      align-items:center;justify-content:center;
+      cursor:pointer;
+      transition: transform .2s var(--ease), background .2s var(--ease);
+    }
+    .mobile-btn:hover{transform: translateY(-1px)}
+    .mobile-panel{
+      display:none;
+      position:fixed;
+      top:var(--header-h);
+      right:16px;
+      width:min(360px, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:14px;
+      z-index:998;
+    }
+    .mobile-panel a{
+      display:flex;
+      padding:12px 12px;
+      border-radius:14px;
+      color:var(--sub);
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .mobile-panel a:hover{
+      background: color-mix(in srgb, var(--border) 22%, transparent);
+      color:var(--text);
+    }
+    @media (max-width: 980px){
+      nav ul{display:none}
+      .mobile-btn{display:flex}
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:10px;padding:12px 18px;border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      font-size:14px;font-weight:600;
+      cursor:pointer;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+    .btn.primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--bg);
+    }
+    .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
+    .btn.ghost{background: transparent}
+
+    /* Main */
+    main{padding-top:var(--header-h)}
+    .hero{
+      padding: 78px 0 48px;
+      background:
+        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
+    }
+    @media (max-width: 560px){
+      .hero{padding: 48px 0 32px}
+    }
+
+    /* Success Animation */
+    .success-icon{
+      width:80px;
+      height:80px;
+      border-radius:50%;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--ok) 20%, transparent), color-mix(in srgb, var(--ok) 10%, transparent));
+      border:2px solid color-mix(in srgb, var(--ok) 40%, var(--border));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 24px;
+      animation: successPulse 0.6s var(--ease);
+    }
+    @keyframes successPulse{
+      0%, 100%{ transform: scale(1); }
+      50%{ transform: scale(1.1); }
+    }
+    .success-icon i{
+      color:var(--ok);
+      font-size:40px;
+    }
+
+    .hero h1{
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      letter-spacing:-1px;
+      font-weight:900;
+      line-height:1.1;
+      text-align:center;
+    }
+    .hero-subtitle{
+      margin-top:16px;
+      color:var(--sub);
+      font-size:18px;
+      text-align:center;
+    }
+    @media (max-width: 560px){
+      .hero-subtitle{font-size:16px}
+    }
+
+    /* Content Grid */
+    .content-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:24px;
+      margin-top:32px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .content-grid{grid-template-columns:1fr;gap:20px}
+    }
+
+    /* Card */
+    .card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+    .card-head{
+      padding:20px 20px 0;
+    }
+    @media (max-width: 560px){
+      .card-head{padding:16px 16px 0}
+    }
+    .card-head h2{
+      font-size:20px;
+      letter-spacing:-.4px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .card-head p{
+      color:var(--sub);
+      font-size:14px;
+    }
+    .card-body{
+      padding:20px;
+    }
+    @media (max-width: 560px){
+      .card-body{padding:16px}
+    }
+
+    /* Booking Summary */
+    .booking-summary{
+      background: linear-gradient(135deg, color-mix(in srgb, var(--ok) 8%, transparent), color-mix(in srgb, var(--bg-alt) 70%, transparent));
+      border:1px solid color-mix(in srgb, var(--ok) 25%, var(--border));
+    }
+    .summary-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 0;
+      border-bottom:1px solid color-mix(in srgb, var(--ok) 15%, transparent);
+    }
+    .summary-row:last-child{
+      border-bottom:none;
+      padding-top:16px;
+      margin-top:8px;
+      border-top:2px solid color-mix(in srgb, var(--ok) 20%, transparent);
+    }
+    .summary-label{
+      font-size:14px;
+      color:var(--sub);
+    }
+    .summary-value{
+      font-size:16px;
+      font-weight:700;
+      color:var(--text);
+      text-align:right;
+    }
+    .summary-row:last-child .summary-value{
+      font-size:20px;
+      color:var(--ok);
+    }
+
+    /* Next Steps */
+    .next-steps{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .step-item{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+      transition: all .2s var(--ease);
+    }
+    .step-item:hover{
+      background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+      transform: translateY(-2px);
+    }
+    .step-number{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      background:var(--accent);
+      color:var(--bg);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      font-size:16px;
+      flex-shrink:0;
+    }
+    .step-content{
+      flex:1;
+    }
+    .step-title{
+      font-size:16px;
+      font-weight:700;
+      color:var(--text);
+      margin-bottom:4px;
+    }
+    .step-description{
+      font-size:14px;
+      color:var(--sub);
+      line-height:1.6;
+    }
+
+    /* Info Box */
+    .info-box{
+      padding:16px;
+      border-radius:18px;
+      border:1px solid color-mix(in srgb, var(--warn) 25%, var(--border));
+      background: color-mix(in srgb, var(--warn) 8%, transparent);
+      margin-top:16px;
+    }
+    .info-box-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .info-box-header i{
+      color:var(--warn);
+      font-size:18px;
+    }
+    .info-box-header h3{
+      font-size:15px;
+      font-weight:700;
+      color:var(--warn);
+    }
+    .info-box-content{
+      font-size:14px;
+      color:var(--sub);
+      line-height:1.6;
+    }
+
+    /* Toast Notification System */
+    .byz-toast{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      z-index:9999;
+      background:rgba(0,0,0,.45);
+      backdrop-filter:blur(12px);
+      padding:20px;
+    }
+    .byz-toast.show{display:grid}
+    .byz-toast-card{
+      background:var(--bg-elev);
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      padding:20px;
+      max-width:400px;
+      width:100%;
+      box-shadow:var(--shadow);
+      position:relative;
+    }
+    @media (max-width: 560px){
+      .byz-toast-card{max-width:calc(100vw - 40px);padding:16px}
+    }
+    .byz-toast-body{
+      color:var(--text);
+      font-size:15px;
+      line-height:1.5;
+    }
+    .byz-toast-sub{
+      margin-top:8px;
+      font-size:13px;
+      color:var(--sub);
+    }
+    .byz-toast-close{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      border:1px solid var(--border);
+      background:var(--bg-alt);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:all 0.2s var(--ease);
+    }
+    .byz-toast-close:hover{
+      background:var(--bg);
+      transform:scale(1.1);
+    }
+    
+    /* Loading Skeleton */
+    .booking-skeleton{
+      border-radius:var(--radius-lg);
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      padding:20px;
+    }
+    .skeleton{
+      background:linear-gradient(90deg,var(--bg-alt) 25%,var(--bg-elev) 50%,var(--bg-alt) 75%);
+      background-size:200% 100%;
+      animation:loading 1.5s ease-in-out infinite;
+      border-radius:16px;
+    }
+    @keyframes loading{
+      0%{background-position:200% 0}
+      100%{background-position:-200% 0}
+    }
+    .skeleton-line{
+      height:16px;
+      border-radius:8px;
+      margin-bottom:12px;
+    }
+    .skeleton-line.short{width:40%}
+    .skeleton-line.medium{width:60%}
+    .skeleton-line.long{width:100%}
+    .skeleton-title{
+      height:24px;
+      width:70%;
+      border-radius:12px;
+      margin-bottom:16px;
+    }
+
+    /* Quick Links */
+    .quick-links{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .quick-link{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      transition: all .2s var(--ease);
+    }
+    .quick-link:hover{
+      background: var(--bg-alt);
+      transform: translateX(4px);
+    }
+    .quick-link i{
+      color:var(--accent);
+      font-size:16px;
+      width:20px;
+    }
+    .quick-link span{
+      font-size:14px;
+      font-weight:600;
+    }
+
+    /* Actions */
+    .action-buttons{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:24px;
+    }
+    .action-buttons .btn{
+      width:100%;
+      justify-content:center;
+    }
+
+    /* Section */
+    section{
+      padding: 60px 0;
+    }
+    @media (max-width: 560px){
+      section{padding: 40px 0}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark" src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-btn" id="mobileBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
+        </svg>
+      </button>
+      <a class="btn primary" href="booking.html">
+        <i class="fa-solid fa-ticket"></i> Book Now
+      </a>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="rate.html">Rate Experience</a>
+    <a href="booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="success-icon">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <h1>Booking Confirmed! 🎉</h1>
+      <p class="hero-subtitle">Your spot is reserved. Here's what happens next.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="content-grid">
+        <div>
+          <!-- Booking Summary -->
+          <div class="card booking-summary" id="bookingSummaryCard">
+            <div class="card-head">
+              <h2>Booking Summary</h2>
+              <p>Your booking details</p>
+            </div>
+            <div class="card-body" id="bookingSummaryBody">
+              <div class="summary-row">
+                <span class="summary-label">Booking ID</span>
+                <span class="summary-value" id="bookingId">[Loading...]</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Event</span>
+                <span class="summary-value" id="eventName">[Event Name]</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Date & Time</span>
+                <span class="summary-value" id="eventDateTime">[Date & Time]</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Type</span>
+                <span class="summary-value" id="bookingType">[Ticket/Table]</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Quantity</span>
+                <span class="summary-value" id="quantity">[Quantity]</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Amount Paid</span>
+                <span class="summary-value" id="amount">[Amount]</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- What's Next -->
+          <div class="card">
+            <div class="card-head">
+              <h2>What's Next?</h2>
+              <p>Important steps to complete</p>
+            </div>
+            <div class="card-body">
+              <div class="next-steps">
+                <div class="step-item">
+                  <div class="step-number">1</div>
+                  <div class="step-content">
+                    <div class="step-title">Verify Payment via WhatsApp</div>
+                    <div class="step-description">
+                      WhatsApp should have opened automatically. Press <strong>SEND</strong> to verify your payment. If it didn't open, contact us at <a href="https://wa.me/255768464367" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline;">+255 768 464 367</a>.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <div class="step-number">2</div>
+                  <div class="step-content">
+                    <div class="step-title">Wait for Confirmation</div>
+                    <div class="step-description">
+                      Your booking will be reviewed within 24 hours. You'll receive an email confirmation once approved.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <div class="step-number">3</div>
+                  <div class="step-content">
+                    <div class="step-title">Receive Your QR Code</div>
+                    <div class="step-description">
+                      Once confirmed, you'll receive an email with your QR code. Save it to your phone or print it out for easy access at the door.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <div class="step-number">4</div>
+                  <div class="step-content">
+                    <div class="step-title">Arrive at the Event</div>
+                    <div class="step-description">
+                      Present your QR code at the door for entry. Doors open at 8:00 PM. See <a href="venue.html" style="color:var(--accent);text-decoration:underline;">venue information</a> for directions.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="info-box-header">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <h3>Important Information</h3>
+                </div>
+                <div class="info-box-content">
+                  <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
+                    <li style="display:flex;align-items:flex-start;gap:8px;">
+                      <i class="fa-solid fa-envelope" style="color:var(--warn);margin-top:2px;font-size:12px;"></i>
+                      <span>Make sure the email address you provided is correct. Your QR code will be sent there.</span>
+                    </li>
+                    <li style="display:flex;align-items:flex-start;gap:8px;">
+                      <i class="fa-solid fa-clock" style="color:var(--warn);margin-top:2px;font-size:12px;"></i>
+                      <span>Booking verification typically takes 24 hours. You'll receive updates via email.</span>
+                    </li>
+                    <li style="display:flex;align-items:flex-start;gap:8px;">
+                      <i class="fa-solid fa-shield-halved" style="color:var(--warn);margin-top:2px;font-size:12px;"></i>
+                      <span>Keep your booking ID safe. You'll need it for any inquiries or support requests.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Quick Actions</h2>
+            </div>
+            <div class="card-body">
+              <div class="quick-links">
+                <a class="quick-link" href="my-bookings.html">
+                  <i class="fa-solid fa-list"></i>
+                  <span>View My Bookings</span>
+                </a>
+                <a class="quick-link" href="venue.html">
+                  <i class="fa-solid fa-map-location-dot"></i>
+                  <span>Venue Information</span>
+                </a>
+                <a class="quick-link" href="faq.html">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span>Frequently Asked Questions</span>
+                </a>
+                <a class="quick-link" href="contact.html">
+                  <i class="fa-solid fa-envelope"></i>
+                  <span>Contact Support</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Event Details -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Event Details</h2>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+                  <i class="fa-solid fa-calendar-days" style="color:var(--accent);width:20px;"></i>
+                  <span id="sidebarDate">[Date]</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+                  <i class="fa-solid fa-clock" style="color:var(--accent);width:20px;"></i>
+                  <span>8:00 PM - Late</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+                  <i class="fa-solid fa-location-dot" style="color:var(--accent);width:20px;"></i>
+                  <span>Tips Coco</span>
+                </div>
+              </div>
+              <a class="btn ghost" href="venue.html" style="width:100%;justify-content:center;margin-top:16px;">
+                <i class="fa-solid fa-map-location-dot"></i> Get Directions
+              </a>
+            </div>
+          </div>
+
+          <!-- Share Booking -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Share Your Booking</h2>
+            </div>
+            <div class="card-body">
+              <p style="font-size:14px;color:var(--sub);margin-bottom:16px;">
+                Let your friends know you're going!
+              </p>
+              <div class="action-buttons">
+                <button class="btn" onclick="shareBooking()" style="width:100%;justify-content:center;">
+                  <i class="fa-solid fa-share-nodes"></i> Share Booking
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mobile menu toggle
+  (function(){
+    const btn = document.getElementById("mobileBtn");
+    const panel = document.getElementById("mobilePanel");
+    if(btn && panel){
+      btn.addEventListener("click", () => {
+        panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if(!btn.contains(e.target) && !panel.contains(e.target)){
+          panel.style.display = "none";
+        }
+      });
+    }
+  })();
+
+  // API Configuration
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+
+  // Fetch booking details from API
+  async function fetchBookingDetails(bookingId, eventKey) {
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "getBooking",
+          bookingId: bookingId,
+          eventKey: eventKey || "groove"
+        })
+      });
+      const data = await res.json();
+      return data.booking || null;
+    } catch (error) {
+      console.error("Error fetching booking:", error);
+      return null;
+    }
+  }
+
+  // Load booking data from API, sessionStorage, or URL parameters
+  (async function(){
+    // Try to get from sessionStorage first (set by booking pages)
+    const bookingData = sessionStorage.getItem("byz_last_booking_data");
+    let data = {};
+    
+    if(bookingData){
+      try {
+        data = JSON.parse(bookingData);
+      } catch(e) {
+        console.error("Error parsing booking data:", e);
+      }
+    }
+
+    // Get parameters
+    const params = new URLSearchParams(window.location.search);
+    const bookingId = params.get("id") || data.bookingId || sessionStorage.getItem("byz_last_bookingId") || "";
+    const eventKey = params.get("event") || data.eventKey || "groove";
+    
+    // Show skeleton loader while fetching
+    const summaryBody = document.getElementById("bookingSummaryBody");
+    if(summaryBody && bookingId && bookingId !== "[Booking ID]") {
+      summaryBody.innerHTML = `
+        <div class="booking-skeleton">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-line long"></div>
+          <div class="skeleton skeleton-line medium" style="margin-top:12px;"></div>
+          <div class="skeleton skeleton-line short" style="margin-top:12px;"></div>
+        </div>
+      `;
+    }
+
+    // Try to fetch from API if we have a booking ID
+    let booking = null;
+    if(bookingId && bookingId !== "[Booking ID]") {
+      booking = await fetchBookingDetails(bookingId, eventKey);
+    }
+
+    // Use API data if available, otherwise fallback to sessionStorage/URL params
+    const eventName = booking?.description || params.get("event") || data.eventName || "[Event Name]";
+    const date = booking?.date || params.get("date") || data.date || "[Date]";
+    const bookingType = booking?.bookingType || params.get("type") || data.bookingType || "[Type]";
+    const quantity = booking?.quantity || params.get("qty") || data.quantity || "[Quantity]";
+    const amount = booking?.amount || params.get("amount") || data.amount || 0;
+
+    // Restore original HTML structure if skeleton was shown
+    if(summaryBody && summaryBody.querySelector(".booking-skeleton")) {
+      summaryBody.innerHTML = `
+        <div class="summary-row">
+          <span class="summary-label">Booking ID</span>
+          <span class="summary-value" id="bookingId">${bookingId || "[Booking ID]"}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Event</span>
+          <span class="summary-value" id="eventName">${eventName}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Date & Time</span>
+          <span class="summary-value" id="eventDateTime">${date + " • 8:00 PM"}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Type</span>
+          <span class="summary-value" id="bookingType">${bookingType === "TICKET" ? "Ticket" : bookingType === "TABLE" ? "VIP Table" : bookingType}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Quantity</span>
+          <span class="summary-value" id="quantity">${quantity}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Total Amount</span>
+          <span class="summary-value" id="amount">${typeof amount === "number" ? amount.toLocaleString() + " TZS" : (amount ? amount + " TZS" : "N/A")}</span>
+        </div>
+      `;
+    } else {
+      // Update page content normally
+      document.getElementById("bookingId").textContent = bookingId || "[Booking ID]";
+      document.getElementById("eventName").textContent = eventName;
+      document.getElementById("eventDateTime").textContent = date + " • 8:00 PM";
+      document.getElementById("bookingType").textContent = bookingType === "TICKET" ? "Ticket" : bookingType === "TABLE" ? "VIP Table" : bookingType;
+      document.getElementById("quantity").textContent = quantity;
+      document.getElementById("amount").textContent = typeof amount === "number" ? amount.toLocaleString() + " TZS" : (amount ? amount + " TZS" : "N/A");
+    }
+    document.getElementById("sidebarDate").textContent = date;
+    
+    // Update status if available from API
+    if(booking && booking.status) {
+      const statusEl = document.querySelector(".summary-value");
+      if(statusEl && booking.status === "CONFIRMED") {
+        statusEl.style.color = "var(--ok)";
+      }
+    }
+
+    // Save to localStorage for my-bookings page
+    const bookingRecord = {
+      bookingId,
+      eventName,
+      date,
+      bookingType,
+      quantity,
+      amount: typeof amount === "number" ? amount : parseFloat(amount) || 0,
+      timestamp: Date.now(),
+      status: "PENDING"
+    };
+
+    // Get existing bookings
+    let bookings = [];
+    try {
+      const saved = localStorage.getItem("byz_my_bookings");
+      if(saved) bookings = JSON.parse(saved);
+    } catch(e) {}
+
+    // Add new booking (avoid duplicates)
+    const exists = bookings.find(b => b.bookingId === bookingId);
+    if(!exists){
+      bookings.unshift(bookingRecord);
+      localStorage.setItem("byz_my_bookings", JSON.stringify(bookings));
+    }
+  })();
+
+  // Toast Notification System
+  let __byzToastTimer = null;
+  
+  function ensureByzToast(){
+    if(document.getElementById("byzToast")) return;
+    
+    const wrap = document.createElement("div");
+    wrap.id = "byzToast";
+    wrap.className = "byz-toast";
+    wrap.innerHTML = `
+      <div class="byz-toast-card" role="dialog" aria-modal="true">
+        <button class="byz-toast-close" type="button" aria-label="Close" onclick="byzCloseToast()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="byz-toast-body" id="byzToastBody"></div>
+      </div>
+    `;
+    
+    document.body.appendChild(wrap);
+    
+    wrap.addEventListener("click", (e) => {
+      if(e.target === wrap) byzCloseToast();
+    });
+  }
+  
+  function byzShowToast(html, duration = 3000){
+    ensureByzToast();
+    const toast = document.getElementById("byzToast");
+    const body = document.getElementById("byzToastBody");
+    if(!toast || !body) return;
+    
+    body.innerHTML = html;
+    toast.classList.add("show");
+    document.body.style.overflow = "hidden";
+    
+    if(__byzToastTimer) clearTimeout(__byzToastTimer);
+    __byzToastTimer = setTimeout(() => {
+      byzCloseToast();
+    }, duration);
+  }
+  
+  function byzCloseToast(){
+    const toast = document.getElementById("byzToast");
+    if(toast) toast.classList.remove("show");
+    document.body.style.overflow = "";
+    if(__byzToastTimer) clearTimeout(__byzToastTimer);
+  }
+  
+  // Initialize toast on load
+  ensureByzToast();
+
+  // Share booking function
+  function shareBooking(){
+    const bookingId = document.getElementById("bookingId").textContent;
+    const eventName = document.getElementById("eventName").textContent;
+    const url = window.location.href;
+    const text = `I just booked ${eventName} at BYZ Entertainment! Booking ID: ${bookingId}`;
+
+    if(navigator.share){
+      navigator.share({
+        title: "BYZ Booking Confirmed",
+        text: text,
+        url: url
+      }).catch(() => {});
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(`${text} ${url}`).then(() => {
+        byzShowToast('<div><i class="fa-solid fa-circle-check"></i> <b>Copied!</b></div><div class="byz-toast-sub">Booking details copied to clipboard</div>', 3000);
+      }).catch(() => {
+        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Share Unavailable</b></div><div class="byz-toast-sub">Booking ID: ${bookingId}</div>`, 4000);
+      });
+    }
+  }
+</script>
+
+<!-- Toast Container -->
+<div id="byzToast" class="byz-toast" style="display:none;">
+  <div class="byz-toast-card" role="dialog" aria-modal="true">
+    <button class="byz-toast-close" type="button" aria-label="Close" onclick="byzCloseToast()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="byz-toast-body" id="byzToastBody"></div>
+  </div>
+</div>
+
+</body>
+</html>
+
