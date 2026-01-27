@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us | BYZ Entertainment</title>
+  <meta name="description" content="Get in touch with BYZ Entertainment. Bookings, inquiries, partnerships, and support." />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1100px;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --header-h: 64px;
+      --whatsapp:#25D366;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+    @media (max-width: 560px){
+      .container{padding:0 28px}
+    }
+
+    /* Header */
+    header{
+      position:fixed;top:0;left:0;right:0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:52px;height:52px;border-radius:14px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-light{display:none;}
+    .logo-dark{display:block;}
+
+    nav ul{display:flex;gap:26px;list-style:none;align-items:center}
+    nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
+    nav a:hover{color:var(--text)}
+    .header-actions{display:flex;align-items:center;gap:12px}
+
+    /* Mobile menu */
+    .mobile-btn{
+      display:none;
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      align-items:center;justify-content:center;
+      cursor:pointer;
+      transition: transform .2s var(--ease), background .2s var(--ease);
+    }
+    .mobile-btn:hover{transform: translateY(-1px)}
+    .mobile-panel{
+      display:none;
+      position:fixed;
+      top:var(--header-h);
+      right:16px;
+      width:min(360px, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:14px;
+      z-index:998;
+    }
+    .mobile-panel a{
+      display:flex;
+      padding:12px 12px;
+      border-radius:14px;
+      color:var(--sub);
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .mobile-panel a:hover{
+      background: color-mix(in srgb, var(--border) 22%, transparent);
+      color:var(--text);
+    }
+    @media (max-width: 980px){
+      nav ul{display:none}
+      .mobile-btn{display:flex}
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:10px;padding:12px 18px;border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      font-size:14px;font-weight:600;
+      cursor:pointer;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+    .btn.primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--bg);
+    }
+    .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
+    .btn.ghost{background: transparent}
+    .btn.whatsapp{
+      background:var(--whatsapp);
+      border-color:transparent;
+      color:#fff;
+    }
+    .btn.whatsapp:hover{box-shadow: 0 18px 60px rgba(37,211,102,.3)}
+
+    /* Main */
+    main{padding-top:var(--header-h)}
+    .hero{
+      padding: 78px 0 48px;
+      background:
+        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
+    }
+    @media (max-width: 560px){
+      .hero{padding: 48px 0 32px}
+    }
+    .hero h1{
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      letter-spacing:-1px;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .hero p{
+      margin-top:14px;
+      color:var(--sub);
+      max-width:60ch;
+      font-size:15px;
+    }
+    @media (max-width: 560px){
+      .hero p{font-size:14px;max-width:100%}
+    }
+
+    /* Content Grid */
+    .content-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:24px;
+      margin-top:32px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .content-grid{grid-template-columns:1fr;gap:20px}
+    }
+
+    /* Card */
+    .card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+    .card-head{
+      padding:20px 20px 0;
+    }
+    @media (max-width: 560px){
+      .card-head{padding:16px 16px 0}
+    }
+    .card-head h2{
+      font-size:20px;
+      letter-spacing:-.4px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .card-head p{
+      color:var(--sub);
+      font-size:14px;
+    }
+    .card-body{
+      padding:20px;
+    }
+    @media (max-width: 560px){
+      .card-body{padding:16px}
+    }
+
+    /* Contact Channels */
+    .contact-channels{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .contact-channel{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      padding:18px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+      transition: all .2s var(--ease);
+      text-decoration:none;
+    }
+    .contact-channel:hover{
+      background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+      transform: translateY(-2px);
+    }
+    .channel-icon{
+      width:48px;
+      height:48px;
+      border-radius:14px;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      border:1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+    .channel-icon i{
+      color:var(--accent);
+      font-size:20px;
+    }
+    .channel-icon.whatsapp{
+      background: color-mix(in srgb, var(--whatsapp) 15%, transparent);
+      border-color: color-mix(in srgb, var(--whatsapp) 30%, var(--border));
+    }
+    .channel-icon.whatsapp i{
+      color:var(--whatsapp);
+    }
+    .channel-content{
+      flex:1;
+    }
+    .channel-label{
+      font-size:12px;
+      color:var(--sub);
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      margin-bottom:4px;
+    }
+    .channel-value{
+      font-size:16px;
+      font-weight:700;
+      color:var(--text);
+    }
+    .channel-description{
+      font-size:13px;
+      color:var(--sub);
+      margin-top:4px;
+    }
+
+    /* Form */
+    .form-group{
+      margin-bottom:20px;
+    }
+    .form-label{
+      display:block;
+      font-size:14px;
+      font-weight:600;
+      color:var(--text);
+      margin-bottom:8px;
+    }
+    .form-label .required{
+      color:var(--sub);
+      font-weight:400;
+    }
+    input, textarea, select{
+      width:100%;
+      padding:14px 18px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background:var(--bg-alt);
+      color:var(--text);
+      font-size:15px;
+      font-family:inherit;
+      outline:none;
+      transition: all .2s var(--ease);
+    }
+    input:focus, textarea:focus, select:focus{
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
+      border-color:var(--accent);
+    }
+    input.error, textarea.error, select.error{
+      border-color:var(--bad);
+      background: color-mix(in srgb, var(--bad) 8%, transparent);
+    }
+    input.error:focus, textarea.error:focus, select.error:focus{
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 20%, transparent);
+    }
+    textarea{
+      resize:vertical;
+      min-height:120px;
+    }
+    .form-help{
+      font-size:12px;
+      color:var(--sub);
+      margin-top:6px;
+    }
+
+    /* Quick Links */
+    .quick-links{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .quick-link{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      transition: all .2s var(--ease);
+    }
+    .quick-link:hover{
+      background: var(--bg-alt);
+      transform: translateX(4px);
+    }
+    .quick-link i{
+      color:var(--accent);
+      font-size:16px;
+      width:20px;
+    }
+    .quick-link span{
+      font-size:14px;
+      font-weight:600;
+    }
+
+    /* Section */
+    section{
+      padding: 60px 0;
+    }
+    @media (max-width: 560px){
+      section{padding: 40px 0}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark" src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-btn" id="mobileBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
+        </svg>
+      </button>
+      <a class="btn primary" href="booking.html">
+        <i class="fa-solid fa-ticket"></i> Book Now
+      </a>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="about.html">About</a>
+    <a href="contact.html" class="active">Contact</a>
+    <a href="rate.html">Rate Experience</a>
+    <a href="booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>Get in Touch</h1>
+      <p>Have a question? Want to partner with us? Need support? We're here to help.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="content-grid">
+        <div>
+          <!-- Contact Channels -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Contact Channels</h2>
+              <p>Choose the best way to reach us</p>
+            </div>
+            <div class="card-body">
+              <div class="contact-channels">
+                <a href="https://wa.me/255768464367" target="_blank" rel="noopener" class="contact-channel">
+                  <div class="channel-icon whatsapp">
+                    <i class="fa-brands fa-whatsapp"></i>
+                  </div>
+                  <div class="channel-content">
+                    <div class="channel-label">WhatsApp</div>
+                    <div class="channel-value">+255 768 464 367</div>
+                    <div class="channel-description">Fastest response • Bookings & Support</div>
+                  </div>
+                </a>
+
+                <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" class="contact-channel">
+                  <div class="channel-icon">
+                    <i class="fa-brands fa-instagram"></i>
+                  </div>
+                  <div class="channel-content">
+                    <div class="channel-label">Instagram</div>
+                    <div class="channel-value">@byzinthehood</div>
+                    <div class="channel-description">Event updates • Behind the scenes</div>
+                  </div>
+                </a>
+
+                <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener" class="contact-channel">
+                  <div class="channel-icon">
+                    <i class="fa-brands fa-tiktok"></i>
+                  </div>
+                  <div class="channel-content">
+                    <div class="channel-label">TikTok</div>
+                    <div class="channel-value">@byzinthehood</div>
+                    <div class="channel-description">Event highlights • Viral moments</div>
+                  </div>
+                </a>
+
+                <a href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" class="contact-channel">
+                  <div class="channel-icon">
+                    <i class="fa-brands fa-facebook"></i>
+                  </div>
+                  <div class="channel-content">
+                    <div class="channel-label">Facebook</div>
+                    <div class="channel-value">BYZ Entertainment</div>
+                    <div class="channel-description">Event pages • Community</div>
+                  </div>
+                </a>
+
+                <a href="mailto:byzinthehooz@gmail.com" class="contact-channel">
+                  <div class="channel-icon">
+                    <i class="fa-solid fa-envelope"></i>
+                  </div>
+                  <div class="channel-content">
+                    <div class="channel-label">Email</div>
+                    <div class="channel-value">byzinthehooz@gmail.com</div>
+                    <div class="channel-description">General inquiries • Partnerships</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Form -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Send Us a Message</h2>
+              <p>Fill out the form below and we'll get back to you</p>
+            </div>
+            <div class="card-body">
+              <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                <div class="form-group">
+                  <label class="form-label">
+                    Name <span class="required">(required)</span>
+                  </label>
+                  <input type="text" name="name" required placeholder="Your name" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    Email <span class="required">(required)</span>
+                  </label>
+                  <input type="email" name="email" required placeholder="your@email.com" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    Phone <span class="required">(optional)</span>
+                  </label>
+                  <input type="tel" name="phone" placeholder="+255 XXX XXX XXX" pattern="^\+?[1-9]\d{1,14}$" />
+                  <div class="form-help">Include country code for faster response</div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    Subject <span class="required">(required)</span>
+                  </label>
+                  <select name="subject" required>
+                    <option value="">Select a topic</option>
+                    <option value="booking">Booking Inquiry</option>
+                    <option value="support">Support Request</option>
+                    <option value="partnership">Partnership Opportunity</option>
+                    <option value="media">Media & Press</option>
+                    <option value="feedback">Feedback</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    Message <span class="required">(required)</span>
+                  </label>
+                  <textarea name="message" required placeholder="Tell us how we can help..." rows="5"></textarea>
+                </div>
+
+                <button type="submit" class="btn primary" style="width:100%;justify-content:center;min-height:52px;font-size:15px;">
+                  <i class="fa-solid fa-paper-plane"></i> Send Message
+                </button>
+
+                <p style="margin-top:12px;font-size:12px;color:var(--sub);text-align:center;">
+                  <i class="fa-solid fa-circle-info"></i> For urgent matters, WhatsApp is fastest
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+          <!-- Quick Links -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Quick Links</h2>
+            </div>
+            <div class="card-body">
+              <div class="quick-links">
+                <a class="quick-link" href="events.html">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <span>View Events</span>
+                </a>
+                <a class="quick-link" href="booking.html">
+                  <i class="fa-solid fa-ticket"></i>
+                  <span>Book Now</span>
+                </a>
+                <a class="quick-link" href="faq.html">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span>Frequently Asked Questions</span>
+                </a>
+                <a class="quick-link" href="venue.html">
+                  <i class="fa-solid fa-map-location-dot"></i>
+                  <span>Venue Information</span>
+                </a>
+                <a class="quick-link" href="my-bookings.html">
+                  <i class="fa-solid fa-list"></i>
+                  <span>My Bookings</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Response Times -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Response Times</h2>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+                  <span style="font-size:14px;color:var(--sub);">WhatsApp</span>
+                  <span style="font-size:14px;font-weight:700;">Within 24 hours</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+                  <span style="font-size:14px;color:var(--sub);">Email</span>
+                  <span style="font-size:14px;font-weight:700;">1-2 business days</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                  <span style="font-size:14px;color:var(--sub);">Social Media</span>
+                  <span style="font-size:14px;font-weight:700;">Varies</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Business Hours -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Business Hours</h2>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+                  <span style="font-size:14px;color:var(--sub);">Monday - Friday</span>
+                  <span style="font-size:14px;font-weight:700;">9:00 AM - 5:00 PM</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+                  <span style="font-size:14px;color:var(--sub);">Weekends</span>
+                  <span style="font-size:14px;font-weight:700;">Event days only</span>
+                </div>
+              </div>
+              <p style="margin-top:16px;font-size:12px;color:var(--sub);">
+                <i class="fa-solid fa-circle-info"></i> We respond to urgent booking inquiries 24/7 via WhatsApp.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mobile menu toggle
+  (function(){
+    const btn = document.getElementById("mobileBtn");
+    const panel = document.getElementById("mobilePanel");
+    if(btn && panel){
+      btn.addEventListener("click", () => {
+        panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if(!btn.contains(e.target) && !panel.contains(e.target)){
+          panel.style.display = "none";
+        }
+      });
+    }
+  })();
+
+  // Real-time validation
+  function setupFormValidation(){
+    const form = document.getElementById("contactForm");
+    if(!form) return;
+    
+    const inputs = form.querySelectorAll("input, textarea, select");
+    inputs.forEach(input => {
+      input.addEventListener("blur", () => validateField(input));
+      input.addEventListener("input", () => {
+        if(input.classList.contains("error")) validateField(input);
+      });
+    });
+  }
+  
+  function validateField(field){
+    const value = field.value.trim();
+    const type = field.type;
+    let isValid = true;
+    let errorMsg = "";
+    
+    if(field.hasAttribute("required") && !value){
+      isValid = false;
+      errorMsg = "This field is required";
+    } else if(type === "email" && value){
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!emailRegex.test(value)){
+        isValid = false;
+        errorMsg = "Please enter a valid email address";
+      }
+    } else if(type === "tel" && value){
+      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+      if(!phoneRegex.test(value.replace(/\s/g, ""))){
+        isValid = false;
+        errorMsg = "Please enter a valid phone number";
+      }
+    }
+    
+    // Update UI
+    if(isValid){
+      field.classList.remove("error");
+      const errorEl = field.parentElement.querySelector(".field-error");
+      if(errorEl) errorEl.remove();
+    } else {
+      field.classList.add("error");
+      let errorEl = field.parentElement.querySelector(".field-error");
+      if(!errorEl){
+        errorEl = document.createElement("div");
+        errorEl.className = "field-error";
+        errorEl.style.cssText = "margin-top:6px;font-size:12px;color:var(--bad);";
+        field.parentElement.appendChild(errorEl);
+      }
+      errorEl.textContent = errorMsg;
+    }
+    
+    return isValid;
+  }
+  
+  // Contact form submission
+  function handleContactSubmit(e){
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    // Validate all fields
+    const inputs = form.querySelectorAll("input[required], textarea[required], select[required]");
+    let allValid = true;
+    inputs.forEach(input => {
+      if(!validateField(input)) allValid = false;
+    });
+    
+    if(!allValid) return;
+    
+    const btn = form.querySelector('button[type="submit"]');
+    const originalText = btn ? btn.innerHTML : "";
+    
+    // Show loading state
+    if(btn){
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+    }
+    
+    // In production, this would send to a backend API
+    // For now, we'll show a success message and optionally open WhatsApp
+    const subject = formData.get("subject");
+    const message = formData.get("message");
+    const name = formData.get("name");
+    
+    // Create WhatsApp message
+    const whatsappMessage = `Hi BYZ! I'm ${name}. ${subject ? `Subject: ${subject}. ` : ''}${message}`;
+    const whatsappUrl = `https://wa.me/255768464367?text=${encodeURIComponent(whatsappMessage)}`;
+    
+    // Simulate API call delay
+    setTimeout(() => {
+      // Show confirmation
+      if(typeof showToast !== 'undefined'){
+        showToast("Thank you for your message! Opening WhatsApp...");
+      } else {
+        // Simple notification
+        if(btn){
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Message Sent!';
+          btn.style.background = 'var(--ok)';
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+            btn.disabled = false;
+          }, 2000);
+        }
+      }
+      window.open(whatsappUrl, "_blank", "noopener");
+      
+      // Reset form
+      form.reset();
+    }, 500);
+  }
+  
+  // Initialize validation on load
+  setupFormValidation();
+</script>
+
+</body>
+</html>
+
