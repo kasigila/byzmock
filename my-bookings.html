@@ -763,15 +763,27 @@
       <!-- Lookup Form -->
       <div class="lookup-form">
         <h2>Find Your Booking</h2>
-        <p>Enter your email address to view your bookings. We'll send you a verification code for security.</p>
+        <p>Enter your email address or phone number to view your bookings. We'll send you a verification code for security.</p>
         
-        <!-- Step 1: Email Entry -->
+        <!-- Step 1: Email/Phone Entry -->
         <div id="emailStep">
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button class="btn ghost" id="lookupTypeEmail" onclick="switchLookupType('email')" style="flex:1;font-size:13px;padding:10px;">
+              <i class="fa-solid fa-envelope"></i> Email
+            </button>
+            <button class="btn ghost" id="lookupTypePhone" onclick="switchLookupType('phone')" style="flex:1;font-size:13px;padding:10px;">
+              <i class="fa-solid fa-phone"></i> Phone
+            </button>
+          </div>
           <div class="form-row">
-            <input type="email" id="emailLookup" placeholder="your@email.com" />
+            <input type="text" id="emailLookup" placeholder="your@email.com" />
             <button class="btn primary" onclick="requestVerificationCode()">
               <i class="fa-solid fa-envelope"></i> Send Code
             </button>
+          </div>
+          <div id="phoneEmails" style="display:none;margin-top:12px;">
+            <p style="font-size:12px;color:var(--sub);margin-bottom:8px;">Select email to receive verification code:</p>
+            <div id="phoneEmailList" style="display:flex;flex-direction:column;gap:8px;"></div>
           </div>
         </div>
 
@@ -796,7 +808,7 @@
     </div>
   </section>
 
-  <section>
+  <section id="bookings">
     <div class="container">
       <!-- Tabs -->
       <div class="tabs">
@@ -823,14 +835,21 @@
         <i class="fa-solid fa-calendar-xmark"></i>
         <h3>No bookings found</h3>
         <p>Enter your email above to find your bookings, or book your first event!</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
-          <a class="btn primary" href="events.html">
+        <div style="display:flex;flex-direction:column;gap:10px;justify-content:center;margin-top:20px;">
+          <a class="btn primary" href="events.html" style="font-size:13px;padding:10px 16px;">
             <i class="fa-solid fa-ticket"></i> Browse Events
           </a>
-          <a class="btn ghost" href="booking.html">
+          <a class="btn ghost" href="booking.html" style="font-size:13px;padding:10px 16px;">
             <i class="fa-solid fa-calendar-plus"></i> Book Now
           </a>
         </div>
+        <style>
+          @media (min-width: 640px) {
+            #emptyState .byz-empty-state > div {
+              flex-direction: row !important;
+            }
+          }
+        </style>
       </div>
     </div>
   </section>
@@ -871,28 +890,67 @@
   // API Configuration
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
 
-  // Request verification code
+  // Request verification code (updated version with phone lookup)
   async function requestVerificationCode() {
-    const email = document.getElementById("emailLookup").value.trim();
-    if (!email) {
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Email Required</b></div><div class="byz-toast-sub">Please enter your email address.</div>', 3000);
+    const input = document.getElementById("emailLookup").value.trim();
+    
+    if (!input) {
+      byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>${lookupType === "email" ? "Email" : "Phone"} Required</b></div><div class="byz-toast-sub">Please enter your ${lookupType === "email" ? "email address" : "phone number"}</div>`, 3000);
       return;
     }
 
-    // Show loading
     const btn = event.target.closest("button");
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+    btn.innerHTML = '<span class="byz-loading-spinner"></span> Sending...';
 
     try {
+      let body = {};
+      
+      if (lookupType === "phone") {
+        // First, get emails associated with phone
+        const phoneRes = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getEmailsByPhone",
+            phone: input
+          })
+        });
+        const phoneData = await phoneRes.json();
+        
+        if (phoneData.success && phoneData.emails && phoneData.emails.length > 0) {
+          if (phoneData.emails.length === 1) {
+            // Only one email, use it directly
+            selectedPhoneEmail = phoneData.emails[0];
+            body = { action: "sendVerificationCode", email: selectedPhoneEmail };
+          } else {
+            // Multiple emails, show selection
+            const phoneEmailList = document.getElementById("phoneEmailList");
+            phoneEmailList.innerHTML = phoneData.emails.map(email => `
+              <button class="btn ghost" onclick="selectPhoneEmail('${email}')" style="width:100%;text-align:left;justify-content:flex-start;">
+                <i class="fa-solid fa-envelope"></i> ${email}
+              </button>
+            `).join("");
+            document.getElementById("phoneEmails").style.display = "block";
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+          }
+        } else {
+          byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>No Bookings Found</b></div><div class="byz-toast-sub">No bookings found for this phone number</div>', 4000);
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          return;
+        }
+      } else {
+        body = { action: "sendVerificationCode", email: input };
+      }
+      
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "sendVerificationCode",
-          email: email
-        })
+        body: JSON.stringify(body)
       });
       const data = await res.json();
 
@@ -911,7 +969,21 @@
           }
         }
         // Store email for verification
-        sessionStorage.setItem("byz_verify_email", email);
+        const emailToStore = lookupType === "phone" ? selectedPhoneEmail : input;
+        sessionStorage.setItem("byz_verify_email", emailToStore);
+        
+        // Show code input step
+        const emailStep = document.getElementById("emailStep");
+        const codeStep = document.getElementById("codeStep");
+        if(emailStep) emailStep.style.display = "none";
+        if(codeStep) {
+          codeStep.style.display = "block";
+          const codeInput = document.getElementById("verificationCode");
+          if(codeInput) {
+            codeInput.focus();
+            setTimeout(() => codeInput.scrollIntoView({behavior:'smooth',block:'center'}), 100);
+          }
+        }
         
         // Show helpful message about checking email and trying different email if needed
         const codeStepInfo = document.querySelector("#codeStep p");
@@ -929,15 +1001,24 @@
         
         byzShowToast('<div><i class="fa-solid fa-circle-check"></i> <b>Code Sent!</b></div><div class="byz-toast-sub">Check your email for the verification code</div>', 3000);
       } else {
-        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">${data.error || "Failed to send verification code"}</div>`, 4000);
+        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">${data.error || "Failed to send verification code. Please check your email address or phone number and try again."}</div>`, 4000);
         btn.innerHTML = originalText;
         btn.disabled = false;
       }
     } catch (error) {
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Error sending verification code. Please try again.</div>', 4000);
+      console.error("Verification code error:", error);
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Error sending verification code. Please check your connection and try again.</div>', 4000);
       btn.innerHTML = originalText;
       btn.disabled = false;
     }
+  }
+
+  // Select email from phone lookup
+  function selectPhoneEmail(email) {
+    selectedPhoneEmail = email;
+    document.getElementById("emailLookup").value = email;
+    document.getElementById("phoneEmails").style.display = "none";
+    requestVerificationCode();
   }
 
   // Show skeleton loaders
