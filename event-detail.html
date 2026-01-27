@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Details | BYZ Entertainment</title>
+  <meta name="description" content="Get all the details about this BYZ event. Date, time, venue, lineup, and booking information." />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1100px;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --header-h: 64px;
+      --ok:#0a7f3f;
+      --warn:#b45309;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+    @media (max-width: 560px){
+      .container{padding:0 28px}
+    }
+
+    /* Header */
+    header{
+      position:fixed;top:0;left:0;right:0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:52px;height:52px;border-radius:14px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-light{display:none;}
+    .logo-dark{display:block;}
+
+    nav ul{display:flex;gap:26px;list-style:none;align-items:center}
+    nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
+    nav a:hover{color:var(--text)}
+    .header-actions{display:flex;align-items:center;gap:12px}
+
+    /* Mobile menu */
+    .mobile-btn{
+      display:none;
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      align-items:center;justify-content:center;
+      cursor:pointer;
+      transition: transform .2s var(--ease), background .2s var(--ease);
+    }
+    .mobile-btn:hover{transform: translateY(-1px)}
+    .mobile-panel{
+      display:none;
+      position:fixed;
+      top:var(--header-h);
+      right:16px;
+      width:min(360px, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:14px;
+      z-index:998;
+    }
+    .mobile-panel a{
+      display:flex;
+      padding:12px 12px;
+      border-radius:14px;
+      color:var(--sub);
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .mobile-panel a:hover{
+      background: color-mix(in srgb, var(--border) 22%, transparent);
+      color:var(--text);
+    }
+    @media (max-width: 980px){
+      nav ul{display:none}
+      .mobile-btn{display:flex}
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:10px;padding:12px 18px;border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      font-size:14px;font-weight:600;
+      cursor:pointer;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+    .btn.primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--bg);
+    }
+    .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
+    .btn.ghost{background: transparent}
+
+    /* Main */
+    main{padding-top:var(--header-h)}
+    .hero{
+      padding: 48px 0 32px;
+      background:
+        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
+    }
+    @media (max-width: 560px){
+      .hero{padding: 32px 0 24px}
+    }
+
+    .hero-breadcrumb{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      color:var(--sub);
+      margin-bottom:16px;
+    }
+    .hero-breadcrumb a{
+      transition:color .2s var(--ease);
+    }
+    .hero-breadcrumb a:hover{color:var(--text)}
+
+    .hero h1{
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      letter-spacing:-1px;
+      font-weight:900;
+      line-height:1.1;
+      margin-bottom:8px;
+    }
+    .hero-subtitle{
+      font-size:18px;
+      color:var(--sub);
+      margin-bottom:20px;
+    }
+    @media (max-width: 560px){
+      .hero-subtitle{font-size:16px}
+    }
+
+    .hero-meta{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-top:20px;
+    }
+    .hero-meta-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:14px;
+      color:var(--sub);
+    }
+    .hero-meta-item i{
+      color:var(--accent);
+      font-size:14px;
+    }
+    .hero-meta-item strong{
+      color:var(--text);
+      font-weight:700;
+    }
+
+    .hero-actions{
+      margin-top:24px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    /* Content Grid */
+    .content-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:24px;
+      margin-top:32px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .content-grid{grid-template-columns:1fr;gap:20px}
+    }
+
+    /* Main Content */
+    .main-content{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    /* Card */
+    .card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+    }
+    .card-head{
+      padding:20px 20px 0;
+    }
+    @media (max-width: 560px){
+      .card-head{padding:16px 16px 0}
+    }
+    .card-head h2{
+      font-size:20px;
+      letter-spacing:-.4px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .card-head p{
+      color:var(--sub);
+      font-size:14px;
+    }
+    .card-body{
+      padding:20px;
+    }
+    @media (max-width: 560px){
+      .card-body{padding:16px}
+    }
+
+    /* Event Image */
+    .event-image{
+      width:100%;
+      height:320px;
+      object-fit:cover;
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+    }
+    @media (max-width: 560px){
+      .event-image{height:240px}
+    }
+
+    /* Info Grid */
+    .info-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    @media (max-width: 640px){
+      .info-grid{grid-template-columns:1fr}
+    }
+    .info-item{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+    }
+    .info-item-label{
+      font-size:12px;
+      color:var(--sub);
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      margin-bottom:6px;
+    }
+    .info-item-value{
+      font-size:16px;
+      font-weight:700;
+      color:var(--text);
+    }
+
+    /* Pricing Card */
+    .pricing-card{
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--bg-alt) 70%, transparent));
+      border:1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+    }
+    .pricing-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 0;
+      border-bottom:1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    }
+    .pricing-item:last-child{
+      border-bottom:none;
+      padding-top:16px;
+      margin-top:8px;
+      border-top:2px solid var(--border);
+    }
+    .pricing-label{
+      font-size:14px;
+      color:var(--sub);
+    }
+    .pricing-value{
+      font-size:18px;
+      font-weight:900;
+      color:var(--text);
+    }
+    .pricing-item:last-child .pricing-value{
+      font-size:24px;
+    }
+
+    /* VIP Packages */
+    .vip-packages{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:12px;
+    }
+    .vip-package{
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+      cursor:pointer;
+      transition: all .2s var(--ease);
+    }
+    .vip-package:hover{
+      background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+      transform: translateY(-2px);
+    }
+    .vip-package-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .vip-package-name{
+      font-size:16px;
+      font-weight:700;
+      color:var(--text);
+    }
+    .vip-package-price{
+      font-size:18px;
+      font-weight:900;
+      color:var(--accent);
+    }
+    .vip-package-features{
+      margin-top:8px;
+      font-size:13px;
+      color:var(--sub);
+    }
+    .vip-package-features ul{
+      list-style:none;
+      padding:0;
+      margin:8px 0 0 0;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .vip-package-features li{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .vip-package-features li i{
+      color:var(--ok);
+      font-size:12px;
+    }
+
+    /* FAQ Accordion */
+    .faq-item{
+      margin-top:12px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      overflow:hidden;
+    }
+    .faq-question{
+      padding:16px;
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      transition: background .2s var(--ease);
+    }
+    .faq-question:hover{
+      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
+    }
+    .faq-question h3{
+      font-size:15px;
+      font-weight:700;
+      color:var(--text);
+      flex:1;
+    }
+    .faq-toggle{
+      width:24px;
+      height:24px;
+      border-radius:12px;
+      background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: transform .3s var(--ease);
+      flex-shrink:0;
+    }
+    .faq-item.expanded .faq-toggle{
+      transform: rotate(180deg);
+    }
+    .faq-answer{
+      max-height:0;
+      overflow:hidden;
+      transition: max-height .3s var(--ease), padding .3s var(--ease);
+      padding:0 16px;
+    }
+    .faq-item.expanded .faq-answer{
+      max-height:500px;
+      padding:0 16px 16px 16px;
+    }
+    .faq-answer p{
+      font-size:14px;
+      color:var(--sub);
+      line-height:1.6;
+    }
+
+    /* Quick Links */
+    .quick-links{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .quick-link{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 16px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      transition: all .2s var(--ease);
+    }
+    .quick-link:hover{
+      background: var(--bg-alt);
+      transform: translateX(4px);
+    }
+    .quick-link i{
+      color:var(--accent);
+      font-size:16px;
+      width:20px;
+    }
+    .quick-link span{
+      font-size:14px;
+      font-weight:600;
+    }
+
+    /* Section */
+    section{
+      padding: 60px 0;
+    }
+    @media (max-width: 560px){
+      section{padding: 40px 0}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark" src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-btn" id="mobileBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
+        </svg>
+      </button>
+      <a class="btn primary" href="booking.html">
+        <i class="fa-solid fa-ticket"></i> Book Now
+      </a>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="rate.html">Rate Experience</a>
+    <a href="booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-breadcrumb">
+        <a href="events.html" class="btn ghost" style="font-size:13px;padding:8px 12px;margin-bottom:16px;display:inline-flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Events
+        </a>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+          <a href="index.html">Home</a>
+          <i class="fa-solid fa-chevron-right" style="font-size:10px;opacity:.5"></i>
+          <a href="events.html">Events</a>
+          <i class="fa-solid fa-chevron-right" style="font-size:10px;opacity:.5"></i>
+          <span id="eventNameBreadcrumb">Event Details</span>
+        </div>
+      </div>
+
+      <h1 id="eventTitle">[Event Name]</h1>
+      <p class="hero-subtitle" id="eventSubtitle">[Event description will be loaded dynamically]</p>
+
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span><strong id="eventDate">[Date]</strong></span>
+        </div>
+        <div class="hero-meta-item">
+          <i class="fa-solid fa-clock"></i>
+          <span><strong id="eventTime">8:00 PM</strong></span>
+        </div>
+        <div class="hero-meta-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <span><strong>Tips Coco</strong></span>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a class="btn primary" href="booking.html" id="bookNowBtn">
+          <i class="fa-solid fa-ticket"></i> Book Now
+        </a>
+        <a class="btn ghost" href="venue.html">
+          <i class="fa-solid fa-map-location-dot"></i> Venue Info
+        </a>
+        <a class="btn ghost" href="gallery.html">
+          <i class="fa-solid fa-images"></i> View Gallery
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="content-grid">
+        <div class="main-content">
+          <!-- Event Image -->
+          <img src="" alt="" class="event-image" id="eventImage" style="display:none;" loading="lazy">
+
+          <!-- Event Details -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Event Details</h2>
+              <p>Everything you need to know</p>
+            </div>
+            <div class="card-body">
+              <div id="eventDescription">
+                <p id="eventDescriptionText">[Event description will load based on event type]</p>
+              </div>
+
+              <div class="info-grid" style="margin-top:24px;">
+                <div class="info-item">
+                  <div class="info-item-label">Date</div>
+                  <div class="info-item-value" id="infoDate">[Date]</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-item-label">Time</div>
+                  <div class="info-item-value">8:00 PM - Late</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-item-label">Venue</div>
+                  <div class="info-item-value">Tips Coco</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-item-label">DJ Lineup</div>
+                  <div class="info-item-value" id="djLineup">[DJ Names]</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- What's Included -->
+          <div class="card">
+            <div class="card-head">
+              <h2>What's Included</h2>
+              <p>What you get with your booking</p>
+            </div>
+            <div class="card-body">
+              <div id="whatsIncluded">
+                <h3 style="font-size:16px;margin-bottom:12px;color:var(--text);">Tickets Include:</h3>
+                <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
+                  <li style="display:flex;align-items:center;gap:10px;color:var(--sub);font-size:14px;">
+                    <i class="fa-solid fa-check" style="color:var(--ok);"></i>
+                    <span>Entry to the event</span>
+                  </li>
+                  <li style="display:flex;align-items:center;gap:10px;color:var(--sub);font-size:14px;">
+                    <i class="fa-solid fa-check" style="color:var(--ok);"></i>
+                    <span>Access to all music and entertainment</span>
+                  </li>
+                  <li style="display:flex;align-items:center;gap:10px;color:var(--sub);font-size:14px;">
+                    <i class="fa-solid fa-check" style="color:var(--ok);"></i>
+                    <span>Venue access and facilities</span>
+                  </li>
+                </ul>
+
+                <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--border);">
+                  <div class="faq-question" onclick="toggleVipSection(this)" style="cursor:pointer;padding:0;margin-bottom:12px;">
+                    <h3 style="font-size:16px;margin:0;color:var(--text);">VIP Tables Include:</h3>
+                    <div class="faq-toggle" style="width:28px;height:28px;">
+                      <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                    </div>
+                  </div>
+                  <div class="faq-answer" id="vipSection" style="max-height:0;overflow:hidden;transition:max-height .3s var(--ease);">
+                    <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+                      <li style="display:flex;align-items:center;gap:10px;color:var(--sub);font-size:14px;">
+                        <i class="fa-solid fa-check" style="color:var(--ok);"></i>
+                        <span>Separate seating area with dedicated space</span>
+                      </li>
+                      <li style="display:flex;align-items:center;gap:10px;color:var(--sub);font-size:14px;">
+                        <i class="fa-solid fa-check" style="color:var(--ok);"></i>
+                        <span>Premium drinks (Cognac VS, mixers, chasers)</span>
+                      </li>
+                      <li style="display:flex;align-items:center;gap:10px;color:var(--sub);font-size:14px;">
+                        <i class="fa-solid fa-check" style="color:var(--ok);"></i>
+                        <span>Shisha included</span>
+                      </li>
+                      <li style="display:flex;align-items:center;gap:10px;color:var(--sub);font-size:14px;">
+                        <i class="fa-solid fa-check" style="color:var(--ok);"></i>
+                        <span>Dedicated service and priority attention</span>
+                      </li>
+                    </ul>
+                    <a class="btn ghost" href="booking.html" style="font-size:13px;padding:10px 14px;">
+                      <i class="fa-solid fa-circle-info"></i> View VIP Packages
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Section -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Frequently Asked Questions</h2>
+              <p>Common questions about this event</p>
+            </div>
+            <div class="card-body">
+              <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                  <h3>What time should I arrive?</h3>
+                  <div class="faq-toggle">
+                    <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                  </div>
+                </div>
+                <div class="faq-answer">
+                  <p>Doors open at 8:00 PM. We recommend arriving by 8:30 PM to secure your spot and enjoy the full experience.</p>
+                </div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                  <h3>What should I bring?</h3>
+                  <div class="faq-toggle">
+                    <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                  </div>
+                </div>
+                <div class="faq-answer">
+                  <p>Bring your QR code (sent via email), valid ID, and good vibes. Dress code is smart casual.</p>
+                </div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                  <h3>Can I get a refund?</h3>
+                  <div class="faq-toggle">
+                    <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                  </div>
+                </div>
+                <div class="faq-answer">
+                  <p>Refunds are available up to 48 hours before the event. Contact us via WhatsApp for refund requests.</p>
+                </div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                  <h3>Is there parking available?</h3>
+                  <div class="faq-toggle">
+                    <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                  </div>
+                </div>
+                <div class="faq-answer">
+                  <p>Limited parking is available at the venue. We recommend using ride-sharing services or public transport.</p>
+                </div>
+              </div>
+
+              <div style="margin-top:16px;">
+                <a class="btn ghost" href="faq.html" style="font-size:13px;padding:10px 14px;">
+                  <i class="fa-solid fa-circle-question"></i> View All FAQs
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <!-- Pricing Card -->
+          <div class="card pricing-card">
+            <div class="card-head">
+              <h2>Pricing</h2>
+              <p>Choose your experience</p>
+            </div>
+            <div class="card-body">
+              <div class="pricing-item">
+                <span class="pricing-label">General Admission</span>
+                <span class="pricing-value">30,000 TZS</span>
+              </div>
+              <div class="pricing-item">
+                <span class="pricing-label">VIP Table (Umlando)</span>
+                <span class="pricing-value">700,000 TZS</span>
+              </div>
+              <div class="pricing-item">
+                <span class="pricing-label">VIP Table (Yebo)</span>
+                <span class="pricing-value">1,200,000 TZS</span>
+              </div>
+              <div class="pricing-item">
+                <span class="pricing-label">VIP Table (Adiwele)</span>
+                <span class="pricing-value">1,800,000 TZS</span>
+              </div>
+              <div class="pricing-item">
+                <span class="pricing-label">Starting from</span>
+                <span class="pricing-value">30,000 TZS</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="card">
+            <div class="card-head">
+              <h2>Quick Links</h2>
+            </div>
+            <div class="card-body">
+              <div class="quick-links">
+                <a class="quick-link" href="venue.html">
+                  <i class="fa-solid fa-map-location-dot"></i>
+                  <span>Venue Information</span>
+                </a>
+                <a class="quick-link" href="faq.html">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span>Frequently Asked Questions</span>
+                </a>
+                <a class="quick-link" href="gallery.html">
+                  <i class="fa-solid fa-images"></i>
+                  <span>View Past Events</span>
+                </a>
+                <a class="quick-link" href="contact.html">
+                  <i class="fa-solid fa-envelope"></i>
+                  <span>Contact Us</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIP Packages Preview -->
+          <div class="card">
+            <div class="card-head">
+              <h2>VIP Packages</h2>
+              <p>Premium experience options</p>
+            </div>
+            <div class="card-body">
+              <div class="vip-packages">
+                <div class="vip-package">
+                  <div class="vip-package-header">
+                    <span class="vip-package-name">Umlando</span>
+                    <span class="vip-package-price">700K TZS</span>
+                  </div>
+                  <div class="vip-package-features">
+                    <ul>
+                      <li><i class="fa-solid fa-check"></i> 2 × Cognac VS</li>
+                      <li><i class="fa-solid fa-check"></i> Mixers/Chasers</li>
+                      <li><i class="fa-solid fa-check"></i> Shisha</li>
+                      <li><i class="fa-solid fa-check"></i> 10 Pax</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="vip-package">
+                  <div class="vip-package-header">
+                    <span class="vip-package-name">Yebo</span>
+                    <span class="vip-package-price">1.2M TZS</span>
+                  </div>
+                  <div class="vip-package-features">
+                    <ul>
+                      <li><i class="fa-solid fa-check"></i> 3 × Cognac VS</li>
+                      <li><i class="fa-solid fa-check"></i> Mixers/Chasers</li>
+                      <li><i class="fa-solid fa-check"></i> 2 × Shisha</li>
+                      <li><i class="fa-solid fa-check"></i> 15 Pax</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="vip-package">
+                  <div class="vip-package-header">
+                    <span class="vip-package-name">Adiwele</span>
+                    <span class="vip-package-price">1.8M TZS</span>
+                  </div>
+                  <div class="vip-package-features">
+                    <ul>
+                      <li><i class="fa-solid fa-check"></i> 4 × Cognac VS</li>
+                      <li><i class="fa-solid fa-check"></i> Mixers/Chasers</li>
+                      <li><i class="fa-solid fa-check"></i> 2 × Shisha</li>
+                      <li><i class="fa-solid fa-check"></i> 20 Pax</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <a class="btn primary" href="booking.html" style="width:100%;margin-top:16px;justify-content:center;">
+                <i class="fa-solid fa-ticket"></i> Book VIP Table
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mobile menu toggle
+  (function(){
+    const btn = document.getElementById("mobileBtn");
+    const panel = document.getElementById("mobilePanel");
+    if(btn && panel){
+      btn.addEventListener("click", () => {
+        panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if(!btn.contains(e.target) && !panel.contains(e.target)){
+          panel.style.display = "none";
+        }
+      });
+    }
+  })();
+
+  // FAQ Toggle
+  function toggleFaq(element){
+    const faqItem = element.closest(".faq-item");
+    faqItem.classList.toggle("expanded");
+  }
+
+  // Dynamic content loading based on URL parameters
+  (function(){
+    const params = new URLSearchParams(window.location.search);
+    const eventType = params.get("event") || "";
+    const eventDate = params.get("date") || "";
+
+    // Event data mapping (would ideally come from a JSON file or API)
+    const eventData = {
+      "caribbean-groove": {
+        title: "Caribbean Groove",
+        subtitle: "Dancehall, reggae, and island heat all night. Feel the rhythm of the Caribbean.",
+        date: "June 7, 2026",
+        time: "8:00 PM",
+        djLineup: "DJ Sammy, DJ Dada",
+        image: "CARIBBEAN-GROOVE-BANNER.jpg",
+        bookingUrl: "booking.html?type=caribbean",
+        description: "Caribbean Groove brings the island energy to Dar es Salaam. Dancehall, reggae, and soca vibes all night long. Feel the rhythm, move to the beat, and let the Caribbean heat take over. This is where the party never stops and the vibes are always right."
+      },
+      "rnb-groove": {
+        title: "RnB Groove",
+        subtitle: "Slow-burn RnB nights with velvet sound and candlelit energy. Intimate vibes.",
+        date: "June 14, 2026",
+        time: "8:00 PM",
+        djLineup: "DJ Apuki, DJ Dada",
+        image: "",
+        bookingUrl: "booking.html?type=rnb",
+        description: "RnB Groove is all about the slow burn. Intimate vibes, velvet sound, and candlelit energy. Perfect for those who want to vibe, connect, and feel the music on a deeper level. Smooth selections, premium atmosphere, and a crowd that knows what's up."
+      },
+      "afrobeats-groove": {
+        title: "Afrobeats Groove",
+        subtitle: "High‑energy Afrobeats selections, dancefloor-first. Non-stop movement.",
+        date: "June 21, 2026",
+        time: "8:00 PM",
+        djLineup: "DJ Sammy, DJ Apuki",
+        image: "",
+        bookingUrl: "booking.html?type=afrobeats",
+        description: "Afrobeats Groove is pure energy. High-tempo selections, dancefloor-first mentality, and non-stop movement. From Amapiano to Afrobeats classics, this is where you come to dance, sweat, and feel the rhythm. The energy is unmatched, the crowd is ready, and the night is yours."
+      }
+    };
+
+    if(eventType && eventData[eventType]){
+      const data = eventData[eventType];
+      
+      // Update page title
+      document.title = `${data.title} | BYZ Entertainment`;
+      
+      // Update breadcrumb
+      document.getElementById("eventNameBreadcrumb").textContent = data.title;
+      
+      // Update hero
+      document.getElementById("eventTitle").textContent = data.title;
+      document.getElementById("eventSubtitle").textContent = data.subtitle;
+      document.getElementById("eventDate").textContent = data.date;
+      document.getElementById("eventTime").textContent = data.time;
+      
+      // Update info grid
+      document.getElementById("infoDate").textContent = data.date;
+      document.getElementById("djLineup").textContent = data.djLineup;
+      
+      // Update booking button
+      const bookBtn = document.getElementById("bookNowBtn");
+      if(bookBtn) bookBtn.href = data.bookingUrl;
+      
+      // Update image if available
+      if(data.image){
+        const img = document.getElementById("eventImage");
+        img.src = data.image;
+        img.alt = data.title;
+        img.style.display = "block";
+      }
+      
+      // Update description
+      const descEl = document.getElementById("eventDescriptionText");
+      if(descEl) descEl.textContent = data.description;
+    }
+  })();
+  
+  function toggleFaq(el){
+    const item = el.closest(".faq-item");
+    item.classList.toggle("expanded");
+  }
+  
+  function toggleVipSection(el){
+    const section = document.getElementById("vipSection");
+    const toggle = el.querySelector(".faq-toggle");
+    if(section.style.maxHeight && section.style.maxHeight !== "0px"){
+      section.style.maxHeight = "0px";
+      toggle.style.transform = "rotate(0deg)";
+    } else {
+      section.style.maxHeight = section.scrollHeight + "px";
+      toggle.style.transform = "rotate(180deg)";
+    }
+  }
+</script>
+
+</body>
+</html>
+
