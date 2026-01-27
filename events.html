@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events | BYZ Entertainment</title>
+  <meta name="description" content="Discover all upcoming BYZ events. Groove Series, Tempo, and exclusive APT sessions in Dar es Salaam." />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1100px;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --header-h: 64px;
+      --ok:#0a7f3f;
+      --warn:#b45309;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+    @media (max-width: 560px){
+      .container{padding:0 28px}
+    }
+
+    /* Header */
+    header{
+      position:fixed;top:0;left:0;right:0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:52px;height:52px;border-radius:14px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-light{display:none;}
+    .logo-dark{display:block;}
+
+    nav ul{display:flex;gap:26px;list-style:none;align-items:center}
+    nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
+    nav a:hover{color:var(--text)}
+    nav a.active{color:var(--text);font-weight:700}
+    .header-actions{display:flex;align-items:center;gap:12px}
+
+    /* Mobile menu */
+    .mobile-btn{
+      display:none;
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      align-items:center;justify-content:center;
+      cursor:pointer;
+      transition: transform .2s var(--ease), background .2s var(--ease);
+    }
+    .mobile-btn:hover{transform: translateY(-1px)}
+    .mobile-panel{
+      display:none;
+      position:fixed;
+      top:var(--header-h);
+      right:16px;
+      width:min(360px, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:14px;
+      z-index:998;
+    }
+    .mobile-panel a{
+      display:flex;
+      padding:12px 12px;
+      border-radius:14px;
+      color:var(--sub);
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .mobile-panel a:hover{
+      background: color-mix(in srgb, var(--border) 22%, transparent);
+      color:var(--text);
+    }
+    @media (max-width: 980px){
+      nav ul{display:none}
+      .mobile-btn{display:flex}
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:10px;padding:12px 18px;border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      font-size:14px;font-weight:600;
+      cursor:pointer;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+    .btn.primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--bg);
+    }
+    .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
+    .btn.ghost{background: transparent}
+
+    /* Main */
+    main{padding-top:var(--header-h)}
+    .hero{
+      padding: 78px 0 48px;
+      background:
+        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
+    }
+    @media (max-width: 560px){
+      .hero{padding: 48px 0 32px}
+    }
+    .hero h1{
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      letter-spacing:-1px;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .hero p{
+      margin-top:14px;
+      color:var(--sub);
+      max-width:60ch;
+      font-size:15px;
+    }
+    @media (max-width: 560px){
+      .hero p{font-size:14px;max-width:100%}
+    }
+
+    /* Filters */
+    .filters{
+      margin-top:32px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .filter-btn{
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      color:var(--sub);
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+      transition: all .2s var(--ease);
+    }
+    .filter-btn:hover{
+      background:var(--bg-alt);
+      color:var(--text);
+    }
+    .filter-btn.active{
+      background:var(--accent);
+      color:var(--bg);
+      border-color:transparent;
+    }
+
+    /* Section Dividers */
+    .section-divider{
+      margin: 60px 0 40px;
+      text-align:center;
+    }
+    @media (max-width: 560px){
+      .section-divider{margin: 40px 0 28px}
+    }
+    .section-divider h2{
+      font-size:28px;
+      letter-spacing:-.6px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+    @media (max-width: 560px){
+      .section-divider h2{font-size:22px;margin-bottom:6px}
+    }
+    .section-divider p{
+      color:var(--sub);
+      font-size:14px;
+    }
+    @media (max-width: 560px){
+      .section-divider p{font-size:13px}
+    }
+
+    /* Events Grid */
+    .events-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:20px;
+      padding-bottom: 80px;
+    }
+    @media (max-width: 980px){
+      .events-grid{grid-template-columns:repeat(2, 1fr);gap:18px}
+    }
+    @media (max-width: 640px){
+      .events-grid{grid-template-columns:1fr;gap:20px}
+    }
+
+    /* Event Card */
+    .event-card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+      position:relative;
+      cursor:pointer;
+    }
+    .event-card:hover{
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+    @media (hover: none) and (pointer: coarse){
+      .event-card:hover{transform: translateY(-2px)}
+    }
+
+    .event-badge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      z-index:10;
+      padding:6px 12px;
+      border-radius:999px;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      color:#000;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      box-shadow: 0 4px 12px rgba(255,215,0,.3);
+    }
+    @media (max-width: 560px){
+      .event-badge{top:10px;right:10px;padding:5px 10px;font-size:10px}
+    }
+
+    .event-media{
+      height: 180px;
+      background: linear-gradient(135deg, #111, #333);
+      position:relative;
+      overflow:hidden;
+    }
+    @media (max-width: 560px){
+      .event-media{height: 160px}
+    }
+    .event-media::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4));
+      pointer-events:none;
+    }
+    .event-media img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition: transform 0.5s var(--ease);
+    }
+    .event-card:hover .event-media img{
+      transform: scale(1.05);
+    }
+
+    .event-body{
+      padding:20px;
+    }
+    @media (max-width: 560px){
+      .event-body{padding:16px}
+    }
+    .event-body h3{
+      font-size:18px;
+      letter-spacing:-.3px;
+      font-weight:900;
+      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    @media (max-width: 560px){
+      .event-body h3{font-size:16px;margin-bottom:4px}
+    }
+    .event-body p{
+      margin-top:8px;
+      color:var(--sub);
+      font-size:14px;
+      line-height:1.5;
+    }
+    @media (max-width: 560px){
+      .event-body p{font-size:13px;margin-top:6px}
+    }
+
+    /* Event Meta */
+    .event-meta{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    @media (max-width: 560px){
+      .event-meta{margin-top:10px;padding-top:10px;gap:6px}
+    }
+    .meta-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      color:var(--sub);
+    }
+    @media (max-width: 560px){
+      .meta-row{font-size:12px;gap:6px}
+    }
+    .meta-row i{
+      width:16px;
+      color:var(--accent);
+      font-size:12px;
+    }
+    .meta-value{
+      color:var(--text);
+      font-weight:600;
+    }
+
+    /* Event Stats */
+    .event-stats{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-top:10px;
+      padding:8px 12px;
+      border-radius:12px;
+      background: color-mix(in srgb, var(--accent) 5%, transparent);
+      border:1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+    }
+    @media (max-width: 560px){
+      .event-stats{flex-wrap:wrap;gap:8px;padding:6px 10px;margin-top:8px}
+    }
+    .stat-item{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:12px;
+      font-weight:700;
+      color:var(--text);
+    }
+    @media (max-width: 560px){
+      .stat-item{font-size:11px;gap:4px}
+    }
+    .stat-item i{
+      color:var(--accent);
+      font-size:11px;
+    }
+    @media (max-width: 560px){
+      .stat-item i{font-size:10px}
+    }
+    .countdown{
+      font-size:11px;
+      color:var(--sub);
+      font-weight:600;
+    }
+    @media (max-width: 560px){
+      .countdown{font-size:10px}
+    }
+
+    /* Event Actions */
+    .event-actions{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    @media (max-width: 560px){
+      .event-actions{margin-top:14px;gap:8px}
+    }
+    .event-actions-secondary{
+      display:flex;
+      gap:8px;
+      margin-left:auto;
+    }
+    @media (max-width: 560px){
+      .event-actions-secondary{margin-left:0;width:100%;justify-content:flex-end}
+    }
+
+    /* Coming Soon Overlay */
+    .coming-soon{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(8px);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      color:#fff;
+      font-weight:900;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      font-size:13px;
+      z-index:10;
+    }
+    .coming-soon i{
+      font-size:32px;
+      opacity:.8;
+    }
+
+    /* Empty State */
+    .empty-state{
+      text-align:center;
+      padding:60px 20px;
+      color:var(--sub);
+    }
+    .empty-state i{
+      font-size:48px;
+      margin-bottom:16px;
+      opacity:.5;
+    }
+    .empty-state h3{
+      font-size:20px;
+      color:var(--text);
+      margin-bottom:8px;
+    }
+    .empty-state p{
+      font-size:14px;
+    }
+
+    /* Loading State */
+    .event-card.loading{
+      pointer-events:none;
+    }
+    .event-card.loading .event-media{
+      background:linear-gradient(90deg, #1c1c1e 25%, #2c2c2e 50%, #1c1c1e 75%);
+      background-size:200% 100%;
+      animation:loading 1.5s ease-in-out infinite;
+    }
+    @keyframes loading{
+      0%{background-position:200% 0}
+      100%{background-position:-200% 0}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark" src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html" class="active">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-btn" id="mobileBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
+        </svg>
+      </button>
+      <a class="btn primary" href="booking.html">
+        <i class="fa-solid fa-ticket"></i> Book Now
+      </a>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <a href="index.html">Home</a>
+    <a href="events.html" class="active">Events</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="rate.html">Rate Experience</a>
+    <a href="booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>Upcoming Events</h1>
+      <p>Discover all BYZ experiences. From weekly Groove nights to exclusive APT sessions—find your vibe.</p>
+
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">
+          <i class="fa-solid fa-fire"></i> All Events
+        </button>
+        <button class="filter-btn" data-filter="groove">
+          <i class="fa-solid fa-music"></i> Groove Series
+        </button>
+        <button class="filter-btn" data-filter="tempo">
+          <i class="fa-solid fa-bolt"></i> Tempo
+        </button>
+        <button class="filter-btn" data-filter="apt">
+          <i class="fa-solid fa-lock"></i> APT
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- This Month -->
+  <section>
+    <div class="container">
+      <div class="section-divider">
+        <h2>This Month</h2>
+        <p>Events happening soon</p>
+      </div>
+
+      <div class="events-grid" id="eventsThisMonth">
+        <!-- Caribbean Groove - Featured -->
+        <div class="event-card" data-event="groove" data-type="caribbean" onclick="window.location.href='event-detail.html?event=caribbean-groove&date=2026-06-07'">
+          <div class="event-badge">Featured</div>
+          <div class="event-media">
+            <img src="CARIBBEAN-GROOVE-BANNER.jpg" alt="Caribbean Groove" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #FF6B35, #F7931E)'">
+          </div>
+          <div class="event-body">
+            <h3>Caribbean Groove</h3>
+            <p>Dancehall, reggae, and island heat all night. Feel the rhythm of the Caribbean.</p>
+            
+            <div class="event-meta">
+              <div class="meta-row">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>June 7, 2026</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-clock"></i>
+                <span>8:00 PM</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-location-dot"></i>
+                <span class="meta-value">Tips Coco</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-microphone"></i>
+                <span>DJ Sammy, DJ Dada</span>
+              </div>
+            </div>
+
+            <div class="event-stats">
+              <div class="stat-item">
+                <i class="fa-solid fa-users"></i>
+                <span>150+ last time</span>
+              </div>
+              <div class="countdown">
+                <i class="fa-solid fa-clock"></i>
+                <span>3 days</span>
+              </div>
+            </div>
+
+            <div class="event-actions">
+              <a class="btn primary" href="booking.html?type=caribbean" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-ticket"></i> Book Now
+              </a>
+              <div class="event-actions-secondary">
+                <a class="btn ghost" href="event-detail.html?event=caribbean-groove&date=2026-06-07" onclick="event.stopPropagation()" style="padding:10px 14px;font-size:13px;">
+                  <i class="fa-solid fa-circle-info"></i> Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RnB Groove -->
+        <div class="event-card" data-event="groove" data-type="rnb" onclick="window.location.href='event-detail.html?event=rnb-groove&date=2026-06-14'">
+          <div class="event-media" style="background:linear-gradient(135deg,#1a1a1a,#2f2f2f)">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
+          </div>
+          <div class="event-body">
+            <h3>RnB Groove</h3>
+            <p>Slow-burn RnB nights with velvet sound and candlelit energy. Intimate vibes.</p>
+            
+            <div class="event-meta">
+              <div class="meta-row">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>June 14, 2026</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-clock"></i>
+                <span>8:00 PM</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-location-dot"></i>
+                <span class="meta-value">Tips Coco</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-microphone"></i>
+                <span>DJ Apuki, DJ Dada</span>
+              </div>
+            </div>
+
+            <div class="event-stats">
+              <div class="stat-item">
+                <i class="fa-solid fa-users"></i>
+                <span>120+ last time</span>
+              </div>
+              <div class="countdown">
+                <i class="fa-solid fa-clock"></i>
+                <span>Coming soon</span>
+              </div>
+            </div>
+
+            <div class="event-actions">
+              <a class="btn primary" href="booking.html?type=rnb" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-ticket"></i> Book Now
+              </a>
+              <div class="event-actions-secondary">
+                <a class="btn ghost" href="event-detail.html?event=rnb-groove&date=2026-06-14" onclick="event.stopPropagation()" style="padding:10px 14px;font-size:13px;">
+                  <i class="fa-solid fa-circle-info"></i> Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Afrobeats Groove -->
+        <div class="event-card" data-event="groove" data-type="afrobeats" onclick="window.location.href='event-detail.html?event=afrobeats-groove&date=2026-06-21'">
+          <div class="event-media" style="background:linear-gradient(135deg,#0b0b0c,#3b2b1f)">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
+          </div>
+          <div class="event-body">
+            <h3>Afrobeats Groove</h3>
+            <p>High‑energy Afrobeats selections, dancefloor-first. Non-stop movement.</p>
+            
+            <div class="event-meta">
+              <div class="meta-row">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>June 21, 2026</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-clock"></i>
+                <span>8:00 PM</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-location-dot"></i>
+                <span class="meta-value">Tips Coco</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-microphone"></i>
+                <span>DJ Sammy, DJ Apuki</span>
+              </div>
+            </div>
+
+            <div class="event-stats">
+              <div class="stat-item">
+                <i class="fa-solid fa-users"></i>
+                <span>180+ last time</span>
+              </div>
+              <div class="countdown">
+                <i class="fa-solid fa-clock"></i>
+                <span>Coming soon</span>
+              </div>
+            </div>
+
+            <div class="event-actions">
+              <a class="btn primary" href="booking.html?type=afrobeats" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-ticket"></i> Book Now
+              </a>
+              <div class="event-actions-secondary">
+                <a class="btn ghost" href="event-detail.html?event=afrobeats-groove&date=2026-06-21" onclick="event.stopPropagation()" style="padding:10px 14px;font-size:13px;">
+                  <i class="fa-solid fa-circle-info"></i> Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Next Month -->
+  <section>
+    <div class="container">
+      <div class="section-divider">
+        <h2>Next Month</h2>
+        <p>Plan ahead</p>
+      </div>
+
+      <div class="events-grid" id="eventsNextMonth">
+        <div class="empty-state">
+          <i class="fa-solid fa-calendar-plus"></i>
+          <h3>More events coming soon</h3>
+          <p>Check back for updates on next month's lineup. Follow us on social media for the latest announcements.</p>
+          <a class="btn primary" href="booking.html" style="margin-top:20px;">
+            <i class="fa-solid fa-ticket"></i> Book Current Events
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Event Series -->
+  <section>
+    <div class="container">
+      <div class="section-divider">
+        <h2>Event Series</h2>
+        <p>Recurring experiences</p>
+      </div>
+
+      <div class="events-grid">
+        <!-- Groove Series -->
+        <div class="event-card" onclick="window.location.href='groove-series.html'">
+          <div class="event-media" style="background:linear-gradient(135deg,#1a1a1a,#2f2f2f)">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
+          </div>
+          <div class="event-body">
+            <h3>Groove Series</h3>
+            <p>Weekly Afro-house nights. Caribbean, RnB, Afrobeats—find your groove.</p>
+            
+            <div class="event-meta">
+              <div class="meta-row">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Every Week</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-location-dot"></i>
+                <span class="meta-value">Tips Coco</span>
+              </div>
+            </div>
+
+            <div class="event-actions">
+              <a class="btn primary" href="groove-series.html" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-circle-info"></i> View Series
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tempo -->
+        <div class="event-card" onclick="window.location.href='booking-tempo.html'">
+          <div class="event-media" style="background:linear-gradient(135deg,#0b0b0c,#3b2b1f)">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
+          </div>
+          <div class="event-body">
+            <h3>Tempo</h3>
+            <p>Seasonal themes. Big energy. Premium crowd. Experience the tempo.</p>
+            
+            <div class="event-meta">
+              <div class="meta-row">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Seasonal</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-location-dot"></i>
+                <span class="meta-value">Tips Coco</span>
+              </div>
+            </div>
+
+            <div class="event-actions">
+              <a class="btn primary" href="booking-tempo.html" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-ticket"></i> Book Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- APT Sessions -->
+        <div class="event-card" onclick="window.location.href='apt-request.html'">
+          <div class="event-media" style="background:linear-gradient(135deg,#1a2233,#0f1623)">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.4))"></div>
+          </div>
+          <div class="event-body">
+            <h3>APT Sessions</h3>
+            <p>Invite-only. Intimate location. Premium vibe. Exclusive access.</p>
+            
+            <div class="event-meta">
+              <div class="meta-row">
+                <i class="fa-solid fa-lock"></i>
+                <span>Invite-Only</span>
+              </div>
+              <div class="meta-row">
+                <i class="fa-solid fa-location-dot"></i>
+                <span class="meta-value">Private Venue</span>
+              </div>
+            </div>
+
+            <div class="event-actions">
+              <a class="btn primary" href="apt-request.html" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-envelope"></i> Request Invite
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mobile menu toggle
+  (function(){
+    const btn = document.getElementById("mobileBtn");
+    const panel = document.getElementById("mobilePanel");
+    if(btn && panel){
+      btn.addEventListener("click", () => {
+        panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+      });
+      // Close on outside click
+      document.addEventListener("click", (e) => {
+        if(!btn.contains(e.target) && !panel.contains(e.target)){
+          panel.style.display = "none";
+        }
+      });
+    }
+  })();
+
+  // Filter functionality
+  (function(){
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    const eventCards = document.querySelectorAll(".event-card[data-event]");
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        // Update active state
+        filterBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const filter = btn.dataset.filter;
+
+        // Show loading state during filter
+        const grid = document.querySelector(".events-grid");
+        if(grid){
+          grid.style.opacity = "0.6";
+          grid.style.pointerEvents = "none";
+        }
+        
+        // Filter events with slight delay for smooth transition
+        setTimeout(() => {
+          eventCards.forEach(card => {
+            if(filter === "all" || card.dataset.event === filter){
+              card.style.display = "";
+            } else {
+              card.style.display = "none";
+            }
+          });
+          if(grid){
+            grid.style.opacity = "1";
+            grid.style.pointerEvents = "";
+          }
+        }, 150);
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
+
