@@ -567,25 +567,10 @@
       opacity:0;
       transform:translateY(30px);
       transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-      visibility:hidden;
     }
     .value-card.revealed{
       opacity:1;
       transform:translateY(0);
-      visibility:visible;
-    }
-    /* Fallback: show after a delay if not revealed */
-    @media (prefers-reduced-motion: no-preference) {
-      .value-card:not(.revealed){
-        animation: fadeInFallback 0.1s 2s forwards;
-      }
-    }
-    @keyframes fadeInFallback{
-      to{
-        opacity:1;
-        transform:translateY(0);
-        visibility:visible;
-      }
     }
     .value-icon{
       width:80px;
@@ -667,23 +652,6 @@
       opacity:0;
       transition: opacity 1s var(--ease-out), transform 1s var(--ease-out);
       box-shadow: var(--shadow);
-      visibility:hidden;
-    }
-    .value-image.revealed{
-      visibility:visible;
-    }
-    /* Fallback: show after a delay if not revealed */
-    @media (prefers-reduced-motion: no-preference) {
-      .value-image:not(.revealed){
-        animation: fadeInImageFallback 0.1s 2.5s forwards;
-      }
-    }
-    @keyframes fadeInImageFallback{
-      to{
-        opacity:1;
-        transform:translateX(0) scale(1);
-        visibility:visible;
-      }
     }
     .value-image.swoosh-left{
       transform:translateX(-100px) scale(0.9);
@@ -1130,26 +1098,16 @@
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     
-    // Trigger when element is in center of viewport (60% visible = more centered)
     const observerOptions = {
-      threshold: 0.6
+      threshold: 0.15,
+      rootMargin: '0px 0px -80px 0px'
     };
     
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if(entry.isIntersecting){
-          // Check if element is in center area of viewport
-          const rect = entry.boundingClientRect;
-          const viewportHeight = window.innerHeight;
-          const elementCenter = rect.top + rect.height / 2;
-          const viewportCenter = viewportHeight / 2;
-          const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
-          
-          // Trigger when element is within 40% of viewport center
-          if(distanceFromCenter < viewportHeight * 0.4){
-            entry.target.classList.add('revealed');
-            revealObserver.unobserve(entry.target);
-          }
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
         }
       });
     }, observerOptions);
@@ -1183,7 +1141,7 @@
       timeline.classList.add('revealed');
     }, 300);
     
-    // Show Today when scrolled into view (center of screen)
+    // Show Today when scrolled into view
     const todayObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if(entry.isIntersecting){
@@ -1191,7 +1149,7 @@
           todayObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.6 });
+    }, { threshold: 0.3 });
     
     todayObserver.observe(timelineToday);
   })();
@@ -1230,23 +1188,9 @@
             }, 300);
           }
         });
-      }, { threshold: 0.2, rootMargin: '0px 0px 0px 0px' });
+      }, { threshold: 0.2 });
       
       cardObserver.observe(cardEl);
-      
-      // Also observe the image separately
-      const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if(entry.isIntersecting && cardEl.classList.contains('revealed')){
-            // Image will be revealed by card observer, but ensure it's visible
-            if(!imageEl.classList.contains('revealed')){
-              imageEl.classList.add('revealed');
-            }
-          }
-        });
-      }, { threshold: 0.1 });
-      
-      imageObserver.observe(imageEl);
     });
   })();
   
@@ -1308,7 +1252,7 @@
         statsObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.6 });
+  }, { threshold: 0.4 });
   
   const statsSection = document.querySelector(".stats-section");
   if(statsSection) statsObserver.observe(statsSection);
