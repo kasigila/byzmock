@@ -337,7 +337,7 @@
       .story-content p{font-size:16px;margin-bottom:18px;line-height:1.7}
     }
 
-    /* Image Gallery - Fixed */
+    /* Horizontal Scroll Gallery - Scroll Linked */
     .story-gallery{
       position:relative;
       border-radius: var(--radius-lg);
@@ -345,44 +345,32 @@
       border:1px solid var(--border);
       box-shadow: var(--shadow);
       background:var(--bg-elev);
-    }
-    .gallery-container{
-      display:grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap:2px;
       height:500px;
+      margin-top:40px;
     }
     @media (max-width: 980px){
-      .gallery-container{height:400px}
+      .story-gallery{height:400px}
     }
     @media (max-width: 560px){
-      .gallery-container{
-        grid-template-columns:1fr;
-        height:300px;
-        gap:0;
-      }
+      .story-gallery{height:300px}
     }
-    .gallery-item{
+    .horizontal-scroll-container{
+      display:flex;
+      width:300%;
+      height:100%;
+      will-change:transform;
+    }
+    .horizontal-scroll-item{
+      flex:0 0 33.333%;
+      height:100%;
       position:relative;
       overflow:hidden;
-      cursor:pointer;
-      transition: transform 0.4s var(--ease-out);
     }
-    .gallery-item img{
+    .horizontal-scroll-item img{
       width:100%;
       height:100%;
       object-fit:cover;
       display:block;
-      transition: transform 0.6s var(--ease-out);
-    }
-    .gallery-item:hover img{
-      transform:scale(1.08);
-    }
-    .gallery-item:hover{
-      z-index:2;
-    }
-    @media (max-width: 560px){
-      .gallery-item:hover img{transform:scale(1.05)}
     }
 
     /* Timeline Card Container */
@@ -558,19 +546,14 @@
     @media (max-width: 560px){
       .values-list{gap:48px}
     }
+    /* Value Card - Scroll Triggered Animations */
     .value-card{
       padding:48px 40px;
       border-radius: var(--radius-lg);
       border:none;
       background:transparent;
       text-align:center;
-      opacity:0;
-      transform:translateY(30px);
-      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-    }
-    .value-card.revealed{
-      opacity:1;
-      transform:translateY(0);
+      margin-bottom:60px;
     }
     .value-icon{
       width:80px;
@@ -587,25 +570,15 @@
       justify-content:center;
       margin:0 auto 24px;
       position:relative;
-      transition: all 0.4s var(--ease-out);
       box-shadow: 
         0 6px 16px color-mix(in srgb, var(--accent) 10%, transparent),
         inset 0 1px 0 color-mix(in srgb, var(--accent) 22%, transparent);
-    }
-    .value-card:hover .value-icon{
-      transform:scale(1.12) rotate(5deg);
-      box-shadow: 
-        0 10px 24px color-mix(in srgb, var(--accent) 14%, transparent),
-        inset 0 1px 0 color-mix(in srgb, var(--accent) 28%, transparent);
+      will-change:transform;
     }
     .value-icon i{
       color:var(--accent);
       font-size:32px;
       filter:drop-shadow(0 2px 6px color-mix(in srgb, var(--accent) 25%, transparent));
-      transition: transform 0.4s var(--ease-out);
-    }
-    .value-card:hover .value-icon i{
-      transform:scale(1.2);
     }
     .value-card h3{
       font-size:24px;
@@ -615,6 +588,9 @@
       word-wrap:break-word;
       overflow-wrap:break-word;
       text-align:center;
+      will-change:transform, opacity;
+      opacity:0;
+      transform:translateX(-100px);
     }
     .value-card p{
       font-size:16px;
@@ -625,10 +601,14 @@
       max-width:100%;
       text-align:center;
       margin:0 auto;
+      will-change:transform, opacity;
+      opacity:0;
+      transform:translateX(100px);
     }
     @media (max-width: 560px){
       .value-card{
         padding:40px 24px;
+        margin-bottom:48px;
       }
       .value-icon{
         width:70px;
@@ -641,7 +621,7 @@
         font-size:15px;
       }
     }
-    /* Value Image - Swoosh Animation (Alternating) */
+    /* Value Image - Scroll Triggered Scale */
     .value-image{
       width:100%;
       max-width:600px;
@@ -649,19 +629,10 @@
       border-radius: var(--radius-lg);
       overflow:hidden;
       margin:40px auto;
-      opacity:0;
-      transition: opacity 1s var(--ease-out), transform 1s var(--ease-out);
       box-shadow: var(--shadow);
-    }
-    .value-image.swoosh-left{
-      transform:translateX(-100px) scale(0.9);
-    }
-    .value-image.swoosh-right{
-      transform:translateX(100px) scale(0.9);
-    }
-    .value-image.revealed{
-      opacity:1;
-      transform:translateX(0) scale(1);
+      will-change:transform, opacity;
+      opacity:0;
+      transform:scale(0.1);
     }
     .value-image img{
       width:100%;
@@ -673,15 +644,6 @@
       .value-image{
         height:280px;
         margin:32px auto;
-      }
-      .value-image.swoosh-left{
-        transform:translateX(-60px) scale(0.9);
-      }
-      .value-image.swoosh-right{
-        transform:translateX(60px) scale(0.9);
-      }
-      .value-image.revealed{
-        transform:translateX(0) scale(1);
       }
     }
 
@@ -896,20 +858,17 @@
             Our mission is to create spaces where music, community, and culture intersect—where every night becomes a memory worth keeping.
           </p>
         </div>
-        <div class="scroll-reveal from-right">
-          <div class="story-gallery">
-            <div class="gallery-container">
-              <div class="gallery-item">
-                <img src="groove-memory-gallery/december-26-2025/FYRM9994.jpg" alt="Groove Event" loading="lazy" onerror="this.parentElement.style.display='none'">
+        <div>
+          <div class="story-gallery" id="horizontalScrollGallery">
+            <div class="horizontal-scroll-container" id="horizontalScrollContainer">
+              <div class="horizontal-scroll-item">
+                <img id="scroll-img-1" src="" alt="BYZ Event" loading="lazy">
               </div>
-              <div class="gallery-item">
-                <img src="tempo-memory-gallery/july-11-2025/FYRM1227.jpg" alt="Tempo Event" loading="lazy" onerror="this.parentElement.style.display='none'">
+              <div class="horizontal-scroll-item">
+                <img id="scroll-img-2" src="" alt="BYZ Event" loading="lazy">
               </div>
-              <div class="gallery-item">
-                <img src="groove-memory-gallery/may-24-2025/692A0026.jpg" alt="BYZ Event" loading="lazy" onerror="this.parentElement.style.display='none'">
-              </div>
-              <div class="gallery-item">
-                <img src="groove-memory-gallery/december-6-2025/FYRM8506.jpg" alt="BYZ Event" loading="lazy" onerror="this.parentElement.style.display='none'">
+              <div class="horizontal-scroll-item">
+                <img id="scroll-img-3" src="" alt="BYZ Event" loading="lazy">
               </div>
             </div>
           </div>
@@ -929,11 +888,11 @@
 
       <div class="values-list">
         <div class="value-card" id="value-1">
-          <div class="value-icon">
+          <div class="value-icon" id="value-icon-1">
             <i class="fa-solid fa-music"></i>
           </div>
-          <h3>Music First</h3>
-          <p>We believe music is the universal language that brings people together.</p>
+          <h3 id="value-title-1">Music First</h3>
+          <p id="value-text-1">We believe music is the universal language that brings people together.</p>
         </div>
         <div class="value-image" id="value-image-1">
           <img src="groove-memory-gallery/december-26-2025/FYRM9994.jpg" alt="Music First" loading="lazy" onerror="this.parentElement.style.display='none'">
@@ -1154,44 +1113,217 @@
     todayObserver.observe(timelineToday);
   })();
   
-  // Values Progressive Reveal with Images (Alternating Swoosh)
+  // Random Images for Horizontal Scroll Gallery
+  (function(){
+    const allImages = [
+      'groove-memory-gallery/december-26-2025/FYRM0007.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0021.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0056.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0071.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0079.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0084.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8087.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8089.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8095.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8101.jpg',
+      'groove-memory-gallery/may-24-2025/692A0461.jpg',
+      'groove-memory-gallery/may-24-2025/692A0512.jpg',
+      'groove-memory-gallery/may-24-2025/692A0560.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0874.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0884.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0903.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9856.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9843.jpg',
+      'tempo-memory-gallery/may-16-2025/692A9698.jpg',
+      'tempo-memory-gallery/may-16-2025/692A9690.jpg'
+    ];
+    
+    // Images already used on page (to avoid duplicates)
+    const usedImages = [
+      'groove-memory-gallery/december-26-2025/FYRM9994.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM1227.jpg',
+      'groove-memory-gallery/may-24-2025/692A0026.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8506.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9856.jpg',
+      'groove-memory-gallery/may-24-2025/692A0037.jpg'
+    ];
+    
+    // Get available images
+    const availableImages = allImages.filter(img => !usedImages.includes(img));
+    
+    // Shuffle and pick 3 random
+    const shuffled = availableImages.sort(() => 0.5 - Math.random());
+    const selectedImages = shuffled.slice(0, 3);
+    
+    // Set images
+    document.getElementById('scroll-img-1').src = selectedImages[0];
+    document.getElementById('scroll-img-2').src = selectedImages[1];
+    document.getElementById('scroll-img-3').src = selectedImages[2];
+  })();
+  
+  // Horizontal Scroll Linked to Vertical Scroll
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     
-    const values = [
-      { card: 'value-1', image: 'value-image-1', direction: 'left' },
-      { card: 'value-2', image: 'value-image-2', direction: 'right' },
-      { card: 'value-3', image: 'value-image-3', direction: 'left' },
-      { card: 'value-4', image: 'value-image-4', direction: 'right' },
-      { card: 'value-5', image: 'value-image-5', direction: 'left' },
-      { card: 'value-6', image: 'value-image-6', direction: 'right' }
-    ];
+    const gallery = document.getElementById('horizontalScrollGallery');
+    const container = document.getElementById('horizontalScrollContainer');
+    if(!gallery || !container) return;
     
-    values.forEach(({ card, image, direction }) => {
-      const cardEl = document.getElementById(card);
-      const imageEl = document.getElementById(image);
+    const galleryTop = gallery.offsetTop;
+    const galleryHeight = gallery.offsetHeight;
+    const scrollDistance = galleryHeight * 2; // Scroll distance for full loop
+    const maxTranslate = -66.666; // Move 2/3 of container width (100% - 33.333%)
+    
+    function updateHorizontalScroll(){
+      const scrollY = window.pageYOffset;
+      const windowHeight = window.innerHeight;
       
-      if(!cardEl || !imageEl) return;
+      // Calculate when gallery enters viewport
+      const galleryStart = galleryTop - windowHeight;
+      const galleryEnd = galleryTop + scrollDistance;
       
-      // Set initial swoosh direction
-      imageEl.classList.add(`swoosh-${direction}`);
-      
-      const cardObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if(entry.isIntersecting){
-            cardEl.classList.add('revealed');
-            cardObserver.unobserve(entry.target);
-            
-            // Reveal image after card with alternating swoosh
-            setTimeout(() => {
-              imageEl.classList.add('revealed');
-            }, 300);
-          }
+      if(scrollY >= galleryStart && scrollY <= galleryEnd){
+        // Calculate progress (0 to 1)
+        const progress = (scrollY - galleryStart) / scrollDistance;
+        // Clamp between 0 and 1
+        const clampedProgress = Math.max(0, Math.min(1, progress));
+        // Calculate translate (0% to -66.666%)
+        const translateX = clampedProgress * maxTranslate;
+        container.style.transform = `translateX(${translateX}%)`;
+      } else if(scrollY < galleryStart){
+        container.style.transform = 'translateX(0%)';
+      } else if(scrollY > galleryEnd){
+        container.style.transform = `translateX(${maxTranslate}%)`;
+      }
+    }
+    
+    let ticking = false;
+    function requestTick(){
+      if(!ticking){
+        requestAnimationFrame(() => {
+          updateHorizontalScroll();
+          ticking = false;
         });
-      }, { threshold: 0.2 });
+        ticking = true;
+      }
+    }
+    
+    window.addEventListener('scroll', requestTick, { passive: true });
+    updateHorizontalScroll();
+  })();
+  
+  // Values Section - Scroll Triggered Animations
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    
+    const value1 = {
+      card: document.getElementById('value-1'),
+      icon: document.getElementById('value-icon-1'),
+      title: document.getElementById('value-title-1'),
+      text: document.getElementById('value-text-1'),
+      image: document.getElementById('value-image-1')
+    };
+    
+    if(!value1.card) return;
+    
+    const value1Top = value1.card.offsetTop;
+    const animationDistance = 800; // pixels to scroll for full animation
+    
+    function updateValue1Animation(){
+      const scrollY = window.pageYOffset;
+      const windowHeight = window.innerHeight;
+      const startPoint = value1Top - windowHeight;
+      const endPoint = startPoint + animationDistance;
       
-      cardObserver.observe(cardEl);
-    });
+      if(scrollY >= startPoint && scrollY <= endPoint){
+        const progress = (scrollY - startPoint) / animationDistance;
+        const clampedProgress = Math.max(0, Math.min(1, progress));
+        
+        // Icon: grows big (0-0.3), returns to normal (0.3-0.6)
+        if(clampedProgress < 0.3){
+          const iconProgress = clampedProgress / 0.3;
+          const scale = 1 + (iconProgress * 1.5); // 1 to 2.5
+          value1.icon.style.transform = `scale(${scale})`;
+        } else if(clampedProgress < 0.6){
+          const iconProgress = (clampedProgress - 0.3) / 0.3;
+          const scale = 2.5 - (iconProgress * 1.5); // 2.5 to 1
+          value1.icon.style.transform = `scale(${scale})`;
+        } else {
+          value1.icon.style.transform = 'scale(1)';
+        }
+        
+        // Title: slides from left (0.2-0.5)
+        if(clampedProgress >= 0.2 && clampedProgress <= 0.5){
+          const titleProgress = (clampedProgress - 0.2) / 0.3;
+          const translateX = (1 - titleProgress) * -100;
+          value1.title.style.opacity = titleProgress;
+          value1.title.style.transform = `translateX(${translateX}px)`;
+        } else if(clampedProgress > 0.5){
+          value1.title.style.opacity = '1';
+          value1.title.style.transform = 'translateX(0)';
+        } else {
+          value1.title.style.opacity = '0';
+          value1.title.style.transform = 'translateX(-100px)';
+        }
+        
+        // Text: slides from right (0.4-0.7)
+        if(clampedProgress >= 0.4 && clampedProgress <= 0.7){
+          const textProgress = (clampedProgress - 0.4) / 0.3;
+          const translateX = (1 - textProgress) * 100;
+          value1.text.style.opacity = textProgress;
+          value1.text.style.transform = `translateX(${translateX}px)`;
+        } else if(clampedProgress > 0.7){
+          value1.text.style.opacity = '1';
+          value1.text.style.transform = 'translateX(0)';
+        } else {
+          value1.text.style.opacity = '0';
+          value1.text.style.transform = 'translateX(100px)';
+        }
+        
+        // Image: starts tiny and grows (0.6-1.0)
+        if(clampedProgress >= 0.6){
+          const imageProgress = (clampedProgress - 0.6) / 0.4;
+          const scale = 0.1 + (imageProgress * 0.9); // 0.1 to 1.0
+          value1.image.style.opacity = imageProgress;
+          value1.image.style.transform = `scale(${scale})`;
+        } else {
+          value1.image.style.opacity = '0';
+          value1.image.style.transform = 'scale(0.1)';
+        }
+      } else if(scrollY < startPoint){
+        // Reset before animation
+        value1.icon.style.transform = 'scale(1)';
+        value1.title.style.opacity = '0';
+        value1.title.style.transform = 'translateX(-100px)';
+        value1.text.style.opacity = '0';
+        value1.text.style.transform = 'translateX(100px)';
+        value1.image.style.opacity = '0';
+        value1.image.style.transform = 'scale(0.1)';
+      } else {
+        // Set final state after animation
+        value1.icon.style.transform = 'scale(1)';
+        value1.title.style.opacity = '1';
+        value1.title.style.transform = 'translateX(0)';
+        value1.text.style.opacity = '1';
+        value1.text.style.transform = 'translateX(0)';
+        value1.image.style.opacity = '1';
+        value1.image.style.transform = 'scale(1)';
+      }
+    }
+    
+    let ticking = false;
+    function requestTick(){
+      if(!ticking){
+        requestAnimationFrame(() => {
+          updateValue1Animation();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+    
+    window.addEventListener('scroll', requestTick, { passive: true });
+    updateValue1Animation();
   })();
   
   // Animate statistics counter and circular progress
