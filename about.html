@@ -281,11 +281,14 @@
       position:relative;
       overflow-x:hidden;
       width:100%;
+      min-height:auto;
+      background:var(--bg);
     }
     .content-section .container{
       overflow-x:hidden;
       width:100%;
       max-width:100%;
+      position:relative;
     }
     @media (max-width: 560px){
       .content-section{padding: 50px 0}
@@ -590,8 +593,11 @@
       overflow-wrap:break-word;
       text-align:center;
       will-change:transform, opacity;
+    }
+    /* Only first value card starts hidden for animation */
+    #value-1 h3{
       opacity:0;
-      transform:translateX(-100px);
+      transform:translateX(-150px);
     }
     .value-card p{
       font-size:16px;
@@ -603,8 +609,11 @@
       text-align:center;
       margin:0 auto;
       will-change:transform, opacity;
+    }
+    /* Only first value card starts hidden for animation */
+    #value-1 p{
       opacity:0;
-      transform:translateX(100px);
+      transform:translateX(150px);
     }
     @media (max-width: 560px){
       .value-card{
@@ -632,6 +641,9 @@
       margin:40px auto;
       box-shadow: var(--shadow);
       will-change:transform, opacity;
+    }
+    /* Only first value image starts hidden for animation */
+    #value-image-1{
       opacity:0;
       transform:scale(0.1);
     }
@@ -655,6 +667,8 @@
       background:transparent;
       border:none;
       box-shadow:none;
+      position:relative;
+      min-height:auto;
     }
     .stats-section::before{
       display:none;
@@ -1256,28 +1270,35 @@
         return;
       }
       
-      const animationDistance = 1000; // pixels to scroll for full animation
+      // Animation completes when card reaches viewport center (50% of viewport)
+      const animationDistance = 600; // Reduced distance for faster completion
       
       function updateValue1Animation(){
         const scrollY = window.pageYOffset;
         const windowHeight = window.innerHeight;
         const cardRect = value1.card.getBoundingClientRect();
-        const cardTop = cardRect.top + scrollY;
-        const startPoint = cardTop - windowHeight * 0.8;
-        const endPoint = startPoint + animationDistance;
+        const cardCenter = cardRect.top + (cardRect.height / 2);
         
-        if(scrollY >= startPoint && scrollY <= endPoint){
-          const progress = (scrollY - startPoint) / animationDistance;
-          const clampedProgress = Math.max(0, Math.min(1, progress));
-          
-          // Icon: grows big (0-0.25), returns to normal (0.25-0.5)
-          if(clampedProgress < 0.25){
-            const iconProgress = clampedProgress / 0.25;
+        // Start animation when card enters viewport, complete when center reaches viewport center
+        const viewportCenter = windowHeight * 0.5;
+        const startPoint = cardRect.top - windowHeight; // When card enters viewport
+        const endPoint = cardRect.top - viewportCenter; // When card center reaches viewport center
+        
+        // Calculate progress based on card center position
+        const distanceToCenter = cardCenter - viewportCenter;
+        const totalDistance = windowHeight * 0.5; // Distance from entry to center
+        const progress = 1 - (distanceToCenter / totalDistance);
+        const clampedProgress = Math.max(0, Math.min(1, progress));
+        
+        if(clampedProgress > 0 && clampedProgress <= 1){
+          // Icon: grows big (0-0.2), returns to normal (0.2-0.4) - completes earlier
+          if(clampedProgress < 0.2){
+            const iconProgress = clampedProgress / 0.2;
             const scale = 1 + (iconProgress * 2); // 1 to 3
             value1.icon.style.transform = `scale(${scale})`;
             value1.icon.style.opacity = '1';
-          } else if(clampedProgress < 0.5){
-            const iconProgress = (clampedProgress - 0.25) / 0.25;
+          } else if(clampedProgress < 0.4){
+            const iconProgress = (clampedProgress - 0.2) / 0.2;
             const scale = 3 - (iconProgress * 2); // 3 to 1
             value1.icon.style.transform = `scale(${scale})`;
             value1.icon.style.opacity = '1';
@@ -1286,13 +1307,13 @@
             value1.icon.style.opacity = '1';
           }
           
-          // Title: slides from left (0.3-0.6)
-          if(clampedProgress >= 0.3 && clampedProgress <= 0.6){
-            const titleProgress = (clampedProgress - 0.3) / 0.3;
+          // Title: slides from left (0.15-0.45) - completes earlier
+          if(clampedProgress >= 0.15 && clampedProgress <= 0.45){
+            const titleProgress = (clampedProgress - 0.15) / 0.3;
             const translateX = (1 - titleProgress) * -150;
             value1.title.style.opacity = titleProgress;
             value1.title.style.transform = `translateX(${translateX}px)`;
-          } else if(clampedProgress > 0.6){
+          } else if(clampedProgress > 0.45){
             value1.title.style.opacity = '1';
             value1.title.style.transform = 'translateX(0)';
           } else {
@@ -1300,13 +1321,13 @@
             value1.title.style.transform = 'translateX(-150px)';
           }
           
-          // Text: slides from right (0.5-0.75)
-          if(clampedProgress >= 0.5 && clampedProgress <= 0.75){
-            const textProgress = (clampedProgress - 0.5) / 0.25;
+          // Text: slides from right (0.3-0.6) - completes earlier
+          if(clampedProgress >= 0.3 && clampedProgress <= 0.6){
+            const textProgress = (clampedProgress - 0.3) / 0.3;
             const translateX = (1 - textProgress) * 150;
             value1.text.style.opacity = textProgress;
             value1.text.style.transform = `translateX(${translateX}px)`;
-          } else if(clampedProgress > 0.75){
+          } else if(clampedProgress > 0.6){
             value1.text.style.opacity = '1';
             value1.text.style.transform = 'translateX(0)';
           } else {
@@ -1314,17 +1335,17 @@
             value1.text.style.transform = 'translateX(150px)';
           }
           
-          // Image: starts tiny and grows (0.7-1.0)
-          if(clampedProgress >= 0.7){
-            const imageProgress = (clampedProgress - 0.7) / 0.3;
-            const scale = 0.1 + (imageProgress * 0.9); // 0.1 to 1.0
-            value1.image.style.opacity = imageProgress;
+          // Image: starts tiny and grows (0.5-0.8) - completes earlier
+          if(clampedProgress >= 0.5){
+            const imageProgress = (clampedProgress - 0.5) / 0.3;
+            const scale = 0.1 + (Math.min(1, imageProgress) * 0.9); // 0.1 to 1.0
+            value1.image.style.opacity = Math.min(1, imageProgress);
             value1.image.style.transform = `scale(${scale})`;
           } else {
             value1.image.style.opacity = '0';
             value1.image.style.transform = 'scale(0.1)';
           }
-        } else if(scrollY < startPoint){
+        } else if(clampedProgress <= 0){
           // Reset before animation
           value1.icon.style.transform = 'scale(1)';
           value1.icon.style.opacity = '1';
@@ -1335,7 +1356,7 @@
           value1.image.style.opacity = '0';
           value1.image.style.transform = 'scale(0.1)';
         } else {
-          // Set final state after animation
+          // Set final state after animation (when center passes viewport center)
           value1.icon.style.transform = 'scale(1)';
           value1.icon.style.opacity = '1';
           value1.title.style.opacity = '1';
@@ -1368,6 +1389,55 @@
     } else {
       initValueAnimations();
     }
+  })();
+  
+  // Debug: Ensure all content after Values section is visible
+  (function(){
+    function makeContentVisible(){
+      // Make sure all value cards 2-6 are visible
+      for(let i = 2; i <= 6; i++){
+        const card = document.getElementById(`value-${i}`);
+        const image = document.getElementById(`value-image-${i}`);
+        if(card){
+          const title = card.querySelector('h3');
+          const text = card.querySelector('p');
+          if(title){
+            title.style.opacity = '1';
+            title.style.transform = 'translateX(0)';
+            title.style.visibility = 'visible';
+          }
+          if(text){
+            text.style.opacity = '1';
+            text.style.transform = 'translateX(0)';
+            text.style.visibility = 'visible';
+          }
+        }
+        if(image){
+          image.style.opacity = '1';
+          image.style.transform = 'scale(1)';
+          image.style.visibility = 'visible';
+        }
+      }
+      
+      // Ensure stats section and CTA are visible
+      const statsSection = document.querySelector('.stats-section');
+      const ctaSection = document.querySelector('.cta-section');
+      if(statsSection){
+        statsSection.style.opacity = '1';
+        statsSection.style.visibility = 'visible';
+        statsSection.style.display = 'block';
+      }
+      if(ctaSection){
+        ctaSection.style.opacity = '1';
+        ctaSection.style.visibility = 'visible';
+        ctaSection.style.display = 'block';
+      }
+    }
+    
+    // Run immediately and after a delay
+    makeContentVisible();
+    setTimeout(makeContentVisible, 500);
+    window.addEventListener('load', makeContentVisible);
   })();
   
   // Animate statistics counter and circular progress
