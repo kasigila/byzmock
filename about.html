@@ -863,7 +863,7 @@
     <div class="hero-decorative"></div>
     <div class="container">
       <h1 class="scroll-reveal from-bottom">About BYZ Entertainment</h1>
-      <p class="scroll-reveal from-bottom" style="transition-delay: 0.1s">Creating unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam.</p>
+      <p class="scroll-reveal from-bottom">Creating unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam.</p>
     </div>
   </section>
 
@@ -886,13 +886,13 @@
               </div>
             </div>
           </div>
-          <p class="scroll-reveal from-left" style="transition-delay: 0.2s">
+          <p class="scroll-reveal from-left">
             Born in the heart of Dar es Salaam, we saw an opportunity to elevate the city's nightlife scene and give people spaces where they could truly connect.
           </p>
-          <p class="scroll-reveal from-left" style="transition-delay: 0.3s">
+          <p class="scroll-reveal from-left">
             What makes BYZ unique? We're not just throwing parties—we're building a community. Every Groove night, every Tempo event, every exclusive APT session is crafted with intention. We know our crowd, we know our city, and we know how to create moments that matter.
           </p>
-          <p class="scroll-reveal from-left" style="transition-delay: 0.4s">
+          <p class="scroll-reveal from-left">
             Our mission is to create spaces where music, community, and culture intersect—where every night becomes a memory worth keeping.
           </p>
         </div>
@@ -924,7 +924,7 @@
     <div class="container">
       <div class="values-header">
         <h2 class="scroll-reveal from-bottom">Our Values</h2>
-        <p class="scroll-reveal from-bottom" style="transition-delay: 0.1s">What drives us every day</p>
+        <p class="scroll-reveal from-bottom">What drives us every day</p>
       </div>
 
       <div class="values-list">
@@ -1001,9 +1001,9 @@
 
   <section class="content-section">
     <div class="container">
-      <div class="stats-section scroll-reveal scale-in">
+      <div class="stats-section">
         <div class="stats-grid">
-          <div class="stat-item scroll-reveal from-bottom" style="transition-delay: 0.1s">
+          <div class="stat-item">
             <div class="stat-circle-wrapper">
               <svg class="stat-circle" viewBox="0 0 100 100">
                 <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
@@ -1015,7 +1015,7 @@
             </div>
             <div class="stat-label">Events Hosted</div>
           </div>
-          <div class="stat-item scroll-reveal from-bottom" style="transition-delay: 0.2s">
+          <div class="stat-item">
             <div class="stat-circle-wrapper">
               <svg class="stat-circle" viewBox="0 0 100 100">
                 <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
@@ -1027,7 +1027,7 @@
             </div>
             <div class="stat-label">Happy Attendees (K+)</div>
           </div>
-          <div class="stat-item scroll-reveal from-bottom" style="transition-delay: 0.3s">
+          <div class="stat-item">
             <div class="stat-circle-wrapper">
               <svg class="stat-circle" viewBox="0 0 100 100">
                 <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
@@ -1039,7 +1039,7 @@
             </div>
             <div class="stat-label">Years of Experience</div>
           </div>
-          <div class="stat-item scroll-reveal from-bottom" style="transition-delay: 0.4s">
+          <div class="stat-item">
             <div class="stat-circle-wrapper">
               <svg class="stat-circle" viewBox="0 0 100 100">
                 <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
@@ -1061,15 +1061,15 @@
   <section class="cta-section">
     <div class="container">
       <h2 class="scroll-reveal from-bottom">Join the BYZ Community</h2>
-      <p class="scroll-reveal from-bottom" style="transition-delay: 0.1s">Experience the energy, connect with the community, and create memories that last a lifetime.</p>
+      <p class="scroll-reveal from-bottom">Experience the energy, connect with the community, and create memories that last a lifetime.</p>
       <div class="cta-buttons">
-        <a class="btn primary scroll-reveal from-bottom" href="events.html" style="transition-delay: 0.2s">
+        <a class="btn primary scroll-reveal from-bottom" href="events.html">
           <i class="fa-solid fa-calendar-days"></i> View Upcoming Events
         </a>
-        <a class="btn ghost scroll-reveal from-bottom" href="my-bookings.html" style="transition-delay: 0.25s">
+        <a class="btn ghost scroll-reveal from-bottom" href="my-bookings.html">
           <i class="fa-solid fa-calendar-check"></i> My Bookings
         </a>
-        <a class="btn ghost scroll-reveal from-bottom" href="contact.html" style="transition-delay: 0.3s">
+        <a class="btn ghost scroll-reveal from-bottom" href="contact.html">
           <i class="fa-solid fa-envelope"></i> Get in Touch
         </a>
       </div>
@@ -1098,16 +1098,26 @@
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     
+    // Trigger when element is in center of viewport (60% visible = more centered)
     const observerOptions = {
-      threshold: 0.15,
-      rootMargin: '0px 0px -80px 0px'
+      threshold: 0.6
     };
     
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if(entry.isIntersecting){
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
+          // Check if element is in center area of viewport
+          const rect = entry.boundingClientRect;
+          const viewportHeight = window.innerHeight;
+          const elementCenter = rect.top + rect.height / 2;
+          const viewportCenter = viewportHeight / 2;
+          const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
+          
+          // Trigger when element is within 40% of viewport center
+          if(distanceFromCenter < viewportHeight * 0.4){
+            entry.target.classList.add('revealed');
+            revealObserver.unobserve(entry.target);
+          }
         }
       });
     }, observerOptions);
@@ -1141,7 +1151,7 @@
       timeline.classList.add('revealed');
     }, 300);
     
-    // Show Today when scrolled into view
+    // Show Today when scrolled into view (center of screen)
     const todayObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if(entry.isIntersecting){
@@ -1149,7 +1159,7 @@
           todayObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.3 });
+    }, { threshold: 0.6 });
     
     todayObserver.observe(timelineToday);
   })();
@@ -1179,16 +1189,26 @@
       const cardObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if(entry.isIntersecting){
-            cardEl.classList.add('revealed');
-            cardObserver.unobserve(entry.target);
+            // Check if element is in center area of viewport
+            const rect = entry.boundingClientRect;
+            const viewportHeight = window.innerHeight;
+            const elementCenter = rect.top + rect.height / 2;
+            const viewportCenter = viewportHeight / 2;
+            const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
             
-            // Reveal image after card with alternating swoosh
-            setTimeout(() => {
-              imageEl.classList.add('revealed');
-            }, 300);
+            // Trigger when element is within 40% of viewport center
+            if(distanceFromCenter < viewportHeight * 0.4){
+              cardEl.classList.add('revealed');
+              cardObserver.unobserve(entry.target);
+              
+              // Reveal image after card with alternating swoosh
+              setTimeout(() => {
+                imageEl.classList.add('revealed');
+              }, 300);
+            }
           }
         });
-      }, { threshold: 0.2 });
+      }, { threshold: 0.3 });
       
       cardObserver.observe(cardEl);
     });
@@ -1252,7 +1272,7 @@
         statsObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.4 });
+  }, { threshold: 0.6 });
   
   const statsSection = document.querySelector(".stats-section");
   if(statsSection) statsObserver.observe(statsSection);
