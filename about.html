@@ -577,7 +577,7 @@
       box-shadow: 
         0 6px 16px color-mix(in srgb, var(--accent) 10%, transparent),
         inset 0 1px 0 color-mix(in srgb, var(--accent) 22%, transparent);
-      will-change:transform;
+      will-change:transform, opacity;
     }
     .value-icon i{
       color:var(--accent);
@@ -611,6 +611,7 @@
       will-change:transform, opacity;
       opacity:0;
       transform:translateX(150px);
+      transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     @media (max-width: 560px){
       .value-card{
@@ -1003,9 +1004,6 @@
           <h3 id="value-title-6">Partnership</h3>
           <p id="value-text-6">We collaborate with the best to showcase the best of Dar es Salaam.</p>
         </div>
-        <div class="value-image" id="value-image-6">
-          <img src="groove-memory-gallery/may-24-2025/692A0037.jpg" alt="Partnership" loading="lazy" onerror="this.parentElement.style.display='none'">
-        </div>
         
         <!-- Partnership Brand Carousel -->
         <div class="partnership-carousel-section">
@@ -1317,6 +1315,112 @@
     }
   })();
   
+  // Image Randomization for Our Values Section
+  (function(){
+    function getAvailableImages(){
+      const images = [];
+      
+      // Check if gallery manifest exists
+      if(window.BYZ_GALLERY && window.BYZ_GALLERY.ROOTS && window.BYZ_GALLERY.BOARDS){
+        const roots = window.BYZ_GALLERY.ROOTS;
+        const boards = window.BYZ_GALLERY.BOARDS;
+        
+        // Collect all images from groove and tempo galleries
+        ['groove', 'tempo'].forEach(type => {
+          if(boards[type]){
+            Object.keys(boards[type]).forEach(board => {
+              boards[type][board].forEach(filename => {
+                images.push(`${roots[type]}${board}/${filename}`);
+              });
+            });
+          }
+        });
+      }
+      
+      // Fallback: Use some default images if manifest not available
+      if(images.length === 0){
+        images.push(
+          'groove-memory-gallery/december-26-2025/FYRM9994.jpg',
+          'tempo-memory-gallery/july-11-2025/FYRM1227.jpg',
+          'groove-memory-gallery/may-24-2025/692A0026.jpg',
+          'groove-memory-gallery/december-6-2025/FYRM8506.jpg',
+          'tempo-memory-gallery/june-27-2025/692A9856.jpg',
+          'groove-memory-gallery/may-24-2025/692A0037.jpg',
+          'groove-memory-gallery/december-26-2025/FYRM9957.jpg',
+          'tempo-memory-gallery/july-11-2025/FYRM1221.jpg'
+        );
+      }
+      
+      return images;
+    }
+    
+    function randomizeValueImages(){
+      const valueImageIds = [1, 2, 3, 4]; // Only 4 images now (value-6 removed)
+      const storageKey = 'byz_value_images';
+      
+      // Check sessionStorage first
+      let selectedImages = null;
+      try {
+        const stored = sessionStorage.getItem(storageKey);
+        if(stored){
+          selectedImages = JSON.parse(stored);
+        }
+      } catch(e){
+        // Ignore storage errors
+      }
+      
+      // If no stored selection or invalid, create new random selection
+      if(!selectedImages || selectedImages.length !== valueImageIds.length){
+        const availableImages = getAvailableImages();
+        const shuffled = [...availableImages].sort(() => Math.random() - 0.5);
+        selectedImages = valueImageIds.map((id, index) => {
+          return shuffled[index % shuffled.length];
+        });
+        
+        // Ensure no duplicates
+        const uniqueImages = [...new Set(selectedImages)];
+        if(uniqueImages.length < valueImageIds.length){
+          // If we have duplicates, fill with remaining images
+          const remaining = availableImages.filter(img => !uniqueImages.includes(img));
+          while(uniqueImages.length < valueImageIds.length && remaining.length > 0){
+            uniqueImages.push(remaining.shift());
+          }
+          selectedImages = uniqueImages.slice(0, valueImageIds.length);
+        }
+        
+        // Store in sessionStorage
+        try {
+          sessionStorage.setItem(storageKey, JSON.stringify(selectedImages));
+        } catch(e){
+          // Ignore storage errors
+        }
+      }
+      
+      // Apply images to DOM
+      valueImageIds.forEach((id, index) => {
+        const imageElement = document.getElementById(`value-image-${id}`);
+        if(imageElement){
+          const img = imageElement.querySelector('img');
+          if(img && selectedImages[index]){
+            img.src = selectedImages[index];
+            img.onerror = function(){
+              // Fallback to a default image if the random one fails
+              this.src = 'groove-memory-gallery/december-26-2025/FYRM9994.jpg';
+              this.onerror = null; // Prevent infinite loop
+            };
+          }
+        }
+      });
+    }
+    
+    // Initialize when DOM is ready
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', randomizeValueImages);
+    } else {
+      randomizeValueImages();
+    }
+  })();
+  
   // Values Section - Scroll Triggered Animations - ALL value cards
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -1347,30 +1451,62 @@
         return;
       }
       
+      // Easing function: cubic-bezier(0.4, 0, 0.2, 1)
+      function easeInOutCubic(t) {
+        return t < 0.5
+          ? 4 * t * t * t
+          : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+      
+      // Get animation range (responsive to viewport)
+      function getAnimationRange(){
+        return window.innerHeight * 1.2; // Extended range for longer duration (800-1200ms equivalent)
+      }
+      
+      // Debounce function for scroll handler
+      function debounce(func, wait){
+        let timeout;
+        return function executedFunction(...args){
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+      
       function updateValueAnimations(){
+        const ANIMATION_RANGE = getAnimationRange();
         const windowHeight = window.innerHeight;
         const viewportCenter = windowHeight * 0.5;
         
-        valueElements.forEach(value => {
+        valueElements.forEach((value, index) => {
           const cardRect = value.card.getBoundingClientRect();
           const cardCenter = cardRect.top + (cardRect.height / 2);
           
-          // Calculate progress based on card center position
+          // Calculate progress with extended range and staggering
           const distanceToCenter = cardCenter - viewportCenter;
-          const totalDistance = windowHeight * 0.5;
-          const progress = 1 - (distanceToCenter / totalDistance);
+          const staggerOffset = index * 0.05; // 5% stagger per card
+          const adjustedDistance = distanceToCenter + (staggerOffset * windowHeight);
+          const progress = 1 - (adjustedDistance / ANIMATION_RANGE);
           const clampedProgress = Math.max(0, Math.min(1, progress));
           
+          // Apply easing
+          const easedProgress = easeInOutCubic(clampedProgress);
+          
           if(clampedProgress > 0 && clampedProgress <= 1){
-            // Icon: grows big (0-0.2), returns to normal (0.2-0.4)
-            if(clampedProgress < 0.2){
-              const iconProgress = clampedProgress / 0.2;
-              const scale = 1 + (iconProgress * 2); // 1 to 3
+            // Icon: grows big (0-0.25), returns to normal (0.25-0.5) - extended range
+            if(easedProgress < 0.25){
+              const iconProgress = easedProgress / 0.25;
+              const easedIcon = easeInOutCubic(iconProgress);
+              const scale = 1 + (easedIcon * 2); // 1 to 3
               value.icon.style.transform = `scale(${scale})`;
               value.icon.style.opacity = '1';
-            } else if(clampedProgress < 0.4){
-              const iconProgress = (clampedProgress - 0.2) / 0.2;
-              const scale = 3 - (iconProgress * 2); // 3 to 1
+            } else if(easedProgress < 0.5){
+              const iconProgress = (easedProgress - 0.25) / 0.25;
+              const easedIcon = easeInOutCubic(iconProgress);
+              const scale = 3 - (easedIcon * 2); // 3 to 1
               value.icon.style.transform = `scale(${scale})`;
               value.icon.style.opacity = '1';
             } else {
@@ -1378,13 +1514,16 @@
               value.icon.style.opacity = '1';
             }
             
-            // Title: slides from left (0.15-0.45)
-            if(clampedProgress >= 0.15 && clampedProgress <= 0.45){
-              const titleProgress = (clampedProgress - 0.15) / 0.3;
-              const translateX = (1 - titleProgress) * -150;
-              value.title.style.opacity = titleProgress;
+            // Title: slides from left (0.2-0.6) - extended range with delay
+            const titleStart = 0.2 + staggerOffset;
+            const titleEnd = 0.6 + staggerOffset;
+            if(easedProgress >= titleStart && easedProgress <= titleEnd){
+              const titleProgress = (easedProgress - titleStart) / (titleEnd - titleStart);
+              const easedTitle = easeInOutCubic(titleProgress);
+              const translateX = (1 - easedTitle) * -150;
+              value.title.style.opacity = easedTitle;
               value.title.style.transform = `translateX(${translateX}px)`;
-            } else if(clampedProgress > 0.45){
+            } else if(easedProgress > titleEnd){
               value.title.style.opacity = '1';
               value.title.style.transform = 'translateX(0)';
             } else {
@@ -1392,13 +1531,16 @@
               value.title.style.transform = 'translateX(-150px)';
             }
             
-            // Text: slides from right (0.3-0.6)
-            if(clampedProgress >= 0.3 && clampedProgress <= 0.6){
-              const textProgress = (clampedProgress - 0.3) / 0.3;
-              const translateX = (1 - textProgress) * 150;
-              value.text.style.opacity = textProgress;
+            // Text: slides from right (0.35-0.7) - extended range with delay
+            const textStart = 0.35 + staggerOffset;
+            const textEnd = 0.7 + staggerOffset;
+            if(easedProgress >= textStart && easedProgress <= textEnd){
+              const textProgress = (easedProgress - textStart) / (textEnd - textStart);
+              const easedText = easeInOutCubic(textProgress);
+              const translateX = (1 - easedText) * 150;
+              value.text.style.opacity = easedText;
               value.text.style.transform = `translateX(${translateX}px)`;
-            } else if(clampedProgress > 0.6){
+            } else if(easedProgress > textEnd){
               value.text.style.opacity = '1';
               value.text.style.transform = 'translateX(0)';
             } else {
@@ -1406,11 +1548,13 @@
               value.text.style.transform = 'translateX(150px)';
             }
             
-            // Image: starts tiny and grows (0.5-0.8)
-            if(clampedProgress >= 0.5){
-              const imageProgress = (clampedProgress - 0.5) / 0.3;
-              const scale = 0.1 + (Math.min(1, imageProgress) * 0.9);
-              value.image.style.opacity = Math.min(1, imageProgress);
+            // Image: starts tiny and grows (0.55-0.85) - extended range
+            const imageStart = 0.55 + staggerOffset;
+            if(easedProgress >= imageStart){
+              const imageProgress = Math.min(1, (easedProgress - imageStart) / 0.3);
+              const easedImage = easeInOutCubic(imageProgress);
+              const scale = 0.1 + (easedImage * 0.9);
+              value.image.style.opacity = easedImage;
               value.image.style.transform = `scale(${scale})`;
             } else {
               value.image.style.opacity = '0';
@@ -1440,18 +1584,30 @@
         });
       }
       
+      // Optimized scroll handler with requestAnimationFrame and debouncing
       let ticking = false;
+      let lastScrollTime = 0;
+      const scrollThrottle = 16; // ~60fps
+      
       function requestTick(){
-        if(!ticking){
+        const now = performance.now();
+        if(!ticking && (now - lastScrollTime) >= scrollThrottle){
           requestAnimationFrame(() => {
             updateValueAnimations();
             ticking = false;
+            lastScrollTime = performance.now();
           });
           ticking = true;
         }
       }
       
+      // Debounced resize handler to update animation range
+      const handleResize = debounce(() => {
+        updateValueAnimations();
+      }, 150);
+      
       window.addEventListener('scroll', requestTick, { passive: true });
+      window.addEventListener('resize', handleResize, { passive: true });
       updateValueAnimations();
     }
     
@@ -1656,5 +1812,6 @@
   })();
 </script>
 
+<script src="gallery-manifest.js"></script>
 </body>
 </html>
