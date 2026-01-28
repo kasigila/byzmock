@@ -337,7 +337,7 @@
       .story-content p{font-size:16px;margin-bottom:18px;line-height:1.7}
     }
 
-    /* Horizontal Scroll Gallery - Scroll Linked */
+    /* Horizontal Scroll Gallery - Scroll Linked with Loop */
     .story-gallery{
       position:relative;
       border-radius: var(--radius-lg);
@@ -356,12 +356,13 @@
     }
     .horizontal-scroll-container{
       display:flex;
-      width:300%;
+      width:400%;
       height:100%;
       will-change:transform;
+      position:relative;
     }
     .horizontal-scroll-item{
-      flex:0 0 33.333%;
+      flex:0 0 25%;
       height:100%;
       position:relative;
       overflow:hidden;
@@ -870,6 +871,9 @@
               <div class="horizontal-scroll-item">
                 <img id="scroll-img-3" src="" alt="BYZ Event" loading="lazy">
               </div>
+              <div class="horizontal-scroll-item">
+                <img id="scroll-img-1-duplicate" src="" alt="BYZ Event" loading="lazy">
+              </div>
             </div>
           </div>
         </div>
@@ -1155,175 +1159,215 @@
     const shuffled = availableImages.sort(() => 0.5 - Math.random());
     const selectedImages = shuffled.slice(0, 3);
     
-    // Set images
-    document.getElementById('scroll-img-1').src = selectedImages[0];
-    document.getElementById('scroll-img-2').src = selectedImages[1];
-    document.getElementById('scroll-img-3').src = selectedImages[2];
+    // Set images (including duplicate for seamless loop)
+    const img1 = document.getElementById('scroll-img-1');
+    const img2 = document.getElementById('scroll-img-2');
+    const img3 = document.getElementById('scroll-img-3');
+    const img1Dup = document.getElementById('scroll-img-1-duplicate');
+    
+    if(img1 && img2 && img3 && img1Dup){
+      img1.src = selectedImages[0];
+      img2.src = selectedImages[1];
+      img3.src = selectedImages[2];
+      img1Dup.src = selectedImages[0]; // Duplicate first image for seamless loop
+    }
   })();
   
-  // Horizontal Scroll Linked to Vertical Scroll
+  // Horizontal Scroll Linked to Vertical Scroll with Loop
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     
-    const gallery = document.getElementById('horizontalScrollGallery');
-    const container = document.getElementById('horizontalScrollContainer');
-    if(!gallery || !container) return;
-    
-    const galleryTop = gallery.offsetTop;
-    const galleryHeight = gallery.offsetHeight;
-    const scrollDistance = galleryHeight * 2; // Scroll distance for full loop
-    const maxTranslate = -66.666; // Move 2/3 of container width (100% - 33.333%)
-    
-    function updateHorizontalScroll(){
-      const scrollY = window.pageYOffset;
-      const windowHeight = window.innerHeight;
-      
-      // Calculate when gallery enters viewport
-      const galleryStart = galleryTop - windowHeight;
-      const galleryEnd = galleryTop + scrollDistance;
-      
-      if(scrollY >= galleryStart && scrollY <= galleryEnd){
-        // Calculate progress (0 to 1)
-        const progress = (scrollY - galleryStart) / scrollDistance;
-        // Clamp between 0 and 1
-        const clampedProgress = Math.max(0, Math.min(1, progress));
-        // Calculate translate (0% to -66.666%)
-        const translateX = clampedProgress * maxTranslate;
-        container.style.transform = `translateX(${translateX}%)`;
-      } else if(scrollY < galleryStart){
-        container.style.transform = 'translateX(0%)';
-      } else if(scrollY > galleryEnd){
-        container.style.transform = `translateX(${maxTranslate}%)`;
+    function initHorizontalScroll(){
+      const gallery = document.getElementById('horizontalScrollGallery');
+      const container = document.getElementById('horizontalScrollContainer');
+      if(!gallery || !container) {
+        setTimeout(initHorizontalScroll, 100);
+        return;
       }
+      
+      // Wait for layout
+      setTimeout(() => {
+        const galleryTop = gallery.offsetTop;
+        const scrollDistance = window.innerHeight * 2; // Distance to scroll for full loop
+        const maxTranslate = -75; // Move 3 images (75% of 400% width = 3/4)
+        
+        function updateHorizontalScroll(){
+          const scrollY = window.pageYOffset;
+          const windowHeight = window.innerHeight;
+          
+          // Calculate when gallery enters viewport
+          const galleryStart = galleryTop - windowHeight * 0.3;
+          const galleryEnd = galleryStart + scrollDistance;
+          
+          if(scrollY >= galleryStart && scrollY <= galleryEnd){
+            // Calculate progress (0 to 1)
+            const progress = (scrollY - galleryStart) / scrollDistance;
+            // Clamp between 0 and 1
+            const clampedProgress = Math.max(0, Math.min(1, progress));
+            // Calculate translate (0% to -75%) - scrolls through all 3 unique images
+            const translateX = clampedProgress * maxTranslate;
+            container.style.transform = `translateX(${translateX}%)`;
+          } else if(scrollY < galleryStart){
+            container.style.transform = 'translateX(0%)';
+          } else if(scrollY > galleryEnd){
+            container.style.transform = `translateX(${maxTranslate}%)`;
+          }
+        }
+        
+        let ticking = false;
+        function requestTick(){
+          if(!ticking){
+            requestAnimationFrame(() => {
+              updateHorizontalScroll();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }
+        
+        window.addEventListener('scroll', requestTick, { passive: true });
+        updateHorizontalScroll();
+      }, 200);
     }
     
-    let ticking = false;
-    function requestTick(){
-      if(!ticking){
-        requestAnimationFrame(() => {
-          updateHorizontalScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', initHorizontalScroll);
+    } else {
+      initHorizontalScroll();
     }
-    
-    window.addEventListener('scroll', requestTick, { passive: true });
-    updateHorizontalScroll();
   })();
   
   // Values Section - Scroll Triggered Animations
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     
-    const value1 = {
-      card: document.getElementById('value-1'),
-      icon: document.getElementById('value-icon-1'),
-      title: document.getElementById('value-title-1'),
-      text: document.getElementById('value-text-1'),
-      image: document.getElementById('value-image-1')
-    };
-    
-    if(!value1.card) return;
-    
-    const value1Top = value1.card.offsetTop;
-    const animationDistance = 800; // pixels to scroll for full animation
-    
-    function updateValue1Animation(){
-      const scrollY = window.pageYOffset;
-      const windowHeight = window.innerHeight;
-      const startPoint = value1Top - windowHeight;
-      const endPoint = startPoint + animationDistance;
+    function initValueAnimations(){
+      const value1 = {
+        card: document.getElementById('value-1'),
+        icon: document.getElementById('value-icon-1'),
+        title: document.getElementById('value-title-1'),
+        text: document.getElementById('value-text-1'),
+        image: document.getElementById('value-image-1')
+      };
       
-      if(scrollY >= startPoint && scrollY <= endPoint){
-        const progress = (scrollY - startPoint) / animationDistance;
-        const clampedProgress = Math.max(0, Math.min(1, progress));
+      if(!value1.card || !value1.icon || !value1.title || !value1.text || !value1.image) {
+        // Retry if elements not ready
+        setTimeout(initValueAnimations, 100);
+        return;
+      }
+      
+      const animationDistance = 1000; // pixels to scroll for full animation
+      
+      function updateValue1Animation(){
+        const scrollY = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        const cardRect = value1.card.getBoundingClientRect();
+        const cardTop = cardRect.top + scrollY;
+        const startPoint = cardTop - windowHeight * 0.8;
+        const endPoint = startPoint + animationDistance;
         
-        // Icon: grows big (0-0.3), returns to normal (0.3-0.6)
-        if(clampedProgress < 0.3){
-          const iconProgress = clampedProgress / 0.3;
-          const scale = 1 + (iconProgress * 1.5); // 1 to 2.5
-          value1.icon.style.transform = `scale(${scale})`;
-        } else if(clampedProgress < 0.6){
-          const iconProgress = (clampedProgress - 0.3) / 0.3;
-          const scale = 2.5 - (iconProgress * 1.5); // 2.5 to 1
-          value1.icon.style.transform = `scale(${scale})`;
-        } else {
+        if(scrollY >= startPoint && scrollY <= endPoint){
+          const progress = (scrollY - startPoint) / animationDistance;
+          const clampedProgress = Math.max(0, Math.min(1, progress));
+          
+          // Icon: grows big (0-0.25), returns to normal (0.25-0.5)
+          if(clampedProgress < 0.25){
+            const iconProgress = clampedProgress / 0.25;
+            const scale = 1 + (iconProgress * 2); // 1 to 3
+            value1.icon.style.transform = `scale(${scale})`;
+            value1.icon.style.opacity = '1';
+          } else if(clampedProgress < 0.5){
+            const iconProgress = (clampedProgress - 0.25) / 0.25;
+            const scale = 3 - (iconProgress * 2); // 3 to 1
+            value1.icon.style.transform = `scale(${scale})`;
+            value1.icon.style.opacity = '1';
+          } else {
+            value1.icon.style.transform = 'scale(1)';
+            value1.icon.style.opacity = '1';
+          }
+          
+          // Title: slides from left (0.3-0.6)
+          if(clampedProgress >= 0.3 && clampedProgress <= 0.6){
+            const titleProgress = (clampedProgress - 0.3) / 0.3;
+            const translateX = (1 - titleProgress) * -150;
+            value1.title.style.opacity = titleProgress;
+            value1.title.style.transform = `translateX(${translateX}px)`;
+          } else if(clampedProgress > 0.6){
+            value1.title.style.opacity = '1';
+            value1.title.style.transform = 'translateX(0)';
+          } else {
+            value1.title.style.opacity = '0';
+            value1.title.style.transform = 'translateX(-150px)';
+          }
+          
+          // Text: slides from right (0.5-0.75)
+          if(clampedProgress >= 0.5 && clampedProgress <= 0.75){
+            const textProgress = (clampedProgress - 0.5) / 0.25;
+            const translateX = (1 - textProgress) * 150;
+            value1.text.style.opacity = textProgress;
+            value1.text.style.transform = `translateX(${translateX}px)`;
+          } else if(clampedProgress > 0.75){
+            value1.text.style.opacity = '1';
+            value1.text.style.transform = 'translateX(0)';
+          } else {
+            value1.text.style.opacity = '0';
+            value1.text.style.transform = 'translateX(150px)';
+          }
+          
+          // Image: starts tiny and grows (0.7-1.0)
+          if(clampedProgress >= 0.7){
+            const imageProgress = (clampedProgress - 0.7) / 0.3;
+            const scale = 0.1 + (imageProgress * 0.9); // 0.1 to 1.0
+            value1.image.style.opacity = imageProgress;
+            value1.image.style.transform = `scale(${scale})`;
+          } else {
+            value1.image.style.opacity = '0';
+            value1.image.style.transform = 'scale(0.1)';
+          }
+        } else if(scrollY < startPoint){
+          // Reset before animation
           value1.icon.style.transform = 'scale(1)';
-        }
-        
-        // Title: slides from left (0.2-0.5)
-        if(clampedProgress >= 0.2 && clampedProgress <= 0.5){
-          const titleProgress = (clampedProgress - 0.2) / 0.3;
-          const translateX = (1 - titleProgress) * -100;
-          value1.title.style.opacity = titleProgress;
-          value1.title.style.transform = `translateX(${translateX}px)`;
-        } else if(clampedProgress > 0.5){
-          value1.title.style.opacity = '1';
-          value1.title.style.transform = 'translateX(0)';
-        } else {
+          value1.icon.style.opacity = '1';
           value1.title.style.opacity = '0';
-          value1.title.style.transform = 'translateX(-100px)';
-        }
-        
-        // Text: slides from right (0.4-0.7)
-        if(clampedProgress >= 0.4 && clampedProgress <= 0.7){
-          const textProgress = (clampedProgress - 0.4) / 0.3;
-          const translateX = (1 - textProgress) * 100;
-          value1.text.style.opacity = textProgress;
-          value1.text.style.transform = `translateX(${translateX}px)`;
-        } else if(clampedProgress > 0.7){
-          value1.text.style.opacity = '1';
-          value1.text.style.transform = 'translateX(0)';
-        } else {
+          value1.title.style.transform = 'translateX(-150px)';
           value1.text.style.opacity = '0';
-          value1.text.style.transform = 'translateX(100px)';
-        }
-        
-        // Image: starts tiny and grows (0.6-1.0)
-        if(clampedProgress >= 0.6){
-          const imageProgress = (clampedProgress - 0.6) / 0.4;
-          const scale = 0.1 + (imageProgress * 0.9); // 0.1 to 1.0
-          value1.image.style.opacity = imageProgress;
-          value1.image.style.transform = `scale(${scale})`;
-        } else {
+          value1.text.style.transform = 'translateX(150px)';
           value1.image.style.opacity = '0';
           value1.image.style.transform = 'scale(0.1)';
+        } else {
+          // Set final state after animation
+          value1.icon.style.transform = 'scale(1)';
+          value1.icon.style.opacity = '1';
+          value1.title.style.opacity = '1';
+          value1.title.style.transform = 'translateX(0)';
+          value1.text.style.opacity = '1';
+          value1.text.style.transform = 'translateX(0)';
+          value1.image.style.opacity = '1';
+          value1.image.style.transform = 'scale(1)';
         }
-      } else if(scrollY < startPoint){
-        // Reset before animation
-        value1.icon.style.transform = 'scale(1)';
-        value1.title.style.opacity = '0';
-        value1.title.style.transform = 'translateX(-100px)';
-        value1.text.style.opacity = '0';
-        value1.text.style.transform = 'translateX(100px)';
-        value1.image.style.opacity = '0';
-        value1.image.style.transform = 'scale(0.1)';
-      } else {
-        // Set final state after animation
-        value1.icon.style.transform = 'scale(1)';
-        value1.title.style.opacity = '1';
-        value1.title.style.transform = 'translateX(0)';
-        value1.text.style.opacity = '1';
-        value1.text.style.transform = 'translateX(0)';
-        value1.image.style.opacity = '1';
-        value1.image.style.transform = 'scale(1)';
       }
+      
+      let ticking = false;
+      function requestTick(){
+        if(!ticking){
+          requestAnimationFrame(() => {
+            updateValue1Animation();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+      
+      window.addEventListener('scroll', requestTick, { passive: true });
+      updateValue1Animation();
     }
     
-    let ticking = false;
-    function requestTick(){
-      if(!ticking){
-        requestAnimationFrame(() => {
-          updateValue1Animation();
-          ticking = false;
-        });
-        ticking = true;
-      }
+    // Initialize when DOM is ready
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', initValueAnimations);
+    } else {
+      initValueAnimations();
     }
-    
-    window.addEventListener('scroll', requestTick, { passive: true });
-    updateValue1Animation();
   })();
   
   // Animate statistics counter and circular progress
