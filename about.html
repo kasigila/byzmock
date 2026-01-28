@@ -20,6 +20,7 @@
       --shadow: 0 18px 60px rgba(0,0,0,.35);
       --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
       --ease: cubic-bezier(.2,.8,.2,1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --max: 1100px;
       --radius: 22px;
       --radius-lg: 28px;
@@ -39,6 +40,39 @@
     .container{max-width:var(--max);margin:0 auto;padding:0 24px}
     @media (max-width: 560px){
       .container{padding:0 28px}
+    }
+
+    /* Scroll Animation Base */
+    @media (prefers-reduced-motion: no-preference) {
+      .scroll-reveal{
+        opacity:0;
+        transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+      }
+      .scroll-reveal.revealed{
+        opacity:1;
+        transform:translateY(0) scale(1);
+      }
+      .scroll-reveal.from-bottom{
+        transform:translateY(40px) scale(0.96);
+      }
+      .scroll-reveal.from-left{
+        transform:translateX(-40px);
+      }
+      .scroll-reveal.from-right{
+        transform:translateX(40px);
+      }
+      .scroll-reveal.from-top{
+        transform:translateY(-40px);
+      }
+      .scroll-reveal.scale-in{
+        transform:scale(0.92);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-reveal{
+        opacity:1;
+        transform:none;
+      }
     }
 
     /* Header */
@@ -133,216 +167,512 @@
     .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
     .btn.ghost{background: transparent}
 
+    /* Section Dividers */
+    .section-divider{
+      height:1px;
+      background: linear-gradient(90deg, 
+        transparent 0%,
+        color-mix(in srgb, var(--border) 60%, transparent) 50%,
+        transparent 100%
+      );
+      margin: 80px 0;
+      opacity:0;
+      transition: opacity 0.8s var(--ease-out);
+    }
+    .section-divider.revealed{opacity:1}
+    @media (max-width: 560px){
+      .section-divider{margin: 60px 0}
+    }
+
     /* Main */
     main{padding-top:var(--header-h)}
+
+    /* Hero Section - Enhanced */
     .hero{
-      padding: 78px 0 48px;
+      padding: 100px 0 70px;
+      position:relative;
+      overflow:hidden;
       background:
         radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
         linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
     }
+    .hero::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;bottom:0;
+      background: 
+        radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--border) 8%, transparent) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--border) 6%, transparent) 0%, transparent 50%);
+      animation: gradientShift 20s ease-in-out infinite;
+      pointer-events:none;
+    }
+    @keyframes gradientShift{
+      0%, 100%{opacity:1;transform:scale(1)}
+      50%{opacity:0.8;transform:scale(1.1)}
+    }
+    .hero-decorative{
+      position:absolute;
+      width:200px;height:200px;
+      border-radius:50%;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 3%, transparent), transparent 70%);
+      filter:blur(60px);
+      top:10%;right:10%;
+      opacity:0.4;
+      animation: float 15s ease-in-out infinite;
+    }
+    @keyframes float{
+      0%, 100%{transform:translate(0,0) scale(1)}
+      50%{transform:translate(30px, -30px) scale(1.1)}
+    }
     @media (max-width: 560px){
-      .hero{padding: 48px 0 32px}
+      .hero{padding: 60px 0 48px}
+      .hero-decorative{width:150px;height:150px;top:5%;right:5%}
+    }
+    .hero .container{
+      position:relative;z-index:1;
     }
     .hero h1{
-      font-size: clamp(2.2rem, 5vw, 3.6rem);
-      letter-spacing:-1px;
+      font-size: clamp(2.4rem, 5.5vw, 4rem);
+      letter-spacing:-1.2px;
       font-weight:900;
       line-height:1.1;
-    }
-    .hero p{
-      margin-top:14px;
-      color:var(--sub);
-      max-width:60ch;
-      font-size:15px;
+      margin-bottom:20px;
     }
     @media (max-width: 560px){
-      .hero p{font-size:14px;max-width:100%}
+      .hero h1{font-size: clamp(2rem, 8vw, 2.8rem);margin-bottom:16px}
+    }
+    .hero p{
+      color:var(--sub);
+      max-width:65ch;
+      font-size:16px;
+      line-height:1.6;
+    }
+    @media (max-width: 560px){
+      .hero p{font-size:15px;max-width:100%}
     }
 
     /* Content Sections */
     .content-section{
-      padding: 60px 0;
+      padding: 80px 0;
+      position:relative;
     }
     @media (max-width: 560px){
-      .content-section{padding: 40px 0}
+      .content-section{padding: 50px 0}
     }
 
-    /* Story Grid */
+    /* Story Grid - Enhanced */
     .story-grid{
       display:grid;
       grid-template-columns: 1.1fr .9fr;
-      gap:32px;
+      gap:48px;
       align-items:center;
-      margin-top:32px;
+      margin-top:48px;
     }
     @media (max-width: 980px){
-      .story-grid{grid-template-columns:1fr;gap:24px}
+      .story-grid{grid-template-columns:1fr;gap:32px;margin-top:32px}
     }
     .story-content h2{
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      letter-spacing:-.6px;
+      font-size: clamp(2rem, 4.5vw, 2.8rem);
+      letter-spacing:-.8px;
       font-weight:900;
-      margin-bottom:16px;
+      margin-bottom:28px;
+      text-align:left;
+    }
+    @media (max-width: 560px){
+      .story-content h2{font-size: clamp(1.75rem, 7vw, 2.2rem);margin-bottom:20px}
     }
     .story-content p{
-      font-size:16px;
+      font-size:17px;
       color:var(--sub);
-      line-height:1.7;
-      margin-bottom:16px;
+      line-height:1.75;
+      margin-bottom:20px;
     }
     @media (max-width: 560px){
-      .story-content p{font-size:15px}
-    }
-    .story-image{
-      width:100%;
-      height:400px;
-      border-radius: var(--radius-lg);
-      border:1px solid var(--border);
-      object-fit:cover;
-      box-shadow: var(--shadow-soft);
-    }
-    @media (max-width: 560px){
-      .story-image{height:280px}
+      .story-content p{font-size:16px;margin-bottom:16px}
     }
 
-    /* Values Grid - Creative Layout */
+    /* Image Gallery/Carousel */
+    .story-gallery{
+      position:relative;
+      border-radius: var(--radius-lg);
+      overflow:hidden;
+      border:1px solid var(--border);
+      box-shadow: var(--shadow);
+      background:var(--bg-elev);
+    }
+    .gallery-container{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:2px;
+      height:500px;
+    }
+    @media (max-width: 980px){
+      .gallery-container{height:400px}
+    }
+    @media (max-width: 560px){
+      .gallery-container{
+        grid-template-columns:1fr;
+        height:auto;
+        gap:0;
+      }
+      .gallery-item:not(:first-child){display:none}
+      .gallery-container{height:320px}
+    }
+    .gallery-item{
+      position:relative;
+      overflow:hidden;
+      cursor:pointer;
+      transition: transform 0.4s var(--ease-out), filter 0.4s var(--ease-out);
+    }
+    .gallery-item img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      transition: transform 0.6s var(--ease-out);
+    }
+    .gallery-item:hover img{
+      transform:scale(1.08);
+    }
+    .gallery-item:hover{
+      z-index:2;
+      transform:scale(1.02);
+    }
+    @media (max-width: 560px){
+      .gallery-item:hover{transform:none}
+      .gallery-item:hover img{transform:scale(1.05)}
+    }
+
+    /* Timeline Element */
+    .timeline{
+      margin:48px 0;
+      padding:32px 0;
+      position:relative;
+    }
+    .timeline::before{
+      content:'';
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:2px;
+      background:linear-gradient(180deg, 
+        var(--accent) 0%,
+        color-mix(in srgb, var(--accent) 40%, transparent) 50%,
+        transparent 100%
+      );
+    }
+    .timeline-item{
+      position:relative;
+      padding-left:32px;
+      margin-bottom:32px;
+    }
+    .timeline-item::before{
+      content:'';
+      position:absolute;
+      left:-6px;top:6px;
+      width:14px;height:14px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 4px var(--bg), 0 0 0 6px var(--accent);
+    }
+    .timeline-year{
+      font-size:18px;
+      font-weight:700;
+      color:var(--accent);
+      margin-bottom:4px;
+    }
+    .timeline-text{
+      font-size:15px;
+      color:var(--sub);
+      line-height:1.6;
+    }
+    @media (max-width: 560px){
+      .timeline{padding:24px 0;margin:32px 0}
+      .timeline-item{padding-left:24px;margin-bottom:24px}
+      .timeline-year{font-size:16px}
+      .timeline-text{font-size:14px}
+    }
+
+    /* Values Section - Enhanced with Glassmorphism */
+    .values-header{
+      text-align:center;
+      margin-bottom:48px;
+    }
+    .values-header h2{
+      font-size: clamp(2rem, 4.5vw, 2.8rem);
+      font-weight:900;
+      margin-bottom:16px;
+      letter-spacing:-.8px;
+    }
+    .values-header p{
+      color:var(--sub);
+      font-size:17px;
+      max-width:60ch;
+      margin:0 auto;
+    }
+    @media (max-width: 560px){
+      .values-header{margin-bottom:32px}
+      .values-header h2{font-size: clamp(1.75rem, 7vw, 2.2rem)}
+      .values-header p{font-size:16px}
+    }
     .values-grid{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
-      gap:20px;
+      gap:24px;
       margin-top:40px;
     }
     @media (max-width: 980px){
-      .values-grid{grid-template-columns:repeat(2, 1fr)}
+      .values-grid{grid-template-columns:repeat(2, 1fr);gap:20px}
     }
     @media (max-width: 640px){
       .values-grid{
         grid-template-columns:1fr;
-        display:flex;
-        flex-direction:column;
         gap:16px;
       }
       .value-card{
         display:flex;
-        align-items:center;
-        gap:16px;
-        padding:20px;
+        align-items:flex-start;
+        gap:20px;
+        padding:24px;
       }
       .value-icon{
-        width:48px;
-        height:48px;
-        min-width:48px;
+        width:56px;
+        height:56px;
+        min-width:56px;
         margin-bottom:0;
       }
       .value-card h3{
-        font-size:16px;
-        margin-bottom:4px;
+        font-size:18px;
+        margin-bottom:6px;
       }
       .value-card p{
-        font-size:12px;
+        font-size:14px;
         margin:0;
+        line-height:1.6;
       }
     }
     .value-card{
-      padding:28px;
+      padding:32px;
       border-radius: var(--radius-lg);
-      border:1px solid var(--border);
-      background: var(--bg-elev);
-      box-shadow: var(--shadow-soft);
-      transition: all .2s var(--ease);
+      border:1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      background: 
+        linear-gradient(135deg, 
+          color-mix(in srgb, var(--bg-elev) 95%, transparent) 0%,
+          color-mix(in srgb, var(--bg-alt) 85%, transparent) 100%
+        );
+      backdrop-filter: blur(40px) saturate(180%);
+      box-shadow: 
+        var(--shadow-soft),
+        inset 0 1px 0 color-mix(in srgb, var(--accent) 8%, transparent);
+      transition: all 0.4s var(--ease-out);
+      position:relative;
+      overflow:hidden;
+    }
+    .value-card::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:1px;
+      background:linear-gradient(90deg,
+        transparent 0%,
+        color-mix(in srgb, var(--accent) 15%, transparent) 50%,
+        transparent 100%
+      );
+      opacity:0;
+      transition:opacity 0.4s var(--ease);
     }
     .value-card:hover{
-      transform: translateY(-4px);
-      box-shadow: var(--shadow);
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 
+        var(--shadow),
+        inset 0 1px 0 color-mix(in srgb, var(--accent) 12%, transparent);
+      border-color:color-mix(in srgb, var(--border) 80%, transparent);
+    }
+    .value-card:hover::before{
+      opacity:1;
     }
     .value-icon{
-      width:56px;
-      height:56px;
-      border-radius:18px;
-      background: color-mix(in srgb, var(--accent) 10%, transparent);
-      border:1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+      width:64px;
+      height:64px;
+      border-radius:20px;
+      background: 
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+          color-mix(in srgb, var(--accent) 8%, transparent) 100%
+        );
+      border:1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
       display:flex;
       align-items:center;
       justify-content:center;
-      margin-bottom:20px;
+      margin-bottom:24px;
+      position:relative;
+      transition: all 0.4s var(--ease-out);
+      box-shadow: 
+        0 4px 12px color-mix(in srgb, var(--accent) 8%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+    .value-card:hover .value-icon{
+      transform:scale(1.1) rotate(5deg);
+      box-shadow: 
+        0 8px 20px color-mix(in srgb, var(--accent) 12%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--accent) 25%, transparent);
     }
     .value-icon i{
       color:var(--accent);
-      font-size:24px;
+      font-size:26px;
+      filter:drop-shadow(0 2px 4px color-mix(in srgb, var(--accent) 20%, transparent));
+      transition: transform 0.4s var(--ease-out);
+    }
+    .value-card:hover .value-icon i{
+      transform:scale(1.15);
     }
     .value-card h3{
-      font-size:20px;
+      font-size:22px;
       font-weight:900;
-      margin-bottom:10px;
+      margin-bottom:12px;
+      letter-spacing:-.4px;
     }
     .value-card p{
-      font-size:14px;
+      font-size:15px;
       color:var(--sub);
-      line-height:1.6;
+      line-height:1.7;
     }
 
-    /* Stats Section */
+    /* Stats Section - Enhanced with Circular Progress */
     .stats-section{
-      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-alt) 80%, transparent), color-mix(in srgb, var(--bg-elev) 90%, transparent));
+      background: 
+        linear-gradient(135deg, 
+          color-mix(in srgb, var(--bg-alt) 85%, transparent) 0%,
+          color-mix(in srgb, var(--bg-elev) 90%, transparent) 100%
+        );
       border-radius: var(--radius-lg);
-      border:1px solid var(--border);
-      padding:48px 32px;
+      border:1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      padding:56px 40px;
       margin-top:48px;
+      position:relative;
+      overflow:hidden;
+      box-shadow: 
+        var(--shadow-soft),
+        inset 0 1px 0 color-mix(in srgb, var(--accent) 6%, transparent);
+    }
+    .stats-section::before{
+      content:'';
+      position:absolute;
+      top:-50%;right:-20%;
+      width:400px;height:400px;
+      border-radius:50%;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 2%, transparent), transparent 70%);
+      filter:blur(80px);
+      opacity:0.5;
+      pointer-events:none;
     }
     @media (max-width: 560px){
-      .stats-section{padding:32px 24px}
+      .stats-section{padding:40px 28px;margin-top:32px}
     }
     .stats-grid{
       display:grid;
       grid-template-columns: repeat(4, 1fr);
-      gap:24px;
+      gap:32px;
+      position:relative;z-index:1;
     }
     @media (max-width: 980px){
-      .stats-grid{grid-template-columns:repeat(2, 1fr)}
+      .stats-grid{grid-template-columns:repeat(2, 1fr);gap:28px}
     }
     @media (max-width: 560px){
-      .stats-grid{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:1fr;gap:32px}
     }
     .stat-item{
       text-align:center;
+      position:relative;
+    }
+    .stat-circle-wrapper{
+      position:relative;
+      width:120px;
+      height:120px;
+      margin:0 auto 20px;
+    }
+    @media (max-width: 560px){
+      .stat-circle-wrapper{width:100px;height:100px;margin-bottom:16px}
+    }
+    .stat-circle{
+      width:100%;
+      height:100%;
+      transform:rotate(-90deg);
+    }
+    .stat-circle-bg{
+      fill:none;
+      stroke:color-mix(in srgb, var(--border) 40%, transparent);
+      stroke-width:6;
+    }
+    .stat-circle-progress{
+      fill:none;
+      stroke:var(--accent);
+      stroke-width:6;
+      stroke-linecap:round;
+      stroke-dasharray:314;
+      stroke-dashoffset:314;
+      transition: stroke-dashoffset 2s var(--ease-out);
+    }
+    .stat-number-wrapper{
+      position:absolute;
+      top:50%;left:50%;
+      transform:translate(-50%, -50%);
     }
     .stat-number{
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-size: clamp(2rem, 5vw, 3.2rem);
       font-weight:900;
       color:var(--accent);
-      margin-bottom:8px;
+      line-height:1;
     }
     .stat-label{
-      font-size:14px;
+      font-size:13px;
       color:var(--sub);
       text-transform:uppercase;
-      letter-spacing:.1em;
+      letter-spacing:.12em;
+      font-weight:600;
+      margin-top:8px;
+    }
+    @media (max-width: 560px){
+      .stat-label{font-size:12px;margin-top:6px}
     }
 
-    /* CTA Section */
+    /* CTA Section - Enhanced */
     .cta-section{
       text-align:center;
-      padding:60px 0;
+      padding:80px 0;
+    }
+    @media (max-width: 560px){
+      .cta-section{padding:60px 0}
     }
     .cta-section h2{
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-size: clamp(2rem, 4.5vw, 2.8rem);
       font-weight:900;
-      margin-bottom:16px;
+      margin-bottom:20px;
+      letter-spacing:-.8px;
     }
     .cta-section p{
-      font-size:16px;
+      font-size:17px;
       color:var(--sub);
-      margin-bottom:24px;
-      max-width:60ch;
+      margin-bottom:32px;
+      max-width:65ch;
       margin-left:auto;
       margin-right:auto;
+      line-height:1.7;
+    }
+    @media (max-width: 560px){
+      .cta-section p{font-size:16px;margin-bottom:24px}
     }
     .cta-buttons{
       display:flex;
-      gap:12px;
+      gap:14px;
       justify-content:center;
       flex-wrap:wrap;
+    }
+    @media (max-width: 560px){
+      .cta-buttons{gap:12px}
+      .cta-buttons .btn{
+        min-width:calc(50% - 6px);
+        font-size:14px;
+        padding:14px 20px;
+      }
     }
   </style>
 </head>
@@ -390,46 +720,73 @@
 
 <main>
   <section class="hero">
+    <div class="hero-decorative"></div>
     <div class="container">
-      <h1>About BYZ Entertainment</h1>
-      <p>Creating unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam.</p>
+      <h1 class="scroll-reveal from-bottom">About BYZ Entertainment</h1>
+      <p class="scroll-reveal from-bottom" style="transition-delay: 0.1s">Creating unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam.</p>
     </div>
   </section>
+
+  <div class="section-divider scroll-reveal"></div>
 
   <section class="content-section">
     <div class="container">
       <div class="story-grid">
         <div class="story-content">
-          <h2 style="text-align:center;">Our Story</h2>
-          <p>
-            BYZ Entertainment was founded in 2018 with a simple vision: to create unforgettable experiences that bring people together through music, culture, and community. Born in the heart of Dar es Salaam, we saw an opportunity to elevate the city's nightlife scene and give people spaces where they could truly connect.
+          <h2 class="scroll-reveal from-top">Our Story</h2>
+          <div class="timeline scroll-reveal from-left" style="transition-delay: 0.1s">
+            <div class="timeline-item">
+              <div class="timeline-year">2018</div>
+              <div class="timeline-text">BYZ Entertainment was founded with a simple vision: to create unforgettable experiences that bring people together through music, culture, and community.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">Today</div>
+              <div class="timeline-text">We've grown into one of Dar's most trusted event brands, partnering with major brands like Guinness and creating nights that people remember.</div>
+            </div>
+          </div>
+          <p class="scroll-reveal from-left" style="transition-delay: 0.2s">
+            Born in the heart of Dar es Salaam, we saw an opportunity to elevate the city's nightlife scene and give people spaces where they could truly connect.
           </p>
-          <p>
-            What started as a passion project has grown into one of Dar's most trusted event brands. We've had the honor of partnering with major brands like Guinness, bringing world-class experiences to our community. But at our core, we're still about one thing: creating nights that people remember.
-          </p>
-          <p>
+          <p class="scroll-reveal from-left" style="transition-delay: 0.3s">
             What makes BYZ unique? We're not just throwing parties—we're building a community. Every Groove night, every Tempo event, every exclusive APT session is crafted with intention. We know our crowd, we know our city, and we know how to create moments that matter.
           </p>
-          <p>
+          <p class="scroll-reveal from-left" style="transition-delay: 0.4s">
             Our mission is to create spaces where music, community, and culture intersect—where every night becomes a memory worth keeping.
           </p>
         </div>
-        <div>
-          <img src="assets/assets/team-photo/team-photo.jpg" alt="BYZ Team" class="story-image" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'height:400px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--bg-alt);display:flex;align-items:center;justify-content:center;color:var(--sub);\'>Team photo</div>'">
+        <div class="scroll-reveal from-right">
+          <div class="story-gallery">
+            <div class="gallery-container">
+              <div class="gallery-item">
+                <img src="assets/assets/events/groove.jpg" alt="Groove Event" loading="lazy" onerror="this.style.display='none'">
+              </div>
+              <div class="gallery-item">
+                <img src="assets/assets/events/tempo.JPG" alt="Tempo Event" loading="lazy" onerror="this.style.display='none'">
+              </div>
+              <div class="gallery-item">
+                <img src="assets/assets/events/apt.jpg" alt="APT Event" loading="lazy" onerror="this.style.display='none'">
+              </div>
+              <div class="gallery-item">
+                <img src="assets/assets/events/carribean-groove.jpg" alt="Caribbean Groove Event" loading="lazy" onerror="this.style.display='none'">
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
+  <div class="section-divider scroll-reveal"></div>
+
   <section class="content-section">
     <div class="container">
-      <h2 style="font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight:900; margin-bottom:12px; text-align:center;">Our Values</h2>
-      <p style="text-align:center; color:var(--sub); margin-bottom:32px; max-width:60ch; margin-left:auto; margin-right:auto;">
-        What drives us every day
-      </p>
+      <div class="values-header">
+        <h2 class="scroll-reveal from-bottom">Our Values</h2>
+        <p class="scroll-reveal from-bottom" style="transition-delay: 0.1s">What drives us every day</p>
+      </div>
 
       <div class="values-grid">
-        <div class="value-card">
+        <div class="value-card scroll-reveal from-bottom scale-in" style="transition-delay: 0.1s">
           <div class="value-icon">
             <i class="fa-solid fa-music"></i>
           </div>
@@ -437,7 +794,7 @@
           <p>We believe music is the universal language that brings people together. Every event is curated with the perfect soundscape in mind.</p>
         </div>
 
-        <div class="value-card">
+        <div class="value-card scroll-reveal from-bottom scale-in" style="transition-delay: 0.15s">
           <div class="value-icon">
             <i class="fa-solid fa-users"></i>
           </div>
@@ -445,7 +802,7 @@
           <p>BYZ is more than events—it's a community. We foster connections, celebrate diversity, and create spaces where everyone belongs.</p>
         </div>
 
-        <div class="value-card">
+        <div class="value-card scroll-reveal from-bottom scale-in" style="transition-delay: 0.2s">
           <div class="value-icon">
             <i class="fa-solid fa-star"></i>
           </div>
@@ -453,7 +810,7 @@
           <p>From sound quality to venue selection, we never compromise on the details. Every experience is crafted to exceed expectations.</p>
         </div>
 
-        <div class="value-card">
+        <div class="value-card scroll-reveal from-bottom scale-in" style="transition-delay: 0.25s">
           <div class="value-icon">
             <i class="fa-solid fa-heart"></i>
           </div>
@@ -461,7 +818,7 @@
           <p>We stay true to our roots while pushing boundaries. BYZ events reflect the real Dar es Salaam nightlife culture.</p>
         </div>
 
-        <div class="value-card">
+        <div class="value-card scroll-reveal from-bottom scale-in" style="transition-delay: 0.3s">
           <div class="value-icon">
             <i class="fa-solid fa-sparkles"></i>
           </div>
@@ -469,7 +826,7 @@
           <p>We're always evolving, experimenting with new formats, and finding fresh ways to create memorable experiences.</p>
         </div>
 
-        <div class="value-card">
+        <div class="value-card scroll-reveal from-bottom scale-in" style="transition-delay: 0.35s">
           <div class="value-icon">
             <i class="fa-solid fa-handshake"></i>
           </div>
@@ -480,24 +837,58 @@
     </div>
   </section>
 
+  <div class="section-divider scroll-reveal"></div>
+
   <section class="content-section">
     <div class="container">
-      <div class="stats-section">
+      <div class="stats-section scroll-reveal scale-in">
         <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-number" data-target="200">0</div>
+          <div class="stat-item scroll-reveal from-bottom" style="transition-delay: 0.1s">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="200" data-max="300"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="200">0</div>
+              </div>
+            </div>
             <div class="stat-label">Events Hosted</div>
           </div>
-          <div class="stat-item">
-            <div class="stat-number" data-target="15">0</div>
+          <div class="stat-item scroll-reveal from-bottom" style="transition-delay: 0.2s">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="15" data-max="20"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="15">0</div>
+              </div>
+            </div>
             <div class="stat-label">Happy Attendees (K+)</div>
           </div>
-          <div class="stat-item">
-            <div class="stat-number" data-target="6">0</div>
+          <div class="stat-item scroll-reveal from-bottom" style="transition-delay: 0.3s">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="6" data-max="10"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="6">0</div>
+              </div>
+            </div>
             <div class="stat-label">Years of Experience</div>
           </div>
-          <div class="stat-item">
-            <div class="stat-number" data-target="50">0</div>
+          <div class="stat-item scroll-reveal from-bottom" style="transition-delay: 0.4s">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="50" data-max="100"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="50">0</div>
+              </div>
+            </div>
             <div class="stat-label">DJs Featured</div>
           </div>
         </div>
@@ -505,15 +896,20 @@
     </div>
   </section>
 
+  <div class="section-divider scroll-reveal"></div>
+
   <section class="cta-section">
     <div class="container">
-      <h2>Join the BYZ Community</h2>
-      <p>Experience the energy, connect with the community, and create memories that last a lifetime.</p>
+      <h2 class="scroll-reveal from-bottom">Join the BYZ Community</h2>
+      <p class="scroll-reveal from-bottom" style="transition-delay: 0.1s">Experience the energy, connect with the community, and create memories that last a lifetime.</p>
       <div class="cta-buttons">
-        <a class="btn primary" href="events.html">
+        <a class="btn primary scroll-reveal from-bottom" href="events.html" style="transition-delay: 0.2s">
           <i class="fa-solid fa-calendar-days"></i> View Upcoming Events
         </a>
-        <a class="btn ghost" href="contact.html">
+        <a class="btn ghost scroll-reveal from-bottom" href="my-bookings.html" style="transition-delay: 0.25s">
+          <i class="fa-solid fa-calendar-check"></i> My Bookings
+        </a>
+        <a class="btn ghost scroll-reveal from-bottom" href="contact.html" style="transition-delay: 0.3s">
           <i class="fa-solid fa-envelope"></i> Get in Touch
         </a>
       </div>
@@ -538,7 +934,38 @@
     }
   })();
   
-  // Animate statistics on scroll
+  // Scroll Reveal Animation System
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: '0px 0px -80px 0px'
+    };
+    
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    // Observe all scroll-reveal elements
+    document.querySelectorAll('.scroll-reveal').forEach(el => {
+      revealObserver.observe(el);
+    });
+    
+    // Reveal hero immediately on load
+    setTimeout(() => {
+      document.querySelectorAll('.hero .scroll-reveal').forEach(el => {
+        el.classList.add('revealed');
+      });
+    }, 100);
+  })();
+  
+  // Animate statistics counter and circular progress
   function animateCounter(el, target, suffix = ""){
     const duration = 2000;
     const start = 0;
@@ -556,34 +983,82 @@
     }, 16);
   }
   
+  function animateProgress(circle, target, max){
+    const circumference = 2 * Math.PI * 45;
+    const percentage = (target / max) * 100;
+    const offset = circumference - (percentage / 100) * circumference;
+    
+    circle.style.strokeDashoffset = offset;
+  }
+  
   // Intersection Observer for stats animation
   const statsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if(entry.isIntersecting){
         const statItems = entry.target.querySelectorAll(".stat-item");
-        statItems.forEach(item => {
-          const stat = item.querySelector(".stat-number");
-          const label = item.querySelector(".stat-label");
-          if(!stat || !label) return;
-          
-          const target = parseInt(stat.dataset.target);
-          // Determine suffix from label text
-          const labelText = label.textContent.toLowerCase();
-          let suffix = "";
-          if(labelText.includes("(k+)")) suffix = "K+";
-          else if(labelText.includes("events hosted") || labelText.includes("djs featured")) suffix = "+";
-          
-          animateCounter(stat, target, suffix);
+        statItems.forEach((item, index) => {
+          setTimeout(() => {
+            const stat = item.querySelector(".stat-number");
+            const label = item.querySelector(".stat-label");
+            const progressCircle = item.querySelector(".stat-circle-progress");
+            
+            if(!stat || !label) return;
+            
+            const target = parseInt(stat.dataset.target);
+            const max = progressCircle ? parseInt(progressCircle.dataset.max) : 100;
+            
+            // Determine suffix from label text
+            const labelText = label.textContent.toLowerCase();
+            let suffix = "";
+            if(labelText.includes("(k+)")) suffix = "K+";
+            else if(labelText.includes("events hosted") || labelText.includes("djs featured")) suffix = "+";
+            
+            animateCounter(stat, target, suffix);
+            
+            if(progressCircle){
+              animateProgress(progressCircle, target, max);
+            }
+          }, index * 150);
         });
         statsObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.5 });
+  }, { threshold: 0.4 });
   
   const statsSection = document.querySelector(".stats-section");
   if(statsSection) statsObserver.observe(statsSection);
+  
+  // Parallax effect for hero (mobile-friendly)
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    
+    let ticking = false;
+    const hero = document.querySelector('.hero');
+    const decorative = document.querySelector('.hero-decorative');
+    
+    function updateParallax(){
+      if(!hero || !decorative) return;
+      
+      const scrolled = window.pageYOffset;
+      const rate = scrolled * 0.3;
+      
+      if(scrolled < window.innerHeight){
+        decorative.style.transform = `translateY(${rate}px)`;
+      }
+      
+      ticking = false;
+    }
+    
+    function requestTick(){
+      if(!ticking){
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }
+    
+    window.addEventListener('scroll', requestTick, { passive: true });
+  })();
 </script>
 
 </body>
 </html>
-
