@@ -256,12 +256,21 @@
       font-weight:900;
       line-height:1.1;
       margin-bottom:20px;
+      text-align:center;
       word-wrap:break-word;
       overflow-wrap:break-word;
-      hyphens:auto;
+      hyphens:none;
+      white-space:nowrap;
     }
     @media (max-width: 560px){
-      .hero h1{font-size: clamp(1.9rem, 8vw, 2.6rem);margin-bottom:16px;line-height:1.15}
+      .hero h1{
+        font-size: clamp(1.9rem, 8vw, 2.6rem);
+        margin-bottom:16px;
+        line-height:1.15;
+        white-space:normal;
+        word-break:keep-all;
+        hyphens:none;
+      }
     }
     .hero p{
       color:var(--sub);
@@ -270,6 +279,8 @@
       line-height:1.6;
       word-wrap:break-word;
       overflow-wrap:break-word;
+      text-align:center;
+      margin:0 auto;
     }
     @media (max-width: 560px){
       .hero p{font-size:15px;max-width:100%}
@@ -418,13 +429,13 @@
       width:2px;
       background-image: repeating-linear-gradient(
         to bottom,
-        var(--accent) 0px,
-        var(--accent) 4px,
-        transparent 4px,
-        transparent 12px
+        color-mix(in srgb, var(--accent) 60%, transparent) 0px,
+        color-mix(in srgb, var(--accent) 60%, transparent) 6px,
+        transparent 6px,
+        transparent 14px
       );
-      opacity:0.6;
-      transition: height 0.8s var(--ease-out);
+      opacity:0.8;
+      transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
       height:0;
     }
     .timeline.revealed::before{
@@ -433,6 +444,13 @@
     @media (max-width: 560px){
       .timeline::before{
         left:-32px;
+        background-image: repeating-linear-gradient(
+          to bottom,
+          color-mix(in srgb, var(--accent) 60%, transparent) 0px,
+          color-mix(in srgb, var(--accent) 60%, transparent) 5px,
+          transparent 5px,
+          transparent 12px
+        );
       }
     }
     .timeline-item{
@@ -445,26 +463,29 @@
       box-sizing:border-box;
       opacity:0;
       transform:translateY(20px);
-      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .timeline-item.revealed{
       opacity:1;
       transform:translateY(0);
     }
     .timeline-item:last-child{
-      margin-bottom:0;
-    }
+        margin-bottom:0;
+      }
     .timeline-item::before{
       content:'';
       position:absolute;
       left:-48px;top:8px;
-      width:12px;height:12px;
+      width:14px;height:14px;
       border-radius:50%;
       background:var(--accent);
-      box-shadow:0 0 0 3px var(--bg), 0 0 0 4px var(--accent);
+      box-shadow:
+        0 0 0 4px var(--bg),
+        0 0 0 5px color-mix(in srgb, var(--accent) 40%, transparent),
+        0 2px 8px rgba(255,255,255,0.2);
       opacity:0;
       transform:scale(0);
-      transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .timeline-item.revealed::before{
       opacity:1;
@@ -473,8 +494,12 @@
     @media (max-width: 560px){
       .timeline-item::before{
         left:-40px;
-        width:10px;
-        height:10px;
+        width:12px;
+        height:12px;
+        box-shadow:
+          0 0 0 3px var(--bg),
+          0 0 0 4px color-mix(in srgb, var(--accent) 40%, transparent),
+          0 2px 6px rgba(255,255,255,0.2);
       }
     }
     .timeline-year{
@@ -498,8 +523,8 @@
       max-width:100%;
       text-align:center;
       padding:0;
-      margin:0;
-    }
+        margin:0;
+      }
     @media (max-width: 560px){
       .timeline-item{
         margin-bottom:40px;
@@ -575,9 +600,10 @@
       margin:0 auto 24px;
       position:relative;
       box-shadow: 
-        0 6px 16px color-mix(in srgb, var(--accent) 10%, transparent),
-        inset 0 1px 0 color-mix(in srgb, var(--accent) 22%, transparent);
+        0 6px 16px color-mix(in srgb, var(--accent) 10%, transparent);
       will-change:transform, opacity;
+      opacity:0;
+      transform:scale(0.5);
     }
     .value-icon i{
       color:var(--accent);
@@ -597,7 +623,7 @@
     /* All value cards start hidden for animation */
     .value-card h3{
       opacity:0;
-      transform:translateX(-150px);
+      transform:translateY(30px);
     }
     .value-card p{
       font-size:16px;
@@ -610,8 +636,7 @@
       margin:0 auto;
       will-change:transform, opacity;
       opacity:0;
-      transform:translateX(150px);
-      transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transform:translateY(30px);
     }
     @media (max-width: 560px){
       .value-card{
@@ -640,7 +665,7 @@
       box-shadow: var(--shadow);
       will-change:transform, opacity;
       opacity:0;
-      transform:scale(0.1);
+      transform:scale(0.3);
     }
     .value-image img{
       width:100%;
@@ -658,8 +683,8 @@
     /* Partnership Carousel */
     .partnership-carousel-section{
       width:100%;
-      margin:80px auto 60px;
-      padding:40px 0;
+      margin:40px auto 60px;
+      padding:32px 0;
       overflow:hidden;
       position:relative;
     }
@@ -926,7 +951,7 @@
             <div class="horizontal-scroll-container" id="horizontalScrollContainer">
               <div class="horizontal-scroll-item">
                 <img id="scroll-img-1" src="" alt="BYZ Event" loading="lazy">
-              </div>
+        </div>
               <div class="horizontal-scroll-item">
                 <img id="scroll-img-2" src="" alt="BYZ Event" loading="lazy">
               </div>
@@ -1004,17 +1029,17 @@
           <h3 id="value-title-6">Partnership</h3>
           <p id="value-text-6">We collaborate with the best to showcase the best of Dar es Salaam.</p>
         </div>
-        
+
         <!-- Partnership Brand Carousel -->
         <div class="partnership-carousel-section">
           <div class="partnership-carousel-container">
             <div class="partnership-carousel-track" id="partnership-carousel-track">
               <div class="partnership-logo-circle">
                 <img src="assets/53B77726-F55A-4780-BC26-7DC570313D83.JPG" alt="Partner" loading="lazy">
-              </div>
+          </div>
               <div class="partnership-logo-circle">
                 <img src="assets/5FA1DE97-E091-4A28-BF64-89FF89C359B8.JPG" alt="Partner" loading="lazy">
-              </div>
+        </div>
               <div class="partnership-logo-circle">
                 <img src="assets/0F763B3F-5631-4865-BD64-3BEBCAE08095.JPG" alt="Partner" loading="lazy">
               </div>
@@ -1051,7 +1076,7 @@
                 <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="200" data-max="300"></circle>
               </svg>
               <div class="stat-number-wrapper">
-                <div class="stat-number" data-target="200">0</div>
+            <div class="stat-number" data-target="200">0</div>
               </div>
             </div>
             <div class="stat-label">Events Hosted</div>
@@ -1063,7 +1088,7 @@
                 <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="15" data-max="20"></circle>
               </svg>
               <div class="stat-number-wrapper">
-                <div class="stat-number" data-target="15">0</div>
+            <div class="stat-number" data-target="15">0</div>
               </div>
             </div>
             <div class="stat-label">Happy Attendees (K+)</div>
@@ -1075,7 +1100,7 @@
                 <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="6" data-max="10"></circle>
               </svg>
               <div class="stat-number-wrapper">
-                <div class="stat-number" data-target="6">0</div>
+            <div class="stat-number" data-target="6">0</div>
               </div>
             </div>
             <div class="stat-label">Years of Experience</div>
@@ -1087,7 +1112,7 @@
                 <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="50" data-max="100"></circle>
               </svg>
               <div class="stat-number-wrapper">
-                <div class="stat-number" data-target="50">0</div>
+            <div class="stat-number" data-target="50">0</div>
               </div>
             </div>
             <div class="stat-label">DJs Featured</div>
@@ -1355,7 +1380,7 @@
     }
     
     function randomizeValueImages(){
-      const valueImageIds = [1, 2, 3, 4]; // Only 4 images now (value-6 removed)
+      const valueImageIds = [1, 2, 3, 4]; // Exclude Partnership (value-6) - only carousel
       const storageKey = 'byz_value_images';
       
       // Check sessionStorage first
@@ -1440,8 +1465,11 @@
           image: document.getElementById(`value-image-${id}`)
         };
         
-        if(elements.card && elements.icon && elements.title && elements.text && elements.image) {
-          valueElements.push(elements);
+        // For value-6 (Partnership), image is optional (only carousel)
+        if(elements.card && elements.icon && elements.title && elements.text) {
+          if(id === 6 || elements.image) {
+            valueElements.push(elements);
+          }
         }
       });
       
@@ -1451,16 +1479,26 @@
         return;
       }
       
-      // Easing function: cubic-bezier(0.4, 0, 0.2, 1)
-      function easeInOutCubic(t) {
+      // Smooth easing functions
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+      
+      function easeOutBack(t) {
+        const c1 = 1.70158;
+        const c3 = c1 + 1;
+        return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+      }
+      
+      function easeInOutQuart(t) {
         return t < 0.5
-          ? 4 * t * t * t
-          : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          ? 8 * t * t * t * t
+          : 1 - Math.pow(-2 * t + 2, 4) / 2;
       }
       
       // Get animation range (responsive to viewport)
       function getAnimationRange(){
-        return window.innerHeight * 1.2; // Extended range for longer duration (800-1200ms equivalent)
+        return window.innerHeight * 1.5; // Extended range for smoother, longer animations
       }
       
       // Debounce function for scroll handler
@@ -1485,101 +1523,98 @@
           const cardRect = value.card.getBoundingClientRect();
           const cardCenter = cardRect.top + (cardRect.height / 2);
           
-          // Calculate progress with extended range and staggering
+          // Calculate progress with extended range and smoother staggering
           const distanceToCenter = cardCenter - viewportCenter;
-          const staggerOffset = index * 0.05; // 5% stagger per card
+          const staggerOffset = index * 0.08; // 8% stagger per card for better separation
           const adjustedDistance = distanceToCenter + (staggerOffset * windowHeight);
           const progress = 1 - (adjustedDistance / ANIMATION_RANGE);
           const clampedProgress = Math.max(0, Math.min(1, progress));
           
-          // Apply easing
-          const easedProgress = easeInOutCubic(clampedProgress);
-          
           if(clampedProgress > 0 && clampedProgress <= 1){
-            // Icon: grows big (0-0.25), returns to normal (0.25-0.5) - extended range
-            if(easedProgress < 0.25){
-              const iconProgress = easedProgress / 0.25;
-              const easedIcon = easeInOutCubic(iconProgress);
-              const scale = 1 + (easedIcon * 2); // 1 to 3
+            // Icon: smooth pop with bounce effect (0-0.3)
+            if(clampedProgress < 0.3){
+              const iconProgress = clampedProgress / 0.3;
+              const easedIcon = easeOutBack(iconProgress);
+              const scale = 0.5 + (easedIcon * 0.5); // 0.5 to 1.0 with bounce
               value.icon.style.transform = `scale(${scale})`;
-              value.icon.style.opacity = '1';
-            } else if(easedProgress < 0.5){
-              const iconProgress = (easedProgress - 0.25) / 0.25;
-              const easedIcon = easeInOutCubic(iconProgress);
-              const scale = 3 - (easedIcon * 2); // 3 to 1
-              value.icon.style.transform = `scale(${scale})`;
-              value.icon.style.opacity = '1';
+              value.icon.style.opacity = Math.min(1, iconProgress * 1.2);
             } else {
               value.icon.style.transform = 'scale(1)';
               value.icon.style.opacity = '1';
             }
             
-            // Title: slides from left (0.2-0.6) - extended range with delay
-            const titleStart = 0.2 + staggerOffset;
-            const titleEnd = 0.6 + staggerOffset;
-            if(easedProgress >= titleStart && easedProgress <= titleEnd){
-              const titleProgress = (easedProgress - titleStart) / (titleEnd - titleStart);
-              const easedTitle = easeInOutCubic(titleProgress);
-              const translateX = (1 - easedTitle) * -150;
+            // Title: smooth fade and slide from bottom (0.15-0.65)
+            const titleStart = 0.15 + staggerOffset;
+            const titleEnd = 0.65 + staggerOffset;
+            if(clampedProgress >= titleStart && clampedProgress <= titleEnd){
+              const titleProgress = (clampedProgress - titleStart) / (titleEnd - titleStart);
+              const easedTitle = easeOutCubic(titleProgress);
+              const translateY = (1 - easedTitle) * 30;
               value.title.style.opacity = easedTitle;
-              value.title.style.transform = `translateX(${translateX}px)`;
-            } else if(easedProgress > titleEnd){
+              value.title.style.transform = `translateY(${translateY}px)`;
+            } else if(clampedProgress > titleEnd){
               value.title.style.opacity = '1';
-              value.title.style.transform = 'translateX(0)';
+              value.title.style.transform = 'translateY(0)';
             } else {
               value.title.style.opacity = '0';
-              value.title.style.transform = 'translateX(-150px)';
+              value.title.style.transform = 'translateY(30px)';
             }
             
-            // Text: slides from right (0.35-0.7) - extended range with delay
-            const textStart = 0.35 + staggerOffset;
-            const textEnd = 0.7 + staggerOffset;
-            if(easedProgress >= textStart && easedProgress <= textEnd){
-              const textProgress = (easedProgress - textStart) / (textEnd - textStart);
-              const easedText = easeInOutCubic(textProgress);
-              const translateX = (1 - easedText) * 150;
+            // Text: smooth fade and slide from bottom (0.3-0.75)
+            const textStart = 0.3 + staggerOffset;
+            const textEnd = 0.75 + staggerOffset;
+            if(clampedProgress >= textStart && clampedProgress <= textEnd){
+              const textProgress = (clampedProgress - textStart) / (textEnd - textStart);
+              const easedText = easeOutCubic(textProgress);
+              const translateY = (1 - easedText) * 30;
               value.text.style.opacity = easedText;
-              value.text.style.transform = `translateX(${translateX}px)`;
-            } else if(easedProgress > textEnd){
+              value.text.style.transform = `translateY(${translateY}px)`;
+            } else if(clampedProgress > textEnd){
               value.text.style.opacity = '1';
-              value.text.style.transform = 'translateX(0)';
+              value.text.style.transform = 'translateY(0)';
             } else {
               value.text.style.opacity = '0';
-              value.text.style.transform = 'translateX(150px)';
+              value.text.style.transform = 'translateY(30px)';
             }
             
-            // Image: starts tiny and grows (0.55-0.85) - extended range
-            const imageStart = 0.55 + staggerOffset;
-            if(easedProgress >= imageStart){
-              const imageProgress = Math.min(1, (easedProgress - imageStart) / 0.3);
-              const easedImage = easeInOutCubic(imageProgress);
-              const scale = 0.1 + (easedImage * 0.9);
-              value.image.style.opacity = easedImage;
-              value.image.style.transform = `scale(${scale})`;
-            } else {
-              value.image.style.opacity = '0';
-              value.image.style.transform = 'scale(0.1)';
+            // Image: smooth scale and fade from center (0.5-0.9)
+            if(value.image){
+              const imageStart = 0.5 + staggerOffset;
+              if(clampedProgress >= imageStart){
+                const imageProgress = Math.min(1, (clampedProgress - imageStart) / 0.4);
+                const easedImage = easeInOutQuart(imageProgress);
+                const scale = 0.3 + (easedImage * 0.7); // 0.3 to 1.0
+                value.image.style.opacity = easedImage;
+                value.image.style.transform = `scale(${scale})`;
+              } else {
+                value.image.style.opacity = '0';
+                value.image.style.transform = 'scale(0.3)';
+              }
             }
           } else if(clampedProgress <= 0){
             // Reset before animation
-            value.icon.style.transform = 'scale(1)';
-            value.icon.style.opacity = '1';
+            value.icon.style.transform = 'scale(0.5)';
+            value.icon.style.opacity = '0';
             value.title.style.opacity = '0';
-            value.title.style.transform = 'translateX(-150px)';
+            value.title.style.transform = 'translateY(30px)';
             value.text.style.opacity = '0';
-            value.text.style.transform = 'translateX(150px)';
-            value.image.style.opacity = '0';
-            value.image.style.transform = 'scale(0.1)';
+            value.text.style.transform = 'translateY(30px)';
+            if(value.image){
+              value.image.style.opacity = '0';
+              value.image.style.transform = 'scale(0.3)';
+            }
           } else {
             // Set final state after animation
             value.icon.style.transform = 'scale(1)';
             value.icon.style.opacity = '1';
             value.title.style.opacity = '1';
-            value.title.style.transform = 'translateX(0)';
+            value.title.style.transform = 'translateY(0)';
             value.text.style.opacity = '1';
-            value.text.style.transform = 'translateX(0)';
-            value.image.style.opacity = '1';
-            value.image.style.transform = 'scale(1)';
+            value.text.style.transform = 'translateY(0)';
+            if(value.image){
+              value.image.style.opacity = '1';
+              value.image.style.transform = 'scale(1)';
+            }
           }
         });
       }
@@ -1750,22 +1785,22 @@
         const statItems = entry.target.querySelectorAll(".stat-item");
         statItems.forEach((item, index) => {
           setTimeout(() => {
-            const stat = item.querySelector(".stat-number");
-            const label = item.querySelector(".stat-label");
+          const stat = item.querySelector(".stat-number");
+          const label = item.querySelector(".stat-label");
             const progressCircle = item.querySelector(".stat-circle-progress");
             
-            if(!stat || !label) return;
-            
-            const target = parseInt(stat.dataset.target);
+          if(!stat || !label) return;
+          
+          const target = parseInt(stat.dataset.target);
             const max = progressCircle ? parseInt(progressCircle.dataset.max) : 100;
             
-            // Determine suffix from label text
-            const labelText = label.textContent.toLowerCase();
-            let suffix = "";
-            if(labelText.includes("(k+)")) suffix = "K+";
-            else if(labelText.includes("events hosted") || labelText.includes("djs featured")) suffix = "+";
-            
-            animateCounter(stat, target, suffix);
+          // Determine suffix from label text
+          const labelText = label.textContent.toLowerCase();
+          let suffix = "";
+          if(labelText.includes("(k+)")) suffix = "K+";
+          else if(labelText.includes("events hosted") || labelText.includes("djs featured")) suffix = "+";
+          
+          animateCounter(stat, target, suffix);
             
             if(progressCircle){
               animateProgress(progressCircle, target, max);
