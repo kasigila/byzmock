@@ -7,7 +7,6 @@
   <meta name="description" content="View your BYZ booking history, QR codes, and upcoming events." />
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- QR Code Library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
@@ -137,6 +136,11 @@
     }
     .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
     .btn.ghost{background: transparent}
+    .btn:disabled{
+      opacity:0.6;
+      cursor:not-allowed;
+      transform:none !important;
+    }
 
     /* Main */
     main{padding-top:var(--header-h)}
@@ -217,6 +221,43 @@
       letter-spacing:8px;
       font-weight:700;
       font-size:20px;
+    }
+
+    /* Phone Email Selection */
+    .phone-emails-container{
+      display:none;
+      margin-top:16px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background:color-mix(in srgb, var(--bg-alt) 50%, transparent);
+    }
+    .phone-emails-header{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:12px;
+    }
+    .phone-emails-header i{
+      color:var(--ok);
+    }
+    .phone-emails-header p{
+      font-size:13px;
+      color:var(--text);
+      font-weight:600;
+      margin:0;
+    }
+    .phone-emails-privacy{
+      font-size:11px;
+      color:var(--sub);
+      margin-bottom:12px;
+      line-height:1.4;
+    }
+    .phone-email-item{
+      width:100%;
+      text-align:left;
+      justify-content:flex-start;
+      padding:12px 16px;
     }
 
     /* Bookings List */
@@ -323,7 +364,7 @@
       color:var(--text);
     }
 
-    /* QR Code Display - Enhanced with Aesthetic Design */
+    /* QR Code Display */
     .qr-display{
       margin-top:20px;
       padding:20px;
@@ -409,7 +450,7 @@
       flex-shrink:0;
     }
     
-    /* Fullscreen QR Modal - Mobile Optimized */
+    /* Fullscreen QR Modal */
     .byz-qr-fullscreen-modal{
       position:fixed;
       inset:0;
@@ -505,9 +546,14 @@
     .booking-actions .btn{
       min-height:44px;
       touch-action:manipulation;
+      flex:1;
+      min-width:140px;
+    }
+    @media (max-width: 560px){
+      .booking-actions .btn{width:100%}
     }
     
-    /* Toast Notification System (Reused from booking.html) */
+    /* Toast Notification System */
     .byz-toast{
       position:fixed;
       inset:0;
@@ -579,7 +625,7 @@
       to{transform:rotate(360deg)}
     }
     
-    /* Skeleton Loader for Booking Cards */
+    /* Skeleton Loader */
     .booking-card-skeleton{
       border-radius: var(--radius-lg);
       border:1px solid var(--border);
@@ -619,7 +665,7 @@
       margin:0 auto;
     }
     
-    /* Enhanced Empty State */
+    /* Empty State */
     .byz-empty-state{
       text-align:center;
       padding:48px 24px;
@@ -642,34 +688,6 @@
       max-width:400px;
       margin-left:auto;
       margin-right:auto;
-    }
-    .booking-actions .btn{
-      flex:1;
-      min-width:140px;
-    }
-    @media (max-width: 560px){
-      .booking-actions .btn{width:100%}
-    }
-
-    /* Empty State */
-    .empty-state{
-      text-align:center;
-      padding:80px 20px;
-      color:var(--sub);
-    }
-    .empty-state i{
-      font-size:64px;
-      margin-bottom:20px;
-      opacity:.3;
-    }
-    .empty-state h3{
-      font-size:24px;
-      color:var(--text);
-      margin-bottom:12px;
-    }
-    .empty-state p{
-      font-size:15px;
-      margin-bottom:24px;
     }
 
     /* Section */
@@ -766,21 +784,27 @@
         <!-- Step 1: Email/Phone Entry -->
         <div id="emailStep">
           <div style="display:flex;gap:8px;margin-bottom:12px;">
-            <button class="btn ghost" id="lookupTypeEmail" onclick="switchLookupType('email')" style="flex:1;font-size:13px;padding:10px;">
+            <button class="btn ghost" id="lookupTypeEmail" style="flex:1;font-size:13px;padding:10px;">
               <i class="fa-solid fa-envelope"></i> Email
             </button>
-            <button class="btn ghost" id="lookupTypePhone" onclick="switchLookupType('phone')" style="flex:1;font-size:13px;padding:10px;">
+            <button class="btn ghost" id="lookupTypePhone" style="flex:1;font-size:13px;padding:10px;">
               <i class="fa-solid fa-phone"></i> Phone
             </button>
           </div>
           <div class="form-row">
             <input type="text" id="emailLookup" placeholder="your@email.com" />
-            <button class="btn primary" onclick="requestVerificationCode()">
+            <button class="btn primary" id="sendCodeBtn">
               <i class="fa-solid fa-envelope"></i> Send Code
             </button>
           </div>
-          <div id="phoneEmails" style="display:none;margin-top:12px;">
-            <p style="font-size:12px;color:var(--sub);margin-bottom:8px;">Select email to receive verification code:</p>
+          <div class="phone-emails-container" id="phoneEmails">
+            <div class="phone-emails-header">
+              <i class="fa-solid fa-shield-halved"></i>
+              <p>Select email to receive verification code:</p>
+            </div>
+            <p class="phone-emails-privacy">
+              <i class="fa-solid fa-lock"></i> Emails are masked for privacy. Only the first 2 characters and domain are shown.
+            </p>
             <div id="phoneEmailList" style="display:flex;flex-direction:column;gap:8px;"></div>
           </div>
         </div>
@@ -791,13 +815,13 @@
             <i class="fa-solid fa-circle-info"></i> Check your email for a 6-digit verification code
           </p>
           <div class="form-row">
-            <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" style="text-align:center;font-size:20px;letter-spacing:8px;font-weight:700;" />
-            <button class="btn primary" onclick="verifyAndLoadBookings()">
+            <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" />
+            <button class="btn primary" id="verifyBtn">
               <i class="fa-solid fa-check"></i> Verify
             </button>
           </div>
           <div style="margin-top:12px;text-align:center;">
-            <button class="btn ghost" onclick="resetVerification()" style="font-size:12px;padding:8px 12px;">
+            <button class="btn ghost" id="resetBtn" style="font-size:12px;padding:8px 12px;">
               <i class="fa-solid fa-arrow-left"></i> Use Different Email
             </button>
           </div>
@@ -810,10 +834,10 @@
     <div class="container">
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab active" data-tab="upcoming" onclick="switchTab('upcoming')">
+        <button class="tab active" data-tab="upcoming" id="tabUpcoming">
           <i class="fa-solid fa-calendar-days"></i> Upcoming
         </button>
-        <button class="tab" data-tab="past" onclick="switchTab('past')">
+        <button class="tab" data-tab="past" id="tabPast">
           <i class="fa-solid fa-history"></i> Past Events
         </button>
       </div>
@@ -828,7 +852,7 @@
         <!-- Past bookings will be loaded here -->
       </div>
 
-      <!-- Empty State (shown when no bookings) -->
+      <!-- Empty State -->
       <div id="emptyState" class="byz-empty-state" style="display:none;">
         <i class="fa-solid fa-calendar-xmark"></i>
         <h3>No bookings found</h3>
@@ -841,20 +865,25 @@
             <i class="fa-solid fa-calendar-plus"></i> Book Now
           </a>
         </div>
-        <style>
-          @media (min-width: 640px) {
-            #emptyState .byz-empty-state > div {
-              flex-direction: row !important;
-            }
-          }
-        </style>
       </div>
     </div>
   </section>
 </main>
 
 <script>
-  // Mobile menu toggle
+  // ============================================
+  // GLOBAL CONFIGURATION & STATE
+  // ============================================
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+  
+  let lookupType = "email";
+  let selectedPhoneEmail = null;
+  let phoneEmailMap = {};
+  let __byzToastTimer = null;
+
+  // ============================================
+  // MOBILE MENU
+  // ============================================
   (function(){
     const btn = document.getElementById("mobileBtn");
     const panel = document.getElementById("mobilePanel");
@@ -870,37 +899,89 @@
     }
   })();
 
-  // Tab switching
-  function switchTab(tab){
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelector(`.tab[data-tab="${tab}"]`).classList.add("active");
+  // ============================================
+  // TOAST NOTIFICATION SYSTEM
+  // ============================================
+  function ensureByzToast(){
+    if(document.getElementById("byzToast")) return;
     
-    if(tab === "upcoming"){
-      document.getElementById("upcomingBookings").style.display = "";
-      document.getElementById("pastBookings").style.display = "none";
-    } else {
-      document.getElementById("upcomingBookings").style.display = "none";
-      document.getElementById("pastBookings").style.display = "";
-    }
-    renderBookings();
+    const wrap = document.createElement("div");
+    wrap.id = "byzToast";
+    wrap.className = "byz-toast";
+    wrap.innerHTML = `
+      <div class="byz-toast-card" role="dialog" aria-modal="true" aria-labelledby="byzToastBody">
+        <button class="byz-toast-close" type="button" aria-label="Close" onclick="byzCloseToast()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="byz-toast-body" id="byzToastBody"></div>
+      </div>
+    `;
+    
+    document.body.appendChild(wrap);
+    
+    wrap.addEventListener("click", (e) => {
+      if(e.target === wrap) byzCloseToast();
+    });
+  }
+  
+  function byzShowToast(html, duration = 3000){
+    ensureByzToast();
+    const toast = document.getElementById("byzToast");
+    const body = document.getElementById("byzToastBody");
+    if(!toast || !body) return;
+    
+    body.innerHTML = html;
+    toast.classList.add("show");
+    document.body.style.overflow = "hidden";
+    
+    if(__byzToastTimer) clearTimeout(__byzToastTimer);
+    __byzToastTimer = setTimeout(() => {
+      byzCloseToast();
+    }, duration);
+  }
+  
+  function byzCloseToast(){
+    const toast = document.getElementById("byzToast");
+    if(toast) toast.classList.remove("show");
+    document.body.style.overflow = "";
+    if(__byzToastTimer) clearTimeout(__byzToastTimer);
   }
 
-  // API Configuration
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+  // ============================================
+  // EMAIL MASKING FOR PRIVACY
+  // ============================================
+  function maskEmail(email) {
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      return email || '***@***';
+    }
+    try {
+      const [localPart, domain] = email.split('@');
+      if (!localPart || !domain) return '***@***';
+      
+      if (localPart.length <= 1) {
+        return `${localPart}***@${domain}`;
+      } else if (localPart.length === 2) {
+        return `${localPart[0]}***@${domain}`;
+      } else {
+        const visibleChars = localPart.substring(0, 2);
+        return `${visibleChars}***@${domain}`;
+      }
+    } catch (e) {
+      console.error('Error masking email:', e);
+      return '***@***';
+    }
+  }
 
-  // Lookup type state
-  let lookupType = "email"; // Default to email
-  let selectedPhoneEmail = null;
-
-  // Switch between email and phone lookup
+  // ============================================
+  // LOOKUP TYPE SWITCHING
+  // ============================================
   function switchLookupType(type) {
     lookupType = type;
     const emailBtn = document.getElementById("lookupTypeEmail");
     const phoneBtn = document.getElementById("lookupTypePhone");
     const input = document.getElementById("emailLookup");
-    const sendBtn = document.querySelector("#emailStep .btn.primary");
+    const sendBtn = document.getElementById("sendCodeBtn");
     
-    // Update button states
     if (emailBtn && phoneBtn) {
       if (type === "email") {
         emailBtn.classList.add("primary");
@@ -929,14 +1010,16 @@
       }
     }
     
-    // Clear input and hide phone email list
     if (input) input.value = "";
     document.getElementById("phoneEmails").style.display = "none";
     selectedPhoneEmail = null;
+    phoneEmailMap = {};
   }
 
-  // Request verification code (updated version with phone lookup)
-  async function requestVerificationCode(event) {
+  // ============================================
+  // REQUEST VERIFICATION CODE
+  // ============================================
+  async function requestVerificationCode() {
     const input = document.getElementById("emailLookup").value.trim();
     
     if (!input) {
@@ -944,11 +1027,9 @@
       return;
     }
 
-    const btn = event ? event.target.closest("button") : document.querySelector("#emailStep .btn.primary");
-    if (!btn) {
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Unable to find send button</div>', 3000);
-      return;
-    }
+    const btn = document.getElementById("sendCodeBtn");
+    if (!btn) return;
+    
     const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="byz-loading-spinner"></span> Sending...';
@@ -957,7 +1038,7 @@
       let body = {};
       
       if (lookupType === "phone") {
-        // First, get emails associated with phone
+        // Get emails associated with phone
         const phoneRes = await fetch(SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -974,16 +1055,36 @@
             selectedPhoneEmail = phoneData.emails[0];
             body = { action: "sendVerificationCode", email: selectedPhoneEmail };
           } else {
-            // Multiple emails, show selection
+            // Multiple emails, show selection with masked emails
             const phoneEmailList = document.getElementById("phoneEmailList");
-            phoneEmailList.innerHTML = phoneData.emails.map(email => `
-              <button class="btn ghost" onclick="selectPhoneEmail('${email}')" style="width:100%;text-align:left;justify-content:flex-start;">
-                <i class="fa-solid fa-envelope"></i> ${email}
-              </button>
-            `).join("");
+            phoneEmailMap = {};
+            
+            phoneEmailList.innerHTML = phoneData.emails.map((email, index) => {
+              const maskedEmail = maskEmail(email);
+              const mapKey = `${maskedEmail}_${index}`;
+              phoneEmailMap[mapKey] = email;
+              
+              return `
+                <button class="btn ghost phone-email-item" data-email-key="${mapKey}">
+                  <i class="fa-solid fa-envelope"></i> 
+                  <span style="font-weight:600;">${maskedEmail}</span>
+                  <span style="font-size:11px;color:var(--sub);margin-left:8px;">(Click to select)</span>
+                </button>
+              `;
+            }).join("");
+            
+            // Add click handlers
+            phoneEmailList.querySelectorAll('.phone-email-item').forEach(btn => {
+              btn.addEventListener('click', () => {
+                const mapKey = btn.getAttribute('data-email-key');
+                selectPhoneEmail(mapKey);
+              });
+            });
+            
             document.getElementById("phoneEmails").style.display = "block";
             btn.innerHTML = originalText;
             btn.disabled = false;
+            byzShowToast(`<div><i class="fa-solid fa-shield-halved"></i> <b>Privacy Protected</b></div><div class="byz-toast-sub">Select which email to receive your verification code</div>`, 4000);
             return;
           }
         } else {
@@ -996,6 +1097,7 @@
         body = { action: "sendVerificationCode", email: input };
       }
       
+      // Send verification code
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1004,37 +1106,23 @@
       const data = await res.json();
 
       if (data.success) {
-        // Show code input step
-        const emailStep = document.getElementById("emailStep");
-        const codeStep = document.getElementById("codeStep");
-        if(emailStep) emailStep.style.display = "none";
-        if(codeStep) {
-          codeStep.style.display = "block";
-          const codeInput = document.getElementById("verificationCode");
-          if(codeInput) {
-            codeInput.focus();
-            // Mobile: scroll to code input
-            setTimeout(() => codeInput.scrollIntoView({behavior:'smooth',block:'center'}), 100);
-          }
-        }
         // Store email for verification
         const emailToStore = lookupType === "phone" ? selectedPhoneEmail : input;
         sessionStorage.setItem("byz_verify_email", emailToStore);
         
         // Show code input step
-        const emailStep = document.getElementById("emailStep");
+        document.getElementById("emailStep").style.display = "none";
         const codeStep = document.getElementById("codeStep");
-        if(emailStep) emailStep.style.display = "none";
-        if(codeStep) {
-          codeStep.style.display = "block";
-          const codeInput = document.getElementById("verificationCode");
-          if(codeInput) {
-            codeInput.focus();
-            setTimeout(() => codeInput.scrollIntoView({behavior:'smooth',block:'center'}), 100);
-          }
+        codeStep.style.display = "block";
+        
+        const codeInput = document.getElementById("verificationCode");
+        if(codeInput) {
+          codeInput.value = "";
+          codeInput.focus();
+          setTimeout(() => codeInput.scrollIntoView({behavior:'smooth',block:'center'}), 100);
         }
         
-        // Show helpful message about checking email and trying different email if needed
+        // Update info message
         const codeStepInfo = document.querySelector("#codeStep p");
         if (codeStepInfo) {
           codeStepInfo.innerHTML = `
@@ -1062,33 +1150,32 @@
     }
   }
 
-  // Select email from phone lookup
-  function selectPhoneEmail(email) {
-    selectedPhoneEmail = email;
-    document.getElementById("emailLookup").value = email;
+  // ============================================
+  // SELECT PHONE EMAIL
+  // ============================================
+  function selectPhoneEmail(mapKey) {
+    const fullEmail = phoneEmailMap[mapKey];
+    if (!fullEmail) {
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Unable to find selected email. Please try again.</div>', 3000);
+      return;
+    }
+    
+    selectedPhoneEmail = fullEmail;
+    document.getElementById("emailLookup").value = maskEmail(fullEmail);
     document.getElementById("phoneEmails").style.display = "none";
-    requestVerificationCode();
+    
+    byzShowToast(`<div><i class="fa-solid fa-circle-check"></i> <b>Email Selected</b></div><div class="byz-toast-sub">Sending verification code to ${maskEmail(fullEmail)}</div>`, 2000);
+    
+    // Send code to selected email
+    setTimeout(() => {
+      requestVerificationCode();
+    }, 500);
   }
 
-  // Show skeleton loaders
-  function showBookingSkeletons(containerId, count = 2) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = Array(count).fill(0).map(() => `
-      <div class="booking-card-skeleton">
-        <div class="skeleton skeleton-title"></div>
-        <div class="skeleton skeleton-line short"></div>
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px;">
-          <div class="skeleton skeleton-line medium"></div>
-          <div class="skeleton skeleton-line medium"></div>
-        </div>
-        <div class="skeleton skeleton-qr" style="margin-top:16px;"></div>
-      </div>
-    `).join("");
-  }
-
-  // Verify code and load bookings
-  async function verifyAndLoadBookings(event) {
+  // ============================================
+  // VERIFY CODE AND LOAD BOOKINGS
+  // ============================================
+  async function verifyAndLoadBookings() {
     const email = sessionStorage.getItem("byz_verify_email");
     const code = document.getElementById("verificationCode").value.trim();
 
@@ -1097,17 +1184,14 @@
       return;
     }
 
-    // Show loading
-    const btn = event ? event.target.closest("button") : document.querySelector("#codeStep .btn.primary");
-    if (!btn) {
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Unable to find verify button</div>', 3000);
-      return;
-    }
+    const btn = document.getElementById("verifyBtn");
+    if (!btn) return;
+    
     const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="byz-loading-spinner"></span> Verifying...';
 
-    // Hide verification form and show loading skeletons
+    // Hide form and show loading
     document.querySelector(".lookup-form").style.display = "none";
     document.getElementById("upcomingBookings").style.display = "";
     document.getElementById("pastBookings").style.display = "none";
@@ -1126,13 +1210,10 @@
       const data = await res.json();
 
       if (data.success) {
-        // Store email for future lookups
         localStorage.setItem("byz_lookup_email", email);
         localStorage.setItem("byz_my_bookings", JSON.stringify(data.bookings));
-        // Process and display bookings
         processBookings(data.bookings);
       } else {
-        // Show form again on error
         document.querySelector(".lookup-form").style.display = "block";
         document.getElementById("upcomingBookings").innerHTML = "";
         byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Verification Failed</b></div><div class="byz-toast-sub">${data.error || "Invalid verification code. Please try again."}</div>`, 4000);
@@ -1145,7 +1226,6 @@
         btn.disabled = false;
       }
     } catch (error) {
-      // Show form again on error
       document.querySelector(".lookup-form").style.display = "block";
       document.getElementById("upcomingBookings").innerHTML = "";
       byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Error verifying code. Please try again.</div>', 4000);
@@ -1154,69 +1234,70 @@
     }
   }
 
-  // Reset verification flow
+  // ============================================
+  // RESET VERIFICATION
+  // ============================================
   function resetVerification() {
     document.getElementById("emailStep").style.display = "block";
     document.getElementById("codeStep").style.display = "none";
     document.getElementById("emailLookup").value = "";
     document.getElementById("verificationCode").value = "";
+    document.getElementById("phoneEmails").style.display = "none";
     sessionStorage.removeItem("byz_verify_email");
+    selectedPhoneEmail = null;
+    phoneEmailMap = {};
   }
 
-  // Fetch bookings from API (with verification)
-  async function fetchUserBookings(email, code) {
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "getBookingsByEmail",
-          email: email,
-          verificationCode: code
-        })
-      });
-      const data = await res.json();
-      return data.bookings || [];
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
-      // Fallback to localStorage if API fails
-      try {
-        const saved = localStorage.getItem("byz_my_bookings");
-        if(saved) return JSON.parse(saved);
-      } catch(e) {}
-      return [];
-    }
+  // ============================================
+  // SKELETON LOADERS
+  // ============================================
+  function showBookingSkeletons(containerId, count = 2) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = Array(count).fill(0).map(() => `
+      <div class="booking-card-skeleton">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-line short"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px;">
+          <div class="skeleton skeleton-line medium"></div>
+          <div class="skeleton skeleton-line medium"></div>
+        </div>
+        <div class="skeleton skeleton-qr" style="margin-top:16px;"></div>
+      </div>
+    `).join("");
   }
 
-  // Allow Enter key on code input
-  document.getElementById("verificationCode")?.addEventListener("keypress", (e) => {
-    if(e.key === "Enter"){
-      e.preventDefault();
-      verifyAndLoadBookings(e);
+  // ============================================
+  // TAB SWITCHING
+  // ============================================
+  function switchTab(tab){
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.getElementById(tab === "upcoming" ? "tabUpcoming" : "tabPast").classList.add("active");
+    
+    if(tab === "upcoming"){
+      document.getElementById("upcomingBookings").style.display = "";
+      document.getElementById("pastBookings").style.display = "none";
+    } else {
+      document.getElementById("upcomingBookings").style.display = "none";
+      document.getElementById("pastBookings").style.display = "";
     }
-  });
+    renderBookings();
+  }
 
-  // Process and render bookings
+  // ============================================
+  // PROCESS AND RENDER BOOKINGS
+  // ============================================
   function processBookings(bookings) {
-    // Separate upcoming and past
-    const now = Date.now();
-    const upcoming = bookings.filter(b => {
-      // If booking is confirmed and event hasn't passed (simple check)
-      return b.status === "CONFIRMED" || b.status === "PENDING";
-    });
-    const past = bookings.filter(b => {
-      return b.status === "CONFIRMED" && b.checkedInCount > 0;
-    });
+    const upcoming = bookings.filter(b => b.status === "CONFIRMED" || b.status === "PENDING");
+    const past = bookings.filter(b => b.status === "CONFIRMED" && b.checkedInCount > 0);
 
     // Render upcoming
     const upcomingContainer = document.getElementById("upcomingBookings");
     if(upcoming.length === 0){
       upcomingContainer.innerHTML = "";
-      const emptyState = document.getElementById("emptyState");
-      if(emptyState) emptyState.style.display = "";
+      document.getElementById("emptyState").style.display = "";
     } else {
-      const emptyState = document.getElementById("emptyState");
-      if(emptyState) emptyState.style.display = "none";
+      document.getElementById("emptyState").style.display = "none";
       upcomingContainer.innerHTML = upcoming.map(b => renderBookingCard(b)).join("");
     }
 
@@ -1228,10 +1309,9 @@
       pastContainer.innerHTML = past.map(b => renderBookingCard(b, true)).join("");
     }
     
-    // Generate QR codes for confirmed bookings after rendering
+    // Generate QR codes
     setTimeout(() => {
-      const allBookings = [...upcoming, ...past];
-      allBookings.forEach(booking => {
+      [...upcoming, ...past].forEach(booking => {
         if (booking.status === "CONFIRMED") {
           byzGenerateQRCode(booking.bookingId, booking.eventKey || "groove");
         }
@@ -1239,10 +1319,10 @@
     }, 150);
   }
 
-  // Render bookings (fallback to localStorage if no email entered)
-  async function renderBookings(){
-    // Only show localStorage bookings if user hasn't verified email
-    // This prevents showing unverified data
+  // ============================================
+  // RENDER BOOKINGS (FALLBACK)
+  // ============================================
+  function renderBookings(){
     let bookings = [];
     try {
       const saved = localStorage.getItem("byz_my_bookings");
@@ -1252,17 +1332,17 @@
     if(bookings.length > 0){
       processBookings(bookings);
     } else {
-      const emptyState = document.getElementById("emptyState");
-      if(emptyState) emptyState.style.display = "";
+      document.getElementById("emptyState").style.display = "";
     }
   }
 
-  // Render booking card
+  // ============================================
+  // RENDER BOOKING CARD
+  // ============================================
   function renderBookingCard(booking, isPast = false){
     const statusClass = booking.status || "PENDING";
     const statusLabel = statusClass === "CONFIRMED" ? "Confirmed" : statusClass === "REJECTED" ? "Rejected" : "Pending";
     
-    // Handle both API and localStorage data formats
     const date = booking.date || (booking.timestamp ? new Date(booking.timestamp).toLocaleDateString() : "TBD");
     const eventName = booking.eventName || booking.description || "Event";
     const bookingType = booking.bookingType === "TICKET" ? "Ticket" : booking.bookingType === "TABLE" ? "VIP Table" : "Booking";
@@ -1330,17 +1410,17 @@
 
           <div class="booking-actions">
             ${statusClass === "CONFIRMED" ? `
-            <button class="btn" onclick="byzSaveQRCode('${bookingId}')" title="Save QR code to your device" style="min-height:44px;touch-action:manipulation;">
+            <button class="btn" onclick="byzSaveQRCode('${bookingId}')" title="Save QR code to your device">
               <i class="fa-solid fa-download"></i> Save QR Code
             </button>
-            <button class="btn ghost" onclick="byzShowQRFullscreen('${bookingId}')" title="Show QR code fullscreen for easy scanning" style="min-height:44px;touch-action:manipulation;">
+            <button class="btn ghost" onclick="byzShowQRFullscreen('${bookingId}')" title="Show QR code fullscreen">
               <i class="fa-solid fa-expand"></i> Show Fullscreen
             </button>
-            <button class="btn ghost" onclick="resendQR('${bookingId}')" style="min-height:44px;touch-action:manipulation;">
+            <button class="btn ghost" onclick="resendQR('${bookingId}')">
               <i class="fa-solid fa-envelope"></i> Resend Email
             </button>
             ` : ""}
-            <button class="btn ghost" onclick="viewReceipt('${bookingId}')" style="min-height:44px;touch-action:manipulation;">
+            <button class="btn ghost" onclick="viewReceipt('${bookingId}')">
               <i class="fa-solid fa-receipt"></i> View Receipt
             </button>
             ${!isPast ? `
@@ -1358,10 +1438,11 @@
     `;
   }
 
-  // Generate QR Code - EXACT SAME FORMAT AS EMAIL (CRITICAL for preventing double booking)
+  // ============================================
+  // QR CODE GENERATION
+  // ============================================
   function byzGenerateQRCode(bookingId, eventKey) {
     return new Promise((resolve, reject) => {
-      // CRITICAL: Use EXACT same format as backend email QR code
       const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
       const qrPayload = WEBAPP_URL + "?event=" + encodeURIComponent(eventKey) + "&bid=" + encodeURIComponent(bookingId);
       
@@ -1375,7 +1456,6 @@
       
       if (typeof QRCode === 'undefined') {
         if (loadingEl) loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR library loading...';
-        // Retry after library loads
         setTimeout(() => byzGenerateQRCode(bookingId, eventKey), 500);
         return;
       }
@@ -1383,10 +1463,7 @@
       QRCode.toCanvas(canvas, qrPayload, {
         width: 200,
         margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        },
+        color: { dark: '#000000', light: '#FFFFFF' },
         errorCorrectionLevel: 'M'
       }, (error) => {
         if (error) {
@@ -1396,7 +1473,6 @@
           }
           reject(error);
         } else {
-          // Hide loading, show QR
           if (loadingEl) loadingEl.style.display = 'none';
           canvas.style.display = 'block';
           resolve();
@@ -1405,7 +1481,9 @@
     });
   }
 
-  // Save QR code to device
+  // ============================================
+  // QR CODE ACTIONS
+  // ============================================
   function byzSaveQRCode(bookingId) {
     const canvas = document.getElementById(`qr-${bookingId}`);
     if (!canvas || canvas.style.display === 'none') {
@@ -1427,7 +1505,6 @@
     }, 'image/png');
   }
 
-  // Show QR code fullscreen for easy scanning (mobile-optimized)
   function byzShowQRFullscreen(bookingId) {
     const canvas = document.getElementById(`qr-${bookingId}`);
     if (!canvas || canvas.style.display === 'none') {
@@ -1435,7 +1512,6 @@
       return;
     }
     
-    // Create fullscreen modal
     const modal = document.createElement('div');
     modal.className = 'byz-qr-fullscreen-modal';
     modal.setAttribute('role', 'dialog');
@@ -1453,7 +1529,7 @@
         </div>
         <div class="byz-qr-fullscreen-id">${bookingId}</div>
         <p class="byz-qr-fullscreen-instructions">Show this to staff at the door</p>
-        <button class="btn primary" onclick="byzSaveQRCode('${bookingId}'); this.closest('.byz-qr-fullscreen-modal').remove();" style="min-height:44px;touch-action:manipulation;">
+        <button class="btn primary" onclick="byzSaveQRCode('${bookingId}'); this.closest('.byz-qr-fullscreen-modal').remove();">
           <i class="fa-solid fa-download"></i> Save to Device
         </button>
       </div>
@@ -1462,118 +1538,81 @@
     document.body.appendChild(modal);
     modal.focus();
     
-    // Copy canvas to fullscreen (larger size for better scanning)
     const fullscreenCanvas = document.getElementById(`qr-fullscreen-${bookingId}`);
     const ctx = fullscreenCanvas.getContext('2d');
     fullscreenCanvas.width = 400;
     fullscreenCanvas.height = 400;
     ctx.drawImage(canvas, 0, 0, 400, 400);
     
-    // Close on escape key
     modal.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') modal.remove();
     });
     
-    // Close on backdrop click
     modal.addEventListener('click', (e) => {
       if (e.target === modal) modal.remove();
     });
   }
 
-  // Resend QR code
   function resendQR(bookingId){
     byzShowToast(`<div><i class="fa-solid fa-envelope"></i> <b>Resend Requested</b></div><div class="byz-toast-sub">QR code email will be sent shortly</div>`, 3000);
-    // In production: API call to resend QR code email
   }
 
-  // View receipt
   function viewReceipt(bookingId){
     byzShowToast(`<div><i class="fa-solid fa-receipt"></i> <b>Receipt</b></div><div class="byz-toast-sub">Receipt feature coming soon</div>`, 3000);
-    // In production: Open receipt modal or download PDF
   }
 
-  // Auto-load bookings on page load (localStorage only - requires verification for API)
-  window.addEventListener("DOMContentLoaded", () => {
-    // Initialize lookup type to email
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+  document.addEventListener("DOMContentLoaded", () => {
+    // Initialize lookup type
     switchLookupType("email");
     
+    // Load saved email
     const savedEmail = localStorage.getItem("byz_lookup_email");
     if(savedEmail){
       document.getElementById("emailLookup").value = savedEmail;
     }
-    renderBookings();
-  });
-
-  // Allow Enter key to trigger code request
-  document.getElementById("emailLookup")?.addEventListener("keypress", (e) => {
-    if(e.key === "Enter"){
-      e.preventDefault();
-      requestVerificationCode(e);
-    }
-  });
-
-  // Toast Notification System (Reused from booking.html)
-  let __byzToastTimer = null;
-  
-  function ensureByzToast(){
-    if(document.getElementById("byzToast")) return;
     
-    const wrap = document.createElement("div");
-    wrap.id = "byzToast";
-    wrap.className = "byz-toast";
-    wrap.innerHTML = `
-      <div class="byz-toast-card" role="dialog" aria-modal="true" aria-labelledby="byzToastBody">
-        <button class="byz-toast-close" type="button" aria-label="Close" onclick="byzCloseToast()">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-        <div class="byz-toast-body" id="byzToastBody"></div>
-      </div>
-    `;
-    
-    document.body.appendChild(wrap);
-    
-    wrap.addEventListener("click", (e) => {
-      if(e.target === wrap) byzCloseToast();
-    });
-  }
-  
-  function byzShowToast(html, duration = 3000){
+    // Initialize toast
     ensureByzToast();
-    const toast = document.getElementById("byzToast");
-    const body = document.getElementById("byzToastBody");
-    if(!toast || !body) return;
     
-    body.innerHTML = html;
-    toast.classList.add("show");
-    document.body.style.overflow = "hidden";
+    // Render bookings if available
+    renderBookings();
     
-    if(__byzToastTimer) clearTimeout(__byzToastTimer);
-    __byzToastTimer = setTimeout(() => {
-      byzCloseToast();
-    }, duration);
-  }
-  
-  function byzCloseToast(){
-    const toast = document.getElementById("byzToast");
-    if(toast) toast.classList.remove("show");
-    document.body.style.overflow = "";
-    if(__byzToastTimer) clearTimeout(__byzToastTimer);
-  }
-  
-  // Initialize toast on load
-  ensureByzToast();
+    // Lookup type buttons
+    document.getElementById("lookupTypeEmail").addEventListener("click", () => switchLookupType("email"));
+    document.getElementById("lookupTypePhone").addEventListener("click", () => switchLookupType("phone"));
+    
+    // Send code button
+    document.getElementById("sendCodeBtn").addEventListener("click", requestVerificationCode);
+    
+    // Verify button
+    document.getElementById("verifyBtn").addEventListener("click", verifyAndLoadBookings);
+    
+    // Reset button
+    document.getElementById("resetBtn").addEventListener("click", resetVerification);
+    
+    // Tab buttons
+    document.getElementById("tabUpcoming").addEventListener("click", () => switchTab("upcoming"));
+    document.getElementById("tabPast").addEventListener("click", () => switchTab("past"));
+    
+    // Enter key handlers
+    document.getElementById("emailLookup").addEventListener("keypress", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        requestVerificationCode();
+      }
+    });
+    
+    document.getElementById("verificationCode").addEventListener("keypress", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        verifyAndLoadBookings();
+      }
+    });
+  });
 </script>
-
-<!-- Toast Container -->
-<div id="byzToast" class="byz-toast" style="display:none;">
-  <div class="byz-toast-card" role="dialog" aria-modal="true">
-    <button class="byz-toast-close" type="button" aria-label="Close" onclick="byzCloseToast()">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-    <div class="byz-toast-body" id="byzToastBody"></div>
-  </div>
-</div>
 
 </body>
 </html>
-
