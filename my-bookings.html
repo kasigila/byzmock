@@ -7,8 +7,8 @@
   <meta name="description" content="View your BYZ booking history, QR codes, and upcoming events." />
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://unpkg.com">
 
   <style>
     :root{
@@ -1152,7 +1152,7 @@
           });
           
           if (!phoneRes.ok) {
-            const errorText = await phoneRes.text();
+            const errorText = await phoneRes.text().catch(() => "Unknown error");
             console.error("Phone lookup HTTP error:", phoneRes.status, errorText);
             throw new Error(`Server error: ${phoneRes.status}. ${errorText.substring(0, 100)}`);
           }
@@ -1161,8 +1161,8 @@
           console.log("Phone lookup response:", phoneData);
         } catch (fetchError) {
           console.error("Phone lookup fetch error:", fetchError);
-          if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError")) {
-            throw new Error("Unable to connect to server. Please check your internet connection and try again.");
+          if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError") || fetchError.message.includes("Load failed") || fetchError.message.includes("405")) {
+            throw new Error("Unable to connect to server. The server may not be configured to accept requests from this domain. Please contact support or try again later.");
           }
           throw fetchError;
         }
@@ -1222,6 +1222,7 @@
       let data;
       
       try {
+        // Try POST with JSON first
         res = await fetch(SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1229,7 +1230,7 @@
         });
         
         if (!res.ok) {
-          const errorText = await res.text();
+          const errorText = await res.text().catch(() => "Unknown error");
           console.error("Verification code HTTP error:", res.status, errorText);
           throw new Error(`Server error: ${res.status}. ${errorText.substring(0, 100)}`);
         }
@@ -1238,8 +1239,8 @@
         console.log("Verification code response:", data);
       } catch (fetchError) {
         console.error("Verification code fetch error:", fetchError);
-        if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError")) {
-          throw new Error("Unable to connect to server. Please check your internet connection and try again.");
+        if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError") || fetchError.message.includes("Load failed") || fetchError.message.includes("405")) {
+          throw new Error("Unable to connect to server. Please check your internet connection and try again. If the problem persists, the server may need to be reconfigured for CORS.");
         }
         throw fetchError;
       }
@@ -1356,7 +1357,7 @@
         });
         
         if (!res.ok) {
-          const errorText = await res.text();
+          const errorText = await res.text().catch(() => "Unknown error");
           console.error("Bookings HTTP error:", res.status, errorText);
           throw new Error(`Server error: ${res.status}. ${errorText.substring(0, 100)}`);
         }
@@ -1365,8 +1366,8 @@
         console.log("Bookings response:", data);
       } catch (fetchError) {
         console.error("Bookings fetch error:", fetchError);
-        if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError")) {
-          throw new Error("Unable to connect to server. Please check your internet connection and try again.");
+        if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError") || fetchError.message.includes("Load failed") || fetchError.message.includes("405")) {
+          throw new Error("Unable to connect to server. Please check your internet connection and try again. If the problem persists, the server may need to be reconfigured for CORS.");
         }
         throw fetchError;
       }
