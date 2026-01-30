@@ -514,9 +514,6 @@
           <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
         </svg>
       </button>
-      <a class="btn primary" href="booking.html">
-        <i class="fa-solid fa-ticket"></i> Book Now
-      </a>
     </div>
   </div>
 
@@ -575,6 +572,9 @@
         </a>
         <a class="btn ghost" href="gallery.html">
           <i class="fa-solid fa-images"></i> View Gallery
+        </a>
+        <a class="btn ghost" href="my-bookings.html">
+          <i class="fa-solid fa-calendar-check"></i> My Bookings
         </a>
       </div>
     </div>
@@ -892,8 +892,30 @@
     const eventType = params.get("event") || "";
     const eventDate = params.get("date") || "";
 
-    // Event data mapping (would ideally come from a JSON file or API)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+    
+    // Event data mapping - matches actual event keys from bookings
     const eventData = {
+      "groove": {
+        title: "Groove",
+        subtitle: "Creating unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam.",
+        date: "Check events page for dates",
+        time: "8:00 PM",
+        djLineup: "DJ Sammy, DJ Apuki, DJ Dada",
+        image: "",
+        bookingUrl: "booking.html",
+        description: "Groove is BYZ Entertainment's signature event series. Each edition brings a unique vibe - from Caribbean heat to RnB slow burns to high-energy Afrobeats. We curate the best DJs, the best atmosphere, and the best crowd. This is where Dar es Salaam comes to party, connect, and create memories that last."
+      },
+      "tempo": {
+        title: "Tempo",
+        subtitle: "High-energy nights with premium sound, curated lineups, and an atmosphere that moves you.",
+        date: "Check events page for dates",
+        time: "8:00 PM",
+        djLineup: "DJ Sammy, DJ Apuki, DJ Dada",
+        image: "",
+        bookingUrl: "booking-tempo.html",
+        description: "Tempo is all about the rhythm. High-energy selections, premium sound systems, and a crowd that's ready to move. From the latest hits to timeless classics, Tempo delivers an experience that keeps you on your feet all night. This is where the beat meets the street."
+      },
       "caribbean-groove": {
         title: "Caribbean Groove",
         subtitle: "Dancehall, reggae, and island heat all night. Feel the rhythm of the Caribbean.",
@@ -926,41 +948,94 @@
       }
     };
 
-    if(eventType && eventData[eventType]){
-      const data = eventData[eventType];
-      
+    // Try to fetch event details from API first, then fallback to static data
+    async function loadEventDetails(eventType) {
+      if (!eventType) {
+        // No event specified, show default
+        return;
+      }
+
+      // Try API first
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getEventDetails&eventKey=${encodeURIComponent(eventType)}`);
+        if (res.ok) {
+          const apiData = await res.json();
+          if (apiData.success && apiData.event) {
+            updateEventDisplay(apiData.event);
+            return;
+          }
+        }
+      } catch (error) {
+        console.log("API fetch failed, using static data:", error);
+      }
+
+      // Fallback to static data
+      if (eventData[eventType]) {
+        updateEventDisplay(eventData[eventType]);
+      } else {
+        // Unknown event type - show generic info
+        updateEventDisplay({
+          title: eventType.charAt(0).toUpperCase() + eventType.slice(1),
+          subtitle: "BYZ Entertainment event",
+          date: "Check events page for dates",
+          time: "8:00 PM",
+          djLineup: "TBA",
+          image: "",
+          bookingUrl: eventType === "tempo" ? "booking-tempo.html" : "booking.html",
+          description: "Join us for an unforgettable night of music, energy, and community. Details will be updated soon."
+        });
+      }
+    }
+
+    function updateEventDisplay(data) {
       // Update page title
       document.title = `${data.title} | BYZ Entertainment`;
       
       // Update breadcrumb
-      document.getElementById("eventNameBreadcrumb").textContent = data.title;
+      const breadcrumbEl = document.getElementById("eventNameBreadcrumb");
+      if (breadcrumbEl) breadcrumbEl.textContent = data.title;
       
       // Update hero
-      document.getElementById("eventTitle").textContent = data.title;
-      document.getElementById("eventSubtitle").textContent = data.subtitle;
-      document.getElementById("eventDate").textContent = data.date;
-      document.getElementById("eventTime").textContent = data.time;
+      const titleEl = document.getElementById("eventTitle");
+      if (titleEl) titleEl.textContent = data.title;
+      
+      const subtitleEl = document.getElementById("eventSubtitle");
+      if (subtitleEl) subtitleEl.textContent = data.subtitle;
+      
+      const dateEl = document.getElementById("eventDate");
+      if (dateEl) dateEl.textContent = data.date;
+      
+      const timeEl = document.getElementById("eventTime");
+      if (timeEl) timeEl.textContent = data.time;
       
       // Update info grid
-      document.getElementById("infoDate").textContent = data.date;
-      document.getElementById("djLineup").textContent = data.djLineup;
+      const infoDateEl = document.getElementById("infoDate");
+      if (infoDateEl) infoDateEl.textContent = data.date;
+      
+      const djLineupEl = document.getElementById("djLineup");
+      if (djLineupEl) djLineupEl.textContent = data.djLineup || "TBA";
       
       // Update booking button
       const bookBtn = document.getElementById("bookNowBtn");
-      if(bookBtn) bookBtn.href = data.bookingUrl;
+      if (bookBtn && data.bookingUrl) bookBtn.href = data.bookingUrl;
       
       // Update image if available
-      if(data.image){
+      if (data.image) {
         const img = document.getElementById("eventImage");
-        img.src = data.image;
-        img.alt = data.title;
-        img.style.display = "block";
+        if (img) {
+          img.src = data.image;
+          img.alt = data.title;
+          img.style.display = "block";
+        }
       }
       
       // Update description
       const descEl = document.getElementById("eventDescriptionText");
-      if(descEl) descEl.textContent = data.description;
+      if (descEl) descEl.textContent = data.description;
     }
+
+    // Load event details
+    loadEventDetails(eventType);
   })();
   
   function toggleFaq(el){
