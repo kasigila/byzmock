@@ -91,6 +91,7 @@
     .mobile-btn:hover{transform: translateY(-1px)}
     .mobile-panel{
       display:none;
+      flex-direction:column;
       position:fixed;
       top:var(--header-h);
       right:16px;
@@ -736,9 +737,6 @@
           <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
         </svg>
       </button>
-      <a class="btn primary" href="booking.html">
-        <i class="fa-solid fa-ticket"></i> Book Now
-      </a>
     </div>
   </div>
 
@@ -890,8 +888,55 @@
   // API Configuration
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
 
+  // Lookup type state
+  let lookupType = "email"; // Default to email
+  let selectedPhoneEmail = null;
+
+  // Switch between email and phone lookup
+  function switchLookupType(type) {
+    lookupType = type;
+    const emailBtn = document.getElementById("lookupTypeEmail");
+    const phoneBtn = document.getElementById("lookupTypePhone");
+    const input = document.getElementById("emailLookup");
+    const sendBtn = document.querySelector("#emailStep .btn.primary");
+    
+    // Update button states
+    if (emailBtn && phoneBtn) {
+      if (type === "email") {
+        emailBtn.classList.add("primary");
+        emailBtn.classList.remove("ghost");
+        phoneBtn.classList.remove("primary");
+        phoneBtn.classList.add("ghost");
+        if (input) {
+          input.type = "email";
+          input.placeholder = "your@email.com";
+        }
+        if (sendBtn) {
+          sendBtn.innerHTML = '<i class="fa-solid fa-envelope"></i> Send Code';
+        }
+      } else {
+        phoneBtn.classList.add("primary");
+        phoneBtn.classList.remove("ghost");
+        emailBtn.classList.remove("primary");
+        emailBtn.classList.add("ghost");
+        if (input) {
+          input.type = "tel";
+          input.placeholder = "+255 123 456 789";
+        }
+        if (sendBtn) {
+          sendBtn.innerHTML = '<i class="fa-solid fa-phone"></i> Send Code';
+        }
+      }
+    }
+    
+    // Clear input and hide phone email list
+    if (input) input.value = "";
+    document.getElementById("phoneEmails").style.display = "none";
+    selectedPhoneEmail = null;
+  }
+
   // Request verification code (updated version with phone lookup)
-  async function requestVerificationCode() {
+  async function requestVerificationCode(event) {
     const input = document.getElementById("emailLookup").value.trim();
     
     if (!input) {
@@ -899,7 +944,11 @@
       return;
     }
 
-    const btn = event.target.closest("button");
+    const btn = event ? event.target.closest("button") : document.querySelector("#emailStep .btn.primary");
+    if (!btn) {
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Unable to find send button</div>', 3000);
+      return;
+    }
     const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="byz-loading-spinner"></span> Sending...';
@@ -1039,7 +1088,7 @@
   }
 
   // Verify code and load bookings
-  async function verifyAndLoadBookings() {
+  async function verifyAndLoadBookings(event) {
     const email = sessionStorage.getItem("byz_verify_email");
     const code = document.getElementById("verificationCode").value.trim();
 
@@ -1049,7 +1098,11 @@
     }
 
     // Show loading
-    const btn = event.target.closest("button");
+    const btn = event ? event.target.closest("button") : document.querySelector("#codeStep .btn.primary");
+    if (!btn) {
+      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Unable to find verify button</div>', 3000);
+      return;
+    }
     const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="byz-loading-spinner"></span> Verifying...';
@@ -1138,7 +1191,8 @@
   // Allow Enter key on code input
   document.getElementById("verificationCode")?.addEventListener("keypress", (e) => {
     if(e.key === "Enter"){
-      verifyAndLoadBookings();
+      e.preventDefault();
+      verifyAndLoadBookings(e);
     }
   });
 
@@ -1440,6 +1494,9 @@
 
   // Auto-load bookings on page load (localStorage only - requires verification for API)
   window.addEventListener("DOMContentLoaded", () => {
+    // Initialize lookup type to email
+    switchLookupType("email");
+    
     const savedEmail = localStorage.getItem("byz_lookup_email");
     if(savedEmail){
       document.getElementById("emailLookup").value = savedEmail;
@@ -1450,7 +1507,8 @@
   // Allow Enter key to trigger code request
   document.getElementById("emailLookup")?.addEventListener("keypress", (e) => {
     if(e.key === "Enter"){
-      requestVerificationCode();
+      e.preventDefault();
+      requestVerificationCode(e);
     }
   });
 
