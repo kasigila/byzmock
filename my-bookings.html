@@ -7,8 +7,25 @@
   <meta name="description" content="View your BYZ booking history, QR codes, and upcoming events." />
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
-  <link rel="preconnect" href="https://unpkg.com">
+  <script>
+    // Dynamically load QR code library to avoid MIME type issues
+    (function() {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+      script.type = 'text/javascript';
+      script.crossOrigin = 'anonymous';
+      script.onerror = function() {
+        // Fallback to alternative CDN
+        const fallback = document.createElement('script');
+        fallback.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
+        fallback.type = 'text/javascript';
+        fallback.crossOrigin = 'anonymous';
+        document.head.appendChild(fallback);
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
   <style>
     :root{
@@ -197,7 +214,10 @@
       align-items:stretch;
     }
     @media (max-width: 640px){
-      .form-row{flex-direction:column}
+      .form-row{
+        flex-direction:column;
+        gap:10px;
+      }
     }
     #phoneInputWrapper{
       display:none;
@@ -205,9 +225,23 @@
       flex-direction:row;
       gap:8px;
       align-items:stretch;
+      min-width:0; /* Prevents flex item from overflowing */
+    }
+    @media (max-width: 640px){
+      #phoneInputWrapper{
+        flex-direction:column;
+        width:100%;
+      }
     }
     #phoneInputWrapper select{
       transition: all .2s var(--ease);
+      min-width:0; /* Prevents select from overflowing */
+    }
+    @media (max-width: 640px){
+      #phoneInputWrapper select{
+        width:100% !important;
+        max-width:100%;
+      }
     }
     #phoneInputWrapper select:focus{
       box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
@@ -215,6 +249,13 @@
     }
     #phoneLookup{
       flex:1;
+      min-width:0; /* Prevents input from overflowing */
+    }
+    @media (max-width: 640px){
+      #phoneLookup{
+        width:100%;
+        max-width:100%;
+      }
     }
     input{
       flex:1;
@@ -812,8 +853,8 @@
             <div id="emailInputWrapper" style="flex:1;display:flex;gap:8px;align-items:stretch;">
               <input type="text" id="emailLookup" placeholder="your@email.com" style="flex:1;" />
             </div>
-            <div id="phoneInputWrapper" style="flex:1;display:none;gap:8px;align-items:stretch;">
-              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 12px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:14px;font-weight:500;cursor:pointer;" aria-label="Country Code">
+            <div id="phoneInputWrapper" style="flex:1;display:none;gap:8px;align-items:stretch;min-width:0;">
+              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 12px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:14px;font-weight:500;cursor:pointer;max-width:100%;" aria-label="Country Code">
                 <option value="+255">🇹🇿 +255 (TZ)</option>
                 <option value="+1">🇺🇸 +1 (US/CA)</option>
                 <option value="+44">🇬🇧 +44 (UK)</option>
@@ -854,7 +895,7 @@
                 <option value="+54">🇦🇷 +54 (AR)</option>
                 <option value="+20">🇪🇬 +20 (EG)</option>
               </select>
-              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;" />
+              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;min-width:0;max-width:100%;" />
             </div>
             <button class="btn primary" id="sendCodeBtn">
               <i class="fa-solid fa-envelope"></i> Send Code
@@ -1025,7 +1066,7 @@
         return `${localPart}***@${domain}`;
       } else if (localPart.length === 2) {
         return `${localPart[0]}***@${domain}`;
-      } else {
+    } else {
         const visibleChars = localPart.substring(0, 2);
         return `${visibleChars}***@${domain}`;
       }
@@ -1143,13 +1184,13 @@
         
         try {
           phoneRes = await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "getEmailsByPhone",
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getEmailsByPhone",
               phone: normalizedPhone
-            })
-          });
+          })
+        });
           
           if (!phoneRes.ok) {
             const errorText = await phoneRes.text().catch(() => "Unknown error");
@@ -1187,7 +1228,7 @@
                   <i class="fa-solid fa-envelope"></i> 
                   <span style="font-weight:600;">${maskedEmail}</span>
                   <span style="font-size:11px;color:var(--sub);margin-left:8px;">(Click to select)</span>
-                </button>
+              </button>
               `;
             }).join("");
             
@@ -1224,10 +1265,10 @@
       try {
         // Try POST with JSON first
         res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
         
         if (!res.ok) {
           const errorText = await res.text().catch(() => "Unknown error");
@@ -1253,13 +1294,13 @@
         // Show code input step
         document.getElementById("emailStep").style.display = "none";
         const codeStep = document.getElementById("codeStep");
-        codeStep.style.display = "block";
+          codeStep.style.display = "block";
         
-        const codeInput = document.getElementById("verificationCode");
-        if(codeInput) {
+          const codeInput = document.getElementById("verificationCode");
+          if(codeInput) {
           codeInput.value = "";
-          codeInput.focus();
-          setTimeout(() => codeInput.scrollIntoView({behavior:'smooth',block:'center'}), 100);
+            codeInput.focus();
+            setTimeout(() => codeInput.scrollIntoView({behavior:'smooth',block:'center'}), 100);
         }
         
         // Update info message
@@ -1311,7 +1352,7 @@
     
     // Send code to selected email
     setTimeout(() => {
-      requestVerificationCode();
+    requestVerificationCode();
     }, 500);
   }
 
@@ -1347,14 +1388,14 @@
       
       try {
         res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "getBookingsByEmail",
-            email: email,
-            verificationCode: code
-          })
-        });
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "getBookingsByEmail",
+          email: email,
+          verificationCode: code
+        })
+      });
         
         if (!res.ok) {
           const errorText = await res.text().catch(() => "Unknown error");
@@ -1610,8 +1651,9 @@
   // ============================================
   function byzGenerateQRCode(bookingId, eventKey) {
     return new Promise((resolve, reject) => {
-      const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
-      const qrPayload = WEBAPP_URL + "?event=" + encodeURIComponent(eventKey) + "&bid=" + encodeURIComponent(bookingId);
+      // CRITICAL: Use EXACT same format as backend email QR code (apps-script-backend.js line 957)
+      // This ensures QR codes match what users receive in confirmation emails
+      const qrPayload = SCRIPT_URL + "?event=" + encodeURIComponent(eventKey) + "&bid=" + encodeURIComponent(bookingId);
       
       const canvas = document.getElementById(`qr-${bookingId}`);
       const loadingEl = document.getElementById(`qr-loading-${bookingId}`);
@@ -1621,12 +1663,14 @@
         return;
       }
       
+      // Check if QRCode library is loaded
       if (typeof QRCode === 'undefined') {
         if (loadingEl) loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR library loading...';
         setTimeout(() => byzGenerateQRCode(bookingId, eventKey), 500);
         return;
       }
       
+      // Use the library's toCanvas method
       QRCode.toCanvas(canvas, qrPayload, {
         width: 200,
         margin: 2,
