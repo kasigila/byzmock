@@ -202,6 +202,9 @@
     #phoneInputWrapper{
       display:none;
       flex:1;
+      flex-direction:row;
+      gap:8px;
+      align-items:stretch;
     }
     #phoneInputWrapper select{
       transition: all .2s var(--ease);
@@ -209,6 +212,9 @@
     #phoneInputWrapper select:focus{
       box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
       border-color:var(--accent);
+    }
+    #phoneLookup{
+      flex:1;
     }
     input{
       flex:1;
@@ -848,7 +854,7 @@
                 <option value="+54">🇦🇷 +54 (AR)</option>
                 <option value="+20">🇪🇬 +20 (EG)</option>
               </select>
-              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;display:none;" />
+              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;" />
             </div>
             <button class="btn primary" id="sendCodeBtn">
               <i class="fa-solid fa-envelope"></i> Send Code
@@ -1064,11 +1070,15 @@
         emailBtn.classList.remove("primary");
         emailBtn.classList.add("ghost");
         if (emailWrapper) emailWrapper.style.display = "none";
-        if (phoneWrapper) phoneWrapper.style.display = "flex";
+        if (phoneWrapper) {
+          phoneWrapper.style.display = "flex";
+          phoneWrapper.style.flexDirection = "row";
+        }
         if (phoneInput) {
           phoneInput.type = "tel";
           phoneInput.placeholder = "Phone number (without country code)";
           phoneInput.value = "";
+          phoneInput.style.display = "block";
         }
         if (sendBtn) {
           sendBtn.innerHTML = '<i class="fa-solid fa-phone"></i> Send Code';
@@ -1128,21 +1138,34 @@
         const normalizedPhone = normalizePhone(input);
         console.log("Looking up phone:", normalizedPhone);
         
-        const phoneRes = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "getEmailsByPhone",
-            phone: normalizedPhone
-          })
-        });
+        let phoneRes;
+        let phoneData;
         
-        if (!phoneRes.ok) {
-          throw new Error(`HTTP error! status: ${phoneRes.status}`);
+        try {
+          phoneRes = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "getEmailsByPhone",
+              phone: normalizedPhone
+            })
+          });
+          
+          if (!phoneRes.ok) {
+            const errorText = await phoneRes.text();
+            console.error("Phone lookup HTTP error:", phoneRes.status, errorText);
+            throw new Error(`Server error: ${phoneRes.status}. ${errorText.substring(0, 100)}`);
+          }
+          
+          phoneData = await phoneRes.json();
+          console.log("Phone lookup response:", phoneData);
+        } catch (fetchError) {
+          console.error("Phone lookup fetch error:", fetchError);
+          if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError")) {
+            throw new Error("Unable to connect to server. Please check your internet connection and try again.");
+          }
+          throw fetchError;
         }
-        
-        const phoneData = await phoneRes.json();
-        console.log("Phone lookup response:", phoneData);
         
         if (phoneData.success && phoneData.emails && phoneData.emails.length > 0) {
           if (phoneData.emails.length === 1) {
@@ -1195,18 +1218,31 @@
       
       // Send verification code
       console.log("Sending verification code request:", body);
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
+      let res;
+      let data;
       
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+      try {
+        res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Verification code HTTP error:", res.status, errorText);
+          throw new Error(`Server error: ${res.status}. ${errorText.substring(0, 100)}`);
+        }
+        
+        data = await res.json();
+        console.log("Verification code response:", data);
+      } catch (fetchError) {
+        console.error("Verification code fetch error:", fetchError);
+        if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError")) {
+          throw new Error("Unable to connect to server. Please check your internet connection and try again.");
+        }
+        throw fetchError;
       }
-      
-      const data = await res.json();
-      console.log("Verification code response:", data);
 
       if (data.success) {
         // Store email for verification
@@ -1305,22 +1341,35 @@
 
     try {
       console.log("Verifying code for email:", email);
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "getBookingsByEmail",
-          email: email,
-          verificationCode: code
-        })
-      });
+      let res;
+      let data;
       
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+      try {
+        res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getBookingsByEmail",
+            email: email,
+            verificationCode: code
+          })
+        });
+        
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Bookings HTTP error:", res.status, errorText);
+          throw new Error(`Server error: ${res.status}. ${errorText.substring(0, 100)}`);
+        }
+        
+        data = await res.json();
+        console.log("Bookings response:", data);
+      } catch (fetchError) {
+        console.error("Bookings fetch error:", fetchError);
+        if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError")) {
+          throw new Error("Unable to connect to server. Please check your internet connection and try again.");
+        }
+        throw fetchError;
       }
-      
-      const data = await res.json();
-      console.log("Bookings response:", data);
 
       if (data.success) {
         localStorage.setItem("byz_lookup_email", email);
