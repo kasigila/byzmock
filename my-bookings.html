@@ -199,6 +199,17 @@
     @media (max-width: 640px){
       .form-row{flex-direction:column}
     }
+    #phoneInputWrapper{
+      display:none;
+      flex:1;
+    }
+    #phoneInputWrapper select{
+      transition: all .2s var(--ease);
+    }
+    #phoneInputWrapper select:focus{
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
+      border-color:var(--accent);
+    }
     input{
       flex:1;
       padding:14px 18px;
@@ -792,7 +803,53 @@
             </button>
           </div>
           <div class="form-row">
-            <input type="text" id="emailLookup" placeholder="your@email.com" />
+            <div id="emailInputWrapper" style="flex:1;display:flex;gap:8px;align-items:stretch;">
+              <input type="text" id="emailLookup" placeholder="your@email.com" style="flex:1;" />
+            </div>
+            <div id="phoneInputWrapper" style="flex:1;display:none;gap:8px;align-items:stretch;">
+              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 12px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:14px;font-weight:500;cursor:pointer;" aria-label="Country Code">
+                <option value="+255">🇹🇿 +255 (TZ)</option>
+                <option value="+1">🇺🇸 +1 (US/CA)</option>
+                <option value="+44">🇬🇧 +44 (UK)</option>
+                <option value="+27">🇿🇦 +27 (ZA)</option>
+                <option value="+254">🇰🇪 +254 (KE)</option>
+                <option value="+256">🇺🇬 +256 (UG)</option>
+                <option value="+250">🇷🇼 +250 (RW)</option>
+                <option value="+234">🇳🇬 +234 (NG)</option>
+                <option value="+233">🇬🇭 +233 (GH)</option>
+                <option value="+91">🇮🇳 +91 (IN)</option>
+                <option value="+86">🇨🇳 +86 (CN)</option>
+                <option value="+971">🇦🇪 +971 (AE)</option>
+                <option value="+61">🇦🇺 +61 (AU)</option>
+                <option value="+49">🇩🇪 +49 (DE)</option>
+                <option value="+33">🇫🇷 +33 (FR)</option>
+                <option value="+39">🇮🇹 +39 (IT)</option>
+                <option value="+34">🇪🇸 +34 (ES)</option>
+                <option value="+31">🇳🇱 +31 (NL)</option>
+                <option value="+32">🇧🇪 +32 (BE)</option>
+                <option value="+41">🇨🇭 +41 (CH)</option>
+                <option value="+46">🇸🇪 +46 (SE)</option>
+                <option value="+47">🇳🇴 +47 (NO)</option>
+                <option value="+45">🇩🇰 +45 (DK)</option>
+                <option value="+358">🇫🇮 +358 (FI)</option>
+                <option value="+351">🇵🇹 +351 (PT)</option>
+                <option value="+353">🇮🇪 +353 (IE)</option>
+                <option value="+48">🇵🇱 +48 (PL)</option>
+                <option value="+7">🇷🇺 +7 (RU)</option>
+                <option value="+81">🇯🇵 +81 (JP)</option>
+                <option value="+82">🇰🇷 +82 (KR)</option>
+                <option value="+65">🇸🇬 +65 (SG)</option>
+                <option value="+60">🇲🇾 +60 (MY)</option>
+                <option value="+66">🇹🇭 +66 (TH)</option>
+                <option value="+84">🇻🇳 +84 (VN)</option>
+                <option value="+62">🇮🇩 +62 (ID)</option>
+                <option value="+55">🇧🇷 +55 (BR)</option>
+                <option value="+52">🇲🇽 +52 (MX)</option>
+                <option value="+54">🇦🇷 +54 (AR)</option>
+                <option value="+20">🇪🇬 +20 (EG)</option>
+              </select>
+              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;display:none;" />
+            </div>
             <button class="btn primary" id="sendCodeBtn">
               <i class="fa-solid fa-envelope"></i> Send Code
             </button>
@@ -979,7 +1036,10 @@
     lookupType = type;
     const emailBtn = document.getElementById("lookupTypeEmail");
     const phoneBtn = document.getElementById("lookupTypePhone");
-    const input = document.getElementById("emailLookup");
+    const emailInput = document.getElementById("emailLookup");
+    const phoneInput = document.getElementById("phoneLookup");
+    const emailWrapper = document.getElementById("emailInputWrapper");
+    const phoneWrapper = document.getElementById("phoneInputWrapper");
     const sendBtn = document.getElementById("sendCodeBtn");
     
     if (emailBtn && phoneBtn) {
@@ -988,9 +1048,12 @@
         emailBtn.classList.remove("ghost");
         phoneBtn.classList.remove("primary");
         phoneBtn.classList.add("ghost");
-        if (input) {
-          input.type = "email";
-          input.placeholder = "your@email.com";
+        if (emailWrapper) emailWrapper.style.display = "flex";
+        if (phoneWrapper) phoneWrapper.style.display = "none";
+        if (emailInput) {
+          emailInput.type = "email";
+          emailInput.placeholder = "your@email.com";
+          emailInput.value = "";
         }
         if (sendBtn) {
           sendBtn.innerHTML = '<i class="fa-solid fa-envelope"></i> Send Code';
@@ -1000,9 +1063,12 @@
         phoneBtn.classList.remove("ghost");
         emailBtn.classList.remove("primary");
         emailBtn.classList.add("ghost");
-        if (input) {
-          input.type = "tel";
-          input.placeholder = "+255 123 456 789";
+        if (emailWrapper) emailWrapper.style.display = "none";
+        if (phoneWrapper) phoneWrapper.style.display = "flex";
+        if (phoneInput) {
+          phoneInput.type = "tel";
+          phoneInput.placeholder = "Phone number (without country code)";
+          phoneInput.value = "";
         }
         if (sendBtn) {
           sendBtn.innerHTML = '<i class="fa-solid fa-phone"></i> Send Code';
@@ -1010,17 +1076,37 @@
       }
     }
     
-    if (input) input.value = "";
     document.getElementById("phoneEmails").style.display = "none";
     selectedPhoneEmail = null;
     phoneEmailMap = {};
   }
 
   // ============================================
+  // NORMALIZE PHONE NUMBER
+  // ============================================
+  function normalizePhone(phone) {
+    if (!phone) return "";
+    // Remove spaces, dashes, parentheses, and other formatting
+    return phone.replace(/[\s\-\(\)]/g, "");
+  }
+
+  // ============================================
   // REQUEST VERIFICATION CODE
   // ============================================
   async function requestVerificationCode() {
-    const input = document.getElementById("emailLookup").value.trim();
+    let input = "";
+    if (lookupType === "email") {
+      input = document.getElementById("emailLookup").value.trim();
+    } else {
+      const countryCode = document.getElementById("phoneCountryCode").value;
+      const phoneNumber = document.getElementById("phoneLookup").value.trim();
+      if (!phoneNumber) {
+        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Phone Required</b></div><div class="byz-toast-sub">Please enter your phone number</div>`, 3000);
+        return;
+      }
+      // Combine country code with phone number and normalize
+      input = normalizePhone(countryCode + phoneNumber);
+    }
     
     if (!input) {
       byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>${lookupType === "email" ? "Email" : "Phone"} Required</b></div><div class="byz-toast-sub">Please enter your ${lookupType === "email" ? "email address" : "phone number"}</div>`, 3000);
@@ -1038,16 +1124,25 @@
       let body = {};
       
       if (lookupType === "phone") {
-        // Get emails associated with phone
+        // Get emails associated with phone (normalize before sending)
+        const normalizedPhone = normalizePhone(input);
+        console.log("Looking up phone:", normalizedPhone);
+        
         const phoneRes = await fetch(SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "getEmailsByPhone",
-            phone: input
+            phone: normalizedPhone
           })
         });
+        
+        if (!phoneRes.ok) {
+          throw new Error(`HTTP error! status: ${phoneRes.status}`);
+        }
+        
         const phoneData = await phoneRes.json();
+        console.log("Phone lookup response:", phoneData);
         
         if (phoneData.success && phoneData.emails && phoneData.emails.length > 0) {
           if (phoneData.emails.length === 1) {
@@ -1088,7 +1183,8 @@
             return;
           }
         } else {
-          byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>No Bookings Found</b></div><div class="byz-toast-sub">No bookings found for this phone number</div>', 4000);
+          const errorMsg = phoneData.error || "No bookings found for this phone number";
+          byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>No Bookings Found</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
           btn.innerHTML = originalText;
           btn.disabled = false;
           return;
@@ -1098,12 +1194,19 @@
       }
       
       // Send verification code
+      console.log("Sending verification code request:", body);
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
       });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
       const data = await res.json();
+      console.log("Verification code response:", data);
 
       if (data.success) {
         // Store email for verification
@@ -1138,13 +1241,16 @@
         
         byzShowToast('<div><i class="fa-solid fa-circle-check"></i> <b>Code Sent!</b></div><div class="byz-toast-sub">Check your email for the verification code</div>', 3000);
       } else {
-        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">${data.error || "Failed to send verification code. Please check your email address or phone number and try again."}</div>`, 4000);
+        const errorMsg = data.error || data.message || "Failed to send verification code. Please check your email address or phone number and try again.";
+        console.error("API Error:", errorMsg);
+        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
         btn.innerHTML = originalText;
         btn.disabled = false;
       }
     } catch (error) {
       console.error("Verification code error:", error);
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Error sending verification code. Please check your connection and try again.</div>', 4000);
+      const errorMsg = error.message || "Error sending verification code. Please check your connection and try again.";
+      byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Connection Error</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
       btn.innerHTML = originalText;
       btn.disabled = false;
     }
@@ -1198,6 +1304,7 @@
     showBookingSkeletons("upcomingBookings", 2);
 
     try {
+      console.log("Verifying code for email:", email);
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1207,7 +1314,13 @@
           verificationCode: code
         })
       });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
       const data = await res.json();
+      console.log("Bookings response:", data);
 
       if (data.success) {
         localStorage.setItem("byz_lookup_email", email);
@@ -1216,7 +1329,9 @@
       } else {
         document.querySelector(".lookup-form").style.display = "block";
         document.getElementById("upcomingBookings").innerHTML = "";
-        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Verification Failed</b></div><div class="byz-toast-sub">${data.error || "Invalid verification code. Please try again."}</div>`, 4000);
+        const errorMsg = data.error || data.message || "Invalid verification code. Please try again.";
+        console.error("Verification failed:", errorMsg);
+        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Verification Failed</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
         const codeInput = document.getElementById("verificationCode");
         if(codeInput) {
           codeInput.value = "";
@@ -1226,9 +1341,11 @@
         btn.disabled = false;
       }
     } catch (error) {
+      console.error("Verification error:", error);
       document.querySelector(".lookup-form").style.display = "block";
       document.getElementById("upcomingBookings").innerHTML = "";
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Error verifying code. Please try again.</div>', 4000);
+      const errorMsg = error.message || "Error verifying code. Please check your connection and try again.";
+      byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Connection Error</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
       btn.innerHTML = originalText;
       btn.disabled = false;
     }
@@ -1599,6 +1716,13 @@
     
     // Enter key handlers
     document.getElementById("emailLookup").addEventListener("keypress", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        requestVerificationCode();
+      }
+    });
+    
+    document.getElementById("phoneLookup").addEventListener("keypress", (e) => {
       if(e.key === "Enter"){
         e.preventDefault();
         requestVerificationCode();
