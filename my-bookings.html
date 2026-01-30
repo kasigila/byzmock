@@ -223,24 +223,29 @@
       display:none;
       flex:1;
       flex-direction:row;
-      gap:8px;
+      gap:10px;
       align-items:stretch;
-      min-width:0; /* Prevents flex item from overflowing */
+      min-width:0;
     }
     @media (max-width: 640px){
       #phoneInputWrapper{
         flex-direction:column;
         width:100%;
+        gap:12px;
       }
     }
     #phoneInputWrapper select{
       transition: all .2s var(--ease);
-      min-width:0; /* Prevents select from overflowing */
+      min-width:0;
+      padding:14px 16px;
+      font-size:15px;
     }
     @media (max-width: 640px){
       #phoneInputWrapper select{
         width:100% !important;
         max-width:100%;
+        padding:16px 18px;
+        font-size:16px; /* Larger for mobile touch targets */
       }
     }
     #phoneInputWrapper select:focus{
@@ -249,12 +254,17 @@
     }
     #phoneLookup{
       flex:1;
-      min-width:0; /* Prevents input from overflowing */
+      min-width:0;
+      padding:14px 18px;
+      font-size:15px;
     }
     @media (max-width: 640px){
       #phoneLookup{
         width:100%;
         max-width:100%;
+        padding:16px 18px;
+        font-size:16px; /* Larger for mobile touch targets */
+        min-height:52px; /* Better touch target */
       }
     }
     input{
@@ -611,7 +621,7 @@
       .booking-actions .btn{width:100%}
     }
     
-    /* Toast Notification System */
+    /* Toast Notification System - Enhanced Aesthetic */
     .byz-toast{
       position:fixed;
       inset:0;
@@ -619,32 +629,162 @@
       place-items:center;
       z-index:9999;
       padding:20px;
+      pointer-events:none;
     }
     .byz-toast.show{
       display:grid;
+      pointer-events:auto;
     }
     .byz-toast-card{
       background:var(--bg-elev);
       border:1px solid var(--border);
       border-radius:var(--radius-lg);
-      padding:20px;
-      max-width:400px;
+      padding:24px;
+      max-width:420px;
       width:100%;
       box-shadow:var(--shadow);
       position:relative;
+      transform:translateY(-20px) scale(0.95);
+      opacity:0;
+      transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events:auto;
+    }
+    .byz-toast.show .byz-toast-card{
+      transform:translateY(0) scale(1);
+      opacity:1;
     }
     @media (max-width: 560px){
-      .byz-toast-card{max-width:calc(100vw - 40px);padding:16px}
+      .byz-toast-card{
+        max-width:calc(100vw - 40px);
+        padding:20px;
+      }
     }
+    
+    /* Success Toast - Aesthetic Green */
+    .byz-toast-card.success{
+      background:linear-gradient(135deg, 
+        color-mix(in srgb, var(--ok) 12%, var(--bg-elev)), 
+        color-mix(in srgb, var(--ok) 6%, var(--bg-elev)));
+      border-color:color-mix(in srgb, var(--ok) 40%, var(--border));
+      box-shadow:0 20px 60px rgba(10, 127, 63, 0.25),
+                 0 0 0 1px color-mix(in srgb, var(--ok) 20%, transparent);
+    }
+    .byz-toast-card.success .byz-toast-icon{
+      background:linear-gradient(135deg, var(--ok), color-mix(in srgb, var(--ok) 80%, transparent));
+      color:#ffffff;
+      width:56px;
+      height:56px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 16px;
+      font-size:24px;
+      box-shadow:0 8px 24px rgba(10, 127, 63, 0.4);
+      animation:successPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes successPulse{
+      0%{transform:scale(0);opacity:0;}
+      50%{transform:scale(1.15);}
+      100%{transform:scale(1);opacity:1;}
+    }
+    .byz-toast-card.success .byz-toast-icon i{
+      animation:checkmarkDraw 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+    }
+    @keyframes checkmarkDraw{
+      0%{transform:scale(0) rotate(-45deg);opacity:0;}
+      100%{transform:scale(1) rotate(0deg);opacity:1;}
+    }
+    
+    /* Error Toast */
+    .byz-toast-card.error{
+      background:linear-gradient(135deg, 
+        color-mix(in srgb, var(--bad) 12%, var(--bg-elev)), 
+        color-mix(in srgb, var(--bad) 6%, var(--bg-elev)));
+      border-color:color-mix(in srgb, var(--bad) 40%, var(--border));
+      box-shadow:0 20px 60px rgba(180, 35, 24, 0.25),
+                 0 0 0 1px color-mix(in srgb, var(--bad) 20%, transparent);
+    }
+    .byz-toast-card.error .byz-toast-icon{
+      background:linear-gradient(135deg, var(--bad), color-mix(in srgb, var(--bad) 80%, transparent));
+      color:#ffffff;
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 16px;
+      font-size:20px;
+      box-shadow:0 8px 24px rgba(180, 35, 24, 0.4);
+      animation:errorShake 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes errorShake{
+      0%,100%{transform:translateX(0) scale(1);}
+      25%{transform:translateX(-8px) scale(1.05);}
+      75%{transform:translateX(8px) scale(1.05);}
+    }
+    
+    /* Info Toast */
+    .byz-toast-card.info{
+      background:linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 8%, var(--bg-elev)), 
+        color-mix(in srgb, var(--accent) 4%, var(--bg-elev)));
+      border-color:color-mix(in srgb, var(--accent) 30%, var(--border));
+    }
+    .byz-toast-card.info .byz-toast-icon{
+      background:linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 80%, transparent));
+      color:var(--bg);
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 16px;
+      font-size:20px;
+      box-shadow:0 8px 24px rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Warning Toast */
+    .byz-toast-card.warning{
+      background:linear-gradient(135deg, 
+        color-mix(in srgb, var(--warn) 12%, var(--bg-elev)), 
+        color-mix(in srgb, var(--warn) 6%, var(--bg-elev)));
+      border-color:color-mix(in srgb, var(--warn) 40%, var(--border));
+    }
+    .byz-toast-card.warning .byz-toast-icon{
+      background:linear-gradient(135deg, var(--warn), color-mix(in srgb, var(--warn) 80%, transparent));
+      color:#ffffff;
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 16px;
+      font-size:20px;
+      box-shadow:0 8px 24px rgba(180, 83, 9, 0.4);
+    }
+    
     .byz-toast-body{
       color:var(--text);
-      font-size:15px;
+      font-size:16px;
       line-height:1.5;
+      text-align:center;
+      font-weight:600;
+    }
+    .byz-toast-body b{
+      font-weight:800;
+      font-size:18px;
+      display:block;
+      margin-bottom:4px;
     }
     .byz-toast-sub{
       margin-top:8px;
-      font-size:13px;
+      font-size:14px;
       color:var(--sub);
+      line-height:1.4;
     }
     .byz-toast-close{
       position:absolute;
@@ -662,11 +802,40 @@
       cursor:pointer;
       transition:all 0.2s var(--ease);
       touch-action:manipulation;
+      opacity:0.6;
     }
     .byz-toast-close:hover,
     .byz-toast-close:active{
       background:var(--bg);
       transform:scale(1.1);
+      opacity:1;
+    }
+    
+    /* Confetti effect for major successes */
+    .byz-toast-confetti{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      border-radius:var(--radius-lg);
+    }
+    .confetti-piece{
+      position:absolute;
+      width:8px;
+      height:8px;
+      background:var(--ok);
+      border-radius:2px;
+      animation:confettiFall 2s ease-out forwards;
+    }
+    @keyframes confettiFall{
+      0%{
+        transform:translateY(-100px) rotate(0deg);
+        opacity:1;
+      }
+      100%{
+        transform:translateY(400px) rotate(720deg);
+        opacity:0;
+      }
     }
     
     /* Loading Spinner */
@@ -853,8 +1022,8 @@
             <div id="emailInputWrapper" style="flex:1;display:flex;gap:8px;align-items:stretch;">
               <input type="text" id="emailLookup" placeholder="your@email.com" style="flex:1;" />
             </div>
-            <div id="phoneInputWrapper" style="flex:1;display:none;gap:8px;align-items:stretch;min-width:0;">
-              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 12px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:14px;font-weight:500;cursor:pointer;max-width:100%;" aria-label="Country Code">
+            <div id="phoneInputWrapper" style="flex:1;display:none;gap:10px;align-items:stretch;min-width:0;">
+              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:15px;font-weight:500;cursor:pointer;max-width:100%;" aria-label="Country Code">
                 <option value="+255">🇹🇿 +255 (TZ)</option>
                 <option value="+1">🇺🇸 +1 (US/CA)</option>
                 <option value="+44">🇬🇧 +44 (UK)</option>
@@ -895,7 +1064,7 @@
                 <option value="+54">🇦🇷 +54 (AR)</option>
                 <option value="+20">🇪🇬 +20 (EG)</option>
               </select>
-              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;min-width:0;max-width:100%;" />
+              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;min-width:0;max-width:100%;padding:14px 18px;font-size:15px;" />
             </div>
             <button class="btn primary" id="sendCodeBtn">
               <i class="fa-solid fa-envelope"></i> Send Code
@@ -1024,24 +1193,67 @@
     document.body.appendChild(wrap);
     
     wrap.addEventListener("click", (e) => {
-      if(e.target === wrap) byzCloseToast();
+      if(e.target === wrap || e.target.closest('.byz-toast-close')) byzCloseToast();
     });
   }
   
-  function byzShowToast(html, duration = 3000){
+  function byzShowToast(title, subtitle = "", type = "info", duration = 3000){
     ensureByzToast();
     const toast = document.getElementById("byzToast");
+    const card = toast.querySelector(".byz-toast-card");
     const body = document.getElementById("byzToastBody");
-    if(!toast || !body) return;
+    if(!toast || !body || !card) return;
     
-    body.innerHTML = html;
+    // Remove previous type classes and confetti
+    card.classList.remove("success", "error", "info", "warning");
+    const existingConfetti = card.querySelector(".byz-toast-confetti");
+    if(existingConfetti) existingConfetti.remove();
+    
+    // Add type class
+    card.classList.add(type);
+    
+    // Get icon based on type
+    const icons = {
+      success: "fa-solid fa-circle-check",
+      error: "fa-solid fa-circle-exclamation",
+      warning: "fa-solid fa-triangle-exclamation",
+      info: "fa-solid fa-circle-info"
+    };
+    
+    // Create toast content
+    body.innerHTML = `
+      <div class="byz-toast-icon">
+        <i class="${icons[type] || icons.info}"></i>
+      </div>
+      <div>
+        <b>${title}</b>
+        ${subtitle ? `<div class="byz-toast-sub">${subtitle}</div>` : ''}
+      </div>
+    `;
+    
+    // Add confetti for major successes
+    if(type === "success" && (title.includes("Code Sent") || title.includes("Saved") || title.includes("Verified"))){
+      const confetti = document.createElement("div");
+      confetti.className = "byz-toast-confetti";
+      for(let i = 0; i < 20; i++){
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        const colors = ["var(--ok)", "#30d158", "#34c759", "#ffd60a"];
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.left = Math.random() * 100 + "%";
+        piece.style.animationDelay = Math.random() * 0.5 + "s";
+        piece.style.animationDuration = (1 + Math.random() * 1) + "s";
+        confetti.appendChild(piece);
+      }
+      card.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 2500);
+    }
+    
     toast.classList.add("show");
     document.body.style.overflow = "hidden";
     
     if(__byzToastTimer) clearTimeout(__byzToastTimer);
-    __byzToastTimer = setTimeout(() => {
-      byzCloseToast();
-    }, duration);
+    __byzToastTimer = setTimeout(() => byzCloseToast(), duration);
   }
   
   function byzCloseToast(){
@@ -1152,7 +1364,7 @@
       const countryCode = document.getElementById("phoneCountryCode").value;
       const phoneNumber = document.getElementById("phoneLookup").value.trim();
       if (!phoneNumber) {
-        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Phone Required</b></div><div class="byz-toast-sub">Please enter your phone number</div>`, 3000);
+        byzShowToast("Phone Required", "Please enter your phone number", "error", 3000);
         return;
       }
       // Combine country code with phone number and normalize
@@ -1160,7 +1372,7 @@
     }
     
     if (!input) {
-      byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>${lookupType === "email" ? "Email" : "Phone"} Required</b></div><div class="byz-toast-sub">Please enter your ${lookupType === "email" ? "email address" : "phone number"}</div>`, 3000);
+      byzShowToast(`${lookupType === "email" ? "Email" : "Phone"} Required`, `Please enter your ${lookupType === "email" ? "email address" : "phone number"}`, "error", 3000);
       return;
     }
 
@@ -1179,34 +1391,18 @@
         const normalizedPhone = normalizePhone(input);
         console.log("Looking up phone:", normalizedPhone);
         
-        let phoneRes;
-        let phoneData;
-        
-        try {
-          phoneRes = await fetch(SCRIPT_URL, {
+        // Get emails for phone number
+        const phoneRes = await fetch(SCRIPT_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "getEmailsByPhone",
-              phone: normalizedPhone
-          })
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "getEmailsByPhone", phone: normalizedPhone })
         });
-          
-          if (!phoneRes.ok) {
-            const errorText = await phoneRes.text().catch(() => "Unknown error");
-            console.error("Phone lookup HTTP error:", phoneRes.status, errorText);
-            throw new Error(`Server error: ${phoneRes.status}. ${errorText.substring(0, 100)}`);
-          }
-          
-          phoneData = await phoneRes.json();
-          console.log("Phone lookup response:", phoneData);
-        } catch (fetchError) {
-          console.error("Phone lookup fetch error:", fetchError);
-          if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError") || fetchError.message.includes("Load failed") || fetchError.message.includes("405")) {
-            throw new Error("Unable to connect to server. The server may not be configured to accept requests from this domain. Please contact support or try again later.");
-          }
-          throw fetchError;
+        
+        if (!phoneRes.ok) {
+          throw new Error("Unable to find bookings for this phone number");
         }
+        
+        const phoneData = await phoneRes.json();
         
         if (phoneData.success && phoneData.emails && phoneData.emails.length > 0) {
           if (phoneData.emails.length === 1) {
@@ -1243,12 +1439,12 @@
             document.getElementById("phoneEmails").style.display = "block";
             btn.innerHTML = originalText;
             btn.disabled = false;
-            byzShowToast(`<div><i class="fa-solid fa-shield-halved"></i> <b>Privacy Protected</b></div><div class="byz-toast-sub">Select which email to receive your verification code</div>`, 4000);
+            byzShowToast("Privacy Protected", "Select which email to receive your verification code", "info", 4000);
             return;
           }
         } else {
           const errorMsg = phoneData.error || "No bookings found for this phone number";
-          byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>No Bookings Found</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
+          byzShowToast("No Bookings Found", errorMsg, "error", 4000);
           btn.innerHTML = originalText;
           btn.disabled = false;
           return;
@@ -1258,33 +1454,17 @@
       }
       
       // Send verification code
-      console.log("Sending verification code request:", body);
-      let res;
-      let data;
-      
-      try {
-        // Try POST with JSON first
-        res = await fetch(SCRIPT_URL, {
+      const res = await fetch(SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(body)
       });
-        
-        if (!res.ok) {
-          const errorText = await res.text().catch(() => "Unknown error");
-          console.error("Verification code HTTP error:", res.status, errorText);
-          throw new Error(`Server error: ${res.status}. ${errorText.substring(0, 100)}`);
-        }
-        
-        data = await res.json();
-        console.log("Verification code response:", data);
-      } catch (fetchError) {
-        console.error("Verification code fetch error:", fetchError);
-        if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError") || fetchError.message.includes("Load failed") || fetchError.message.includes("405")) {
-          throw new Error("Unable to connect to server. Please check your internet connection and try again. If the problem persists, the server may need to be reconfigured for CORS.");
-        }
-        throw fetchError;
+      
+      if (!res.ok) {
+        throw new Error("Failed to send verification code. Please try again.");
       }
+      
+      const data = await res.json();
 
       if (data.success) {
         // Store email for verification
@@ -1317,11 +1497,11 @@
           `;
         }
         
-        byzShowToast('<div><i class="fa-solid fa-circle-check"></i> <b>Code Sent!</b></div><div class="byz-toast-sub">Check your email for the verification code</div>', 3000);
+        byzShowToast("Code Sent!", "Check your email for the verification code", "success", 3000);
       } else {
         const errorMsg = data.error || data.message || "Failed to send verification code. Please check your email address or phone number and try again.";
         console.error("API Error:", errorMsg);
-        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
+        byzShowToast("Error", errorMsg, "error", 4000);
         btn.innerHTML = originalText;
         btn.disabled = false;
       }
@@ -1340,7 +1520,7 @@
   function selectPhoneEmail(mapKey) {
     const fullEmail = phoneEmailMap[mapKey];
     if (!fullEmail) {
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Error</b></div><div class="byz-toast-sub">Unable to find selected email. Please try again.</div>', 3000);
+      byzShowToast("Error", "Unable to find selected email. Please try again.", "error", 3000);
       return;
     }
     
@@ -1348,7 +1528,7 @@
     document.getElementById("emailLookup").value = maskEmail(fullEmail);
     document.getElementById("phoneEmails").style.display = "none";
     
-    byzShowToast(`<div><i class="fa-solid fa-circle-check"></i> <b>Email Selected</b></div><div class="byz-toast-sub">Sending verification code to ${maskEmail(fullEmail)}</div>`, 2000);
+    byzShowToast("Email Selected", `Sending verification code to ${maskEmail(fullEmail)}`, "success", 2000);
     
     // Send code to selected email
     setTimeout(() => {
@@ -1364,7 +1544,7 @@
     const code = document.getElementById("verificationCode").value.trim();
 
     if (!email || !code) {
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>Code Required</b></div><div class="byz-toast-sub">Please enter the verification code</div>', 3000);
+      byzShowToast("Code Required", "Please enter the verification code", "error", 3000);
       return;
     }
 
@@ -1382,36 +1562,22 @@
     showBookingSkeletons("upcomingBookings", 2);
 
     try {
-      console.log("Verifying code for email:", email);
-      let res;
-      let data;
-      
-      try {
-        res = await fetch(SCRIPT_URL, {
+      // Verify code and get bookings
+      const res = await fetch(SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
           action: "getBookingsByEmail",
           email: email,
           verificationCode: code
         })
       });
-        
-        if (!res.ok) {
-          const errorText = await res.text().catch(() => "Unknown error");
-          console.error("Bookings HTTP error:", res.status, errorText);
-          throw new Error(`Server error: ${res.status}. ${errorText.substring(0, 100)}`);
-        }
-        
-        data = await res.json();
-        console.log("Bookings response:", data);
-      } catch (fetchError) {
-        console.error("Bookings fetch error:", fetchError);
-        if (fetchError.message.includes("Failed to fetch") || fetchError.message.includes("NetworkError") || fetchError.message.includes("Load failed") || fetchError.message.includes("405")) {
-          throw new Error("Unable to connect to server. Please check your internet connection and try again. If the problem persists, the server may need to be reconfigured for CORS.");
-        }
-        throw fetchError;
+      
+      if (!res.ok) {
+        throw new Error("Unable to verify code. Please try again.");
       }
+      
+      const data = await res.json();
 
       if (data.success) {
         localStorage.setItem("byz_lookup_email", email);
@@ -1422,7 +1588,7 @@
         document.getElementById("upcomingBookings").innerHTML = "";
         const errorMsg = data.error || data.message || "Invalid verification code. Please try again.";
         console.error("Verification failed:", errorMsg);
-        byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Verification Failed</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
+        byzShowToast("Verification Failed", errorMsg, "error", 4000);
         const codeInput = document.getElementById("verificationCode");
         if(codeInput) {
           codeInput.value = "";
@@ -1436,7 +1602,7 @@
       document.querySelector(".lookup-form").style.display = "block";
       document.getElementById("upcomingBookings").innerHTML = "";
       const errorMsg = error.message || "Error verifying code. Please check your connection and try again.";
-      byzShowToast(`<div><i class="fa-solid fa-circle-exclamation"></i> <b>Connection Error</b></div><div class="byz-toast-sub">${errorMsg}</div>`, 4000);
+      byzShowToast("Connection Error", errorMsg, "error", 4000);
       btn.innerHTML = originalText;
       btn.disabled = false;
     }
@@ -1698,7 +1864,7 @@
   function byzSaveQRCode(bookingId) {
     const canvas = document.getElementById(`qr-${bookingId}`);
     if (!canvas || canvas.style.display === 'none') {
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>QR Code Not Ready</b></div><div class="byz-toast-sub">Please wait for QR code to generate</div>', 3000);
+      byzShowToast("QR Code Not Ready", "Please wait for QR code to generate", "error", 3000);
       return;
     }
     
@@ -1712,14 +1878,14 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      byzShowToast(`<div><i class="fa-solid fa-circle-check"></i> <b>QR Code Saved!</b></div><div class="byz-toast-sub">Saved as BYZ-QR-${bookingId}.png</div>`, 3000);
+      byzShowToast("QR Code Saved!", `Saved as BYZ-QR-${bookingId}.png`, "success", 3000);
     }, 'image/png');
   }
 
   function byzShowQRFullscreen(bookingId) {
     const canvas = document.getElementById(`qr-${bookingId}`);
     if (!canvas || canvas.style.display === 'none') {
-      byzShowToast('<div><i class="fa-solid fa-circle-exclamation"></i> <b>QR Code Not Ready</b></div><div class="byz-toast-sub">Please wait for QR code to generate</div>', 3000);
+      byzShowToast("QR Code Not Ready", "Please wait for QR code to generate", "error", 3000);
       return;
     }
     
@@ -1765,11 +1931,11 @@
   }
 
   function resendQR(bookingId){
-    byzShowToast(`<div><i class="fa-solid fa-envelope"></i> <b>Resend Requested</b></div><div class="byz-toast-sub">QR code email will be sent shortly</div>`, 3000);
+    byzShowToast("Resend Requested", "QR code email will be sent shortly", "info", 3000);
   }
 
   function viewReceipt(bookingId){
-    byzShowToast(`<div><i class="fa-solid fa-receipt"></i> <b>Receipt</b></div><div class="byz-toast-sub">Receipt feature coming soon</div>`, 3000);
+    byzShowToast("Receipt", "Receipt feature coming soon", "info", 3000);
   }
 
   // ============================================
