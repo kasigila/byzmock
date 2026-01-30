@@ -8,21 +8,44 @@
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script>
-    // Dynamically load QR code library to avoid MIME type issues
-    (function() {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
-      script.type = 'text/javascript';
-      script.crossOrigin = 'anonymous';
-      script.onerror = function() {
-        // Fallback to alternative CDN
-        const fallback = document.createElement('script');
-        fallback.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
-        fallback.type = 'text/javascript';
-        fallback.crossOrigin = 'anonymous';
-        document.head.appendChild(fallback);
-      };
-      document.head.appendChild(script);
+    // Load QR code library with multiple fallbacks
+    (function loadQRCodeLibrary() {
+      const sources = [
+        'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
+        'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js'
+      ];
+      
+      let currentIndex = 0;
+      
+      function tryLoad() {
+        if (currentIndex >= sources.length) {
+          console.error('Failed to load QR code library from all sources');
+          return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = sources[currentIndex];
+        script.type = 'text/javascript';
+        script.crossOrigin = 'anonymous';
+        
+        script.onload = function() {
+          console.log('QR code library loaded successfully');
+          // Check if library is available
+          if (typeof QRCode !== 'undefined') {
+            window.QRCodeLoaded = true;
+          }
+        };
+        
+        script.onerror = function() {
+          currentIndex++;
+          tryLoad();
+        };
+        
+        document.head.appendChild(script);
+      }
+      
+      tryLoad();
     })();
   </script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -239,13 +262,16 @@
       min-width:0;
       padding:14px 16px;
       font-size:15px;
+      box-sizing:border-box;
     }
     @media (max-width: 640px){
       #phoneInputWrapper select{
         width:100% !important;
-        max-width:100%;
+        max-width:100% !important;
         padding:16px 18px;
-        font-size:16px; /* Larger for mobile touch targets */
+        font-size:16px;
+        min-height:52px;
+        box-sizing:border-box;
       }
     }
     #phoneInputWrapper select:focus{
@@ -257,14 +283,16 @@
       min-width:0;
       padding:14px 18px;
       font-size:15px;
+      box-sizing:border-box;
     }
     @media (max-width: 640px){
       #phoneLookup{
-        width:100%;
-        max-width:100%;
+        width:100% !important;
+        max-width:100% !important;
         padding:16px 18px;
-        font-size:16px; /* Larger for mobile touch targets */
-        min-height:52px; /* Better touch target */
+        font-size:16px;
+        min-height:52px;
+        box-sizing:border-box;
       }
     }
     input{
@@ -1023,7 +1051,7 @@
               <input type="text" id="emailLookup" placeholder="your@email.com" style="flex:1;" />
             </div>
             <div id="phoneInputWrapper" style="flex:1;display:none;gap:10px;align-items:stretch;min-width:0;">
-              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:15px;font-weight:500;cursor:pointer;max-width:100%;" aria-label="Country Code">
+              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:15px;font-weight:500;cursor:pointer;max-width:100%;box-sizing:border-box;" aria-label="Country Code">
                 <option value="+255">🇹🇿 +255 (TZ)</option>
                 <option value="+1">🇺🇸 +1 (US/CA)</option>
                 <option value="+44">🇬🇧 +44 (UK)</option>
@@ -1064,7 +1092,7 @@
                 <option value="+54">🇦🇷 +54 (AR)</option>
                 <option value="+20">🇪🇬 +20 (EG)</option>
               </select>
-              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;min-width:0;max-width:100%;padding:14px 18px;font-size:15px;" />
+              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;min-width:0;max-width:100%;padding:14px 18px;font-size:15px;box-sizing:border-box;" />
             </div>
             <button class="btn primary" id="sendCodeBtn">
               <i class="fa-solid fa-envelope"></i> Send Code
@@ -1829,32 +1857,59 @@
         return;
       }
       
-      // Check if QRCode library is loaded
-      if (typeof QRCode === 'undefined') {
-        if (loadingEl) loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR library loading...';
-        setTimeout(() => byzGenerateQRCode(bookingId, eventKey), 500);
-        return;
+      // Check if QRCode library is loaded - wait up to 10 seconds
+      let attempts = 0;
+      const maxAttempts = 20; // 20 * 500ms = 10 seconds
+      
+      function checkAndGenerate() {
+        attempts++;
+        
+        if (typeof QRCode === 'undefined' || typeof QRCode.toCanvas === 'undefined') {
+          if (loadingEl) {
+            loadingEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading QR library...';
+          }
+          
+          if (attempts < maxAttempts) {
+            setTimeout(checkAndGenerate, 500);
+          } else {
+            if (loadingEl) {
+              loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR library failed to load';
+            }
+            reject(new Error('QR code library failed to load'));
+          }
+          return;
+        }
+        
+        // Library is loaded, generate QR code
+        try {
+          QRCode.toCanvas(canvas, qrPayload, {
+            width: 200,
+            margin: 2,
+            color: { dark: '#000000', light: '#FFFFFF' },
+            errorCorrectionLevel: 'M'
+          }, (error) => {
+            if (error) {
+              console.error('QR code generation error:', error);
+              if (loadingEl) {
+                loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR code unavailable';
+              }
+              reject(error);
+            } else {
+              if (loadingEl) loadingEl.style.display = 'none';
+              canvas.style.display = 'block';
+              resolve();
+            }
+          });
+        } catch (err) {
+          console.error('QR code generation exception:', err);
+          if (loadingEl) {
+            loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR code error';
+          }
+          reject(err);
+        }
       }
       
-      // Use the library's toCanvas method
-      QRCode.toCanvas(canvas, qrPayload, {
-        width: 200,
-        margin: 2,
-        color: { dark: '#000000', light: '#FFFFFF' },
-        errorCorrectionLevel: 'M'
-      }, (error) => {
-        if (error) {
-          console.error('QR code generation error:', error);
-          if (loadingEl) {
-            loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR code unavailable';
-          }
-          reject(error);
-        } else {
-          if (loadingEl) loadingEl.style.display = 'none';
-          canvas.style.display = 'block';
-          resolve();
-        }
-      });
+      checkAndGenerate();
     });
   }
 
