@@ -115,6 +115,7 @@ nav a:hover{color:var(--text)}
 .mobile-btn:hover{transform: translateY(-1px)}
 .mobile-panel{
   display:none;
+  flex-direction:column;
   position:fixed;
   top:var(--header-h);
   right:16px;
@@ -2944,7 +2945,7 @@ footer{
   .footer-grid{grid-template-columns:1fr 1fr}
   nav ul{display:none}
   .mobile-btn{display:flex}
-  .mobile-panel{display:block; opacity:0; pointer-events:none; transform: translateY(-6px); transition: opacity .2s var(--ease), transform .2s var(--ease); }
+  .mobile-panel{display:flex; flex-direction:column; opacity:0; pointer-events:none; transform: translateY(-6px); transition: opacity .2s var(--ease), transform .2s var(--ease); }
   .mobile-panel.open{opacity:1; pointer-events:auto; transform: translateY(0)}
 }
 
@@ -4778,7 +4779,6 @@ body.bulkbar-active .social-dock{
     <a href="rate.html">Rate Experience</a>
     <a href="admin.html">Admin Log In</a>
     <a href="#connect">Connect</a>
-    <a href="https://kasigila.github.io/byzmock/booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
   </div>
 </header>
 
@@ -5628,9 +5628,9 @@ body.bulkbar-active .social-dock{
 
   <p>
     Business Email:
-    <a href="mailto:byzentertainment@gmail.com?subject=BYZ%20Inquiry"
+    <a href="mailto:byzinthehoodz@gmail.com?subject=BYZ%20Inquiry"
        style="text-decoration:underline;font-weight:800;">
-      byzentertainment@gmail.com
+      byzinthehoodz@gmail.com
     </a>
   </p>
 
@@ -8046,7 +8046,7 @@ When providing information, include tappable links/icons where appropriate (e.g.
 COMPANY INFORMATION:
 - BYZ Entertainment creates legendary nightlife experiences in Dar es Salaam
 - Location: Dar es Salaam, Tanzania
-- Email: byzentertainment@gmail.com
+- Email: byzinthehoodz@gmail.com
 - WhatsApp: +255 768 464 367
 - Website: https://kasigila.github.io/byzmock/
 
@@ -9998,9 +9998,9 @@ IMPORTANT:
       processedText = processedText.replace(/\+255 768 464 367/g, 
         '<a href="https://wa.me/255768464367" target="_blank" class="chat-link"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>');
     }
-    if ((text.includes('email') || text.includes('byzentertainment@gmail.com')) && !text.includes('chat-link')) {
-      processedText = processedText.replace(/byzentertainment@gmail\.com/g, 
-        '<a href="mailto:byzentertainment@gmail.com" class="chat-link"><i class="fa-solid fa-envelope"></i> Email</a>');
+    if ((text.includes('email') || text.includes('byzinthehoodz@gmail.com')) && !text.includes('chat-link')) {
+      processedText = processedText.replace(/byzinthehoodz@gmail\.com/g, 
+        '<a href="mailto:byzinthehoodz@gmail.com" class="chat-link"><i class="fa-solid fa-envelope"></i> Email</a>');
     }
     
     message.innerHTML = `
@@ -10110,7 +10110,7 @@ IMPORTANT:
           'email': 'Email'
         };
         const linkUrl = response.linkType === 'whatsapp' ? 'https://wa.me/255768464367' : 
-                       response.linkType === 'email' ? 'mailto:byzentertainment@gmail.com' : 
+                       response.linkType === 'email' ? 'mailto:byzinthehoodz@gmail.com' : 
                        response.link;
         
         responseText += ` <a href="${linkUrl}" target="_blank" class="chat-link"><i class="${icons[response.linkType]}"></i> ${labels[response.linkType]}</a>`;
