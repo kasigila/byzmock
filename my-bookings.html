@@ -7,46 +7,14 @@
   <meta name="description" content="View your BYZ booking history, QR codes, and upcoming events." />
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <script>
-    // Load QR code library with multiple fallbacks
-    (function loadQRCodeLibrary() {
-      const sources = [
-        'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
-        'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js'
-      ];
-      
-      let currentIndex = 0;
-      
-      function tryLoad() {
-        if (currentIndex >= sources.length) {
-          console.error('Failed to load QR code library from all sources');
-          return;
-        }
-        
-        const script = document.createElement('script');
-        script.src = sources[currentIndex];
-        script.type = 'text/javascript';
-        script.crossOrigin = 'anonymous';
-        
-        script.onload = function() {
-          console.log('QR code library loaded successfully');
-          // Check if library is available
-          if (typeof QRCode !== 'undefined') {
-            window.QRCodeLoaded = true;
-          }
-        };
-        
-        script.onerror = function() {
-          currentIndex++;
-          tryLoad();
-        };
-        
-        document.head.appendChild(script);
-      }
-      
-      tryLoad();
-    })();
+    // Fallback if primary CDN fails
+    if (typeof QRCode === 'undefined') {
+      const fallback = document.createElement('script');
+      fallback.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
+      document.head.appendChild(fallback);
+    }
   </script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
@@ -284,15 +252,17 @@
       padding:14px 18px;
       font-size:15px;
       box-sizing:border-box;
+      width:100%;
     }
     @media (max-width: 640px){
       #phoneLookup{
         width:100% !important;
         max-width:100% !important;
-        padding:16px 18px;
-        font-size:16px;
-        min-height:52px;
+        padding:18px 20px;
+        font-size:18px;
+        min-height:56px;
         box-sizing:border-box;
+        letter-spacing:0.5px;
       }
     }
     input{
@@ -630,6 +600,115 @@
     @keyframes byz-fadeIn{
       from{opacity:0}
       to{opacity:1}
+    }
+
+    /* Receipt Modal */
+    .byz-receipt-modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.95);
+      backdrop-filter:blur(20px);
+      z-index:10000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      animation:byz-fadeIn 0.3s var(--ease);
+      overflow-y:auto;
+    }
+    .byz-receipt-content{
+      position:relative;
+      background:var(--bg-elev);
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      padding:32px;
+      max-width:600px;
+      width:100%;
+      box-shadow:var(--shadow);
+      margin:auto;
+    }
+    @media (max-width: 640px){
+      .byz-receipt-content{padding:24px}
+    }
+    .byz-receipt-close{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      border:1px solid var(--border);
+      background:var(--bg-alt);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:all .2s var(--ease);
+    }
+    .byz-receipt-close:hover{
+      background:var(--bg);
+      transform:scale(1.1);
+    }
+    .byz-receipt-header{
+      text-align:center;
+      margin-bottom:32px;
+      padding-bottom:24px;
+      border-bottom:1px solid var(--border);
+    }
+    .byz-receipt-logo{
+      margin-bottom:16px;
+    }
+    .byz-receipt-header h2{
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-.5px;
+      margin-bottom:4px;
+    }
+    .byz-receipt-body{
+      margin-bottom:24px;
+    }
+    .byz-receipt-section{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .byz-receipt-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 0;
+      border-bottom:1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    }
+    .byz-receipt-row:last-child{
+      border-bottom:none;
+    }
+    .byz-receipt-label{
+      font-size:14px;
+      color:var(--sub);
+      font-weight:600;
+    }
+    .byz-receipt-value{
+      font-size:15px;
+      color:var(--text);
+      font-weight:700;
+      text-align:right;
+    }
+    .byz-receipt-divider{
+      height:2px;
+      background:var(--border);
+      margin:8px 0;
+    }
+    .byz-receipt-footer{
+      margin-top:24px;
+      padding-top:24px;
+      border-top:1px solid var(--border);
+    }
+    @media print{
+      .byz-receipt-close{display:none}
+      .byz-receipt-footer{display:none}
+      .byz-receipt-modal{background:#fff}
+      .byz-receipt-content{box-shadow:none;border:none}
     }
 
     /* Booking Actions */
@@ -1021,7 +1100,6 @@
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
     <a href="rate.html">Rate Experience</a>
-    <a href="booking.html" class="btn primary" style="margin-top:10px; width:100%;">Book Now</a>
   </div>
 </header>
 
@@ -1857,14 +1935,17 @@
         return;
       }
       
-      // Check if QRCode library is loaded - wait up to 10 seconds
+      // Check if QRCode library is loaded - wait up to 15 seconds
       let attempts = 0;
-      const maxAttempts = 20; // 20 * 500ms = 10 seconds
+      const maxAttempts = 30; // 30 * 500ms = 15 seconds
       
       function checkAndGenerate() {
         attempts++;
         
-        if (typeof QRCode === 'undefined' || typeof QRCode.toCanvas === 'undefined') {
+        // Check for QRCode library (multiple possible names)
+        const qrLib = window.QRCode || window.qrcode || (typeof QRCode !== 'undefined' ? QRCode : null);
+        
+        if (!qrLib || (qrLib.toCanvas === undefined && qrLib.toDataURL === undefined)) {
           if (loadingEl) {
             loadingEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading QR library...';
           }
@@ -1872,34 +1953,76 @@
           if (attempts < maxAttempts) {
             setTimeout(checkAndGenerate, 500);
           } else {
+            // Fallback: use QR server API
             if (loadingEl) {
-              loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR library failed to load';
+              loadingEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating via API...';
             }
-            reject(new Error('QR code library failed to load'));
-          }
-          return;
-        }
-        
-        // Library is loaded, generate QR code
-        try {
-          QRCode.toCanvas(canvas, qrPayload, {
-            width: 200,
-            margin: 2,
-            color: { dark: '#000000', light: '#FFFFFF' },
-            errorCorrectionLevel: 'M'
-          }, (error) => {
-            if (error) {
-              console.error('QR code generation error:', error);
-              if (loadingEl) {
-                loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR code unavailable';
-              }
-              reject(error);
-            } else {
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload)}`;
+            const img = document.createElement('img');
+            img.src = qrUrl;
+            img.onload = () => {
+              const ctx = canvas.getContext('2d');
+              canvas.width = 200;
+              canvas.height = 200;
+              ctx.drawImage(img, 0, 0);
               if (loadingEl) loadingEl.style.display = 'none';
               canvas.style.display = 'block';
               resolve();
-            }
-          });
+            };
+            img.onerror = () => {
+              if (loadingEl) {
+                loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR code unavailable';
+              }
+              reject(new Error('QR code generation failed'));
+            };
+          }
+        return;
+      }
+      
+        // Library is loaded, generate QR code
+        try {
+          if (qrLib.toCanvas) {
+            qrLib.toCanvas(canvas, qrPayload, {
+        width: 200,
+        margin: 2,
+              color: { dark: '#000000', light: '#FFFFFF' },
+        errorCorrectionLevel: 'M'
+      }, (error) => {
+        if (error) {
+          console.error('QR code generation error:', error);
+          if (loadingEl) {
+            loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR code unavailable';
+          }
+          reject(error);
+        } else {
+          if (loadingEl) loadingEl.style.display = 'none';
+          canvas.style.display = 'block';
+          resolve();
+        }
+      });
+          } else if (qrLib.toDataURL) {
+            qrLib.toDataURL(qrPayload, { width: 200, margin: 2 }, (error, url) => {
+              if (error) {
+                console.error('QR code generation error:', error);
+                if (loadingEl) {
+                  loadingEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> QR code unavailable';
+                }
+                reject(error);
+              } else {
+                const img = new Image();
+                img.onload = () => {
+                  const ctx = canvas.getContext('2d');
+                  canvas.width = 200;
+                  canvas.height = 200;
+                  ctx.drawImage(img, 0, 0);
+                  if (loadingEl) loadingEl.style.display = 'none';
+                  canvas.style.display = 'block';
+                  resolve();
+                };
+                img.src = url;
+              }
+            });
+          }
         } catch (err) {
           console.error('QR code generation exception:', err);
           if (loadingEl) {
@@ -1985,12 +2108,185 @@
     });
   }
 
-  function resendQR(bookingId){
-    byzShowToast("Resend Requested", "QR code email will be sent shortly", "info", 3000);
+  async function resendQR(bookingId){
+    try {
+      // Get booking details from localStorage
+      const saved = localStorage.getItem("byz_my_bookings");
+      if (!saved) {
+        byzShowToast("Error", "Booking information not found", "error", 3000);
+        return;
+      }
+      
+      const bookings = JSON.parse(saved);
+      const booking = bookings.find(b => b.bookingId === bookingId);
+      
+      if (!booking) {
+        byzShowToast("Error", "Booking not found", "error", 3000);
+        return;
+      }
+      
+      // Get email from sessionStorage (the verified email)
+      const verifiedEmail = sessionStorage.getItem("byz_verify_email");
+      if (!verifiedEmail) {
+        byzShowToast("Error", "Email verification required", "error", 3000);
+        return;
+      }
+      
+      const btn = event?.target?.closest('button');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="byz-loading-spinner"></span> Sending...';
+      }
+      
+      // Use sendConfirmedEmail action - backend will resend the confirmation email with QR code
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: "resendConfirmationEmail",
+          bookingId: bookingId,
+          email: verifiedEmail,
+          eventKey: booking.eventKey || "groove"
+        })
+      });
+      
+      if (!res.ok) {
+        throw new Error("Failed to resend email");
+      }
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        byzShowToast("Email Sent!", `QR code email sent to ${verifiedEmail}`, "success", 3000);
+      } else {
+        throw new Error(data.error || "Failed to resend email");
+      }
+      
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-envelope"></i> Resend Email';
+      }
+    } catch (error) {
+      console.error("Resend email error:", error);
+      byzShowToast("Error", error.message || "Failed to resend email. Please try again.", "error", 4000);
+      const btn = event?.target?.closest('button');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-envelope"></i> Resend Email';
+      }
+    }
   }
 
   function viewReceipt(bookingId){
-    byzShowToast("Receipt", "Receipt feature coming soon", "info", 3000);
+    // Get booking details from localStorage
+    const saved = localStorage.getItem("byz_my_bookings");
+    if (!saved) {
+      byzShowToast("Error", "Booking information not found", "error", 3000);
+      return;
+    }
+    
+    const bookings = JSON.parse(saved);
+    const booking = bookings.find(b => b.bookingId === bookingId);
+    
+    if (!booking) {
+      byzShowToast("Error", "Booking not found", "error", 3000);
+      return;
+    }
+    
+    // Create receipt modal
+    const modal = document.createElement('div');
+    modal.className = 'byz-receipt-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Booking Receipt');
+    modal.tabIndex = -1;
+    
+    const eventName = booking.eventName || booking.description || "Event";
+    const date = booking.date || (booking.timestamp ? new Date(booking.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "TBD");
+    const bookingType = booking.bookingType === "TICKET" ? "Ticket" : booking.bookingType === "TABLE" ? "VIP Table" : booking.bookingType || "Booking";
+    const quantity = booking.quantity || 1;
+    const amount = typeof booking.amount === "number" ? booking.amount.toLocaleString() + " TZS" : (booking.amount ? booking.amount + " TZS" : "N/A");
+    const status = booking.status === "CONFIRMED" ? "Confirmed" : booking.status === "REJECTED" ? "Rejected" : "Pending";
+    
+    modal.innerHTML = `
+      <div class="byz-receipt-content">
+        <button class="byz-receipt-close" onclick="this.closest('.byz-receipt-modal').remove()" aria-label="Close receipt">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="byz-receipt-header">
+          <div class="byz-receipt-logo">
+            <img src="assets/byz-logo-white.png" alt="BYZ Entertainment" style="width:60px;height:60px;object-fit:contain;">
+          </div>
+          <h2>BYZ Entertainment</h2>
+          <p style="color:var(--sub);font-size:13px;margin-top:4px;">Booking Receipt</p>
+        </div>
+        <div class="byz-receipt-body">
+          <div class="byz-receipt-section">
+            <div class="byz-receipt-row">
+              <span class="byz-receipt-label">Booking ID</span>
+              <span class="byz-receipt-value">${bookingId}</span>
+            </div>
+            <div class="byz-receipt-row">
+              <span class="byz-receipt-label">Event</span>
+              <span class="byz-receipt-value">${eventName}</span>
+            </div>
+            <div class="byz-receipt-row">
+              <span class="byz-receipt-label">Date</span>
+              <span class="byz-receipt-value">${date}</span>
+            </div>
+            <div class="byz-receipt-row">
+              <span class="byz-receipt-label">Type</span>
+              <span class="byz-receipt-value">${bookingType}</span>
+            </div>
+            ${booking.tier ? `
+            <div class="byz-receipt-row">
+              <span class="byz-receipt-label">Tier</span>
+              <span class="byz-receipt-value">${booking.tier}</span>
+            </div>
+            ` : ''}
+            <div class="byz-receipt-row">
+              <span class="byz-receipt-label">Quantity</span>
+              <span class="byz-receipt-value">${quantity}</span>
+            </div>
+            <div class="byz-receipt-row">
+              <span class="byz-receipt-label">Status</span>
+              <span class="byz-receipt-value" style="color:${status === "Confirmed" ? "var(--ok)" : status === "Rejected" ? "var(--bad)" : "var(--warn)"}">${status}</span>
+            </div>
+            <div class="byz-receipt-divider"></div>
+            <div class="byz-receipt-row" style="font-size:18px;font-weight:900;">
+              <span class="byz-receipt-label">Total Amount</span>
+              <span class="byz-receipt-value">${amount}</span>
+            </div>
+            ${booking.transactionCode ? `
+            <div class="byz-receipt-row" style="margin-top:12px;">
+              <span class="byz-receipt-label">Transaction ID</span>
+              <span class="byz-receipt-value" style="font-family:monospace;font-size:12px;">${booking.transactionCode}</span>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+        <div class="byz-receipt-footer">
+          <button class="btn primary" onclick="byzPrintReceipt('${bookingId}')" style="width:100%;">
+            <i class="fa-solid fa-print"></i> Print Receipt
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.focus();
+    
+    modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') modal.remove();
+    });
+    
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+  }
+  
+  function byzPrintReceipt(bookingId) {
+    window.print();
   }
 
   // ============================================
