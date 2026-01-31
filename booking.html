@@ -930,13 +930,6 @@
                     </a>
                   </div>
 
-                  <div class="whatsapp-hint">
-                    <div class="whatsapp-dot"></div>
-                    <div>
-                      After submitting, WhatsApp opens automatically for payment verification.
-                      Press <b>SEND</b>.
-                    </div>
-                  </div>
 
                   <div class="guidance-card" style="margin-top:12px;" onclick="toggleGuidanceCard(this)" role="button" tabindex="0" aria-expanded="false">
                     <div class="guidance-card-header">
@@ -1192,7 +1185,7 @@
               </button>
 
               <div class="notice">
-                <i class="fa-solid fa-circle-info"></i> Once WhatsApp opens, press <b>SEND</b> to verify payment.
+                <i class="fa-solid fa-circle-info"></i> Your booking will be reviewed within 48 hours. You'll receive a confirmation email once approved.
               </div>
             </div>
 
@@ -1205,7 +1198,7 @@
               </div>
               <div class="guidance-card-content">
                 <ul>
-                  <li>Your booking will be reviewed within 24 hours</li>
+                  <li>Your booking will be reviewed within 48 hours</li>
                   <li>You'll receive a confirmation email once approved</li>
                   <li>Your QR code will be sent via email</li>
                   <li>Present your QR code at the door for entry</li>
@@ -1217,6 +1210,11 @@
               <span style="font-size: 12px; color: var(--sub);">Need help?</span>
               <a class="btn primary" href="faq.html" style="font-size: 12px; padding: 8px 12px; transition: transform .2s var(--ease), box-shadow .2s var(--ease);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(255,255,255,.2)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
                 <i class="fa-solid fa-circle-question"></i> FAQ
+              </a>
+            </div>
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+              <a class="btn ghost" href="my-bookings.html" style="font-size: 12px; padding: 8px 12px; width: 100%; justify-content: center; transition: transform .2s var(--ease), box-shadow .2s var(--ease);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 2px 8px rgba(255,255,255,.1)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <i class="fa-solid fa-calendar-check"></i> View My Bookings
               </a>
             </div>
 
@@ -1792,22 +1790,7 @@
 
         const bookingId = res && res.bookingId ? res.bookingId : "(pending)";
 
-        const msg =
-`NEW BYZ BOOKING (GROOVE)
-BookingID: ${bookingId}
-Name: ${data.name}
-Phone: ${data.phone}
-${desc}
-Qty: ${quantity}
-Amount: ${amount}
-Txn: ${data.transactionCode}`;
-
-        const waUrl = `https://wa.me/${BYZ_WHATSAPP}?text=${encodeURIComponent(msg)}`;
-
-        sessionStorage.setItem("byz_last_wa", waUrl);
-        sessionStorage.setItem("byz_last_ts", String(Date.now()));
         sessionStorage.setItem("byz_last_bookingId", bookingId);
-        sessionStorage.setItem("byz_last_status", "submitted");
 
         setProgress(100);
         updateStepIndicator(3);
@@ -1867,9 +1850,6 @@ Txn: ${data.transactionCode}`;
         if(btn) btn.classList.add("success-animation");
         
         showPendingToast();
-        setTimeout(() => {
-          window.location.href = waUrl;
-        }, 650);
 
 
       }catch(err){
@@ -1966,11 +1946,10 @@ function showPendingToast(){
 
 function showBookingSubmittedUI(){
   const bookingId = sessionStorage.getItem("byz_last_bookingId") || "";
-  const wa = sessionStorage.getItem("byz_last_wa") || "";
 
   const notice = document.querySelector("#formStep .notice");
   if(notice){
-    notice.innerHTML = `Booking submitted ✅ WhatsApp opened — press <b>SEND</b> to verify payment.`;
+    notice.innerHTML = `Booking submitted ✅ Your booking will be reviewed within 48 hours.`;
   }
 
   const foot = document.querySelector(".foot");
@@ -1979,8 +1958,8 @@ function showBookingSubmittedUI(){
   const toastHtml = `
     <div><b>Booking submitted ✅</b></div>
     ${bookingId ? `<div class="toast-sub">Booking ID: <b>${bookingId}</b></div>` : ``}
+    <div class="toast-sub" style="margin-top:8px;">Your booking is being reviewed. You'll receive a confirmation email once approved.</div>
     <div class="toast-actions">
-      ${wa ? `<a class="toast-link" href="${wa}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Open WhatsApp again</a>` : ``}
       <button class="toast-link" onclick="downloadReceipt('${bookingId}')" style="background:none; border:none; color:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:8px; transition:background 0.2s;">
         <i class="fa-solid fa-download"></i> Download Receipt
       </button>
@@ -1990,23 +1969,6 @@ function showBookingSubmittedUI(){
 
   setProgress(100);
 }
-
-function handleReturnFromWhatsApp(){
-  const status = sessionStorage.getItem("byz_last_status");
-  const ts = Number(sessionStorage.getItem("byz_last_ts") || "0");
-
-  if(status === "submitted" && (Date.now() - ts < 10 * 60 * 1000)){
-    showPendingToast();
-  }
-}
-
-
-window.addEventListener("pageshow", handleReturnFromWhatsApp);
-window.addEventListener("focus", handleReturnFromWhatsApp);
-
-document.addEventListener("visibilitychange", () => {
-  if(!document.hidden) handleReturnFromWhatsApp();
-});
 
 // Download Receipt Function (Receiptify-Style - Image Download)
 function downloadReceipt(bookingId) {
