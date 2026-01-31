@@ -40,6 +40,15 @@
     .container{max-width:var(--max);margin:0 auto;padding:0 24px}
     @media (max-width: 560px){
       .container{padding:0 28px}
+      /* Safe area for notched devices */
+      body{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      header{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
     }
 
     /* Header */
@@ -123,6 +132,16 @@
       font-size:14px;font-weight:600;
       cursor:pointer;
       transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+      min-height: 44px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    @media (max-width: 560px){
+      .btn{
+        min-height: 48px;
+        padding: 14px 20px;
+        font-size: 15px;
+      }
     }
     .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
     .btn.primary{
@@ -220,35 +239,101 @@
       display:flex;
       align-items:center;
       gap:16px;
-      padding:18px;
+      padding:20px;
       border-radius:18px;
       border:1px solid var(--border);
-      background: color-mix(in srgb, var(--bg-alt) 50%, transparent);
-      transition: all .2s var(--ease);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 60%, transparent) 0%,
+        color-mix(in srgb, var(--bg-elev) 80%, transparent) 100%
+      );
+      transition: all .3s var(--ease);
       text-decoration:none;
+      position: relative;
+      overflow: hidden;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    @media (max-width: 560px){
+      .contact-channel{
+        padding: 18px;
+        min-height: 52px;
+      }
+    }
+    .contact-channel::before{
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%);
+      opacity: 0;
+      transition: opacity .3s var(--ease);
     }
     .contact-channel:hover{
-      background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
-      transform: translateY(-2px);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 80%, transparent) 0%,
+        color-mix(in srgb, var(--border) 30%, transparent) 100%
+      );
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: var(--shadow);
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+    }
+    .contact-channel:hover::before{
+      opacity: 1;
+    }
+    .contact-channel.whatsapp:hover{
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--whatsapp) 15%, transparent) 0%,
+        color-mix(in srgb, var(--whatsapp) 8%, transparent) 100%
+      );
+      border-color: color-mix(in srgb, var(--whatsapp) 40%, var(--border));
+      box-shadow: 0 18px 60px rgba(37,211,102,.2);
     }
     .channel-icon{
-      width:48px;
-      height:48px;
-      border-radius:14px;
-      background: color-mix(in srgb, var(--accent) 10%, transparent);
-      border:1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 8%, transparent) 100%
+      );
+      border:1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
       display:flex;
       align-items:center;
       justify-content:center;
       flex-shrink:0;
+      transition: all .3s var(--ease);
+      position: relative;
+      z-index: 1;
+    }
+    @media (max-width: 560px){
+      .channel-icon{
+        width: 56px;
+        height: 56px;
+      }
+    }
+    .contact-channel:hover .channel-icon{
+      transform: scale(1.08) rotate(3deg);
+      box-shadow: 0 6px 20px rgba(255,255,255,.08);
     }
     .channel-icon i{
       color:var(--accent);
-      font-size:20px;
+      font-size:22px;
+      transition: transform .3s var(--ease);
+    }
+    @media (max-width: 560px){
+      .channel-icon i{
+        font-size: 24px;
+      }
+    }
+    .contact-channel:hover .channel-icon i{
+      transform: scale(1.1);
     }
     .channel-icon.whatsapp{
-      background: color-mix(in srgb, var(--whatsapp) 15%, transparent);
-      border-color: color-mix(in srgb, var(--whatsapp) 30%, var(--border));
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--whatsapp) 18%, transparent) 0%,
+        color-mix(in srgb, var(--whatsapp) 12%, transparent) 100%
+      );
+      border-color: color-mix(in srgb, var(--whatsapp) 35%, var(--border));
     }
     .channel-icon.whatsapp i{
       color:var(--whatsapp);
@@ -277,6 +362,7 @@
     /* Form */
     .form-group{
       margin-bottom:20px;
+      position: relative;
     }
     .form-label{
       display:block;
@@ -289,21 +375,89 @@
       color:var(--sub);
       font-weight:400;
     }
+    /* Validation checkmark - iOS style */
+    .validation-check{
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%) scale(0);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--ok);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .form-group input:valid:not(:placeholder-shown) + .validation-check,
+    .form-group textarea:valid:not(:placeholder-shown) + .validation-check{
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+    .validation-check::before{
+      content: '✓';
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    input:valid:not(:placeholder-shown),
+    textarea:valid:not(:placeholder-shown){
+      padding-right: 48px;
+    }
+    @media (max-width: 560px){
+      .validation-check{
+        right: 18px;
+      }
+      input:valid:not(:placeholder-shown),
+      textarea:valid:not(:placeholder-shown){
+        padding-right: 52px;
+      }
+    }
     input, textarea, select{
       width:100%;
       padding:14px 18px;
       border-radius:18px;
       border:1px solid var(--border);
-      background:var(--bg-alt);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 0%,
+        color-mix(in srgb, var(--bg-elev) 90%, transparent) 100%
+      );
       color:var(--text);
       font-size:15px;
       font-family:inherit;
       outline:none;
-      transition: all .2s var(--ease);
+      transition: all .3s var(--ease);
+      min-height: 44px;
+      box-shadow: var(--shadow-soft);
+    }
+    @media (max-width: 560px){
+      input, textarea, select{
+        min-height: 48px;
+        padding: 16px 20px;
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
     }
     input:focus, textarea:focus, select:focus{
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), 
+                  0 8px 32px rgba(255,255,255,.06);
       border-color:var(--accent);
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 100%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 6%, var(--bg-elev)) 100%
+      );
+    }
+    input:valid:not(:placeholder-shown), textarea:valid:not(:placeholder-shown), select:valid{
+      border-color: color-mix(in srgb, var(--ok) 40%, var(--border));
+    }
+    input:valid:not(:placeholder-shown):focus, textarea:valid:not(:placeholder-shown):focus{
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 20%, transparent), 
+                  0 10px 40px rgba(10,127,63,.1);
     }
     input.error, textarea.error, select.error{
       border-color:var(--bad);
@@ -320,6 +474,24 @@
       font-size:12px;
       color:var(--sub);
       margin-top:6px;
+    }
+    .char-counter{
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--sub);
+      transition: color .3s var(--ease);
+    }
+    .char-counter.warning{
+      color: var(--warn);
+    }
+    .char-counter.danger{
+      color: var(--bad);
+    }
+    #charCount{
+      font-weight: 600;
+      color: var(--text);
     }
 
     /* Quick Links */
@@ -493,6 +665,7 @@
                     Name <span class="required">(required)</span>
                   </label>
                   <input type="text" name="name" required placeholder="Your name" />
+                  <span class="validation-check"></span>
                 </div>
 
                 <div class="form-group">
@@ -500,6 +673,7 @@
                     Email <span class="required">(required)</span>
                   </label>
                   <input type="email" name="email" required placeholder="your@email.com" />
+                  <span class="validation-check"></span>
                 </div>
 
                 <div class="form-group">
@@ -507,6 +681,7 @@
                     Phone <span class="required">(optional)</span>
                   </label>
                   <input type="tel" name="phone" placeholder="+255 XXX XXX XXX" pattern="^\+?[1-9]\d{1,14}$" />
+                  <span class="validation-check"></span>
                   <div class="form-help">Include country code for faster response</div>
                 </div>
 
@@ -529,12 +704,32 @@
                   <label class="form-label">
                     Message <span class="required">(required)</span>
                   </label>
-                  <textarea name="message" required placeholder="Tell us how we can help..." rows="5"></textarea>
+                  <textarea name="message" required placeholder="Tell us how we can help..." rows="5" maxlength="1000" id="messageTextarea"></textarea>
+                  <div class="char-counter" id="charCounter">
+                    <span id="charCount">0</span> / 1000 characters
+                  </div>
+                  <span class="validation-check"></span>
                 </div>
 
-                <button type="submit" class="btn primary" style="width:100%;justify-content:center;min-height:52px;font-size:15px;">
-                  <i class="fa-solid fa-paper-plane"></i> Send Message
-                </button>
+                <div class="form-actions" style="display:flex;gap:12px;flex-wrap:wrap;">
+                  <button type="submit" class="btn primary" style="flex:1;min-width:200px;justify-content:center;min-height:52px;font-size:15px;" id="submitBtn">
+                    <i class="fa-solid fa-paper-plane"></i> Send Message
+                  </button>
+                  <button type="button" class="btn whatsapp" style="flex:1;min-width:200px;justify-content:center;min-height:52px;font-size:15px;" onclick="openWhatsAppFromForm()">
+                    <i class="fa-brands fa-whatsapp"></i> Send via WhatsApp
+                  </button>
+                </div>
+                <style>
+                  @media (max-width: 560px){
+                    .form-actions{
+                      flex-direction:column;
+                    }
+                    .form-actions .btn{
+                      width:100% !important;
+                      min-width:100% !important;
+                    }
+                  }
+                </style>
 
                 <p style="margin-top:12px;font-size:12px;color:var(--sub);text-align:center;">
                   <i class="fa-solid fa-circle-info"></i> For urgent matters, WhatsApp is fastest
@@ -586,7 +781,7 @@
               <div style="display:flex;flex-direction:column;gap:12px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
                   <span style="font-size:14px;color:var(--sub);">WhatsApp</span>
-                  <span style="font-size:14px;font-weight:700;">Within 24 hours</span>
+                  <span style="font-size:14px;font-weight:700;">Within 48 hours</span>
                 </div>
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
                   <span style="font-size:14px;color:var(--sub);">Email</span>
@@ -701,8 +896,89 @@
     return isValid;
   }
   
+  // API Configuration
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+
+  // Toast Notification System
+  function showToast(message, type = "success"){
+    // Remove existing toast if any
+    const existingToast = document.getElementById("contactToast");
+    if(existingToast) existingToast.remove();
+    
+    const toast = document.createElement("div");
+    toast.id = "contactToast";
+    toast.style.cssText = `
+      position:fixed;
+      bottom:24px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:10000;
+      padding:14px 20px;
+      border-radius:999px;
+      background:${type === "error" ? "rgba(220,38,38,0.95)" : "rgba(0,0,0,0.85)"};
+      backdrop-filter:blur(16px);
+      color:#fff;
+      font-size:14px;
+      font-weight:600;
+      opacity:0;
+      transition:opacity 0.3s var(--ease), transform 0.3s var(--ease);
+      max-width:calc(100vw - 40px);
+      text-align:center;
+      box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+      toast.style.opacity = "1";
+      toast.style.transform = "translateX(-50%) translateY(-8px)";
+    }, 10);
+    
+    // Remove after delay
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transform = "translateX(-50%) translateY(0)";
+      setTimeout(() => toast.remove(), 300);
+    }, type === "error" ? 5000 : 4000);
+  }
+
+  // Open WhatsApp from form data
+  function openWhatsAppFromForm(){
+    const form = document.getElementById("contactForm");
+    if(!form) return;
+    
+    const formData = new FormData(form);
+    const name = formData.get("name") || "";
+    const email = formData.get("email") || "";
+    const phone = formData.get("phone") || "";
+    const subject = formData.get("subject") || "";
+    const message = formData.get("message") || "";
+    
+    const subjectLabels = {
+      "booking": "Booking Inquiry",
+      "support": "Support Request",
+      "partnership": "Partnership Opportunity",
+      "media": "Media & Press",
+      "feedback": "Feedback",
+      "other": "Other"
+    };
+    
+    const subjectLabel = subjectLabels[subject] || subject;
+    
+    let whatsappMessage = `Hi BYZ!\n\n`;
+    if(name) whatsappMessage += `Name: ${name}\n`;
+    if(email) whatsappMessage += `Email: ${email}\n`;
+    if(phone) whatsappMessage += `Phone: ${phone}\n`;
+    if(subject) whatsappMessage += `Subject: ${subjectLabel}\n`;
+    whatsappMessage += `\n${message}`;
+    
+    const whatsappUrl = `https://wa.me/255768464367?text=${encodeURIComponent(whatsappMessage)}`;
+    window.open(whatsappUrl, "_blank", "noopener");
+  }
+
   // Contact form submission
-  function handleContactSubmit(e){
+  async function handleContactSubmit(e){
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
@@ -714,10 +990,14 @@
       if(!validateField(input)) allValid = false;
     });
     
-    if(!allValid) return;
+    if(!allValid) {
+      showToast("Please fill in all required fields correctly", "error");
+      return;
+    }
     
-    const btn = form.querySelector('button[type="submit"]');
+    const btn = document.getElementById("submitBtn");
     const originalText = btn ? btn.innerHTML : "";
+    const originalDisabled = btn ? btn.disabled : false;
     
     // Show loading state
     if(btn){
@@ -725,40 +1005,264 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
     }
     
-    // In production, this would send to a backend API
-    // For now, we'll show a success message and optionally open WhatsApp
-    const subject = formData.get("subject");
-    const message = formData.get("message");
-    const name = formData.get("name");
-    
-    // Create WhatsApp message
-    const whatsappMessage = `Hi BYZ! I'm ${name}. ${subject ? `Subject: ${subject}. ` : ''}${message}`;
-    const whatsappUrl = `https://wa.me/255768464367?text=${encodeURIComponent(whatsappMessage)}`;
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      // Show confirmation
-      if(typeof showToast !== 'undefined'){
-        showToast("Thank you for your message! Opening WhatsApp...");
-      } else {
-        // Simple notification
+    const submissionData = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone") || "",
+      subject: formData.get("subject"),
+      message: formData.get("message")
+    };
+
+    // Check if offline
+    if(!navigator.onLine){
+      saveToOfflineQueue(submissionData);
+      if(btn){
+        btn.innerHTML = '<i class="fa-solid fa-cloud-upload"></i> Queued (Offline)';
+        btn.style.background = 'var(--warn)';
+      }
+      showToast("You're offline. Your message has been queued and will be sent when you're back online.", "error");
+      
+      setTimeout(() => {
+        if(btn){
+          btn.innerHTML = originalText;
+          btn.style.background = '';
+          btn.disabled = originalDisabled;
+        }
+      }, 3000);
+      return;
+    }
+
+    try {
+      // Submit to backend API with retry mechanism
+      const result = await retrySubmission(submissionData);
+      
+      if(result.success){
+        // Success
         if(btn){
           btn.innerHTML = '<i class="fa-solid fa-check"></i> Message Sent!';
           btn.style.background = 'var(--ok)';
-          setTimeout(() => {
+        }
+        showToast("Your message has been sent successfully! We'll get back to you soon.");
+        
+        // Reset form
+        setTimeout(() => {
+          form.reset();
+          const charCount = document.getElementById("charCount");
+          if(charCount) charCount.textContent = "0";
+          const charCounter = document.getElementById("charCounter");
+          if(charCounter) charCounter.classList.remove("warning", "danger");
+          if(btn){
             btn.innerHTML = originalText;
             btn.style.background = '';
-            btn.disabled = false;
-          }, 2000);
-        }
+            btn.disabled = originalDisabled;
+          }
+        }, 2000);
       }
-      window.open(whatsappUrl, "_blank", "noopener");
+    } catch (error) {
+      // Network or other error - save to offline queue
+      console.error("Contact form error:", error);
       
-      // Reset form
-      form.reset();
-    }, 500);
+      saveToOfflineQueue(submissionData);
+      
+      if(btn){
+        btn.innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i> Retry';
+        btn.style.background = 'var(--warn)';
+        const retryHandler = () => {
+          btn.onclick = null;
+          handleContactSubmit(e);
+        };
+        btn.onclick = retryHandler;
+        setTimeout(() => {
+          if(btn.onclick === retryHandler){
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+            btn.onclick = null;
+          }
+        }, 5000);
+      }
+      
+      showToast(
+        "Message queued. We'll retry sending automatically when connection is restored.",
+        "error"
+      );
+    }
   }
   
+  // Character counter for message textarea
+  (function(){
+    const textarea = document.getElementById("messageTextarea");
+    const counter = document.getElementById("charCounter");
+    const countSpan = document.getElementById("charCount");
+    
+    if(textarea && counter && countSpan){
+      function updateCounter(){
+        const length = textarea.value.length;
+        const maxLength = textarea.getAttribute("maxlength") || 1000;
+        countSpan.textContent = length;
+        
+        counter.classList.remove("warning", "danger");
+        if(length > maxLength * 0.9){
+          counter.classList.add("danger");
+        } else if(length > maxLength * 0.75){
+          counter.classList.add("warning");
+        }
+      }
+      
+      textarea.addEventListener("input", updateCounter);
+      updateCounter(); // Initial count
+    }
+  })();
+
+  // Offline queue and retry mechanism
+  const OFFLINE_QUEUE_KEY = "byz_contact_offline_queue";
+  let retryAttempts = 0;
+  const MAX_RETRIES = 3;
+  const BASE_DELAY = 1000; // 1 second base delay
+
+  function getOfflineQueue(){
+    try {
+      const queue = localStorage.getItem(OFFLINE_QUEUE_KEY);
+      return queue ? JSON.parse(queue) : [];
+    } catch(e){
+      return [];
+    }
+  }
+
+  function saveToOfflineQueue(data){
+    try {
+      const queue = getOfflineQueue();
+      queue.push({
+        ...data,
+        timestamp: Date.now(),
+        retryCount: 0
+      });
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+    } catch(e){
+      console.error("Failed to save to offline queue:", e);
+    }
+  }
+
+  function removeFromOfflineQueue(index){
+    try {
+      const queue = getOfflineQueue();
+      queue.splice(index, 1);
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+    } catch(e){
+      console.error("Failed to remove from queue:", e);
+    }
+  }
+
+  async function retrySubmission(data, retryCount = 0){
+    const delay = BASE_DELAY * Math.pow(2, retryCount); // Exponential backoff
+    
+    if(retryCount > 0){
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+    
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "submitContact",
+          data: data
+        })
+      });
+      
+      const result = await response.json();
+      
+      if(result.success){
+        return { success: true };
+      } else {
+        throw new Error(result.error || "Submission failed");
+      }
+    } catch(error){
+      if(retryCount < MAX_RETRIES){
+        return retrySubmission(data, retryCount + 1);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  async function processOfflineQueue(){
+    if(!navigator.onLine) return;
+    
+    const queue = getOfflineQueue();
+    if(queue.length === 0) return;
+    
+    // Show processing indicator
+    const indicator = document.createElement("div");
+    indicator.id = "offlineQueueIndicator";
+    indicator.style.cssText = `
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(16px);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+    indicator.innerHTML = `<i class="fa-solid fa-cloud-upload"></i> Syncing ${queue.length} queued message${queue.length > 1 ? 's' : ''}...`;
+    document.body.appendChild(indicator);
+    
+    let successCount = 0;
+    let failCount = 0;
+    
+    for(let i = queue.length - 1; i >= 0; i--){
+      const item = queue[i];
+      try {
+        await retrySubmission(item.data, item.retryCount);
+        removeFromOfflineQueue(i);
+        successCount++;
+      } catch(error){
+        item.retryCount++;
+        if(item.retryCount >= MAX_RETRIES){
+          removeFromOfflineQueue(i);
+          failCount++;
+        } else {
+          // Update retry count in queue
+          const updatedQueue = getOfflineQueue();
+          updatedQueue[i].retryCount = item.retryCount;
+          localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(updatedQueue));
+        }
+      }
+    }
+    
+    // Update indicator
+    if(successCount > 0 || failCount > 0){
+      indicator.innerHTML = `<i class="fa-solid fa-check"></i> ${successCount} message${successCount !== 1 ? 's' : ''} synced`;
+      if(failCount > 0){
+        indicator.innerHTML += `, ${failCount} failed`;
+      }
+      setTimeout(() => {
+        indicator.style.opacity = "0";
+        setTimeout(() => indicator.remove(), 300);
+      }, 2000);
+    } else {
+      indicator.remove();
+    }
+  }
+
+  // Check for offline queue on load and when coming online
+  window.addEventListener("online", () => {
+    processOfflineQueue();
+  });
+
+  // Process queue on page load if online
+  if(navigator.onLine){
+    setTimeout(processOfflineQueue, 1000);
+  }
+
   // Initialize validation on load
   setupFormValidation();
 </script>
