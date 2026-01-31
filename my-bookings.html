@@ -216,44 +216,36 @@
       display:none;
       flex:1;
       flex-direction:row;
-      gap:10px;
+      gap:8px;
       align-items:stretch;
-      min-width:0;
     }
     @media (max-width: 640px){
       #phoneInputWrapper{
         flex-direction:column;
-        width:100%;
         gap:12px;
-        align-items:stretch;
-      }
-      #phoneInputWrapper select,
-      #phoneInputWrapper input {
-        width: 100% !important;
-        max-width: 100% !important;
-        flex: 1 1 100%;
       }
     }
     #phoneInputWrapper select{
-      transition: all .2s var(--ease);
-      min-width:0;
-      padding:14px 16px;
-      font-size:15px;
+      width:140px;
+      flex-shrink:0;
+      padding:14px 12px;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      background:var(--bg-alt);
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+      font-weight:500;
+      cursor:pointer;
       box-sizing:border-box;
-      flex-shrink: 0;
-      width: auto;
-      min-width: 140px;
+      transition: all .2s var(--ease);
     }
     @media (max-width: 640px){
       #phoneInputWrapper select{
-        width:100% !important;
-        max-width:100% !important;
-        min-width: 0 !important;
+        width:100%;
         padding:18px 20px;
         font-size:18px;
         min-height:56px;
-        box-sizing:border-box;
-        flex: 1 1 100%;
       }
     }
     #phoneInputWrapper select:focus{
@@ -264,23 +256,27 @@
       flex:1;
       min-width:0;
       padding:14px 18px;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      background:var(--bg-alt);
+      color:var(--text);
       font-size:15px;
+      outline:none;
       box-sizing:border-box;
-      width:100%;
-      flex-grow: 1;
+      transition: all .2s var(--ease);
     }
     @media (max-width: 640px){
       #phoneLookup{
-        width:100% !important;
-        max-width:100% !important;
+        width:100%;
         padding:18px 20px;
         font-size:18px;
         min-height:56px;
-        box-sizing:border-box;
         letter-spacing:0.5px;
-        flex: 1 1 100% !important;
-        min-width: 0 !important;
       }
+    }
+    #phoneLookup:focus{
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
+      border-color:var(--accent);
     }
     input{
       flex:1;
@@ -1145,8 +1141,8 @@
             <div id="emailInputWrapper" style="flex:1;display:flex;gap:8px;align-items:stretch;">
               <input type="text" id="emailLookup" placeholder="your@email.com" style="flex:1;" />
             </div>
-            <div id="phoneInputWrapper" style="flex:1;display:none;gap:10px;align-items:stretch;min-width:0;">
-              <select id="phoneCountryCode" style="flex-shrink:0;min-width:140px;max-width:160px;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:15px;font-weight:500;cursor:pointer;box-sizing:border-box;" aria-label="Country Code">
+            <div id="phoneInputWrapper" style="flex:1;display:none;gap:8px;align-items:stretch;">
+              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box;" aria-label="Country Code">
                 <option value="+255">🇹🇿 +255 (TZ)</option>
                 <option value="+1">🇺🇸 +1 (US/CA)</option>
                 <option value="+44">🇬🇧 +44 (UK)</option>
@@ -1187,7 +1183,7 @@
                 <option value="+54">🇦🇷 +54 (AR)</option>
                 <option value="+20">🇪🇬 +20 (EG)</option>
               </select>
-              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1 1 auto;min-width:0;padding:14px 18px;font-size:15px;box-sizing:border-box;width:100%;" />
+              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;min-width:0;padding:14px 18px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-alt);color:var(--text);font-size:15px;outline:none;box-sizing:border-box;" />
             </div>
             <button class="btn primary" id="sendCodeBtn">
               <i class="fa-solid fa-envelope"></i> Send Code
