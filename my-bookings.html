@@ -8,6 +8,8 @@
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script>
     // Fallback if primary CDN fails
     if (typeof QRCode === 'undefined') {
@@ -223,6 +225,13 @@
         flex-direction:column;
         width:100%;
         gap:12px;
+        align-items:stretch;
+      }
+      #phoneInputWrapper select,
+      #phoneInputWrapper input {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100%;
       }
     }
     #phoneInputWrapper select{
@@ -231,15 +240,20 @@
       padding:14px 16px;
       font-size:15px;
       box-sizing:border-box;
+      flex-shrink: 0;
+      width: auto;
+      min-width: 140px;
     }
     @media (max-width: 640px){
       #phoneInputWrapper select{
         width:100% !important;
         max-width:100% !important;
-        padding:16px 18px;
-        font-size:16px;
-        min-height:52px;
+        min-width: 0 !important;
+        padding:18px 20px;
+        font-size:18px;
+        min-height:56px;
         box-sizing:border-box;
+        flex: 1 1 100%;
       }
     }
     #phoneInputWrapper select:focus{
@@ -253,6 +267,7 @@
       font-size:15px;
       box-sizing:border-box;
       width:100%;
+      flex-grow: 1;
     }
     @media (max-width: 640px){
       #phoneLookup{
@@ -263,6 +278,8 @@
         min-height:56px;
         box-sizing:border-box;
         letter-spacing:0.5px;
+        flex: 1 1 100% !important;
+        min-width: 0 !important;
       }
     }
     input{
@@ -1129,7 +1146,7 @@
               <input type="text" id="emailLookup" placeholder="your@email.com" style="flex:1;" />
             </div>
             <div id="phoneInputWrapper" style="flex:1;display:none;gap:10px;align-items:stretch;min-width:0;">
-              <select id="phoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:15px;font-weight:500;cursor:pointer;max-width:100%;box-sizing:border-box;" aria-label="Country Code">
+              <select id="phoneCountryCode" style="flex-shrink:0;min-width:140px;max-width:160px;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);outline:none;font-size:15px;font-weight:500;cursor:pointer;box-sizing:border-box;" aria-label="Country Code">
                 <option value="+255">🇹🇿 +255 (TZ)</option>
                 <option value="+1">🇺🇸 +1 (US/CA)</option>
                 <option value="+44">🇬🇧 +44 (UK)</option>
@@ -1170,7 +1187,7 @@
                 <option value="+54">🇦🇷 +54 (AR)</option>
                 <option value="+20">🇪🇬 +20 (EG)</option>
               </select>
-              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1;min-width:0;max-width:100%;padding:14px 18px;font-size:15px;box-sizing:border-box;" />
+              <input type="tel" id="phoneLookup" placeholder="Phone number (without country code)" style="flex:1 1 auto;min-width:0;padding:14px 18px;font-size:15px;box-sizing:border-box;width:100%;" />
             </div>
             <button class="btn primary" id="sendCodeBtn">
               <i class="fa-solid fa-envelope"></i> Send Code
@@ -1935,9 +1952,9 @@
         return;
       }
       
-      // Check if QRCode library is loaded - wait up to 15 seconds
+      // Check if QRCode library is loaded - use API fallback quickly if not available
       let attempts = 0;
-      const maxAttempts = 30; // 30 * 500ms = 15 seconds
+      const maxAttempts = 6; // 6 * 500ms = 3 seconds max wait
       
       function checkAndGenerate() {
         attempts++;
@@ -1946,28 +1963,34 @@
         const qrLib = window.QRCode || window.qrcode || (typeof QRCode !== 'undefined' ? QRCode : null);
         
         if (!qrLib || (qrLib.toCanvas === undefined && qrLib.toDataURL === undefined)) {
-          if (loadingEl) {
+          if (attempts <= 2 && loadingEl) {
             loadingEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading QR library...';
           }
           
           if (attempts < maxAttempts) {
             setTimeout(checkAndGenerate, 500);
           } else {
-            // Fallback: use QR server API
+            // Fallback: use QR server API immediately
             if (loadingEl) {
-              loadingEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating via API...';
+              loadingEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
             }
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload)}`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=2&data=${encodeURIComponent(qrPayload)}`;
             const img = document.createElement('img');
-            img.src = qrUrl;
+            img.crossOrigin = 'anonymous';
             img.onload = () => {
-              const ctx = canvas.getContext('2d');
-              canvas.width = 200;
-              canvas.height = 200;
-              ctx.drawImage(img, 0, 0);
-              if (loadingEl) loadingEl.style.display = 'none';
-              canvas.style.display = 'block';
-              resolve();
+              try {
+                const ctx = canvas.getContext('2d');
+                canvas.width = 200;
+                canvas.height = 200;
+                ctx.clearRect(0, 0, 200, 200);
+                ctx.drawImage(img, 0, 0, 200, 200);
+                if (loadingEl) loadingEl.style.display = 'none';
+                canvas.style.display = 'block';
+                resolve();
+              } catch (err) {
+                console.error('Canvas draw error:', err);
+                reject(err);
+              }
             };
             img.onerror = () => {
               if (loadingEl) {
@@ -1975,9 +1998,10 @@
               }
               reject(new Error('QR code generation failed'));
             };
+            img.src = qrUrl;
           }
-        return;
-      }
+          return;
+        }
       
         // Library is loaded, generate QR code
         try {
@@ -2041,23 +2065,45 @@
   // ============================================
   function byzSaveQRCode(bookingId) {
     const canvas = document.getElementById(`qr-${bookingId}`);
-    if (!canvas || canvas.style.display === 'none') {
+    if (!canvas) {
       byzShowToast("QR Code Not Ready", "Please wait for QR code to generate", "error", 3000);
       return;
     }
     
-    canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `BYZ-QR-${bookingId}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      byzShowToast("QR Code Saved!", `Saved as BYZ-QR-${bookingId}.png`, "success", 3000);
-    }, 'image/png');
+    // Check if canvas has content
+    if (canvas.style.display === 'none' || canvas.width === 0 || canvas.height === 0) {
+      byzShowToast("QR Code Not Ready", "Please wait for QR code to generate", "error", 3000);
+      return;
+    }
+    
+    try {
+      // Convert canvas to blob and download
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          byzShowToast("Error", "Failed to generate QR code image", "error", 3000);
+          return;
+        }
+        
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `BYZ-QR-${bookingId}.png`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up after a delay
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+        
+        byzShowToast("QR Code Saved!", `Saved as BYZ-QR-${bookingId}.png`, "success", 3000);
+      }, 'image/png', 1.0);
+    } catch (error) {
+      console.error('Save QR code error:', error);
+      byzShowToast("Error", "Failed to save QR code. Please try again.", "error", 3000);
+    }
   }
 
   function byzShowQRFullscreen(bookingId) {
@@ -2138,12 +2184,17 @@
         btn.innerHTML = '<span class="byz-loading-spinner"></span> Sending...';
       }
       
-      // Use sendConfirmedEmail action - backend will resend the confirmation email with QR code
+      // Use approvePayment action with resend flag - but we need to verify email matches booking
+      // First verify the email matches this booking
+      if (booking.email && booking.email.toLowerCase() !== verifiedEmail.toLowerCase()) {
+        throw new Error("Email does not match this booking");
+      }
+      
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
-          action: "resendConfirmationEmail",
+          action: "resendBookingEmail",
           bookingId: bookingId,
           email: verifiedEmail,
           eventKey: booking.eventKey || "groove"
@@ -2266,8 +2317,8 @@
           </div>
         </div>
         <div class="byz-receipt-footer">
-          <button class="btn primary" onclick="byzPrintReceipt('${bookingId}')" style="width:100%;">
-            <i class="fa-solid fa-print"></i> Print Receipt
+          <button class="btn primary" onclick="byzDownloadReceipt('${bookingId}')" style="width:100%;">
+            <i class="fa-solid fa-download"></i> Download Receipt
           </button>
         </div>
       </div>
@@ -2285,8 +2336,200 @@
     });
   }
   
-  function byzPrintReceipt(bookingId) {
-    window.print();
+  function byzDownloadReceipt(bookingId) {
+    // Get booking details
+    const saved = localStorage.getItem("byz_my_bookings");
+    if (!saved) {
+      byzShowToast("Error", "Booking information not found", "error", 3000);
+      return;
+    }
+    
+    const bookings = JSON.parse(saved);
+    const booking = bookings.find(b => b.bookingId === bookingId);
+    
+    if (!booking) {
+      byzShowToast("Error", "Booking not found", "error", 3000);
+      return;
+    }
+    
+    // Check if html2canvas is loaded
+    if (typeof html2canvas === 'undefined') {
+      byzShowToast("Error", "Receipt generator loading. Please wait a moment and try again.", "error", 3000);
+      return;
+    }
+    
+    // Create receipt container (similar to booking.html)
+    const receiptContainer = document.createElement('div');
+    receiptContainer.id = 'receipt-download-container';
+    receiptContainer.style.cssText = `
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      width: 400px;
+      background: #ffffff;
+      color: #000000;
+      padding: 32px 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      line-height: 1.5;
+    `;
+    
+    const eventName = booking.eventName || booking.description || "Event";
+    const date = booking.date || (booking.timestamp ? new Date(booking.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "TBD");
+    const bookingType = booking.bookingType === "TICKET" ? "Ticket" : booking.bookingType === "TABLE" ? "VIP Table" : booking.bookingType || "Booking";
+    const quantity = booking.quantity || 1;
+    const amountNum = typeof booking.amount === "number" ? booking.amount : (booking.amount ? parseFloat(String(booking.amount).replace(/[^0-9.]/g, '')) : 0);
+    const timestamp = booking.timestamp ? new Date(booking.timestamp).toLocaleString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }) : new Date().toLocaleString();
+    
+    receiptContainer.innerHTML = `
+      <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #000;">
+        <div style="margin-bottom: 12px;">
+          <img id="receipt-logo-img" src="assets/byz-logo-black.png" alt="BYZ" style="width: 80px; height: 80px; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('receipt-logo-fallback').style.display='block';">
+          <div id="receipt-logo-fallback" style="display: none; font-size: 72px; font-weight: 900; letter-spacing: 4px; font-family: 'Courier New', monospace; line-height: 120px;">BYZ</div>
+        </div>
+        <div style="font-size: 9px; color: #333; letter-spacing: 1px;">━━━━━━━━━━━━━━━━━━━━━━━━</div>
+      </div>
+      
+      <div style="margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dotted #ccc;">
+          <span style="font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Receipt #</span>
+          <span style="font-size: 13px; font-weight: 900; letter-spacing: 1.5px; font-family: 'Courier New', monospace;">${bookingId}</span>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span style="font-size: 9px; color: #666; text-transform: uppercase;">Date</span>
+          <span style="font-size: 11px; font-weight: 600;">${timestamp}</span>
+        </div>
+        
+        <div style="margin: 16px 0; padding: 12px; background: linear-gradient(135deg, #e0e0e0 0%, #d5d5d5 100%); border-left: 3px solid #000;">
+          <div style="font-size: 9px; color: #666; margin-bottom: 4px; text-transform: uppercase;">Event</div>
+          <div style="font-size: 14px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 8px;">${eventName}</div>
+          <div style="font-size: 9px; color: #666; margin-bottom: 4px; text-transform: uppercase; margin-top: 12px;">Type</div>
+          <div style="font-size: 12px; font-weight: 700;">${bookingType}</div>
+        </div>
+        
+        ${booking.name ? `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px dotted #ddd;">
+          <span style="font-size: 9px; color: #666; text-transform: uppercase;">Customer</span>
+          <span style="font-size: 11px; font-weight: 600; text-align: right; max-width: 60%;">${booking.name}</span>
+        </div>
+        ` : ''}
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px dotted #ddd;">
+          <span style="font-size: 9px; color: #666; text-transform: uppercase;">Quantity</span>
+          <span style="font-size: 11px; font-weight: 600;">${quantity}</span>
+        </div>
+      </div>
+      
+      <div style="border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 18px 0; margin: 24px 0; background: linear-gradient(to bottom, #ffffff 0%, #f9f9f9 100%);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding: 0 4px;">
+          <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Subtotal</span>
+          <span style="font-size: 12px; font-weight: 700; font-family: 'Courier New', monospace;">${amountNum.toLocaleString()} TZS</span>
+        </div>
+        <div style="border-top: 1px dotted #999; padding-top: 12px; margin-top: 12px;">
+          <div style="display: flex; justify-content: space-between; padding: 0 4px;">
+            <span style="font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">TOTAL</span>
+            <span style="font-size: 18px; font-weight: 900; letter-spacing: 1.5px; font-family: 'Courier New', monospace;">${amountNum.toLocaleString()} TZS</span>
+          </div>
+        </div>
+      </div>
+      
+      ${booking.transactionCode ? `
+      <div style="text-align: center; margin: 24px auto; padding: 16px; background: #000; color: #fff; border: 1px solid #333; max-width: 320px;">
+        <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; opacity: 0.8;">Transaction</div>
+        <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px;">
+          Code: <span style="font-family: 'Courier New', monospace; letter-spacing: 1.5px; font-weight: 700;">${booking.transactionCode}</span>
+        </div>
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.5px;">Method: M-Pesa</div>
+      </div>
+      ` : ''}
+      
+      <div id="barcode-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 320px; margin: 32px auto; padding: 28px 20px; border-top: 3px solid #000; border-bottom: 3px solid #000; background: #ffffff; text-align: center;">
+        <div style="font-size: 8px; color: #666; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; text-align: center;">Booking Reference</div>
+        <svg id="barcode-svg-${bookingId}" style="width: 100%; max-width: 280px; height: 70px; margin: 0 auto; display: block;"></svg>
+        <div style="font-size: 11px; color: #000; margin-top: 14px; letter-spacing: 2.5px; font-weight: 700; font-family: 'Courier New', monospace; text-align: center; word-break: break-all; padding: 0 10px;">${bookingId}</div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 28px; padding-top: 20px; border-top: 2px dashed #ccc;">
+        <div style="font-size: 10px; color: #333; margin-bottom: 6px; font-weight: 600;">Thank you for your booking!</div>
+        <div style="font-size: 8px; color: #999; letter-spacing: 0.5px;">byzentertainment.com</div>
+        <div style="font-size: 7px; color: #bbb; margin-top: 12px; font-style: italic;">This is your official receipt. Keep it safe.</div>
+      </div>
+    `;
+    
+    document.body.appendChild(receiptContainer);
+    
+    // Generate barcode and then create image
+    setTimeout(() => {
+      // Generate barcode if JsBarcode is available
+      if (typeof JsBarcode !== 'undefined') {
+        try {
+          JsBarcode(`#barcode-svg-${bookingId}`, bookingId, {
+            format: "CODE128",
+            width: 2,
+            height: 50,
+            displayValue: false,
+            background: "#ffffff",
+            lineColor: "#000000"
+          });
+        } catch (e) {
+          console.error("Barcode generation error:", e);
+        }
+      }
+      
+      // Wait for logo and barcode to render, then generate canvas
+      setTimeout(() => {
+        html2canvas(receiptContainer, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+          width: 400,
+          height: receiptContainer.scrollHeight,
+          onclone: (clonedDoc) => {
+            // Ensure logo loads in cloned document
+            const clonedImg = clonedDoc.getElementById('receipt-logo-img');
+            if (clonedImg && !clonedImg.complete) {
+              clonedImg.src = 'assets/byz-logo-black.png';
+            }
+          }
+        }).then(canvas => {
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              byzShowToast("Error", "Failed to generate receipt image", "error", 3000);
+              document.body.removeChild(receiptContainer);
+              return;
+            }
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BYZ-Receipt-${bookingId}.png`;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+              document.body.removeChild(a);
+              document.body.removeChild(receiptContainer);
+              URL.revokeObjectURL(url);
+            }, 100);
+            
+            byzShowToast("Receipt Downloaded!", `Saved as BYZ-Receipt-${bookingId}.png`, "success", 3000);
+          }, 'image/png', 1.0);
+        }).catch(err => {
+          console.error("Canvas generation error:", err);
+          document.body.removeChild(receiptContainer);
+          byzShowToast("Error", "Failed to generate receipt. Please try again.", "error", 3000);
+        });
+      }, 500);
+    }, 100);
   }
 
   // ============================================
