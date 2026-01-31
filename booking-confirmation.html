@@ -41,6 +41,15 @@
     .container{max-width:var(--max);margin:0 auto;padding:0 24px}
     @media (max-width: 560px){
       .container{padding:0 28px}
+      /* Safe area for notched devices */
+      body{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      header{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
     }
 
     /* Header */
@@ -148,24 +157,73 @@
 
     /* Success Animation */
     .success-icon{
-      width:80px;
-      height:80px;
+      width:100px;
+      height:100px;
       border-radius:50%;
-      background: linear-gradient(135deg, color-mix(in srgb, var(--ok) 20%, transparent), color-mix(in srgb, var(--ok) 10%, transparent));
-      border:2px solid color-mix(in srgb, var(--ok) 40%, var(--border));
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--ok) 20%, transparent) 0%,
+        color-mix(in srgb, var(--ok) 12%, transparent) 100%
+      );
+      border:4px solid color-mix(in srgb, var(--ok) 40%, var(--border));
       display:flex;
       align-items:center;
       justify-content:center;
       margin:0 auto 24px;
-      animation: successPulse 0.6s var(--ease);
+      position: relative;
+      animation: successPulse 0.8s var(--ease);
+    }
+    @media (max-width: 560px){
+      .success-icon{
+        width: 90px;
+        height: 90px;
+      }
+    }
+    .success-icon::before{
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--ok) 30%, transparent);
+      animation: successRipple 1.5s ease-out infinite;
+    }
+    .success-icon::after{
+      content: '';
+      position: absolute;
+      inset: -16px;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--ok) 20%, transparent);
+      animation: successRipple 1.5s 0.5s ease-out infinite;
     }
     @keyframes successPulse{
-      0%, 100%{ transform: scale(1); }
-      50%{ transform: scale(1.1); }
+      0%{ transform: scale(0); opacity: 0; }
+      50%{ transform: scale(1.15); }
+      100%{ transform: scale(1); opacity: 1; }
+    }
+    @keyframes successRipple{
+      0%{ transform: scale(0.8); opacity: 1; }
+      100%{ transform: scale(1.5); opacity: 0; }
     }
     .success-icon i{
       color:var(--ok);
-      font-size:40px;
+      font-size:48px;
+      position: relative;
+      z-index: 1;
+      animation: checkmarkDraw 0.4s 0.3s cubic-bezier(.34, 1.56, .64, 1) both;
+    }
+    @media (max-width: 560px){
+      .success-icon i{
+        font-size: 42px;
+      }
+    }
+    @keyframes checkmarkDraw{
+      0%{ 
+        opacity: 0;
+        transform: scale(0) rotate(-12deg);
+      }
+      100%{ 
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
     }
 
     .hero h1{
@@ -201,9 +259,40 @@
     .card{
       border-radius: var(--radius-lg);
       border:1px solid var(--border);
-      background: var(--bg-elev);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+      );
       box-shadow: var(--shadow-soft);
       overflow:hidden;
+      transition: all .3s var(--ease);
+      position: relative;
+    }
+    .card::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--ok), transparent);
+      opacity: 0.6;
+    }
+    .card:hover{
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: color-mix(in srgb, var(--ok) 25%, var(--border));
+    }
+    .card.booking-summary{
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--ok) 10%, var(--bg-elev)) 0%,
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+      );
+      border-color: color-mix(in srgb, var(--ok) 30%, var(--border));
+    }
+    .card.booking-summary::before{
+      opacity: 1;
+    }
       margin-bottom:24px;
     }
     .card-head{
@@ -579,25 +668,15 @@
                 <div class="step-item">
                   <div class="step-number">1</div>
                   <div class="step-content">
-                    <div class="step-title">Verify Payment via WhatsApp</div>
+                    <div class="step-title">Wait for Confirmation</div>
                     <div class="step-description">
-                      WhatsApp should have opened automatically. Press <strong>SEND</strong> to verify your payment. If it didn't open, contact us at <a href="https://wa.me/255768464367" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline;">+255 768 464 367</a>.
+                      Your booking will be reviewed within 48 hours. You'll receive an email confirmation once approved.
                     </div>
                   </div>
                 </div>
 
                 <div class="step-item">
                   <div class="step-number">2</div>
-                  <div class="step-content">
-                    <div class="step-title">Wait for Confirmation</div>
-                    <div class="step-description">
-                      Your booking will be reviewed within 24 hours. You'll receive an email confirmation once approved.
-                    </div>
-                  </div>
-                </div>
-
-                <div class="step-item">
-                  <div class="step-number">3</div>
                   <div class="step-content">
                     <div class="step-title">Receive Your QR Code</div>
                     <div class="step-description">
@@ -607,7 +686,7 @@
                 </div>
 
                 <div class="step-item">
-                  <div class="step-number">4</div>
+                  <div class="step-number">3</div>
                   <div class="step-content">
                     <div class="step-title">Arrive at the Event</div>
                     <div class="step-description">
@@ -630,7 +709,7 @@
                     </li>
                     <li style="display:flex;align-items:flex-start;gap:8px;">
                       <i class="fa-solid fa-clock" style="color:var(--warn);margin-top:2px;font-size:12px;"></i>
-                      <span>Booking verification typically takes 24 hours. You'll receive updates via email.</span>
+                      <span>Booking verification typically takes 48 hours. You'll receive updates via email.</span>
                     </li>
                     <li style="display:flex;align-items:flex-start;gap:8px;">
                       <i class="fa-solid fa-shield-halved" style="color:var(--warn);margin-top:2px;font-size:12px;"></i>
