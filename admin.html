@@ -1010,12 +1010,12 @@
             </div>
           </div>
 
-          <input id="password" type="password" placeholder="Enter admin password" autocomplete="current-password" onkeypress="if(event.key==='Enter') login()" style="margin-top: 8px;">
+          <input id="password" type="password" placeholder="Enter admin password" autocomplete="current-password" onkeypress="if(event.key==='Enter') handleLogin()" style="margin-top: 8px;">
           <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--sub);cursor:pointer;">
             <input type="checkbox" id="rememberMe" style="width:auto;margin:0;">
             <span>Remember me</span>
           </label>
-          <button class="primary full" onclick="login()" id="loginBtn">
+          <button class="primary full" onclick="handleLogin()" id="loginBtn">
             <i class="fa-solid fa-arrow-right-to-bracket"></i>
             <span>Enter Dashboard</span>
           </button>
@@ -1233,7 +1233,7 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
-    const ADMIN_PASSWORD = "weballwithbyz";
+    // ADMIN_PASSWORD is defined in admin-shared.js - don't redeclare it
 
     let bookings = [];
     let filteredBookings = [];
@@ -1258,7 +1258,7 @@
       return;
     }
 
-    function login(){
+    function handleLogin(){
       const passwordInput = document.getElementById("password");
       const rememberCheck = document.getElementById("rememberMe");
       if(!passwordInput){
