@@ -41,6 +41,15 @@
     .container{max-width:var(--max);margin:0 auto;padding:0 24px}
     @media (max-width: 560px){
       .container{padding:0 28px}
+      /* Safe area for notched devices */
+      body{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      header{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
     }
 
     /* Header */
@@ -272,6 +281,135 @@
     }
     @media (max-width: 560px){
       .event-image{height:240px}
+    }
+
+    /* Countdown Timer */
+    .countdown-item{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .countdown-value{
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    @media (max-width: 560px){
+      .countdown-value{font-size: 24px}
+    }
+    .countdown-label{
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--sub);
+    }
+    .countdown-separator{
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--sub);
+      opacity: 0.5;
+    }
+    @media (max-width: 560px){
+      .countdown-separator{font-size: 18px}
+    }
+
+    /* Gallery */
+    .gallery-thumbnail{
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: transform .2s var(--ease), opacity .2s var(--ease);
+      border: 2px solid transparent;
+    }
+    .gallery-thumbnail:hover{
+      transform: scale(1.05);
+      border-color: var(--accent);
+      opacity: 0.9;
+    }
+
+    /* Lightbox */
+    .lightbox{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(20px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .lightbox.active{
+      display: flex;
+    }
+    .lightbox-content{
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+    .lightbox-image{
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-lg);
+    }
+    .lightbox-close{
+      position: absolute;
+      top: -50px;
+      right: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .2s var(--ease);
+    }
+    .lightbox-close:hover{
+      background: var(--bg-alt);
+      transform: scale(1.1);
+    }
+    .lightbox-nav{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .2s var(--ease);
+    }
+    .lightbox-nav:hover{
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-50%) scale(1.1);
+    }
+    .lightbox-nav.prev{
+      left: 20px;
+    }
+    .lightbox-nav.next{
+      right: 20px;
+    }
+    @media (max-width: 560px){
+      .lightbox-nav{width: 40px; height: 40px; font-size: 14px}
+      .lightbox-nav.prev{left: 10px}
+      .lightbox-nav.next{right: 10px}
     }
 
     /* Info Grid */
@@ -567,19 +705,48 @@
         </div>
       </div>
 
+      <div id="countdownTimer" style="margin-top: 24px; padding: 20px; border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%); border: 1px solid var(--border); display: none;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap;">
+          <div class="countdown-item">
+            <div class="countdown-value" id="countdownDays">0</div>
+            <div class="countdown-label">Days</div>
+          </div>
+          <div class="countdown-separator">:</div>
+          <div class="countdown-item">
+            <div class="countdown-value" id="countdownHours">0</div>
+            <div class="countdown-label">Hours</div>
+          </div>
+          <div class="countdown-separator">:</div>
+          <div class="countdown-item">
+            <div class="countdown-value" id="countdownMinutes">0</div>
+            <div class="countdown-label">Minutes</div>
+          </div>
+          <div class="countdown-separator">:</div>
+          <div class="countdown-item">
+            <div class="countdown-value" id="countdownSeconds">0</div>
+            <div class="countdown-label">Seconds</div>
+          </div>
+        </div>
+      </div>
+
       <div class="hero-actions">
         <a class="btn primary" href="booking.html" id="bookNowBtn">
           <i class="fa-solid fa-ticket"></i> Book Now
         </a>
+        <button class="btn ghost" id="addToCalendarBtn" onclick="downloadCalendar()">
+          <i class="fa-solid fa-calendar-plus"></i> Add to Calendar
+        </button>
         <a class="btn ghost" href="venue.html">
           <i class="fa-solid fa-map-location-dot"></i> Venue Info
         </a>
-        <a class="btn ghost" href="gallery.html">
-          <i class="fa-solid fa-images"></i> View Gallery
-        </a>
-        <a class="btn ghost" href="my-bookings.html">
-          <i class="fa-solid fa-calendar-check"></i> My Bookings
-        </a>
+        <div class="social-share-buttons" style="display: flex; gap: 8px;">
+          <button class="btn ghost" onclick="shareToWhatsApp()" style="padding: 10px 14px; min-width: auto;">
+            <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+          </button>
+          <button class="btn ghost" onclick="shareToInstagram()" style="padding: 10px 14px; min-width: auto;">
+            <i class="fa-brands fa-instagram" style="color: #E4405F;"></i>
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -1058,6 +1225,199 @@
       toggle.style.transform = "rotate(180deg)";
     }
   }
+
+  // Countdown Timer
+  (function(){
+    function updateCountdown(){
+      const dateEl = document.getElementById("eventDate");
+      if(!dateEl) return;
+      
+      const dateText = dateEl.textContent.trim();
+      if(!dateText || dateText.includes("Check")) return;
+      
+      // Parse date (format: "June 7, 2026")
+      const eventDate = new Date(dateText + " 20:00:00");
+      if(isNaN(eventDate.getTime())) return;
+      
+      const now = new Date();
+      const diff = eventDate - now;
+      
+      if(diff <= 0){
+        document.getElementById("countdownTimer").style.display = "none";
+        return;
+      }
+      
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      document.getElementById("countdownDays").textContent = String(days).padStart(2, "0");
+      document.getElementById("countdownHours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("countdownMinutes").textContent = String(minutes).padStart(2, "0");
+      document.getElementById("countdownSeconds").textContent = String(seconds).padStart(2, "0");
+      document.getElementById("countdownTimer").style.display = "block";
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  })();
+
+  // Calendar Download
+  function downloadCalendar(){
+    const title = document.getElementById("eventTitle")?.textContent || "BYZ Event";
+    const dateEl = document.getElementById("eventDate")?.textContent || "";
+    const time = document.getElementById("eventTime")?.textContent || "8:00 PM";
+    const venue = "Tips Coco";
+    const description = document.getElementById("eventDescriptionText")?.textContent || "";
+    const url = window.location.href;
+    
+    // Parse date
+    let eventDate = new Date(dateText + " 20:00:00");
+    if(isNaN(eventDate.getTime())){
+      eventDate = new Date();
+      eventDate.setDate(eventDate.getDate() + 7);
+    }
+    
+    const endDate = new Date(eventDate);
+    endDate.setHours(23, 59, 59);
+    
+    // Format dates for ICS
+    function formatICSDate(date){
+      return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    }
+    
+    const icsContent = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//BYZ Entertainment//Event Calendar//EN",
+      "BEGIN:VEVENT",
+      `DTSTART:${formatICSDate(eventDate)}`,
+      `DTEND:${formatICSDate(endDate)}`,
+      `SUMMARY:${title}`,
+      `DESCRIPTION:${description}\\n\\nBook at: ${url}`,
+      `LOCATION:${venue}`,
+      `URL:${url}`,
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ].join("\r\n");
+    
+    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${title.replace(/\s+/g, "-")}.ics`;
+    link.click();
+  }
+
+  // Social Share
+  function shareToWhatsApp(){
+    const title = document.getElementById("eventTitle")?.textContent || "BYZ Event";
+    const date = document.getElementById("eventDate")?.textContent || "";
+    const url = window.location.href;
+    const message = `Check out ${title} on ${date}! ${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
+  }
+
+  function shareToInstagram(){
+    const url = window.location.href;
+    // Instagram doesn't support direct sharing, so copy link
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Link copied! Paste it in your Instagram story or post.");
+    });
+  }
+
+  // Gallery Lightbox
+  let currentGalleryIndex = 0;
+  let galleryImages = [];
+
+  function openGalleryLightbox(index){
+    currentGalleryIndex = index;
+    const lightbox = document.getElementById("galleryLightbox");
+    if(!lightbox){
+      const lb = document.createElement("div");
+      lb.id = "galleryLightbox";
+      lb.className = "lightbox";
+      lb.innerHTML = `
+        <div class="lightbox-content">
+          <button class="lightbox-close" onclick="closeGalleryLightbox()">
+            <i class="fa-solid fa-times"></i>
+          </button>
+          <button class="lightbox-nav prev" onclick="galleryPrev()">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <img class="lightbox-image" id="lightboxImage" src="" alt="">
+          <button class="lightbox-nav next" onclick="galleryNext()">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      `;
+      document.body.appendChild(lb);
+      lb.addEventListener("click", (e) => {
+        if(e.target === lb) closeGalleryLightbox();
+      });
+    }
+    updateLightboxImage();
+    document.getElementById("galleryLightbox").classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeGalleryLightbox(){
+    const lightbox = document.getElementById("galleryLightbox");
+    if(lightbox){
+      lightbox.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  }
+
+  function galleryPrev(){
+    currentGalleryIndex = (currentGalleryIndex - 1 + galleryImages.length) % galleryImages.length;
+    updateLightboxImage();
+  }
+
+  function galleryNext(){
+    currentGalleryIndex = (currentGalleryIndex + 1) % galleryImages.length;
+    updateLightboxImage();
+  }
+
+  function updateLightboxImage(){
+    const img = document.getElementById("lightboxImage");
+    if(img && galleryImages[currentGalleryIndex]){
+      img.src = galleryImages[currentGalleryIndex];
+    }
+  }
+
+  // Related Events (will be populated based on event type)
+  function loadRelatedEvents(){
+    const params = new URLSearchParams(window.location.search);
+    const eventType = params.get("event") || "";
+    
+    // This would typically fetch from API, but for now we'll show a placeholder
+    const relatedSection = document.querySelector(".related-events");
+    if(relatedSection){
+      relatedSection.innerHTML = `
+        <div class="card">
+          <div class="card-head">
+            <h2>You Might Also Like</h2>
+            <p>More events you might enjoy</p>
+          </div>
+          <div class="card-body">
+            <div class="events-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+              <a href="events.html" class="event-card" style="text-decoration: none;">
+                <div class="event-media" style="height: 120px; background: linear-gradient(135deg, #111, #333);"></div>
+                <div class="event-body" style="padding: 12px;">
+                  <h3 style="font-size: 14px; margin-bottom: 4px;">Browse All Events</h3>
+                  <p style="font-size: 12px; color: var(--sub);">Discover more BYZ experiences</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Initialize related events
+  setTimeout(loadRelatedEvents, 1000);
 </script>
 
 </body>
