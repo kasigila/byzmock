@@ -132,9 +132,20 @@
   }
 
   main{padding-top:calc(var(--header-h) + 40px)}
+  @media (max-width: 560px){
+    main{padding-top:calc(var(--header-h) + 20px)}
+  }
 
   .hero{
     padding: 24px 0 16px;
+  }
+  @media (max-width: 560px){
+    .hero{
+      padding: 20px 0 12px;
+    }
+    .hero-card{
+      margin-top: 8px;
+    }
   }
   .hero-card{
     border-radius: var(--radius-lg);
