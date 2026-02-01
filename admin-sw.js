@@ -23,10 +23,17 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Bypass service worker completely for Google Apps Script API calls
-  // Don't call event.respondWith() at all - this lets the browser handle it natively
-  if (url.hostname === 'script.google.com' || url.hostname.includes('googleapis.com') || url.hostname.includes('google.com')) {
-    return; // Don't intercept - let browser handle directly
+  // Bypass service worker completely for ALL Google domains and API calls
+  // This includes script.google.com, script.googleusercontent.com, and any googleapis.com
+  if (
+    url.hostname === 'script.google.com' || 
+    url.hostname.includes('googleapis.com') || 
+    url.hostname.includes('googleusercontent.com') ||
+    url.hostname.includes('google.com')
+  ) {
+    // Don't intercept at all - let browser handle natively
+    // This prevents CORS/preflight issues
+    return;
   }
   
   // For static assets, use cache-first strategy
