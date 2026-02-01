@@ -891,51 +891,61 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
     // ADMIN_PASSWORD, ADMIN_SESSION_KEY, ADMIN_REMEMBER_KEY are defined in admin-shared.js
 
-    // Authentication check - allow if session exists or coming from admin.html
-    function checkAuthImmediate() {
-      // Check if we have a valid session
-      const session = sessionStorage.getItem(window.ADMIN_SESSION_KEY);
-      if (session && session === window.ADMIN_PASSWORD) return true;
+    // Simple authentication check - only allow if session exists
+    // If accessed via admin.html navigation, session will be set
+    // If accessed directly (typing URL), no session = redirect to admin.html
+    function checkAuthAndRedirect() {
+      // Wait for admin-shared.js to define window.ADMIN_PASSWORD (max 10 retries = 500ms)
+      let retries = 0;
+      const maxRetries = 10;
       
-      // Check if "remember me" is set
-      const remembered = localStorage.getItem(window.ADMIN_REMEMBER_KEY);
-      if (remembered && remembered === window.ADMIN_PASSWORD) {
-        sessionStorage.setItem(window.ADMIN_SESSION_KEY, window.ADMIN_PASSWORD);
-        return true;
+      function check() {
+        if (typeof window.ADMIN_PASSWORD === 'undefined' || typeof window.ADMIN_SESSION_KEY === 'undefined') {
+          retries++;
+          if (retries < maxRetries) {
+            setTimeout(check, 50);
+            return;
+          } else {
+            console.error("admin-shared.js failed to load, redirecting to admin.html");
+            window.location.replace("admin.html");
+            return;
+          }
+        }
+        
+        // Check sessionStorage first (active session from admin.html login)
+        const session = sessionStorage.getItem(window.ADMIN_SESSION_KEY);
+        if (session && session === window.ADMIN_PASSWORD) {
+          // Authenticated - render navigation and continue
+          console.log("Authenticated via sessionStorage");
+          if (window.renderAdminNav) {
+            window.renderAdminNav("messages");
+          }
+          return true;
+        }
+        
+        // Check localStorage for "remember me" (if it was ever used)
+        const remembered = localStorage.getItem(window.ADMIN_REMEMBER_KEY);
+        if (remembered && remembered === window.ADMIN_PASSWORD) {
+          // Restore session
+          console.log("Authenticated via localStorage, restoring session");
+          sessionStorage.setItem(window.ADMIN_SESSION_KEY, window.ADMIN_PASSWORD);
+          if (window.renderAdminNav) {
+            window.renderAdminNav("messages");
+          }
+          return true;
+        }
+        
+        // No valid session - redirect to admin.html (will show login)
+        console.log("No valid session found, redirecting to admin.html");
+        window.location.replace("admin.html");
+        return false;
       }
       
-      // Check if coming from admin.html (allow navigation from authenticated admin page)
-      const referrer = document.referrer;
-      if (referrer && referrer.includes('admin.html')) {
-        // Coming from admin.html - check if they have a session there
-        // If they're navigating from admin.html, they should already be authenticated
-        // Give it a moment for session to be available
-        return true; // Allow through - session check will happen in initAdminAuth
-      }
-      
-      return false;
+      check();
     }
 
-    // Check auth - redirect only if not authenticated AND not coming from admin.html
-    // Wait for admin-shared.js to load first
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        if (typeof window.ADMIN_PASSWORD !== 'undefined') {
-          if (!checkAuthImmediate()) {
-            window.location.replace("admin.html");
-          }
-        }
-      });
-    } else {
-      // DOM already loaded, wait a tick for admin-shared.js
-      setTimeout(() => {
-        if (typeof window.ADMIN_PASSWORD !== 'undefined') {
-          if (!checkAuthImmediate()) {
-            window.location.replace("admin.html");
-          }
-        }
-      }, 0);
-    }
+    // Run auth check immediately
+    checkAuthAndRedirect();
 
     // Tab Switching
     function switchTab(tabName) {
@@ -1406,23 +1416,24 @@
       }, 3000);
     }
 
-    // Initialize on page load
+    // Initialize page after authentication check
+    // checkAuthAndRedirect() will call renderAdminNav() if authenticated
+    // Then we load the data
+    function initializePage() {
+      // Only initialize if we're authenticated (navigation was rendered)
+      if (document.querySelector('.admin-nav-desktop') || document.querySelector('.mobile-nav-panel')) {
+        // Navigation is rendered, we're authenticated - load data
+        switchTab('contact'); // Default to contact messages tab
+      }
+    }
+    
+    // Wait for auth check to complete, then initialize
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        if (typeof initAdminAuth === 'function') {
-          if (initAdminAuth()) {
-            renderAdminNav("messages");
-            loadContactMessages();
-          }
-        }
+        setTimeout(initializePage, 100); // Give auth check time to complete
       });
     } else {
-      if (typeof initAdminAuth === 'function') {
-        if (initAdminAuth()) {
-          renderAdminNav("messages");
-          loadContactMessages();
-        }
-      }
+      setTimeout(initializePage, 100);
     }
 
     // Make functions globally available
@@ -1435,24 +1446,25 @@
     window.filterFAQFeedback = filterFAQFeedback;
     window.exportFAQFeedback = exportFAQFeedback;
 
-    // Register Service Worker for PWA (with updated API bypass)
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          // Unregister all existing service workers first to clear old cache
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          for (let registration of registrations) {
-            await registration.unregister();
-          }
-          
-          // Register new service worker
-          const registration = await navigator.serviceWorker.register('./admin-sw.js');
-          console.log('Service Worker registered:', registration);
-        } catch (error) {
-          console.error('Service Worker registration failed:', error);
+    // Register Service Worker for PWA (only if authenticated)
+    function registerServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        // Only register if we're authenticated (navigation exists)
+        if (document.querySelector('.admin-nav-desktop') || document.querySelector('.mobile-nav-panel')) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            // Unregister old service workers
+            registrations.forEach(registration => registration.unregister());
+            // Register new one
+            navigator.serviceWorker.register('./admin-sw.js')
+              .then(registration => console.log('Service Worker registered:', registration))
+              .catch(error => console.error('Service Worker registration failed:', error));
+          });
         }
-      });
+      }
     }
+    
+    // Register service worker after page initialization
+    setTimeout(registerServiceWorker, 200);
   </script>
 </body>
 </html>
