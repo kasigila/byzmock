@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages & Feedback | BYZ Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BYZ Entertainment Admin - Manage contact messages and FAQ feedback">
+  <meta name="theme-color" content="#000000">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  
+  <!-- Admin Shared Utilities -->
+  <script src="admin-shared.js"></script>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --bg-alt:#f5f5f7;
+      --bg-elev:#ffffff;
+      --text:#1d1d1f;
+      --sub:#6e6e73;
+      --border:#d2d2d7;
+      --accent:#000000;
+
+      --radius: 22px;
+      --radius-lg: 28px;
+      --shadow: 0 18px 60px rgba(0,0,0,.08);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.08);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1200px;
+      --header-h: 64px;
+
+      --ok:#0a7f3f;
+      --warn:#b45309;
+      --bad:#b42318;
+    }
+
+    [data-theme="dark"]{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      transition: background .35s var(--ease), color .35s var(--ease);
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+
+    header{
+      position: sticky;
+      top: 0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 75%, transparent);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-bottom:1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      z-index:999;
+      box-shadow: 
+        0 1px 0 color-mix(in srgb, var(--accent) 3%, transparent) inset,
+        0 -1px 0 rgba(0,0,0,.05) inset;
+    }
+
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    
+    /* Admin Navigation */
+    .admin-nav-desktop{
+      display:flex;align-items:center;gap:4px;
+    }
+    @media (max-width: 768px){
+      .admin-nav-desktop{display:none}
+    }
+    .nav-link{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 16px;border-radius:12px;
+      font-size:14px;font-weight:600;
+      color:var(--sub);
+      transition:all .2s var(--ease);
+      text-decoration:none;
+    }
+    .nav-link:hover{
+      background:color-mix(in srgb, var(--accent) 8%, transparent);
+      color:var(--text);
+    }
+    .nav-link.active{
+      background:color-mix(in srgb, var(--accent) 12%, transparent);
+      color:var(--accent);
+      font-weight:700;
+    }
+    .nav-link i{font-size:13px}
+    .mobile-menu-btn{
+      display:none;
+      padding:8px;border:none;background:transparent;
+      color:var(--text);font-size:20px;cursor:pointer;
+    }
+    @media (max-width: 768px){
+      .mobile-menu-btn{display:block}
+    }
+    .logout-text{
+      @media (max-width: 560px){display:none}
+    }
+    
+    /* Mobile Navigation */
+    .mobile-nav-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.5);
+      backdrop-filter:blur(4px);z-index:9998;
+      animation:fadeIn .2s var(--ease);
+    }
+    .mobile-nav-panel{
+      position:fixed;top:0;right:0;bottom:0;
+      width:min(320px,85vw);background:var(--bg-elev);
+      border-left:1px solid var(--border);
+      z-index:9999;overflow-y:auto;
+      transform:translateX(100%);
+      transition:transform .3s var(--ease);
+      box-shadow:-4px 0 24px rgba(0,0,0,.1);
+    }
+    .mobile-nav-panel:not(.hidden){
+      transform:translateX(0);
+    }
+    .mobile-nav-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:20px;border-bottom:1px solid var(--border);
+    }
+    .mobile-nav-close{
+      padding:8px;border:none;background:transparent;
+      color:var(--text);font-size:20px;cursor:pointer;
+      border-radius:8px;transition:background .2s var(--ease);
+    }
+    .mobile-nav-close:hover{
+      background:color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+    .mobile-nav-links{
+      display:flex;flex-direction:column;padding:12px;
+    }
+    .mobile-nav-links .nav-link{
+      padding:14px 16px;margin-bottom:4px;
+      border-radius:12px;width:100%;
+    }
+    .mobile-nav-links .logout-btn{
+      margin-top:8px;color:var(--bad);
+      border-top:1px solid var(--border);padding-top:16px;
+    }
+    @keyframes fadeIn{
+      from{opacity:0}to{opacity:1}
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:34px;height:34px;border-radius:12px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-dark{display:none;}
+    [data-theme="dark"] .logo-light{display:none;}
+    [data-theme="dark"] .logo-dark{display:block;}
+
+    .top-actions{display:flex;align-items:center;gap:10px}
+
+    main{padding-top: 26px; padding-bottom: 90px;}
+
+    .card{
+      border-radius: var(--radius-lg);
+      border:1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 85%, transparent);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      box-shadow: 
+        0 8px 32px rgba(0,0,0,.08),
+        0 1px 0 color-mix(in srgb, var(--accent) 5%, transparent) inset,
+        0 -1px 0 color-mix(in srgb, var(--border) 20%, transparent) inset;
+      overflow:hidden;
+      position:relative;
+    }
+    .card::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:1px;
+      background:linear-gradient(90deg, 
+        transparent 0%,
+        color-mix(in srgb, var(--accent) 15%, transparent) 50%,
+        transparent 100%
+      );
+      opacity:0.6;
+    }
+    .card-head{padding: 24px 24px 0}
+    .card-head h1{
+      font-size: clamp(24px, 3.5vw, 36px);
+      letter-spacing: -1.2px;
+      line-height: 1.1;
+      font-weight:900;
+      background: linear-gradient(135deg, var(--text) 0%, color-mix(in srgb, var(--text) 85%, transparent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .card-head p{
+      margin-top:10px;
+      color:var(--sub);
+      font-size:15px;
+      font-weight:500;
+      letter-spacing:-0.2px;
+    }
+    .card-body{padding: 24px}
+
+    input, select{
+      width:100%;
+      padding:14px 18px;
+      border-radius: var(--radius);
+      border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 80%, transparent);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      color: var(--text);
+      outline: none;
+      font-size:14px;
+      font-weight:500;
+      letter-spacing:-0.1px;
+      transition: all 0.3s var(--ease);
+      box-shadow: 
+        0 2px 8px rgba(0,0,0,.04),
+        0 1px 0 color-mix(in srgb, var(--accent) 2%, transparent) inset;
+    }
+    @media (max-width: 560px){
+      input, select{
+        padding:16px 20px;
+        font-size:16px;
+      }
+    }
+    input:focus, select:focus{
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      box-shadow: 
+        0 8px 24px rgba(0,0,0,.12),
+        0 0 0 3px color-mix(in srgb, var(--accent) 8%, transparent),
+        0 1px 0 color-mix(in srgb, var(--accent) 5%, transparent) inset;
+      transform: translateY(-2px);
+      background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+    }
+    input::placeholder{
+      color: var(--sub);
+    }
+    button, .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:14px 22px;
+      border-radius:999px;
+      border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 85%, transparent);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      color: var(--text);
+      font-weight:700;
+      font-size:14px;
+      letter-spacing:-0.2px;
+      cursor:pointer;
+      transition: all 0.3s var(--ease);
+      box-shadow: 
+        0 4px 12px rgba(0,0,0,.08),
+        0 1px 0 color-mix(in srgb, var(--accent) 3%, transparent) inset;
+      text-decoration:none;
+    }
+    @media (max-width: 560px){
+      button, .btn{
+        padding:16px 24px;
+        font-size:15px;
+        min-height: 48px;
+      }
+    }
+    button:hover, .btn:hover{
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 8px 24px rgba(0,0,0,.14),
+        0 2px 0 color-mix(in srgb, var(--accent) 6%, transparent) inset;
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+    }
+    button:active, .btn:active{
+      transform: translateY(-1px) scale(1);
+    }
+    button:disabled, .btn:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+    }
+    .primary{
+      background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 95%, transparent) 100%);
+      color: var(--bg);
+      border-color: transparent;
+      box-shadow: 
+        0 6px 20px rgba(0,0,0,.15),
+        0 2px 0 color-mix(in srgb, var(--accent) 20%, transparent) inset;
+    }
+    .primary:hover{
+      box-shadow: 
+        0 12px 32px rgba(0,0,0,.2),
+        0 3px 0 color-mix(in srgb, var(--accent) 30%, transparent) inset;
+      transform: translateY(-4px) scale(1.03);
+    }
+    .hidden{display:none !important}
+
+    .tabs{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;
+    }
+    .tab-btn{
+      padding:12px 18px;border-radius:999px;
+      border:1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 80%, transparent);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      font-weight:700;font-size:13px;letter-spacing:-0.2px;
+      cursor:pointer;
+      transition: all .3s var(--ease);
+      min-height: 44px;
+      display:inline-flex;align-items:center;gap:8px;
+      box-shadow: 
+        0 2px 8px rgba(0,0,0,.04),
+        0 1px 0 color-mix(in srgb, var(--accent) 2%, transparent) inset;
+      color:var(--text);
+    }
+    .tab-btn.active{
+      background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 95%, transparent) 100%);
+      color: var(--bg);
+      border-color: transparent;
+      box-shadow: 
+        0 4px 16px rgba(0,0,0,.15),
+        0 2px 0 color-mix(in srgb, var(--accent) 20%, transparent) inset;
+      transform: scale(1.05);
+    }
+    .tab-btn:hover:not(.active){
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
+      transform: translateY(-2px);
+      box-shadow: 
+        0 6px 16px rgba(0,0,0,.1),
+        0 1px 0 color-mix(in srgb, var(--accent) 4%, transparent) inset;
+    }
+
+    .toolbar{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;flex-wrap:wrap;margin-top: 14px;
+    }
+    .filters{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+      flex: 1;
+    }
+    .filters input, .filters select{
+      min-width: 180px;
+    }
+    @media (max-width: 768px){
+      .filters{flex-direction:column;align-items:stretch;}
+      .filters input, .filters select{width:100%;min-width:auto;}
+    }
+
+    /* Stats Cards */
+    .stats-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap:16px;
+      margin-bottom:24px;
+    }
+    @media (max-width: 560px){
+      .stats-grid{grid-template-columns:1fr;}
+    }
+    .stat-card{
+      border-radius: var(--radius);
+      border:1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 88%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 82%, transparent) 100%
+      );
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      box-shadow: 
+        0 4px 16px rgba(0,0,0,.06),
+        0 1px 0 color-mix(in srgb, var(--accent) 3%, transparent) inset;
+      padding: 22px;
+      transition: all .35s var(--ease);
+      position:relative;
+      overflow:hidden;
+    }
+    .stat-card::after{
+      content:'';
+      position:absolute;
+      top:-50%;right:-50%;
+      width:200%;height:200%;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 70%);
+      opacity:0;
+      transition:opacity .35s var(--ease);
+    }
+    .stat-card:hover{
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 
+        0 12px 32px rgba(0,0,0,.12),
+        0 2px 0 color-mix(in srgb, var(--accent) 8%, transparent) inset;
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+    }
+    .stat-card:hover::after{
+      opacity:1;
+    }
+    .stat-card-label{
+      color:var(--sub);
+      font-size:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      margin-bottom:10px;
+      opacity:0.8;
+    }
+    .stat-card-value{
+      font-size:32px;
+      font-weight:900;
+      letter-spacing:-1.5px;
+      color:var(--text);
+      line-height:1.1;
+      background: linear-gradient(135deg, var(--text) 0%, color-mix(in srgb, var(--text) 80%, transparent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-card-sub{
+      color:var(--sub);
+      font-size:11px;
+      margin-top:8px;
+      font-weight:600;
+      letter-spacing:-0.1px;
+      opacity:0.9;
+    }
+
+    /* Message Cards */
+    .message-card{
+      border-radius: var(--radius-lg);
+      border:1px solid color-mix(in srgb, var(--border) 55%, transparent);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 90%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 88%, transparent) 100%
+      );
+      backdrop-filter: blur(30px) saturate(160%);
+      -webkit-backdrop-filter: blur(30px) saturate(160%);
+      box-shadow: 
+        0 6px 24px rgba(0,0,0,.08),
+        0 1px 0 color-mix(in srgb, var(--accent) 4%, transparent) inset;
+      padding: 24px;
+      margin-bottom: 18px;
+      transition: all .35s var(--ease);
+      position:relative;
+      overflow:hidden;
+    }
+    .message-card::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:2px;
+      background:linear-gradient(90deg, 
+        var(--accent) 0%,
+        color-mix(in srgb, var(--accent) 60%, transparent) 50%,
+        transparent 100%
+      );
+      opacity:0;
+      transition:opacity .35s var(--ease);
+    }
+    .message-card::after{
+      content:'';
+      position:absolute;
+      top:-50%;right:-50%;
+      width:200%;height:200%;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 3%, transparent) 0%, transparent 70%);
+      opacity:0;
+      transition:opacity .35s var(--ease);
+    }
+    .message-card:hover{
+      transform: translateY(-5px) scale(1.005);
+      box-shadow: 
+        0 16px 40px rgba(0,0,0,.12),
+        0 2px 0 color-mix(in srgb, var(--accent) 6%, transparent) inset;
+      border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+    }
+    .message-card:hover::before,
+    .message-card:hover::after{
+      opacity:1;
+    }
+    .message-card.new{
+      border-left:4px solid var(--bad);
+    }
+    .message-card.read{
+      border-left:4px solid var(--warn);
+    }
+    .message-card.replied{
+      border-left:4px solid var(--ok);
+    }
+    .message-header{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px;
+    }
+    @media (max-width: 560px){
+      .message-header{
+        flex-direction:column;
+        gap:12px;
+      }
+    }
+    .message-title{
+      font-weight:900;
+      font-size:19px;
+      letter-spacing:-.5px;
+      color:var(--text);
+      line-height:1.3;
+      background: linear-gradient(135deg, var(--text) 0%, color-mix(in srgb, var(--text) 85%, transparent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .message-meta{
+      display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--sub);
+      margin-top:12px;
+    }
+    .message-meta b{
+      color:var(--text);
+      font-weight:700;
+      margin-right:4px;
+    }
+    .message-actions{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;
+    }
+    @media (max-width: 560px){
+      .message-actions{
+        flex-direction:column;
+        gap:8px;
+      }
+    }
+    .message-actions button, .message-actions a{
+      flex:1;
+      min-width:120px;
+      padding:12px 16px;
+      font-size:14px;
+      font-weight:600;
+      border-radius:12px;
+      transition:all .2s var(--ease);
+    }
+    @media (max-width: 560px){
+      .message-actions button, .message-actions a{
+        width:100%;
+        min-width:100%;
+        padding:14px 16px;
+      }
+    }
+
+    /* FAQ Feedback Cards */
+    .faq-feedback-card{
+      border-radius: var(--radius-lg);
+      border:1px solid color-mix(in srgb, var(--border) 55%, transparent);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 90%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 88%, transparent) 100%
+      );
+      backdrop-filter: blur(30px) saturate(160%);
+      -webkit-backdrop-filter: blur(30px) saturate(160%);
+      box-shadow: 
+        0 6px 24px rgba(0,0,0,.08),
+        0 1px 0 color-mix(in srgb, var(--accent) 4%, transparent) inset;
+      padding:24px;
+      margin-bottom:18px;
+      transition: all .35s var(--ease);
+      position:relative;
+      overflow:hidden;
+    }
+    .faq-feedback-card::after{
+      content:'';
+      position:absolute;
+      top:-50%;right:-50%;
+      width:200%;height:200%;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 3%, transparent) 0%, transparent 70%);
+      opacity:0;
+      transition:opacity .35s var(--ease);
+    }
+    .faq-feedback-card:hover{
+      transform: translateY(-4px) scale(1.005);
+      box-shadow: 
+        0 16px 40px rgba(0,0,0,.12),
+        0 2px 0 color-mix(in srgb, var(--accent) 6%, transparent) inset;
+      border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+    }
+    .faq-feedback-card:hover::after{
+      opacity:1;
+    }
+    .progress-bar{
+      height:8px;
+      border-radius:4px;
+      overflow:hidden;
+      margin-top:6px;
+      background:color-mix(in srgb, var(--bg-alt) 60%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 
+        0 1px 2px rgba(0,0,0,.1) inset,
+        0 1px 0 color-mix(in srgb, var(--accent) 2%, transparent) inset;
+    }
+    .progress-fill{
+      height:100%;
+      transition:width .5s cubic-bezier(.34,1.56,.64,1);
+      border-radius:4px;
+      box-shadow: 
+        0 2px 8px rgba(0,0,0,.2),
+        0 1px 0 rgba(255,255,255,.2) inset;
+      position:relative;
+    }
+    .progress-fill::after{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;bottom:0;
+      background:linear-gradient(90deg, 
+        transparent 0%,
+        rgba(255,255,255,.3) 50%,
+        transparent 100%
+      );
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    @keyframes shimmer{
+      0%{transform:translateX(-100%);}
+      100%{transform:translateX(100%);}
+    }
+
+    /* Empty State */
+    .empty-state{
+      text-align:center;
+      padding:80px 20px;
+      color:var(--sub);
+    }
+    .empty-state i{
+      font-size:56px;
+      margin-bottom:20px;
+      opacity:0.4;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,.1));
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float{
+      0%, 100%{transform:translateY(0px);}
+      50%{transform:translateY(-8px);}
+    }
+    .empty-state h3{
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:-0.5px;
+      margin-bottom:10px;
+      background: linear-gradient(135deg, var(--text) 0%, color-mix(in srgb, var(--text) 70%, transparent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .empty-state p{
+      font-size:15px;
+      color:var(--sub);
+      font-weight:500;
+      letter-spacing:-0.1px;
+      opacity:0.8;
+    }
+
+    /* Toast Notifications */
+    .toast{
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      pointer-events: none;
+    }
+    @media (max-width: 560px){
+      .toast{left:16px;right:16px;max-width:none;}
+    }
+    .toast-item{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      pointer-events: auto;
+      animation: toastSlideIn .3s var(--ease);
+    }
+    @keyframes toastSlideIn{
+      from{transform: translateX(400px);opacity:0;}
+      to{transform: translateX(0);opacity:1;}
+    }
+    .toast-item.success{
+      border-color: color-mix(in srgb, var(--ok) 40%, var(--border));
+      background: color-mix(in srgb, var(--ok) 8%, var(--bg-elev));
+    }
+    .toast-item.error{
+      border-color: color-mix(in srgb, var(--bad) 40%, var(--border));
+      background: color-mix(in srgb, var(--bad) 8%, var(--bg-elev));
+    }
+    .toast-icon{
+      width:20px;height:20px;flex-shrink:0;margin-top:2px;
+    }
+    .toast-icon.success{color:var(--ok)}
+    .toast-icon.error{color:var(--bad)}
+    .toast-content{flex:1}
+    .toast-title{font-weight:800;font-size:14px;margin-bottom:4px}
+    .toast-message{font-size:13px;color:var(--sub);line-height:1.4}
+    .toast-close{
+      width:20px;height:20px;flex-shrink:0;
+      border:none;background:none;color:var(--sub);
+      cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+    }
+
+    /* Tab Content */
+    .tab-content{
+      display:none;
+    }
+    .tab-content.active{
+      display:block;
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+  <!-- Navigation will be rendered by admin-shared.js -->
+  
+  <main class="container">
+    <section class="card">
+      <div class="card-head">
+        <h1>Messages & Feedback</h1>
+        <p>Manage contact messages and FAQ feedback analytics.</p>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="contact" onclick="switchTab('contact')">
+            <i class="fa-solid fa-envelope"></i> Contact Messages
+          </button>
+          <button class="tab-btn" data-tab="faq" onclick="switchTab('faq')">
+            <i class="fa-solid fa-question-circle"></i> FAQ Feedback
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Contact Messages Tab -->
+        <div id="contactTab" class="tab-content active">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <div>
+              <h2 style="font-size:24px;font-weight:900;letter-spacing:-0.5px;margin-bottom:4px;">Contact Messages</h2>
+              <p style="color:var(--sub);font-size:14px;">All contact form submissions</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button onclick="exportContactMessages()" class="btn" style="padding:10px 16px;font-size:13px;">
+                <i class="fa-solid fa-download"></i> Export
+              </button>
+              <button onclick="loadContactMessages()" class="btn primary" style="padding:10px 16px;font-size:13px;">
+                <i class="fa-solid fa-arrow-rotate-right"></i> Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- Contact Messages Stats -->
+          <div class="stats-grid">
+            <div class="stat-card" style="border-color:color-mix(in srgb, var(--accent) 30%, var(--border));">
+              <div class="stat-card-label">Total</div>
+              <div class="stat-card-value" id="contactTotal">—</div>
+            </div>
+            <div class="stat-card" style="border-color:color-mix(in srgb, var(--bad) 30%, var(--border));">
+              <div class="stat-card-label">New</div>
+              <div class="stat-card-value" id="contactNew" style="color:var(--bad);">—</div>
+            </div>
+            <div class="stat-card" style="border-color:color-mix(in srgb, var(--warn) 30%, var(--border));">
+              <div class="stat-card-label">Read</div>
+              <div class="stat-card-value" id="contactRead" style="color:var(--warn);">—</div>
+            </div>
+            <div class="stat-card" style="border-color:color-mix(in srgb, var(--ok) 30%, var(--border));">
+              <div class="stat-card-label">Replied</div>
+              <div class="stat-card-value" id="contactReplied" style="color:var(--ok);">—</div>
+            </div>
+          </div>
+
+          <!-- Contact Messages Filters -->
+          <div class="toolbar" style="margin-bottom:20px;">
+            <div class="filters">
+              <input id="contactSearch" placeholder="Search name, email, subject..." oninput="filterContactMessages()" style="flex:1;min-width:200px;">
+              <select id="contactStatusFilter" onchange="filterContactMessages()" style="min-width:150px;">
+                <option value="">All Status</option>
+                <option value="NEW">New</option>
+                <option value="READ">Read</option>
+                <option value="REPLIED">Replied</option>
+              </select>
+              <select id="contactSubjectFilter" onchange="filterContactMessages()" style="min-width:180px;">
+                <option value="">All Subjects</option>
+                <option value="booking">Booking Inquiry</option>
+                <option value="support">Support Request</option>
+                <option value="partnership">Partnership</option>
+                <option value="media">Media & Press</option>
+                <option value="feedback">Feedback</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Contact Messages List -->
+          <div id="contactMessagesList" style="display:grid;gap:16px;"></div>
+          <div id="contactEmptyState" class="empty-state hidden">
+            <i class="fa-solid fa-envelope"></i>
+            <h3>No contact messages</h3>
+            <p>Contact form submissions will appear here.</p>
+          </div>
+        </div>
+
+        <!-- FAQ Feedback Tab -->
+        <div id="faqTab" class="tab-content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <div>
+              <h2 style="font-size:24px;font-weight:900;letter-spacing:-0.5px;margin-bottom:4px;">FAQ Feedback Analytics</h2>
+              <p style="color:var(--sub);font-size:14px;">See which FAQs are helpful and which need improvement</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button onclick="exportFAQFeedback()" class="btn" style="padding:10px 16px;font-size:13px;">
+                <i class="fa-solid fa-download"></i> Export
+              </button>
+              <button onclick="loadFAQFeedback()" class="btn primary" style="padding:10px 16px;font-size:13px;">
+                <i class="fa-solid fa-arrow-rotate-right"></i> Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- FAQ Feedback Stats -->
+          <div class="stats-grid">
+            <div class="stat-card" style="border-color:color-mix(in srgb, var(--ok) 30%, var(--border));">
+              <div class="stat-card-label">Helpful</div>
+              <div class="stat-card-value" id="faqHelpfulCount" style="color:var(--ok);">—</div>
+              <div class="stat-card-sub" id="faqHelpfulPercent">—</div>
+            </div>
+            <div class="stat-card" style="border-color:color-mix(in srgb, var(--bad) 30%, var(--border));">
+              <div class="stat-card-label">Not Helpful</div>
+              <div class="stat-card-value" id="faqNotHelpfulCount" style="color:var(--bad);">—</div>
+              <div class="stat-card-sub" id="faqNotHelpfulPercent">—</div>
+            </div>
+            <div class="stat-card" style="border-color:color-mix(in srgb, var(--accent) 30%, var(--border));">
+              <div class="stat-card-label">Total Feedback</div>
+              <div class="stat-card-value" id="faqTotalCount" style="color:var(--accent);">—</div>
+              <div class="stat-card-sub">All responses</div>
+            </div>
+          </div>
+
+          <!-- FAQ Feedback Filters -->
+          <div class="toolbar" style="margin-bottom:20px;">
+            <div class="filters">
+              <input id="faqSearch" placeholder="Search question..." oninput="filterFAQFeedback()" style="flex:1;min-width:200px;">
+              <select id="faqHelpfulFilter" onchange="filterFAQFeedback()" style="min-width:150px;">
+                <option value="">All Feedback</option>
+                <option value="true">Helpful</option>
+                <option value="false">Not Helpful</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- FAQ Feedback List -->
+          <div id="faqFeedbackList" style="display:grid;gap:16px;"></div>
+          <div id="faqEmptyState" class="empty-state hidden">
+            <i class="fa-solid fa-question-circle"></i>
+            <h3>No FAQ feedback yet</h3>
+            <p>Feedback from users will appear here.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Container -->
+  <div class="toast" id="toastContainer"></div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+    const ADMIN_PASSWORD = "weballwithbyz";
+    const ADMIN_SESSION_KEY = "byz_admin_session";
+    const ADMIN_REMEMBER_KEY = "byz_admin_remember";
+
+    // Immediate authentication check - run before page renders
+    function checkAuthImmediate() {
+      const session = sessionStorage.getItem(ADMIN_SESSION_KEY);
+      if (session && session === ADMIN_PASSWORD) return true;
+      const remembered = localStorage.getItem(ADMIN_REMEMBER_KEY);
+      if (remembered && remembered === ADMIN_PASSWORD) {
+        sessionStorage.setItem(ADMIN_SESSION_KEY, ADMIN_PASSWORD);
+        return true;
+      }
+      return false;
+    }
+
+    // Check auth immediately - redirect if not authenticated
+    if (!checkAuthImmediate()) {
+      window.location.replace("admin.html");
+    }
+
+    // Tab Switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+      document.getElementById(`${tabName}Tab`).classList.add('active');
+      
+      if(tabName === 'contact') {
+        loadContactMessages();
+      } else if(tabName === 'faq') {
+        loadFAQFeedback();
+      }
+    }
+
+    // Contact Messages Functions
+    let contactMessages = [];
+    let filteredContactMessages = [];
+    
+    async function loadContactMessages(){
+      const listEl = document.getElementById("contactMessagesList");
+      const emptyEl = document.getElementById("contactEmptyState");
+      
+      if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub);"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;">Loading messages...</p></div>';
+      
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getContactMessages",
+            adminPin: ADMIN_PASSWORD
+          }),
+          cache: "no-store"
+        });
+        
+        const result = await res.json();
+        
+        if(result.success && result.messages){
+          contactMessages = result.messages;
+          filteredContactMessages = [];
+          filterContactMessages();
+          updateContactStats();
+        } else {
+          throw new Error(result.error || "Failed to load messages");
+        }
+      } catch(err) {
+        console.error("Load contact messages error:", err);
+        if(listEl) listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--bad);"><i class="fa-solid fa-triangle-exclamation"></i><p style="margin-top:12px;">${err.message}</p></div>`;
+        if(emptyEl) emptyEl.classList.add("hidden");
+      }
+    }
+    
+    function filterContactMessages(){
+      const search = (document.getElementById("contactSearch")?.value || "").toLowerCase();
+      const statusFilter = document.getElementById("contactStatusFilter")?.value || "";
+      const subjectFilter = document.getElementById("contactSubjectFilter")?.value || "";
+      
+      filteredContactMessages = contactMessages.filter(msg => {
+        if(statusFilter && msg.status !== statusFilter) return false;
+        if(subjectFilter && msg.subject !== subjectFilter) return false;
+        if(search && !(
+          (msg.name || "").toLowerCase().includes(search) ||
+          (msg.email || "").toLowerCase().includes(search) ||
+          (msg.subject || "").toLowerCase().includes(search) ||
+          (msg.message || "").toLowerCase().includes(search)
+        )) return false;
+        return true;
+      });
+      
+      renderContactMessages();
+    }
+    
+    function renderContactMessages(){
+      const listEl = document.getElementById("contactMessagesList");
+      const emptyEl = document.getElementById("contactEmptyState");
+      
+      if(!listEl) return;
+      
+      const messagesToRender = filteredContactMessages.length > 0 ? filteredContactMessages : contactMessages;
+      
+      if(messagesToRender.length === 0){
+        listEl.innerHTML = "";
+        if(emptyEl) emptyEl.classList.remove("hidden");
+        return;
+      }
+      
+      if(emptyEl) emptyEl.classList.add("hidden");
+      
+      listEl.innerHTML = messagesToRender.map((msg, index) => {
+        const date = new Date(msg.timestamp);
+        const dateStr = date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+        const timeStr = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+        
+        const subjectLabels = {
+          "booking": "Booking Inquiry",
+          "support": "Support Request",
+          "partnership": "Partnership Opportunity",
+          "media": "Media & Press",
+          "feedback": "Feedback",
+          "other": "Other"
+        };
+        
+        const subjectLabel = subjectLabels[msg.subject] || msg.subject;
+        const isNew = msg.status === "NEW";
+        const statusColors = {
+          "NEW": "var(--bad)",
+          "READ": "var(--warn)",
+          "REPLIED": "var(--ok)"
+        };
+        
+        const statusClass = msg.status.toLowerCase();
+        const statusIcon = {
+          "NEW": "fa-circle",
+          "READ": "fa-check",
+          "REPLIED": "fa-check-double"
+        }[msg.status] || "fa-circle";
+        
+        return `
+          <div class="message-card ${statusClass}" style="border-left:4px solid ${statusColors[msg.status] || "var(--border)"};">
+            <div class="message-header">
+              <div style="flex:1;">
+                <div class="message-title" style="display:flex;align-items:center;gap:10px;">
+                  ${isNew ? '<span style="display:inline-block;width:10px;height:10px;background:var(--bad);border-radius:50%;animation:pulse 2s ease-in-out infinite;"></span>' : ''}
+                  <i class="fa-solid fa-user" style="color:var(--sub);font-size:14px;"></i>
+                  ${escapeHtml(msg.name || "Unknown")}
+                </div>
+                <div class="message-meta">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-tag" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Subject:</b> ${subjectLabel}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-envelope" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Email:</b> <a href="mailto:${msg.email}" style="color:var(--accent);text-decoration:none;">${escapeHtml(msg.email || "")}</a></span>
+                  </div>
+                  ${msg.phone ? `
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-phone" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Phone:</b> <a href="tel:${msg.phone}" style="color:var(--accent);text-decoration:none;">${escapeHtml(msg.phone)}</a></span>
+                  </div>
+                  ` : ''}
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-clock" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Date:</b> ${dateStr} at ${timeStr}</span>
+                  </div>
+                  <div style="margin-top:14px;padding:16px;background:linear-gradient(135deg, color-mix(in srgb, var(--bg-alt) 80%, transparent), color-mix(in srgb, var(--bg-elev) 90%, transparent));border-radius:14px;border:1px solid var(--border);">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--sub);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">
+                      <i class="fa-solid fa-message"></i>
+                      <span>Message</span>
+                    </div>
+                    <div style="color:var(--text);font-size:14px;line-height:1.7;white-space:pre-wrap;">${escapeHtml(msg.message || "")}</div>
+                  </div>
+                </div>
+              </div>
+              <span class="status ${statusClass}" style="background:${statusColors[msg.status] || "var(--sub)"};color:#fff;padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
+                <i class="fa-solid ${statusIcon}"></i>
+                ${msg.status}
+              </span>
+            </div>
+            <div class="message-actions">
+              <a href="mailto:${msg.email}?subject=Re: ${encodeURIComponent(subjectLabel)}" class="btn primary" style="flex:1;">
+                <i class="fa-solid fa-reply"></i> Reply Email
+              </a>
+              ${msg.phone ? `
+              <a href="https://wa.me/${msg.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn" style="background:#25D366;color:#fff;border:none;flex:1;">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+              </a>
+              ` : ''}
+              ${msg.status === "NEW" ? `
+              <button onclick="updateContactStatus(${index}, 'READ')" class="btn" style="flex:1;">
+                <i class="fa-solid fa-check"></i> Mark Read
+              </button>
+              ` : ''}
+              ${msg.status !== "REPLIED" ? `
+              <button onclick="updateContactStatus(${index}, 'REPLIED')" class="btn" style="background:var(--ok);color:#fff;border:none;flex:1;">
+                <i class="fa-solid fa-check-double"></i> Mark Replied
+              </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+    
+    async function updateContactStatus(index, status){
+      const msg = filteredContactMessages[index] || contactMessages[index];
+      if(!msg) return;
+      
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "updateContactStatus",
+            adminPin: ADMIN_PASSWORD,
+            rowIndex: msg.rowIndex || index,
+            status: status
+          })
+        });
+        
+        const result = await res.json();
+        
+        if(result.success){
+          showToast(`Message marked as ${status}`, "success");
+          loadContactMessages();
+        } else {
+          throw new Error(result.error || "Failed to update status");
+        }
+      } catch(err) {
+        console.error("Update contact status error:", err);
+        showToast(err.message || "Failed to update status", "error");
+      }
+    }
+    
+    function updateContactStats(){
+      const total = contactMessages.length;
+      const newCount = contactMessages.filter(m => m.status === "NEW").length;
+      const readCount = contactMessages.filter(m => m.status === "READ").length;
+      const repliedCount = contactMessages.filter(m => m.status === "REPLIED").length;
+      
+      document.getElementById("contactTotal").textContent = total;
+      document.getElementById("contactNew").textContent = newCount;
+      document.getElementById("contactRead").textContent = readCount;
+      document.getElementById("contactReplied").textContent = repliedCount;
+    }
+    
+    function exportContactMessages(){
+      const messagesToExport = filteredContactMessages.length > 0 ? filteredContactMessages : contactMessages;
+      if(messagesToExport.length === 0){
+        showToast("No messages to export", "error");
+        return;
+      }
+      
+      const rows = [["Timestamp","Name","Email","Phone","Subject","Message","Status"]];
+      messagesToExport.forEach(msg => {
+        rows.push([
+          msg.timestamp || "",
+          msg.name || "",
+          msg.email || "",
+          msg.phone || "",
+          msg.subject || "",
+          msg.message || "",
+          msg.status || ""
+        ]);
+      });
+      const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `byz-contact-messages-${new Date().toISOString().split("T")[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast("Contact messages exported successfully", "success");
+    }
+
+    // FAQ Feedback Functions
+    let faqFeedbackData = [];
+    let filteredFAQFeedback = [];
+    
+    async function loadFAQFeedback(){
+      const listEl = document.getElementById("faqFeedbackList");
+      const emptyEl = document.getElementById("faqEmptyState");
+      
+      if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub);"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;">Loading FAQ feedback...</p></div>';
+      
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getFAQFeedback",
+            adminPin: ADMIN_PASSWORD
+          }),
+          cache: "no-store"
+        });
+        
+        const result = await res.json();
+        
+        if(result.success && result.feedback){
+          faqFeedbackData = result.feedback;
+          filteredFAQFeedback = [];
+          filterFAQFeedback();
+          updateFAQStats();
+        } else {
+          throw new Error(result.error || "Failed to load FAQ feedback");
+        }
+      } catch(err) {
+        console.error("Load FAQ feedback error:", err);
+        if(listEl) listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--bad);"><i class="fa-solid fa-triangle-exclamation"></i><p style="margin-top:12px;">${err.message}</p></div>`;
+        if(emptyEl) emptyEl.classList.add("hidden");
+      }
+    }
+    
+    function filterFAQFeedback(){
+      const search = (document.getElementById("faqSearch")?.value || "").toLowerCase();
+      const helpfulFilter = document.getElementById("faqHelpfulFilter")?.value || "";
+      
+      filteredFAQFeedback = faqFeedbackData.filter(fb => {
+        if(helpfulFilter && String(fb.helpful) !== helpfulFilter) return false;
+        if(search && !(fb.question || "").toLowerCase().includes(search)) return false;
+        return true;
+      });
+      
+      renderFAQFeedback();
+    }
+    
+    function renderFAQFeedback(){
+      const listEl = document.getElementById("faqFeedbackList");
+      const emptyEl = document.getElementById("faqEmptyState");
+      
+      if(!listEl) return;
+      
+      if(filteredFAQFeedback.length === 0){
+        listEl.innerHTML = "";
+        if(emptyEl) emptyEl.classList.remove("hidden");
+        return;
+      }
+      
+      if(emptyEl) emptyEl.classList.add("hidden");
+      
+      // Group feedback by question
+      const grouped = {};
+      filteredFAQFeedback.forEach(fb => {
+        const q = fb.question || "Unknown";
+        if(!grouped[q]){
+          grouped[q] = { question: q, helpful: 0, notHelpful: 0, total: 0, latest: fb.timestamp };
+        }
+        if(fb.helpful){
+          grouped[q].helpful++;
+        } else {
+          grouped[q].notHelpful++;
+        }
+        grouped[q].total++;
+        if(fb.timestamp > grouped[q].latest){
+          grouped[q].latest = fb.timestamp;
+        }
+      });
+      
+      const sorted = Object.values(grouped).sort((a, b) => {
+        if(b.total !== a.total) return b.total - a.total;
+        const aRatio = a.helpful / a.total;
+        const bRatio = b.helpful / b.total;
+        return bRatio - aRatio;
+      });
+      
+      listEl.innerHTML = sorted.map(item => {
+        const helpfulPercent = Math.round((item.helpful / item.total) * 100);
+        const notHelpfulPercent = Math.round((item.notHelpful / item.total) * 100);
+        const date = new Date(item.latest);
+        const dateStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        return `
+          <div class="faq-feedback-card">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+              <h3 style="font-size:16px;font-weight:700;flex:1;min-width:200px;">${escapeHtml(item.question)}</h3>
+              <div style="font-size:12px;color:var(--sub);white-space:nowrap;">${dateStr}</div>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:120px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <i class="fa-solid fa-thumbs-up" style="color:var(--ok);font-size:14px;"></i>
+                  <span style="font-size:13px;color:var(--sub);">Helpful</span>
+                  <span style="font-weight:700;color:var(--ok);margin-left:auto;">${item.helpful}</span>
+                </div>
+                <div class="progress-bar" style="background:color-mix(in srgb, var(--ok) 20%, transparent);">
+                  <div class="progress-fill" style="width:${helpfulPercent}%;background:var(--ok);"></div>
+                </div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">${helpfulPercent}%</div>
+              </div>
+              <div style="flex:1;min-width:120px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <i class="fa-solid fa-thumbs-down" style="color:var(--bad);font-size:14px;"></i>
+                  <span style="font-size:13px;color:var(--sub);">Not Helpful</span>
+                  <span style="font-weight:700;color:var(--bad);margin-left:auto;">${item.notHelpful}</span>
+                </div>
+                <div class="progress-bar" style="background:color-mix(in srgb, var(--bad) 20%, transparent);">
+                  <div class="progress-fill" style="width:${notHelpfulPercent}%;background:var(--bad);"></div>
+                </div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">${notHelpfulPercent}%</div>
+              </div>
+              <div style="min-width:80px;text-align:center;padding:8px;background:color-mix(in srgb, var(--accent) 10%, transparent);border-radius:var(--radius);">
+                <div style="font-size:11px;color:var(--sub);margin-bottom:4px;">Total</div>
+                <div style="font-size:20px;font-weight:900;color:var(--accent);">${item.total}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+    
+    function updateFAQStats(){
+      const total = faqFeedbackData.length;
+      const helpful = faqFeedbackData.filter(fb => fb.helpful).length;
+      const notHelpful = faqFeedbackData.filter(fb => !fb.helpful).length;
+      const helpfulPercent = total > 0 ? Math.round((helpful / total) * 100) : 0;
+      const notHelpfulPercent = total > 0 ? Math.round((notHelpful / total) * 100) : 0;
+      
+      document.getElementById("faqHelpfulCount").textContent = helpful;
+      document.getElementById("faqHelpfulPercent").textContent = `${helpfulPercent}% positive`;
+      document.getElementById("faqNotHelpfulCount").textContent = notHelpful;
+      document.getElementById("faqNotHelpfulPercent").textContent = `${notHelpfulPercent}% negative`;
+      document.getElementById("faqTotalCount").textContent = total;
+    }
+    
+    function exportFAQFeedback(){
+      if(filteredFAQFeedback.length === 0){
+        showToast("No FAQ feedback to export", "error");
+        return;
+      }
+      
+      const headers = ["Timestamp", "Question", "Helpful"];
+      const rows = filteredFAQFeedback.map(fb => [
+        fb.timestamp || "",
+        fb.question || "",
+        fb.helpful ? "Yes" : "No"
+      ]);
+      
+      const csv = [headers, ...rows].map(row => 
+        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      ).join("\n");
+      
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `faq-feedback-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showToast("FAQ feedback exported successfully", "success");
+    }
+    
+    function escapeHtml(text){
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(message, type = "success"){
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast-item ${type}`;
+      toast.innerHTML = `
+        <i class="fa-solid ${type === "success" ? "fa-circle-check" : "fa-circle-xmark"} toast-icon ${type}"></i>
+        <div class="toast-content">
+          <div class="toast-title">${type === "success" ? "Success" : "Error"}</div>
+          <div class="toast-message">${escapeHtml(message)}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = "toastSlideIn .3s var(--ease) reverse";
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        if (typeof initAdminAuth === 'function') {
+          if (initAdminAuth()) {
+            renderAdminNav("messages");
+            loadContactMessages();
+          }
+        }
+      });
+    } else {
+      if (typeof initAdminAuth === 'function') {
+        if (initAdminAuth()) {
+          renderAdminNav("messages");
+          loadContactMessages();
+        }
+      }
+    }
+
+    // Make functions globally available
+    window.switchTab = switchTab;
+    window.loadContactMessages = loadContactMessages;
+    window.filterContactMessages = filterContactMessages;
+    window.updateContactStatus = updateContactStatus;
+    window.exportContactMessages = exportContactMessages;
+    window.loadFAQFeedback = loadFAQFeedback;
+    window.filterFAQFeedback = filterFAQFeedback;
+    window.exportFAQFeedback = exportFAQFeedback;
+  </script>
+</body>
+</html>
+
