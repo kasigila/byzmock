@@ -1198,6 +1198,98 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   background: var(--bg-elev);
 }
 
+/* Live Now Indicator */
+.live-now-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, #ff3b30 95%, transparent) 0%,
+    color-mix(in srgb, #ff3b30 85%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, #ff3b30 40%, transparent);
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3),
+              0 0 0 1px color-mix(in srgb, #ff3b30 20%, transparent);
+  animation: livePulse 2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+.live-now-pill::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  animation: liveShimmer 3s ease-in-out infinite;
+}
+.live-now-pill i{
+  font-size: 8px;
+  animation: liveBlink 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+}
+.live-now-pill .live-minutes{
+  font-size: 10px;
+  opacity: 0.9;
+  font-weight: 700;
+  margin-left: 2px;
+}
+@keyframes livePulse{
+  0%, 100%{
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3),
+                0 0 0 1px color-mix(in srgb, #ff3b30 20%, transparent);
+  }
+  50%{
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.4),
+                0 0 0 2px color-mix(in srgb, #ff3b30 30%, transparent);
+  }
+}
+@keyframes liveShimmer{
+  0%{ transform: translateX(-100%); }
+  100%{ transform: translateX(100%); }
+}
+@keyframes liveBlink{
+  0%, 100%{ opacity: 1; }
+  50%{ opacity: 0.6; }
+}
+.slot.live-now .slot-content{
+  border-color: color-mix(in srgb, #ff3b30 30%, var(--border));
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, #ff3b30 8%, var(--bg-elev)) 0%,
+    color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+  );
+  position: relative;
+}
+.slot.live-now .slot-content::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    #ff3b30 50%,
+    transparent 100%
+  );
+  animation: liveGlow 2s ease-in-out infinite;
+}
+@keyframes liveGlow{
+  0%, 100%{ opacity: 0.6; }
+  50%{ opacity: 1; }
+}
+
 /* ===================== DJ ACCORDION STYLES ===================== */
 .dj-card-collapsible {
   padding: 20px;
@@ -10236,6 +10328,108 @@ function generateQRCode(url) {
     }
   }
 }
+
+// ============================================
+// LIVE DJ SLOT DETECTION
+// ============================================
+(function(){
+  function parseTime(timeStr){
+    // Parse "HH:MM" format
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const now = new Date();
+    const time = new Date();
+    time.setHours(hours, minutes, 0, 0);
+    
+    // If time is before current time today, assume it's tomorrow (for late night sets)
+    if(time < now && hours < 12){
+      time.setDate(time.getDate() + 1);
+    }
+    return time;
+  }
+  
+  function isSlotLive(startStr, endStr){
+    const now = new Date();
+    const start = parseTime(startStr);
+    const end = parseTime(endStr);
+    
+    // Handle overnight sets (e.g., 11:30 PM - 1:00 AM)
+    if(end < start){
+      end.setDate(end.getDate() + 1);
+    }
+    
+    return now >= start && now <= end;
+  }
+  
+  function getMinutesRemaining(startStr, endStr){
+    const now = new Date();
+    const end = parseTime(endStr);
+    const start = parseTime(startStr);
+    
+    // Handle overnight sets (e.g., 11:30 PM - 1:00 AM)
+    if(end < start){
+      end.setDate(end.getDate() + 1);
+    }
+    
+    const diff = end - now;
+    if(diff <= 0) return 0;
+    return Math.ceil(diff / (1000 * 60));
+  }
+  
+  function updateLiveSlots(){
+    const slots = document.querySelectorAll('.slot[data-start][data-end]');
+    slots.forEach(slot => {
+      const start = slot.getAttribute('data-start');
+      const end = slot.getAttribute('data-end');
+      
+      if(!start || !end) return;
+      
+      const isLive = isSlotLive(start, end);
+      const slotContent = slot.querySelector('.slot-content');
+      
+      if(isLive){
+        slot.classList.add('live-now');
+        const minutesRemaining = getMinutesRemaining(start, end);
+        
+        // Remove existing live indicator
+        const existingLive = slotContent.querySelector('.live-now-pill');
+        if(existingLive) existingLive.remove();
+        
+        // Add live indicator pill
+        const livePill = document.createElement('div');
+        livePill.className = 'live-now-pill';
+        livePill.innerHTML = `
+          <i class="fa-solid fa-circle"></i>
+          <span>LIVE NOW</span>
+          ${minutesRemaining > 0 ? `<span class="live-minutes">${minutesRemaining}m left</span>` : ''}
+        `;
+        
+        // Insert before badge or at the end
+        const badge = slotContent.querySelector('.badge');
+        if(badge){
+          slotContent.insertBefore(livePill, badge);
+        } else {
+          slotContent.appendChild(livePill);
+        }
+      } else {
+        slot.classList.remove('live-now');
+        const existingLive = slotContent.querySelector('.live-now-pill');
+        if(existingLive) existingLive.remove();
+      }
+    });
+  }
+  
+  // Update on load
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', () => {
+      updateLiveSlots();
+      // Update every minute
+      setInterval(updateLiveSlots, 60000);
+    });
+  } else {
+    updateLiveSlots();
+    setInterval(updateLiveSlots, 60000);
+  }
+})();
 
 </script>
   <!-- Mobile Sticky CTA - REMOVED per user request -->
