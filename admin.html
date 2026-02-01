@@ -1244,6 +1244,10 @@
     let activityLog = JSON.parse(localStorage.getItem("byz_activity") || "[]");
     let lastLoadTime = null;
     let recentRejections = JSON.parse(localStorage.getItem("byz_recent_rejections") || "{}"); // Track rejections for undo
+    
+    // PWA Install variables - declare early to avoid hoisting issues
+    let deferredPrompt = null;
+    let installPromptShown = false;
 
     (function initTheme(){
       document.body.setAttribute("data-theme", "dark");
@@ -3084,7 +3088,7 @@
     cleanupExpiredRejections();
     
     // PWA Install Functionality - Only show after successful login
-    // Variables already declared at top of script
+    // Variables (deferredPrompt, installPromptShown) are declared at top of script
     
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
