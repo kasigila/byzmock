@@ -548,145 +548,238 @@
       }
     }
 
-    /* Values Section - Redesigned with Swoosh Animations */
+    /* ===================== OUR VALUES SECTION - GLASSMORPHIC REDESIGN ===================== */
     .values-header{
       text-align:center;
-      margin-bottom:56px;
+      margin-bottom:48px;
+    }
+    @media (max-width: 560px){
+      .values-header{
+        margin-bottom:32px;
+        padding: 0 8px;
+      }
     }
     .values-header h2{
       font-size: clamp(1.9rem, 4.5vw, 2.6rem);
       font-weight:900;
-      margin-bottom:16px;
+      margin-bottom:12px;
       letter-spacing:-.8px;
-      word-wrap:break-word;
-      overflow-wrap:break-word;
+    }
+    @media (max-width: 560px){
+      .values-header h2{
+        font-size: clamp(1.65rem, 7vw, 2rem);
+      }
     }
     .values-header p{
       color:var(--sub);
       font-size:17px;
       max-width:60ch;
       margin:0 auto;
-      word-wrap:break-word;
-      overflow-wrap:break-word;
     }
     @media (max-width: 560px){
-      .values-header{margin-bottom:40px}
-      .values-header h2{font-size: clamp(1.65rem, 7vw, 2rem)}
-      .values-header p{font-size:16px}
+      .values-header p{
+        font-size:15px;
     }
-    .values-list{
+    }
+    
+    /* Values Grid - Mobile First */
+    .values-grid{
       display:flex;
       flex-direction:column;
-      gap:60px;
-      max-width:800px;
+      gap:24px;
+      max-width:900px;
       margin:0 auto;
     }
     @media (max-width: 560px){
-      .values-list{gap:48px}
+      .values-grid{
+        gap:20px;
+        padding: 0 4px;
+      }
     }
-    /* Value Card - Scroll Triggered Animations */
-    .value-card{
-      padding:48px 40px;
-      border-radius: var(--radius-lg);
-      border:none;
-      background:transparent;
-      text-align:center;
-      margin-bottom:60px;
-    }
-    .value-icon{
-      width:80px;
-      height:80px;
-      border-radius:24px;
-      background: 
-        linear-gradient(135deg,
-          color-mix(in srgb, var(--accent) 14%, transparent) 0%,
-          color-mix(in srgb, var(--accent) 10%, transparent) 100%
-        );
-      border:none;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin:0 auto 24px;
+    
+    /* Glassmorphic Value Card */
+    .value-card-glass{
       position:relative;
-      box-shadow: 
-        0 6px 16px color-mix(in srgb, var(--accent) 10%, transparent);
-      will-change:transform, opacity;
-      opacity:0;
-      transform:scale(0.5);
-    }
-    .value-icon i{
-      color:var(--accent);
-      font-size:32px;
-      filter:drop-shadow(0 2px 6px color-mix(in srgb, var(--accent) 25%, transparent));
-    }
-    .value-card h3{
-      font-size:24px;
-      font-weight:900;
-      margin-bottom:12px;
-      letter-spacing:-.4px;
-      word-wrap:break-word;
-      overflow-wrap:break-word;
-      text-align:center;
-      will-change:transform, opacity;
-    }
-    /* All value cards start hidden for animation */
-    .value-card h3{
-      opacity:0;
-      transform:translateY(30px);
-    }
-    .value-card p{
-      font-size:16px;
-      color:var(--sub);
-      line-height:1.7;
-      word-wrap:break-word;
-      overflow-wrap:break-word;
-      max-width:100%;
-      text-align:center;
-      margin:0 auto;
-      will-change:transform, opacity;
-      opacity:0;
-      transform:translateY(30px);
-    }
-    @media (max-width: 560px){
-      .value-card{
-        padding:40px 24px;
-        margin-bottom:48px;
-      }
-      .value-icon{
-        width:70px;
-        height:70px;
-      }
-      .value-card h3{
-        font-size:20px;
-      }
-      .value-card p{
-        font-size:15px;
-      }
-    }
-    /* Value Image - Scroll Triggered Scale */
-    .value-image{
-      width:100%;
-      max-width:600px;
-      height:400px;
       border-radius: var(--radius-lg);
       overflow:hidden;
-      margin:40px auto;
+      min-height:380px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
       box-shadow: var(--shadow);
+      border:1px solid color-mix(in srgb, var(--border) 50%, transparent);
       will-change:transform, opacity;
       opacity:0;
-      transform:scale(0.3);
+      transform:translateY(40px) scale(0.95);
+      transition: transform .4s cubic-bezier(.2,.8,.2,1), opacity .4s cubic-bezier(.2,.8,.2,1);
     }
-    .value-image img{
+    @media (max-width: 560px){
+      .value-card-glass{
+        min-height:320px;
+        border-radius: 20px;
+      }
+    }
+    .value-card-glass.revealed{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+    
+    /* Background Image */
+    .value-card-bg{
+      position:absolute;
+      inset:0;
+      z-index:0;
+    }
+    .value-card-bg img{
       width:100%;
       height:100%;
       object-fit:cover;
       display:block;
+      transform:scale(1.05);
+      transition:transform .6s cubic-bezier(.2,.8,.2,1);
+    }
+    .value-card-glass:hover .value-card-bg img{
+      transform:scale(1.1);
+    }
+    
+    /* Gradient Overlay */
+    .value-card-overlay{
+      position:absolute;
+      inset:0;
+      background:linear-gradient(
+        180deg,
+        transparent 0%,
+        color-mix(in srgb, var(--bg) 20%, transparent) 40%,
+        color-mix(in srgb, var(--bg) 85%, transparent) 100%
+      );
+      z-index:1;
+    }
+    
+    /* Glass Content Panel */
+    .value-card-content{
+      position:relative;
+      z-index:2;
+      padding:32px 24px 28px;
+      background:linear-gradient(
+        180deg,
+        transparent 0%,
+        color-mix(in srgb, var(--bg-elev) 75%, transparent) 100%
+      );
+      backdrop-filter:blur(20px) saturate(180%);
+      -webkit-backdrop-filter:blur(20px) saturate(180%);
+      border-top:1px solid color-mix(in srgb, var(--accent) 15%, transparent);
     }
     @media (max-width: 560px){
-      .value-image{
-        height:280px;
-        margin:32px auto;
+      .value-card-content{
+        padding:28px 20px 24px;
       }
+    }
+    
+    /* Icon Badge - Top Center */
+    .value-icon-badge{
+      position:absolute;
+      top:20px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:3;
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      background:linear-gradient(135deg,
+        color-mix(in srgb, var(--accent) 95%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 85%, transparent) 100%
+      );
+      border:3px solid color-mix(in srgb, var(--bg-elev) 90%, transparent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 
+        0 8px 24px rgba(0,0,0,.3),
+        0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
+        inset 0 1px 0 rgba(255,255,255,.1);
+      will-change:transform, opacity;
+      opacity:0;
+      transform:translateX(-50%) scale(0.5);
+      transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .5s cubic-bezier(.2,.8,.2,1);
+    }
+    @media (max-width: 560px){
+      .value-icon-badge{
+        width:56px;
+        height:56px;
+        top:16px;
+        border-width:2.5px;
+      }
+    }
+    .value-card-glass.revealed .value-icon-badge{
+      opacity:1;
+      transform:translateX(-50%) scale(1);
+    }
+    .value-icon-badge i{
+      color:var(--accent);
+      font-size:28px;
+      filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));
+      animation:iconPulse 3s ease-in-out infinite;
+    }
+    @media (max-width: 560px){
+      .value-icon-badge i{
+      font-size:24px;
+      }
+    }
+    @keyframes iconPulse{
+      0%, 100%{
+        transform:scale(1);
+        filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));
+      }
+      50%{
+        transform:scale(1.1);
+        filter:drop-shadow(0 4px 12px color-mix(in srgb, var(--accent) 40%, transparent));
+      }
+    }
+    
+    /* Title */
+    .value-card-title{
+      font-size:24px;
+      font-weight:900;
+      margin-bottom:8px;
+      letter-spacing:-.4px;
+      color:var(--text);
+      text-shadow:0 2px 12px rgba(0,0,0,.4);
+      line-height:1.2;
+    }
+    @media (max-width: 560px){
+      .value-card-title{
+        font-size:20px;
+        margin-bottom:6px;
+      }
+    }
+    
+    /* Description */
+    .value-card-desc{
+        font-size:15px;
+      color:color-mix(in srgb, var(--text) 85%, transparent);
+      line-height:1.6;
+      text-shadow:0 1px 6px rgba(0,0,0,.3);
+    }
+    @media (max-width: 560px){
+      .value-card-desc{
+        font-size:14px;
+        line-height:1.5;
+      }
+    }
+    
+    /* Hover Effects */
+    .value-card-glass:hover{
+      transform:translateY(-4px) scale(1.01);
+      box-shadow:
+        0 24px 48px rgba(0,0,0,.4),
+        0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+    .value-card-glass:hover .value-icon-badge{
+      transform:translateX(-50%) scale(1.1);
+      box-shadow:
+        0 12px 32px rgba(0,0,0,.4),
+        0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent),
+        inset 0 1px 0 rgba(255,255,255,.2);
     }
 
     /* Partnership Carousel */
@@ -985,57 +1078,80 @@
         <p class="scroll-reveal from-bottom">What drives us every day</p>
       </div>
 
-      <div class="values-list">
-        <div class="value-card" id="value-1">
-          <div class="value-icon" id="value-icon-1">
+      <div class="values-grid">
+        <!-- Music First -->
+        <div class="value-card-glass" data-value="music">
+          <div class="value-card-bg">
+            <img src="groove-memory-gallery/december-26-2025/FYRM9994.jpg" alt="Music First" loading="lazy" onerror="this.src='groove-memory-gallery/may-24-2025/692A0026.jpg'">
+          </div>
+          <div class="value-card-overlay"></div>
+          <div class="value-icon-badge">
             <i class="fa-solid fa-music"></i>
           </div>
-          <h3 id="value-title-1">Music First</h3>
-          <p id="value-text-1">We believe music is the universal language that brings people together.</p>
+          <div class="value-card-content">
+            <h3 class="value-card-title">Music First</h3>
+            <p class="value-card-desc">We believe music is the universal language that brings people together.</p>
         </div>
-        <div class="value-image" id="value-image-1">
-          <img src="groove-memory-gallery/december-26-2025/FYRM9994.jpg" alt="Music First" loading="lazy" onerror="this.parentElement.style.display='none'">
         </div>
 
-        <div class="value-card" id="value-2">
-          <div class="value-icon" id="value-icon-2">
+        <!-- Community -->
+        <div class="value-card-glass" data-value="community">
+          <div class="value-card-bg">
+            <img src="tempo-memory-gallery/july-11-2025/FYRM1227.jpg" alt="Community" loading="lazy" onerror="this.src='groove-memory-gallery/december-6-2025/FYRM8506.jpg'">
+          </div>
+          <div class="value-card-overlay"></div>
+          <div class="value-icon-badge">
             <i class="fa-solid fa-users"></i>
           </div>
-          <h3 id="value-title-2">Community</h3>
-          <p id="value-text-2">BYZ is more than events—it's a community where everyone belongs.</p>
+          <div class="value-card-content">
+            <h3 class="value-card-title">Community</h3>
+            <p class="value-card-desc">BYZ is more than events—it's a community where everyone belongs.</p>
         </div>
-        <div class="value-image" id="value-image-2">
-          <img src="tempo-memory-gallery/july-11-2025/FYRM1227.jpg" alt="Community" loading="lazy" onerror="this.parentElement.style.display='none'">
         </div>
 
-        <div class="value-card" id="value-3">
-          <div class="value-icon" id="value-icon-3">
+        <!-- Excellence -->
+        <div class="value-card-glass" data-value="excellence">
+          <div class="value-card-bg">
+            <img src="groove-memory-gallery/may-24-2025/692A0026.jpg" alt="Excellence" loading="lazy" onerror="this.src='tempo-memory-gallery/july-11-2025/FYRM1227.jpg'">
+          </div>
+          <div class="value-card-overlay"></div>
+          <div class="value-icon-badge">
             <i class="fa-solid fa-star"></i>
           </div>
-          <h3 id="value-title-3">Excellence</h3>
-          <p id="value-text-3">We never compromise on the details. Every experience exceeds expectations.</p>
-        </div>
-        <div class="value-image" id="value-image-3">
-          <img src="groove-memory-gallery/may-24-2025/692A0026.jpg" alt="Excellence" loading="lazy" onerror="this.parentElement.style.display='none'">
+          <div class="value-card-content">
+            <h3 class="value-card-title">Excellence</h3>
+            <p class="value-card-desc">We never compromise on the details. Every experience exceeds expectations.</p>
+          </div>
         </div>
 
-        <div class="value-card" id="value-4">
-          <div class="value-icon" id="value-icon-4">
+        <!-- Authenticity -->
+        <div class="value-card-glass" data-value="authenticity">
+          <div class="value-card-bg">
+            <img src="groove-memory-gallery/december-6-2025/FYRM8506.jpg" alt="Authenticity" loading="lazy" onerror="this.src='groove-memory-gallery/december-26-2025/FYRM9994.jpg'">
+          </div>
+          <div class="value-card-overlay"></div>
+          <div class="value-icon-badge">
             <i class="fa-solid fa-heart"></i>
           </div>
-          <h3 id="value-title-4">Authenticity</h3>
-          <p id="value-text-4">We stay true to our roots while pushing boundaries.</p>
-        </div>
-        <div class="value-image" id="value-image-4">
-          <img src="groove-memory-gallery/december-6-2025/FYRM8506.jpg" alt="Authenticity" loading="lazy" onerror="this.parentElement.style.display='none'">
+          <div class="value-card-content">
+            <h3 class="value-card-title">Authenticity</h3>
+            <p class="value-card-desc">We stay true to our roots while pushing boundaries.</p>
+          </div>
         </div>
 
-        <div class="value-card" id="value-6">
-          <div class="value-icon" id="value-icon-6">
+        <!-- Partnership -->
+        <div class="value-card-glass" data-value="partnership">
+          <div class="value-card-bg">
+            <img src="tempo-memory-gallery/june-27-2025/692A9856.jpg" alt="Partnership" loading="lazy" onerror="this.src='groove-memory-gallery/may-24-2025/692A0037.jpg'">
+          </div>
+          <div class="value-card-overlay"></div>
+          <div class="value-icon-badge">
             <i class="fa-solid fa-handshake"></i>
           </div>
-          <h3 id="value-title-6">Partnership</h3>
-          <p id="value-text-6">We collaborate with the best to showcase the best of Dar es Salaam.</p>
+          <div class="value-card-content">
+            <h3 class="value-card-title">Partnership</h3>
+            <p class="value-card-desc">We collaborate with the best to showcase the best of Dar es Salaam.</p>
+          </div>
         </div>
 
         <!-- Partnership Brand Carousel -->
@@ -1348,318 +1464,28 @@
     }
   })();
   
-  // Image Randomization for Our Values Section
-  (function(){
-    function getAvailableImages(){
-      const images = [];
-      
-      // Check if gallery manifest exists
-      if(window.BYZ_GALLERY && window.BYZ_GALLERY.ROOTS && window.BYZ_GALLERY.BOARDS){
-        const roots = window.BYZ_GALLERY.ROOTS;
-        const boards = window.BYZ_GALLERY.BOARDS;
-        
-        // Collect all images from groove and tempo galleries
-        ['groove', 'tempo'].forEach(type => {
-          if(boards[type]){
-            Object.keys(boards[type]).forEach(board => {
-              boards[type][board].forEach(filename => {
-                images.push(`${roots[type]}${board}/${filename}`);
-              });
-            });
-          }
-        });
-      }
-      
-      // Fallback: Use some default images if manifest not available
-      if(images.length === 0){
-        images.push(
-          'groove-memory-gallery/december-26-2025/FYRM9994.jpg',
-          'tempo-memory-gallery/july-11-2025/FYRM1227.jpg',
-          'groove-memory-gallery/may-24-2025/692A0026.jpg',
-          'groove-memory-gallery/december-6-2025/FYRM8506.jpg',
-          'tempo-memory-gallery/june-27-2025/692A9856.jpg',
-          'groove-memory-gallery/may-24-2025/692A0037.jpg',
-          'groove-memory-gallery/december-26-2025/FYRM9957.jpg',
-          'tempo-memory-gallery/july-11-2025/FYRM1221.jpg'
-        );
-      }
-      
-      return images;
-    }
-    
-    function randomizeValueImages(){
-      const valueImageIds = [1, 2, 3, 4]; // Exclude Partnership (value-6) - only carousel
-      const storageKey = 'byz_value_images';
-      
-      // Check sessionStorage first
-      let selectedImages = null;
-      try {
-        const stored = sessionStorage.getItem(storageKey);
-        if(stored){
-          selectedImages = JSON.parse(stored);
-        }
-      } catch(e){
-        // Ignore storage errors
-      }
-      
-      // If no stored selection or invalid, create new random selection
-      if(!selectedImages || selectedImages.length !== valueImageIds.length){
-        const availableImages = getAvailableImages();
-        const shuffled = [...availableImages].sort(() => Math.random() - 0.5);
-        selectedImages = valueImageIds.map((id, index) => {
-          return shuffled[index % shuffled.length];
-        });
-        
-        // Ensure no duplicates
-        const uniqueImages = [...new Set(selectedImages)];
-        if(uniqueImages.length < valueImageIds.length){
-          // If we have duplicates, fill with remaining images
-          const remaining = availableImages.filter(img => !uniqueImages.includes(img));
-          while(uniqueImages.length < valueImageIds.length && remaining.length > 0){
-            uniqueImages.push(remaining.shift());
-          }
-          selectedImages = uniqueImages.slice(0, valueImageIds.length);
-        }
-        
-        // Store in sessionStorage
-        try {
-          sessionStorage.setItem(storageKey, JSON.stringify(selectedImages));
-        } catch(e){
-          // Ignore storage errors
-        }
-      }
-      
-      // Apply images to DOM
-      valueImageIds.forEach((id, index) => {
-        const imageElement = document.getElementById(`value-image-${id}`);
-        if(imageElement){
-          const img = imageElement.querySelector('img');
-          if(img && selectedImages[index]){
-            img.src = selectedImages[index];
-            img.onerror = function(){
-              // Fallback to a default image if the random one fails
-              this.src = 'groove-memory-gallery/december-26-2025/FYRM9994.jpg';
-              this.onerror = null; // Prevent infinite loop
-            };
-          }
-        }
-      });
-    }
-    
-    // Initialize when DOM is ready
-    if(document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', randomizeValueImages);
-    } else {
-      randomizeValueImages();
-    }
-  })();
-  
-  // Values Section - Scroll Triggered Animations - ALL value cards
+  // ===================== OUR VALUES - SCROLL REVEAL ANIMATIONS =====================
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     
-    const valueIds = [1, 2, 3, 4, 6]; // All value card IDs (excluding removed value-5)
-    const valueElements = [];
+    const valueCards = document.querySelectorAll('.value-card-glass');
+    if(!valueCards.length) return;
     
-    function initValueAnimations(){
-      // Get all value card elements
-      valueIds.forEach(id => {
-        const elements = {
-          id: id,
-          card: document.getElementById(`value-${id}`),
-          icon: document.getElementById(`value-icon-${id}`),
-          title: document.getElementById(`value-title-${id}`),
-          text: document.getElementById(`value-text-${id}`),
-          image: document.getElementById(`value-image-${id}`)
-        };
-        
-        // For value-6 (Partnership), image is optional (only carousel)
-        if(elements.card && elements.icon && elements.title && elements.text) {
-          if(id === 6 || elements.image) {
-            valueElements.push(elements);
-          }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if(entry.isIntersecting){
+          setTimeout(() => {
+            entry.target.classList.add('revealed');
+          }, index * 100);
+          observer.unobserve(entry.target);
         }
       });
-      
-      if(valueElements.length === 0) {
-        // Retry if elements not ready
-        setTimeout(initValueAnimations, 100);
-        return;
-      }
-      
-      // Smooth easing functions
-      function easeOutCubic(t) {
-        return 1 - Math.pow(1 - t, 3);
-      }
-      
-      function easeOutBack(t) {
-        const c1 = 1.70158;
-        const c3 = c1 + 1;
-        return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-      }
-      
-      function easeInOutQuart(t) {
-        return t < 0.5
-          ? 8 * t * t * t * t
-          : 1 - Math.pow(-2 * t + 2, 4) / 2;
-      }
-      
-      // Get animation range (responsive to viewport)
-      function getAnimationRange(){
-        return window.innerHeight * 1.5; // Extended range for smoother, longer animations
-      }
-      
-      // Debounce function for scroll handler
-      function debounce(func, wait){
-        let timeout;
-        return function executedFunction(...args){
-          const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-          };
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-        };
-      }
-      
-      function updateValueAnimations(){
-        const ANIMATION_RANGE = getAnimationRange();
-        const windowHeight = window.innerHeight;
-        const viewportCenter = windowHeight * 0.5;
-        
-        valueElements.forEach((value, index) => {
-          const cardRect = value.card.getBoundingClientRect();
-          const cardCenter = cardRect.top + (cardRect.height / 2);
-          
-          // Calculate progress with extended range and smoother staggering
-          const distanceToCenter = cardCenter - viewportCenter;
-          const staggerOffset = index * 0.08; // 8% stagger per card for better separation
-          const adjustedDistance = distanceToCenter + (staggerOffset * windowHeight);
-          const progress = 1 - (adjustedDistance / ANIMATION_RANGE);
-          const clampedProgress = Math.max(0, Math.min(1, progress));
-          
-          if(clampedProgress > 0 && clampedProgress <= 1){
-            // Icon: smooth pop with bounce effect (0-0.3)
-            if(clampedProgress < 0.3){
-              const iconProgress = clampedProgress / 0.3;
-              const easedIcon = easeOutBack(iconProgress);
-              const scale = 0.5 + (easedIcon * 0.5); // 0.5 to 1.0 with bounce
-              value.icon.style.transform = `scale(${scale})`;
-              value.icon.style.opacity = Math.min(1, iconProgress * 1.2);
-            } else {
-              value.icon.style.transform = 'scale(1)';
-              value.icon.style.opacity = '1';
-            }
-            
-            // Title: smooth fade and slide from bottom (0.15-0.65)
-            const titleStart = 0.15 + staggerOffset;
-            const titleEnd = 0.65 + staggerOffset;
-            if(clampedProgress >= titleStart && clampedProgress <= titleEnd){
-              const titleProgress = (clampedProgress - titleStart) / (titleEnd - titleStart);
-              const easedTitle = easeOutCubic(titleProgress);
-              const translateY = (1 - easedTitle) * 30;
-              value.title.style.opacity = easedTitle;
-              value.title.style.transform = `translateY(${translateY}px)`;
-            } else if(clampedProgress > titleEnd){
-              value.title.style.opacity = '1';
-              value.title.style.transform = 'translateY(0)';
-            } else {
-              value.title.style.opacity = '0';
-              value.title.style.transform = 'translateY(30px)';
-            }
-            
-            // Text: smooth fade and slide from bottom (0.3-0.75)
-            const textStart = 0.3 + staggerOffset;
-            const textEnd = 0.75 + staggerOffset;
-            if(clampedProgress >= textStart && clampedProgress <= textEnd){
-              const textProgress = (clampedProgress - textStart) / (textEnd - textStart);
-              const easedText = easeOutCubic(textProgress);
-              const translateY = (1 - easedText) * 30;
-              value.text.style.opacity = easedText;
-              value.text.style.transform = `translateY(${translateY}px)`;
-            } else if(clampedProgress > textEnd){
-              value.text.style.opacity = '1';
-              value.text.style.transform = 'translateY(0)';
-            } else {
-              value.text.style.opacity = '0';
-              value.text.style.transform = 'translateY(30px)';
-            }
-            
-            // Image: smooth scale and fade from center (0.5-0.9)
-            if(value.image){
-              const imageStart = 0.5 + staggerOffset;
-              if(clampedProgress >= imageStart){
-                const imageProgress = Math.min(1, (clampedProgress - imageStart) / 0.4);
-                const easedImage = easeInOutQuart(imageProgress);
-                const scale = 0.3 + (easedImage * 0.7); // 0.3 to 1.0
-                value.image.style.opacity = easedImage;
-                value.image.style.transform = `scale(${scale})`;
-              } else {
-                value.image.style.opacity = '0';
-                value.image.style.transform = 'scale(0.3)';
-              }
-            }
-          } else if(clampedProgress <= 0){
-            // Reset before animation
-            value.icon.style.transform = 'scale(0.5)';
-            value.icon.style.opacity = '0';
-            value.title.style.opacity = '0';
-            value.title.style.transform = 'translateY(30px)';
-            value.text.style.opacity = '0';
-            value.text.style.transform = 'translateY(30px)';
-            if(value.image){
-              value.image.style.opacity = '0';
-              value.image.style.transform = 'scale(0.3)';
-            }
-          } else {
-            // Set final state after animation
-            value.icon.style.transform = 'scale(1)';
-            value.icon.style.opacity = '1';
-            value.title.style.opacity = '1';
-            value.title.style.transform = 'translateY(0)';
-            value.text.style.opacity = '1';
-            value.text.style.transform = 'translateY(0)';
-            if(value.image){
-              value.image.style.opacity = '1';
-              value.image.style.transform = 'scale(1)';
-            }
-          }
-        });
-      }
-      
-      // Optimized scroll handler with requestAnimationFrame and debouncing
-      let ticking = false;
-      let lastScrollTime = 0;
-      const scrollThrottle = 16; // ~60fps
-      
-      function requestTick(){
-        const now = performance.now();
-        if(!ticking && (now - lastScrollTime) >= scrollThrottle){
-          requestAnimationFrame(() => {
-            updateValueAnimations();
-            ticking = false;
-            lastScrollTime = performance.now();
-          });
-          ticking = true;
-        }
-      }
-      
-      // Debounced resize handler to update animation range
-      const handleResize = debounce(() => {
-        updateValueAnimations();
-      }, 150);
-      
-      window.addEventListener('scroll', requestTick, { passive: true });
-      window.addEventListener('resize', handleResize, { passive: true });
-      updateValueAnimations();
-    }
+    }, {
+      threshold: 0.2,
+      rootMargin: '0px 0px -50px 0px'
+    });
     
-    // Initialize when DOM is ready
-    if(document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', initValueAnimations);
-    } else {
-      initValueAnimations();
-    }
+    valueCards.forEach(card => observer.observe(card));
   })();
   
   // Partnership Carousel - Scroll-Driven Horizontal Animation
