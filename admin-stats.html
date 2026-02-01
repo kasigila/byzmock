@@ -615,7 +615,11 @@
       try {
         // Load all data in parallel
         const [bookingsRes, contactRes, faqRes] = await Promise.all([
-          fetch(`${SCRIPT_URL}?eventKey=all`, { cache: "no-store" }),
+          fetch(`${SCRIPT_URL}?eventKey=all`, { 
+            cache: "no-store",
+            mode: "cors",
+            credentials: "omit"
+          }),
           fetch(SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -623,7 +627,9 @@
               action: "getContactMessages",
               adminPin: window.ADMIN_PASSWORD
             }),
-            cache: "no-store"
+            cache: "no-store",
+            mode: "cors",
+            credentials: "omit"
           }),
           fetch(SCRIPT_URL, {
             method: "POST",
@@ -632,7 +638,9 @@
               action: "getFAQFeedback",
               adminPin: window.ADMIN_PASSWORD
             }),
-            cache: "no-store"
+            cache: "no-store",
+            mode: "cors",
+            credentials: "omit"
           })
         ]);
         
