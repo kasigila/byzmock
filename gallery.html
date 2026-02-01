@@ -988,27 +988,42 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
   position:absolute;
   top:12px;
   right:12px;
-  width:36px;
-  height:36px;
+  width:44px;
+  height:44px;
   border-radius:50%;
-  background:rgba(255,0,0,.85);
+  background:rgba(255,59,48,.95);
   backdrop-filter:blur(10px);
-  border:2px solid rgba(255,255,255,.9);
+  border:2px solid rgba(255,255,255,.95);
   display:flex;
   align-items:center;
   justify-content:center;
   opacity:0;
   transform:scale(0);
-  transition:all .3s var(--ease);
-  z-index:5;
+  transition:all .3s cubic-bezier(.2,.8,.2,1);
+  z-index:100;
+  box-shadow: 0 4px 12px rgba(255,59,48,.3);
+  cursor:pointer;
+  pointer-events:none;
 }
-.pin[data-liked="true"] .pin-liked{
+.pin-liked:hover{
+  background:rgba(255,59,48,1);
+  transform:scale(1.1);
+  box-shadow: 0 6px 16px rgba(255,59,48,.4);
+}
+.pin-liked:active{
+  transform:scale(0.95);
+}
+.pin[data-liked="true"] .pin-liked,
+.pin-liked[style*="opacity:1"]{
   opacity:1;
   transform:scale(1);
+  pointer-events:auto;
 }
 .pin-liked i{
   color:#fff;
-  font-size:16px;
+  font-size:18px;
+  display:block;
+  line-height:1;
 }
 
 .gallery-note{ margin-top: 10px; color: var(--sub); font-size: 13px; font-weight: 400; }
@@ -2377,6 +2392,12 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
       <button class="btn ghost" id="recentActivityBtn" type="button" aria-label="Recent activity">
         <i class="fa-solid fa-clock-rotate-left"></i>
       </button>
+      <a class="btn primary" href="booking.html" style="font-size: 13px; padding: 10px 14px;">
+        <i class="fa-solid fa-ticket"></i> Book Now
+      </a>
+      <a class="btn ghost" href="my-bookings.html" style="font-size: 13px; padding: 10px 14px;">
+        <i class="fa-solid fa-calendar-check"></i> My Bookings
+      </a>
       <a class="btn ghost" href="index.html" style="font-size: 13px; padding: 10px 14px;"><i class="fa-solid fa-arrow-left"></i> Home</a>
     </div>
   </div>
@@ -2387,6 +2408,11 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
     <div class="container">
       <h1>Memory Gallery</h1>
       <p>All photo albums from past events. Browse, preview, and download your favorite memories.</p>
+      <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a class="btn ghost" href="rate.html" style="font-size: 13px; padding: 10px 14px;">
+          <i class="fa-solid fa-star"></i> Rate Experience
+        </a>
+      </div>
     </div>
   </section>
 
@@ -2523,8 +2549,18 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
           <div class="download-progress byz-hidden" id="downloadProgress">
             <div class="download-progress-bar" id="downloadProgressBar"></div>
           </div>
+          
+          <!-- Desktop Instructions (only on desktop) -->
+          <p class="gallery-note desktop-only" style="margin-top: 12px; display: none;">
+            <i class="fa-solid fa-hand-pointer"></i> Tap to preview. <i class="fa-solid fa-hand-pointer"></i> <i class="fa-solid fa-hand-pointer"></i> Double-tap to like. <i class="fa-solid fa-download"></i> Hover to download. Use <b>Select</b> to download multiple.
+          </p>
+          <style>
+            @media (min-width: 768px) {
+              .desktop-only { display: block !important; }
+            }
+          </style>
 
-          <p class="gallery-note">
+          <p class="gallery-note mobile-only">
             <i class="fa-solid fa-hand-pointer"></i> Tap to preview. <i class="fa-solid fa-hand-pointer"></i> <i class="fa-solid fa-hand-pointer"></i> Double-tap to like. <i class="fa-solid fa-download"></i> Hover to download. Use <b>Select</b> to download multiple.
           </p>
           
@@ -2541,6 +2577,33 @@ main{padding-top:calc(var(--header-h) + 28px); padding-bottom: 100px;}
               </button>
             </div>
           </div>
+          
+          <!-- Popup Notification (Shows on page load) -->
+          <div class="popup-notification byz-hidden" id="popupNotification" style="position:fixed;top:20px;right:20px;z-index:10000;max-width:360px;padding:16px;border-radius:18px;background:var(--bg-elev);border:1px solid var(--border);box-shadow:var(--shadow);animation:slideIn 0.3s var(--ease);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <i class="fa-solid fa-heart" style="font-size:24px;color:#ff3b30;"></i>
+              <div style="flex:1;">
+                <strong style="display:block;font-size:14px;margin-bottom:4px;">Double-tap photos to like them</strong>
+                <span style="font-size:12px;color:var(--sub);">Save your favorites for easy access</span>
+              </div>
+              <button onclick="dismissPopupNotification()" style="width:28px;height:28px;border-radius:14px;border:1px solid var(--border);background:var(--bg-alt);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" aria-label="Dismiss">
+                <i class="fa-solid fa-xmark" style="font-size:12px;"></i>
+              </button>
+            </div>
+          </div>
+          <style>
+            @keyframes slideIn {
+              from { transform: translateX(400px); opacity: 0; }
+              to { transform: translateX(0); opacity: 1; }
+            }
+            @media (max-width: 767px) {
+              .mobile-only { display: block; }
+              .desktop-only { display: none !important; }
+            }
+            @media (min-width: 768px) {
+              .mobile-only { display: none; }
+            }
+          </style>
 
           <!-- Bulk bar -->
           <div class="bulkbar" id="bulkbar" aria-hidden="true">
@@ -3365,6 +3428,16 @@ console.log("✅ Script file loaded!");
     selected.clear();
     updateBulkUI();
 
+    // Ensure we're using the correct event - double check currentEvent matches the active tab
+    const activeTab = document.querySelector(".gallery-tabs .tab.active");
+    if(activeTab && activeTab.dataset.event){
+      const tabEvent = activeTab.dataset.event;
+      if(tabEvent !== currentEvent){
+        console.warn("⚠️ Event mismatch detected! Tab says", tabEvent, "but currentEvent is", currentEvent);
+        currentEvent = tabEvent;
+      }
+    }
+
     const raw = flattenPhotos(currentEvent, albumKey);
     const sorted = applySort(raw);
 
@@ -3388,11 +3461,11 @@ console.log("✅ Script file loaded!");
       // Load first 12 images eagerly to prevent black boxes on laptop
       const loadingAttr = idx < 12 ? "eager" : "lazy";
       return `
-        <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
+        <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked ? "true" : "false"}" data-has-liked="${isLiked ? "true" : "false"}" tabindex="0" role="button" aria-label="Open photo preview">
           <div class="pin-check"><i class="fa-solid fa-check"></i></div>
           <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
-                <div class="pin-liked" onclick="event.stopPropagation(); if(typeof handleUnlike === 'function') handleUnlike('${x.src.replace(/'/g, "\\'")}', this);"><i class="fa-solid fa-heart"></i></div>
-          <img src="${x.src}" alt="${currentEvent} photo" loading="${loadingAttr}" decoding="async" />
+          <div class="pin-liked" style="${isLiked ? "opacity:1;transform:scale(1);pointer-events:auto;" : "opacity:0;transform:scale(0);pointer-events:none;"}" onclick="event.stopPropagation(); if(typeof handleUnlike === 'function') handleUnlike('${x.src.replace(/'/g, "\\'")}', this);"><i class="fa-solid fa-heart"></i></div>
+          <img src="${x.src}" alt="${currentEvent} photo" loading="${loadingAttr}" decoding="async" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'400\\' height=\\'400\\'/%3E%3Ctext fill=\\'%23999\\' font-family=\\'sans-serif\\' font-size=\\'18\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\'%3EImage not available%3C/text%3E%3C/svg%3E';" />
           <div class="pin-overlay">
             <div class="pin-label">${label}</div>
             <a class="pin-download" href="${x.src}" download onclick="event.stopPropagation()">
@@ -3568,83 +3641,114 @@ console.log("✅ Script file loaded!");
   function prev(){ openLightboxByIndex(lightboxIndex - 1); }
 
   /* ===================== INSTAGRAM-STYLE DOUBLE-TAP TO LIKE (18) ===================== */
-  function handleDoubleTap(pin, src){
+  /* ===================== LIKE/UNLIKE FUNCTIONS - REWRITTEN ===================== */
+  
+  // Main function to toggle like state
+  function togglePhotoLike(src, showAnimation = true) {
+    // Always get fresh data from localStorage
     const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
     const isLiked = photoLikes[src] === true;
     
+    const pin = document.querySelector(`.pin[data-src="${src}"]`);
+    if(!pin) return;
+    
     if(isLiked){
+      // UNLIKE: Remove from localStorage completely
       delete photoLikes[src];
+      localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
+      
+      // Update pin state
       pin.dataset.liked = "false";
       pin.dataset.hasLiked = "false";
-      // Remove heart badge - ensure it's hidden
+      pin.classList.remove("liked");
+      
+      // Hide heart icon on top right
       const likedBadge = pin.querySelector('.pin-liked');
       if(likedBadge) {
         likedBadge.style.opacity = "0";
-        likedBadge.style.display = "none";
+        likedBadge.style.transform = "scale(0)";
+        likedBadge.style.pointerEvents = "none";
       }
+      
       showToast("Unliked");
-    }else{
+      trackEvent("photo_liked", "unliked");
+    } else {
+      // LIKE: Add to localStorage
       photoLikes[src] = true;
+      localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
+      
+      // Update pin state
       pin.dataset.liked = "true";
       pin.dataset.hasLiked = "true";
-      const heart = pin.querySelector(".pin-heart");
-      if(heart){
-        heart.classList.add("show");
-        setTimeout(() => heart.classList.remove("show"), 600);
+      pin.classList.add("liked");
+      
+      // Show animated heart in center (double-tap animation)
+      if(showAnimation) {
+        const heart = pin.querySelector(".pin-heart");
+        if(heart){
+          heart.classList.add("show");
+          setTimeout(() => heart.classList.remove("show"), 600);
+        }
       }
-      // Show heart badge - ensure it's visible
+      
+      // Show heart icon on top right (persistent)
       const likedBadge = pin.querySelector('.pin-liked');
       if(likedBadge) {
         likedBadge.style.opacity = "1";
-        likedBadge.style.display = "block";
+        likedBadge.style.transform = "scale(1)";
+        likedBadge.style.pointerEvents = "auto";
+        likedBadge.style.cursor = "pointer";
+      } else {
+        // Create heart icon if it doesn't exist
+        const newBadge = document.createElement("div");
+        newBadge.className = "pin-liked";
+        newBadge.innerHTML = '<i class="fa-solid fa-heart"></i>';
+        newBadge.style.cssText = "position:absolute;top:12px;right:12px;width:42px;height:42px;border-radius:50%;background:rgba(255,59,48,.95);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;opacity:1;transform:scale(1);transition:all .3s cubic-bezier(.2,.8,.2,1);cursor:pointer;z-index:100;";
+        newBadge.onclick = (e) => {
+          e.stopPropagation();
+          togglePhotoLike(src, false);
+        };
+        pin.appendChild(newBadge);
       }
+      
       showToast("Liked");
       localStorage.setItem("byz_has_liked_any", "true");
-      // Hide double-tap badge on this photo
+      
+      // Hide double-tap badge
       const badge = pin.querySelector(".pin-double-tap-badge");
       if(badge) badge.style.opacity = "0";
-    }
-    localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
-    
-    // Update photoLikes object in memory if it exists
-    if(typeof photoLikes !== 'undefined') {
-      if(isLiked) {
-        delete photoLikes[src];
-      } else {
-        photoLikes[src] = true;
-      }
+      
+      trackEvent("photo_liked", "liked");
     }
     
-    trackEvent("photo_liked", isLiked ? "unliked" : "liked");
-    
-    // Update likes count if function exists
+    // Update UI components
     if(typeof updateLikesCount === "function") updateLikesCount();
-    
-    // Update liked photos sidebar
     if(typeof renderLikedPhotos === "function") renderLikedPhotos();
     
-    // Update most liked grid under search bar
-    if(typeof updateMostLikedGrid === "function") {
-      updateMostLikedGrid();
-    } else {
-      const mostLikedGrid = document.getElementById("mostLikedGrid");
-      if(mostLikedGrid) {
-        const likedUrls = Object.keys(photoLikes).filter(url => photoLikes[url] === true);
-        if(likedUrls.length > 0){
-          mostLikedGrid.innerHTML = likedUrls.slice(0, 6).map(url => `
-            <div class="liked-photo-item" onclick="openLikedPhoto('${url.replace(/'/g, "\\'")}')">
-              <img src="${url}" alt="Liked photo" loading="lazy" />
-            </div>
-          `).join("");
-        } else {
-          mostLikedGrid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
-              Double-tap photos to like them
-            </div>
-          `;
-        }
+    // Update most liked grid
+    const mostLikedGrid = document.getElementById("mostLikedGrid");
+    if(mostLikedGrid) {
+      const currentLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
+      const likedUrls = Object.keys(currentLikes).filter(url => currentLikes[url] === true);
+      if(likedUrls.length > 0){
+        mostLikedGrid.innerHTML = likedUrls.slice(0, 6).map(url => `
+          <div class="liked-photo-item" onclick="openLikedPhoto('${url.replace(/'/g, "\\'")}')">
+            <img src="${url}" alt="Liked photo" loading="lazy" />
+          </div>
+        `).join("");
+      } else {
+        mostLikedGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--sub); font-size: 13px;">
+            Double-tap photos to like them
+          </div>
+        `;
       }
     }
+  }
+  
+  // Handle double-tap (like/unlike toggle)
+  function handleDoubleTap(pin, src){
+    togglePhotoLike(src, true);
   }
   
   // Make handleDoubleTap available globally
@@ -3652,39 +3756,8 @@ console.log("✅ Script file loaded!");
   
   // Unlike function - called when clicking the top-right heart icon
   window.handleUnlike = function(src, element) {
-    const photoLikes = JSON.parse(localStorage.getItem("byz_photo_likes") || "{}");
-    if(photoLikes[src] === true) {
-      delete photoLikes[src];
-      localStorage.setItem("byz_photo_likes", JSON.stringify(photoLikes));
-      
-      // Update photoLikes object in memory
-      if(typeof photoLikes !== 'undefined' && photoLikes[src]) {
-        delete photoLikes[src];
-      }
-      
-      // Update pin state
-      const pin = element.closest(".pin");
-      if(pin) {
-        pin.dataset.liked = "false";
-        pin.dataset.hasLiked = "false";
-        pin.classList.remove("liked");
-        
-        // Hide heart badge
-        const likedBadge = pin.querySelector('.pin-liked');
-        if(likedBadge) {
-          likedBadge.style.opacity = "0";
-          likedBadge.style.display = "none";
-        }
-      }
-      
-      showToast("Unliked");
-      trackEvent("photo_liked", "unliked");
-      
-      // Update likes count and render
-      if(typeof updateLikesCount === "function") updateLikesCount();
-      if(typeof renderLikedPhotos === "function") renderLikedPhotos();
-      
-      // Update most liked grid
+    togglePhotoLike(src, false);
+  }
       if(typeof updateMostLikedGrid === "function") {
         updateMostLikedGrid();
       } else {
@@ -4327,7 +4400,7 @@ console.log("✅ Script file loaded!");
               <div class="pin ${selectMode ? "selectable":""}" data-src="${x.src}" data-label="${label}" data-liked="${isLiked}" tabindex="0" role="button" aria-label="Open photo preview">
                 <div class="pin-check"><i class="fa-solid fa-check"></i></div>
                 <div class="pin-heart"><i class="fa-solid fa-heart"></i></div>
-                <div class="pin-liked" onclick="event.stopPropagation(); handleUnlike('${x.src.replace(/'/g, "\\'")}', this);"><i class="fa-solid fa-heart"></i></div>
+                <div class="pin-liked" style="${photoLikes[x.src] === true ? "opacity:1;transform:scale(1);pointer-events:auto;" : "opacity:0;transform:scale(0);pointer-events:none;"}" onclick="event.stopPropagation(); handleUnlike('${x.src.replace(/'/g, "\\'")}', this);"><i class="fa-solid fa-heart"></i></div>
                 <img src="${x.src}" alt="${currentEvent} photo" loading="${loadingAttr}" decoding="async" />
                 <div class="pin-overlay">
                   <div class="pin-label">${label}</div>
@@ -4856,17 +4929,21 @@ function clearAllLikes(){
   showToast("All likes cleared");
   
   // Clear all pin states - both data-liked and data-has-liked
-  document.querySelectorAll('.pin[data-liked="true"]').forEach(pin => {
+  document.querySelectorAll('.pin').forEach(pin => {
     pin.dataset.liked = "false";
     pin.dataset.hasLiked = "false";
+    pin.classList.remove("liked");
     const likedBadge = pin.querySelector('.pin-liked');
-    if(likedBadge) likedBadge.style.opacity = "0";
+    if(likedBadge) {
+      likedBadge.style.opacity = "0";
+      likedBadge.style.display = "none";
+    }
   });
   
-  // Also clear any pins with data-has-liked
-  document.querySelectorAll('.pin[data-has-liked="true"]').forEach(pin => {
-    pin.dataset.hasLiked = "false";
-  });
+  // Re-render current album to ensure all states are fresh
+  if(typeof renderAlbum === "function" && currentAlbum) {
+    renderAlbum(currentAlbum);
+  }
   
   // Update most liked grid under search bar
   if(typeof updateMostLikedGrid === "function") {
