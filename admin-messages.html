@@ -970,7 +970,9 @@
             action: "getContactMessages",
             adminPin: window.ADMIN_PASSWORD
           }),
-          cache: "no-store"
+          cache: "no-store",
+          mode: "cors",
+          credentials: "omit"
         });
         
         const result = await res.json();
@@ -1135,7 +1137,10 @@
             adminPin: window.ADMIN_PASSWORD,
             rowIndex: msg.rowIndex || index,
             status: status
-          })
+          }),
+          cache: "no-store",
+          mode: "cors",
+          credentials: "omit"
         });
         
         const result = await res.json();
@@ -1211,7 +1216,9 @@
             action: "getFAQFeedback",
             adminPin: window.ADMIN_PASSWORD
           }),
-          cache: "no-store"
+          cache: "no-store",
+          mode: "cors",
+          credentials: "omit"
         });
         
         const result = await res.json();
