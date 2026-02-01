@@ -1053,22 +1053,24 @@
         };
         
         const subjectLabel = subjectLabels[msg.subject] || msg.subject;
-        const isNew = msg.status === "NEW";
+        // Ensure status is a string and has a default value
+        const status = String(msg.status || "NEW").toUpperCase();
+        const isNew = status === "NEW";
         const statusColors = {
           "NEW": "var(--bad)",
           "READ": "var(--warn)",
           "REPLIED": "var(--ok)"
         };
         
-        const statusClass = msg.status.toLowerCase();
+        const statusClass = status.toLowerCase();
         const statusIcon = {
           "NEW": "fa-circle",
           "READ": "fa-check",
           "REPLIED": "fa-check-double"
-        }[msg.status] || "fa-circle";
+        }[status] || "fa-circle";
         
         return `
-          <div class="message-card ${statusClass}" style="border-left:4px solid ${statusColors[msg.status] || "var(--border)"};">
+          <div class="message-card ${statusClass}" style="border-left:4px solid ${statusColors[status] || "var(--border)"};">
             <div class="message-header">
               <div style="flex:1;">
                 <div class="message-title" style="display:flex;align-items:center;gap:10px;">
@@ -1104,9 +1106,9 @@
                   </div>
                 </div>
               </div>
-              <span class="status ${statusClass}" style="background:${statusColors[msg.status] || "var(--sub)"};color:#fff;padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
+              <span class="status ${statusClass}" style="background:${statusColors[status] || "var(--sub)"};color:#fff;padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
                 <i class="fa-solid ${statusIcon}"></i>
-                ${msg.status}
+                ${status}
               </span>
             </div>
             <div class="message-actions">
@@ -1118,12 +1120,12 @@
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
               </a>
               ` : ''}
-              ${msg.status === "NEW" ? `
+              ${status === "NEW" ? `
               <button onclick="updateContactStatus(${index}, 'READ')" class="btn" style="flex:1;">
                 <i class="fa-solid fa-check"></i> Mark Read
               </button>
               ` : ''}
-              ${msg.status !== "REPLIED" ? `
+              ${status !== "REPLIED" ? `
               <button onclick="updateContactStatus(${index}, 'REPLIED')" class="btn" style="background:var(--ok);color:#fff;border:none;flex:1;">
                 <i class="fa-solid fa-check-double"></i> Mark Replied
               </button>
@@ -1170,9 +1172,10 @@
     
     function updateContactStats(){
       const total = contactMessages.length;
-      const newCount = contactMessages.filter(m => m.status === "NEW").length;
-      const readCount = contactMessages.filter(m => m.status === "READ").length;
-      const repliedCount = contactMessages.filter(m => m.status === "REPLIED").length;
+      // Ensure status is a string before comparing
+      const newCount = contactMessages.filter(m => String(m.status || "NEW").toUpperCase() === "NEW").length;
+      const readCount = contactMessages.filter(m => String(m.status || "").toUpperCase() === "READ").length;
+      const repliedCount = contactMessages.filter(m => String(m.status || "").toUpperCase() === "REPLIED").length;
       
       document.getElementById("contactTotal").textContent = total;
       document.getElementById("contactNew").textContent = newCount;
