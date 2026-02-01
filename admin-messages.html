@@ -973,13 +973,13 @@
       if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub);"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;">Loading messages...</p></div>';
       
       try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "getContactMessages",
-            adminPin: window.ADMIN_PASSWORD
-          }),
+        // Use GET instead of POST to avoid CORS preflight
+        const url = new URL(SCRIPT_URL);
+        url.searchParams.set("action", "getContactMessages");
+        url.searchParams.set("adminPin", window.ADMIN_PASSWORD);
+        
+        const res = await fetch(url.toString(), {
+          method: "GET",
           cache: "no-store",
           mode: "cors",
           credentials: "omit"
@@ -1139,6 +1139,7 @@
       if(!msg) return;
       
       try {
+        // Keep POST for updateContactStatus (it modifies data)
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1219,13 +1220,13 @@
       if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub);"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;">Loading FAQ feedback...</p></div>';
       
       try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "getFAQFeedback",
-            adminPin: window.ADMIN_PASSWORD
-          }),
+        // Use GET instead of POST to avoid CORS preflight
+        const url = new URL(SCRIPT_URL);
+        url.searchParams.set("action", "getFAQFeedback");
+        url.searchParams.set("adminPin", window.ADMIN_PASSWORD);
+        
+        const res = await fetch(url.toString(), {
+          method: "GET",
           cache: "no-store",
           mode: "cors",
           credentials: "omit"
