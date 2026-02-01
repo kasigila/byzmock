@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Analytics & Statistics | BYZ Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BYZ Entertainment Admin - View analytics and statistics">
+  <meta name="theme-color" content="#000000">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  
+  <!-- Admin Shared Utilities -->
+  <script src="admin-shared.js"></script>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --bg-alt:#f5f5f7;
+      --bg-elev:#ffffff;
+      --text:#1d1d1f;
+      --sub:#6e6e73;
+      --border:#d2d2d7;
+      --accent:#000000;
+
+      --radius: 22px;
+      --radius-lg: 28px;
+      --shadow: 0 18px 60px rgba(0,0,0,.08);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.08);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1200px;
+      --header-h: 64px;
+
+      --ok:#0a7f3f;
+      --warn:#b45309;
+      --bad:#b42318;
+    }
+
+    [data-theme="dark"]{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      transition: background .35s var(--ease), color .35s var(--ease);
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+
+    header{
+      position: sticky;
+      top: 0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 75%, transparent);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-bottom:1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      z-index:999;
+      box-shadow: 
+        0 1px 0 color-mix(in srgb, var(--accent) 3%, transparent) inset,
+        0 -1px 0 rgba(0,0,0,.05) inset;
+    }
+
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    
+    /* Admin Navigation */
+    .admin-nav-desktop{
+      display:flex;align-items:center;gap:4px;
+    }
+    @media (max-width: 768px){
+      .admin-nav-desktop{display:none}
+    }
+    .nav-link{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 16px;border-radius:12px;
+      font-size:14px;font-weight:600;
+      color:var(--sub);
+      transition:all .2s var(--ease);
+      text-decoration:none;
+    }
+    .nav-link:hover{
+      background:color-mix(in srgb, var(--accent) 8%, transparent);
+      color:var(--text);
+    }
+    .nav-link.active{
+      background:color-mix(in srgb, var(--accent) 12%, transparent);
+      color:var(--accent);
+      font-weight:700;
+    }
+    .nav-link i{font-size:13px}
+    .mobile-menu-btn{
+      display:none;
+      padding:8px;border:none;background:transparent;
+      color:var(--text);font-size:20px;cursor:pointer;
+    }
+    @media (max-width: 768px){
+      .mobile-menu-btn{display:block}
+    }
+    .logout-text{
+      @media (max-width: 560px){display:none}
+    }
+    
+    /* Mobile Navigation */
+    .mobile-nav-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.5);
+      backdrop-filter:blur(4px);z-index:9998;
+      animation:fadeIn .2s var(--ease);
+    }
+    .mobile-nav-panel{
+      position:fixed;top:0;right:0;bottom:0;
+      width:min(320px,85vw);background:var(--bg-elev);
+      border-left:1px solid var(--border);
+      z-index:9999;overflow-y:auto;
+      transform:translateX(100%);
+      transition:transform .3s var(--ease);
+      box-shadow:-4px 0 24px rgba(0,0,0,.1);
+    }
+    .mobile-nav-panel:not(.hidden){
+      transform:translateX(0);
+    }
+    .mobile-nav-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:20px;border-bottom:1px solid var(--border);
+    }
+    .mobile-nav-close{
+      padding:8px;border:none;background:transparent;
+      color:var(--text);font-size:20px;cursor:pointer;
+      border-radius:8px;transition:background .2s var(--ease);
+    }
+    .mobile-nav-close:hover{
+      background:color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+    .mobile-nav-links{
+      display:flex;flex-direction:column;padding:12px;
+    }
+    .mobile-nav-links .nav-link{
+      padding:14px 16px;margin-bottom:4px;
+      border-radius:12px;width:100%;
+    }
+    .mobile-nav-links .logout-btn{
+      margin-top:8px;color:var(--bad);
+      border-top:1px solid var(--border);padding-top:16px;
+    }
+    @keyframes fadeIn{
+      from{opacity:0}to{opacity:1}
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:34px;height:34px;border-radius:12px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-dark{display:none;}
+    [data-theme="dark"] .logo-light{display:none;}
+    [data-theme="dark"] .logo-dark{display:block;}
+
+    .top-actions{display:flex;align-items:center;gap:10px}
+
+    main{padding-top: 26px; padding-bottom: 90px;}
+
+    .card{
+      border-radius: var(--radius-lg);
+      border:1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 85%, transparent);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      box-shadow: 
+        0 8px 32px rgba(0,0,0,.08),
+        0 1px 0 color-mix(in srgb, var(--accent) 5%, transparent) inset,
+        0 -1px 0 color-mix(in srgb, var(--border) 20%, transparent) inset;
+      overflow:hidden;
+      position:relative;
+    }
+    .card::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:1px;
+      background:linear-gradient(90deg, 
+        transparent 0%,
+        color-mix(in srgb, var(--accent) 15%, transparent) 50%,
+        transparent 100%
+      );
+      opacity:0.6;
+    }
+    .card-head{padding: 24px 24px 0}
+    .card-head h1{
+      font-size: clamp(24px, 3.5vw, 36px);
+      letter-spacing: -1.2px;
+      line-height: 1.1;
+      font-weight:900;
+      background: linear-gradient(135deg, var(--text) 0%, color-mix(in srgb, var(--text) 85%, transparent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .card-head p{
+      margin-top:10px;
+      color:var(--sub);
+      font-size:15px;
+      font-weight:500;
+      letter-spacing:-0.2px;
+    }
+    .card-body{padding: 24px}
+
+    button, .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:14px 22px;
+      border-radius:999px;
+      border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      background: color-mix(in srgb, var(--bg-elev) 85%, transparent);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      color: var(--text);
+      font-weight:700;
+      font-size:14px;
+      letter-spacing:-0.2px;
+      cursor:pointer;
+      transition: all 0.3s var(--ease);
+      box-shadow: 
+        0 4px 12px rgba(0,0,0,.08),
+        0 1px 0 color-mix(in srgb, var(--accent) 3%, transparent) inset;
+      text-decoration:none;
+    }
+    @media (max-width: 560px){
+      button, .btn{
+        padding:16px 24px;
+        font-size:15px;
+        min-height: 48px;
+      }
+    }
+    button:hover, .btn:hover{
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 8px 24px rgba(0,0,0,.14),
+        0 2px 0 color-mix(in srgb, var(--accent) 6%, transparent) inset;
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+    }
+    button:active, .btn:active{
+      transform: translateY(-1px) scale(1);
+    }
+    button:disabled, .btn:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+    }
+    .primary{
+      background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 95%, transparent) 100%);
+      color: var(--bg);
+      border-color: transparent;
+      box-shadow: 
+        0 6px 20px rgba(0,0,0,.15),
+        0 2px 0 color-mix(in srgb, var(--accent) 20%, transparent) inset;
+    }
+    .primary:hover{
+      box-shadow: 
+        0 12px 32px rgba(0,0,0,.2),
+        0 3px 0 color-mix(in srgb, var(--accent) 30%, transparent) inset;
+      transform: translateY(-4px) scale(1.03);
+    }
+    .hidden{display:none !important}
+
+    /* Stats Grid */
+    .stats-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap:16px;
+      margin-top:20px;
+    }
+    @media (max-width: 980px){ 
+      .stats-grid{grid-template-columns:repeat(2, 1fr);} 
+    }
+    @media (max-width: 560px){ 
+      .stats-grid{grid-template-columns:1fr;} 
+    }
+
+    .stat{
+      border-radius: var(--radius);
+      border:1px solid color-mix(in srgb, var(--border) 50%, transparent);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 88%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 82%, transparent) 100%
+      );
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      box-shadow: 
+        0 4px 16px rgba(0,0,0,.06),
+        0 1px 0 color-mix(in srgb, var(--accent) 3%, transparent) inset;
+      padding: 24px;
+      position:relative;
+      overflow:hidden;
+      transition: all .35s var(--ease);
+    }
+    .stat::before{
+      content:'';
+      position:absolute;
+      top:0;right:0;
+      width:80px;height:80px;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%);
+      border-radius:50%;
+      transform:translate(25px, -25px);
+      opacity:0.5;
+      transition:opacity .35s var(--ease);
+    }
+    .stat::after{
+      content:'';
+      position:absolute;
+      top:-50%;right:-50%;
+      width:200%;height:200%;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 70%);
+      opacity:0;
+      transition:opacity .35s var(--ease);
+    }
+    .stat:hover{
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 
+        0 12px 32px rgba(0,0,0,.12),
+        0 2px 0 color-mix(in srgb, var(--accent) 8%, transparent) inset;
+      border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+    }
+    .stat:hover::before{
+      opacity:0.8;
+    }
+    .stat:hover::after{
+      opacity:1;
+    }
+    .stat-icon{
+      width:44px;height:44px;
+      border-radius:16px;
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 14%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 10%, transparent) 100%
+      );
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display:flex;align-items:center;justify-content:center;
+      margin-bottom:14px;
+      color:var(--accent);
+      font-size:19px;
+      box-shadow: 
+        0 2px 8px rgba(0,0,0,.08),
+        0 1px 0 color-mix(in srgb, var(--accent) 20%, transparent) inset;
+      transition: all .35s var(--ease);
+    }
+    .stat:hover .stat-icon{
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 
+        0 4px 12px rgba(0,0,0,.12),
+        0 1px 0 color-mix(in srgb, var(--accent) 30%, transparent) inset;
+    }
+    .stat .k{
+      color:var(--sub);
+      font-size:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      margin-bottom:10px;
+      opacity:0.8;
+    }
+    .stat .v{
+      font-size:34px;
+      font-weight:900;
+      letter-spacing:-1.6px;
+      margin-top:4px;
+      line-height:1.1;
+      background: linear-gradient(135deg, var(--text) 0%, color-mix(in srgb, var(--text) 80%, transparent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat .sub{
+      color:var(--sub);
+      font-size:11px;
+      margin-top:8px;
+      font-weight:600;
+      letter-spacing:-0.1px;
+      opacity:0.9;
+    }
+    @media (max-width: 560px){
+      .stat{padding:16px}
+      .stat .v{font-size:24px}
+      .stat-icon{width:36px;height:36px;font-size:16px;margin-bottom:10px}
+    }
+
+    /* Loading State */
+    .loading{
+      text-align:center;
+      padding:80px 20px;
+      color:var(--sub);
+    }
+    .loading i{
+      font-size:52px;
+      margin-bottom:20px;
+      color:var(--accent);
+      opacity:0.7;
+      animation:spin 1.2s cubic-bezier(.68,-0.55,.27,1.55) infinite;
+      filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--accent) 20%, transparent));
+    }
+    .loading p{
+      font-size:15px;
+      font-weight:600;
+      letter-spacing:-0.2px;
+      opacity:0.8;
+    }
+    @keyframes spin{
+      from{transform:rotate(0deg) scale(1);}
+      50%{transform:rotate(180deg) scale(1.1);}
+      to{transform:rotate(360deg) scale(1);}
+    }
+
+    /* Pulse Animation */
+    @keyframes statPulse{
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+  <!-- Navigation will be rendered by admin-shared.js -->
+  
+  <main class="container">
+    <section class="card">
+      <div class="card-head">
+        <h1>Analytics & Statistics</h1>
+        <p>Overview of all bookings, revenue, and activity metrics.</p>
+        
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+          <button onclick="loadStats()" class="btn primary" style="padding:10px 16px;font-size:13px;">
+            <i class="fa-solid fa-arrow-rotate-right"></i> Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div id="loadingState" class="loading">
+          <i class="fa-solid fa-spinner"></i>
+          <p>Loading statistics...</p>
+        </div>
+
+        <div id="statsGrid" class="stats-grid hidden">
+          <!-- Total Bookings -->
+          <div class="stat">
+            <div class="stat-icon">
+              <i class="fa-solid fa-ticket"></i>
+            </div>
+            <div class="k">Total Bookings</div>
+            <div class="v" id="statTotal">—</div>
+          </div>
+
+          <!-- Pending Review -->
+          <div class="stat" style="border-color:color-mix(in srgb, var(--warn) 30%, var(--border));">
+            <div class="stat-icon" style="background:color-mix(in srgb, var(--warn) 15%, transparent);color:var(--warn);">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="k">Pending Review</div>
+            <div class="v" id="statPending" style="color:var(--warn);">—</div>
+          </div>
+
+          <!-- Confirmed -->
+          <div class="stat" style="border-color:color-mix(in srgb, var(--ok) 30%, var(--border));">
+            <div class="stat-icon" style="background:color-mix(in srgb, var(--ok) 15%, transparent);color:var(--ok);">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="k">Confirmed</div>
+            <div class="v" id="statConfirmed" style="color:var(--ok);">—</div>
+          </div>
+
+          <!-- Checked In -->
+          <div class="stat">
+            <div class="stat-icon">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="k">Checked In</div>
+            <div class="v" id="statCheckedIn">—</div>
+          </div>
+
+          <!-- Total Revenue -->
+          <div class="stat" style="border-color:color-mix(in srgb, var(--ok) 30%, var(--border));background:linear-gradient(135deg, color-mix(in srgb, var(--ok) 8%, transparent), color-mix(in srgb, var(--bg-elev) 95%, transparent));">
+            <div class="stat-icon" style="background:color-mix(in srgb, var(--ok) 15%, transparent);color:var(--ok);">
+              <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+            <div class="k">Total Revenue</div>
+            <div class="v" id="statRevenue" style="color:var(--ok);">—</div>
+            <div class="sub" id="statRevenueSub"></div>
+          </div>
+
+          <!-- Avg Booking -->
+          <div class="stat">
+            <div class="stat-icon">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="k">Avg Booking</div>
+            <div class="v" id="statAvg">—</div>
+          </div>
+
+          <!-- Contact Messages -->
+          <div class="stat" style="border-color:color-mix(in srgb, var(--bad) 30%, var(--border));">
+            <div class="stat-icon" style="background:color-mix(in srgb, var(--bad) 15%, transparent);color:var(--bad);">
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div class="k">Contact Messages</div>
+            <div class="v" id="statContacts" style="color:var(--bad);">—</div>
+            <div class="sub" id="statContactsSub">New messages</div>
+          </div>
+
+          <!-- APT Requests -->
+          <div class="stat" style="border-color:color-mix(in srgb, var(--warn) 30%, var(--border));">
+            <div class="stat-icon" style="background:color-mix(in srgb, var(--warn) 15%, transparent);color:var(--warn);">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <div class="k">APT Requests</div>
+            <div class="v" id="statApt" style="color:var(--warn);">—</div>
+            <div class="sub" id="statAptSub">Pending</div>
+          </div>
+
+          <!-- FAQ Feedback -->
+          <div class="stat" style="border-color:color-mix(in srgb, var(--accent) 30%, var(--border));">
+            <div class="stat-icon" style="background:color-mix(in srgb, var(--accent) 15%, transparent);color:var(--accent);">
+              <i class="fa-solid fa-question-circle"></i>
+            </div>
+            <div class="k">FAQ Feedback</div>
+            <div class="v" id="statFaq" style="color:var(--accent);">—</div>
+            <div class="sub" id="statFaqSub">Total responses</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+    const ADMIN_PASSWORD = "weballwithbyz";
+    const ADMIN_SESSION_KEY = "byz_admin_session";
+    const ADMIN_REMEMBER_KEY = "byz_admin_remember";
+
+    // Immediate authentication check - run before page renders
+    function checkAuthImmediate() {
+      const session = sessionStorage.getItem(ADMIN_SESSION_KEY);
+      if (session && session === ADMIN_PASSWORD) return true;
+      const remembered = localStorage.getItem(ADMIN_REMEMBER_KEY);
+      if (remembered && remembered === ADMIN_PASSWORD) {
+        sessionStorage.setItem(ADMIN_SESSION_KEY, ADMIN_PASSWORD);
+        return true;
+      }
+      return false;
+    }
+
+    // Check auth immediately - redirect if not authenticated
+    if (!checkAuthImmediate()) {
+      window.location.replace("admin.html");
+    }
+
+    let allBookings = [];
+    let contactMessages = [];
+    let faqFeedback = [];
+    let aptRequests = [];
+
+    async function loadStats(){
+      const loadingEl = document.getElementById("loadingState");
+      const statsEl = document.getElementById("statsGrid");
+      
+      if(loadingEl) loadingEl.classList.remove("hidden");
+      if(statsEl) statsEl.classList.add("hidden");
+      
+      try {
+        // Load all data in parallel
+        const [bookingsRes, contactRes, faqRes] = await Promise.all([
+          fetch(`${SCRIPT_URL}?eventKey=all`, { cache: "no-store" }),
+          fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "getContactMessages",
+              adminPin: ADMIN_PASSWORD
+            }),
+            cache: "no-store"
+          }),
+          fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "getFAQFeedback",
+              adminPin: ADMIN_PASSWORD
+            }),
+            cache: "no-store"
+          })
+        ]);
+        
+        // Parse responses
+        const bookingsData = await bookingsRes.json();
+        const contactData = await contactRes.json();
+        const faqData = await faqRes.json();
+        
+        if(Array.isArray(bookingsData)){
+          allBookings = bookingsData;
+        } else if(bookingsData && Array.isArray(bookingsData.bookings)){
+          allBookings = bookingsData.bookings;
+        }
+        
+        if(contactData.success && contactData.messages){
+          contactMessages = contactData.messages;
+        }
+        
+        if(faqData.success && faqData.feedback){
+          faqFeedback = faqData.feedback;
+        }
+        
+        // Filter APT requests from bookings
+        aptRequests = allBookings.filter(b => b.eventKey === "apt");
+        
+        // Calculate and update stats
+        updateAllStats();
+        
+        if(loadingEl) loadingEl.classList.add("hidden");
+        if(statsEl) statsEl.classList.remove("hidden");
+      } catch(err) {
+        console.error("Load stats error:", err);
+        if(loadingEl) {
+          loadingEl.innerHTML = `
+            <i class="fa-solid fa-triangle-exclamation" style="color:var(--bad);"></i>
+            <p style="color:var(--bad);">Failed to load statistics</p>
+            <button onclick="loadStats()" class="btn primary" style="margin-top:16px;">
+              <i class="fa-solid fa-arrow-rotate-right"></i> Retry
+            </button>
+          `;
+        }
+      }
+    }
+
+    function updateAllStats(){
+      // Booking stats
+      const total = allBookings.length;
+      const pending = allBookings.filter(b => b.status === "PENDING").length;
+      const confirmed = allBookings.filter(b => b.status === "CONFIRMED").length;
+      const checkedIn = allBookings.reduce((s, b) => s + (Number(b.checkedInCount) || 0), 0);
+      const revenue = allBookings
+        .filter(b => b.status === "CONFIRMED")
+        .reduce((s, b) => s + (Number(b.amount) || 0), 0);
+      const avgBooking = confirmed > 0 ? Math.round(revenue / confirmed) : 0;
+      
+      // Contact messages stats
+      const contactTotal = contactMessages.length;
+      const contactNew = contactMessages.filter(m => m.status === "NEW").length;
+      
+      // APT requests stats
+      const aptTotal = aptRequests.length;
+      const aptPending = aptRequests.filter(b => b.status === "PENDING").length;
+      
+      // FAQ feedback stats
+      const faqTotal = faqFeedback.length;
+      const faqHelpful = faqFeedback.filter(fb => fb.helpful).length;
+      const faqHelpfulPercent = faqTotal > 0 ? Math.round((faqHelpful / faqTotal) * 100) : 0;
+      
+      // Update UI with animation
+      animateStat("statTotal", total);
+      animateStat("statPending", pending);
+      animateStat("statConfirmed", confirmed);
+      animateStat("statCheckedIn", checkedIn);
+      
+      if(revenue > 0){
+        const revenueText = revenue >= 1000000 
+          ? (revenue / 1000000).toFixed(1).replace(/\.0$/, "") + "M"
+          : (revenue / 1000).toFixed(0) + "K";
+        animateStat("statRevenue", revenueText);
+        document.getElementById("statRevenueSub").textContent = "TZS";
+      } else {
+        document.getElementById("statRevenue").textContent = "—";
+        document.getElementById("statRevenueSub").textContent = "";
+      }
+      
+      if(avgBooking > 0){
+        const avgText = avgBooking >= 1000000
+          ? (avgBooking / 1000000).toFixed(1).replace(/\.0$/, "") + "M"
+          : (avgBooking / 1000).toFixed(0) + "K";
+        animateStat("statAvg", avgText);
+      } else {
+        document.getElementById("statAvg").textContent = "—";
+      }
+      
+      animateStat("statContacts", contactTotal);
+      document.getElementById("statContactsSub").textContent = `${contactNew} new`;
+      
+      animateStat("statApt", aptTotal);
+      document.getElementById("statAptSub").textContent = `${aptPending} pending`;
+      
+      animateStat("statFaq", faqTotal);
+      document.getElementById("statFaqSub").textContent = `${faqHelpfulPercent}% helpful`;
+    }
+
+    function animateStat(id, target){
+      const el = document.getElementById(id);
+      if(!el) return;
+      
+      const current = el.textContent;
+      if(current === String(target) || current === "—") {
+        el.textContent = target;
+        return;
+      }
+      
+      el.textContent = target;
+      
+      // Add pulse animation
+      el.style.animation = "statPulse 0.3s var(--ease)";
+      setTimeout(() => {
+        el.style.animation = "";
+      }, 300);
+    }
+
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        if (typeof initAdminAuth === 'function') {
+          if (initAdminAuth()) {
+            renderAdminNav("stats");
+            loadStats();
+          }
+        }
+      });
+    } else {
+      if (typeof initAdminAuth === 'function') {
+        if (initAdminAuth()) {
+          renderAdminNav("stats");
+          loadStats();
+        }
+      }
+    }
+
+    // Make function globally available
+    window.loadStats = loadStats;
+  </script>
+</body>
+</html>
+
