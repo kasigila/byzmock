@@ -333,13 +333,67 @@
     .stat{
       border-radius: 22px;
       border:1px solid var(--border);
-      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 95%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 90%, transparent) 100%
+      );
       box-shadow: var(--shadow-soft);
-      padding: 14px;
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+      transition: all .3s var(--ease);
     }
-    .stat .k{color:var(--sub);font-size:12px;font-weight:700}
-    .stat .v{font-size:26px;font-weight:900;letter-spacing:-1px;margin-top:6px}
-    .stat .sub{color:var(--sub);font-size:11px;margin-top:4px}
+    .stat::before{
+      content:'';
+      position:absolute;
+      top:0;right:0;
+      width:60px;height:60px;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
+      border-radius:50%;
+      transform:translate(20px, -20px);
+      opacity:0.6;
+    }
+    .stat:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
+    }
+    .stat-icon{
+      width:40px;height:40px;
+      border-radius:14px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      display:flex;align-items:center;justify-content:center;
+      margin-bottom:12px;
+      color:var(--accent);
+      font-size:18px;
+    }
+    .stat .k{
+      color:var(--sub);
+      font-size:12px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.05em;
+      margin-bottom:8px;
+    }
+    .stat .v{
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-1.2px;
+      margin-top:4px;
+      color:var(--text);
+      line-height:1.1;
+    }
+    .stat .sub{
+      color:var(--sub);
+      font-size:11px;
+      margin-top:6px;
+      font-weight:600;
+    }
+    @media (max-width: 560px){
+      .stat{padding:16px}
+      .stat .v{font-size:24px}
+      .stat-icon{width:36px;height:36px;font-size:16px;margin-bottom:10px}
+    }
 
     .tabs{
       display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;
@@ -445,29 +499,139 @@
     .booking-card{
       border-radius: var(--radius-lg);
       border:1px solid var(--border);
-      background: var(--bg-elev);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+      );
       box-shadow: var(--shadow-soft);
-      padding: 16px;
-      margin-bottom: 12px;
-      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all .3s var(--ease);
+      position:relative;
+      overflow:hidden;
     }
-    .booking-card:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
+    .booking-card::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:3px;
+      background:linear-gradient(90deg, var(--accent), transparent);
+      opacity:0;
+      transition:opacity .3s var(--ease);
+    }
+    .booking-card:hover{
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+    }
+    .booking-card:hover::before{
+      opacity:1;
+    }
+    .booking-card.pending{
+      border-left:4px solid var(--warn);
+    }
+    .booking-card.confirmed{
+      border-left:4px solid var(--ok);
+    }
+    .booking-card.rejected{
+      border-left:4px solid var(--bad);
+    }
+    @media (max-width: 560px){
+      .booking-card{
+        padding:16px;
+        margin-bottom:12px;
+      }
+    }
+    
+    /* Contact Message Cards */
+    .contact-message-card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      padding:20px;
+      transition: all .2s var(--ease);
+    }
+    .contact-message-card:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .contact-message-card.new{
+      border-left:4px solid var(--bad);
+    }
+    .contact-message-card.read{
+      border-left:4px solid var(--warn);
+    }
+    .contact-message-card.replied{
+      border-left:4px solid var(--ok);
+    }
+    
     .booking-card.recent-action{
       background: color-mix(in srgb, var(--ok) 15%, transparent);
       animation: highlightFade 2s var(--ease);
     }
     .card-header{
-      display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;
+      display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px;
     }
-    .card-title{font-weight:900;font-size:16px;letter-spacing:-.3px}
+    @media (max-width: 560px){
+      .card-header{
+        flex-direction:column;
+        gap:12px;
+      }
+    }
+    .card-title{
+      font-weight:900;
+      font-size:18px;
+      letter-spacing:-.4px;
+      color:var(--text);
+      line-height:1.3;
+    }
+    @media (max-width: 560px){
+      .card-title{font-size:16px}
+    }
     .card-meta{
-      display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--sub);
+      display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--sub);
+      margin-top:12px;
     }
-    .card-meta b{color:var(--text);font-weight:700}
+    @media (max-width: 560px){
+      .card-meta{
+        gap:8px;
+        font-size:13px;
+      }
+    }
+    .card-meta b{
+      color:var(--text);
+      font-weight:700;
+      margin-right:4px;
+    }
     .card-actions{
-      display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;
     }
-    .card-actions button{flex:1;min-width:120px;padding:12px;}
+    @media (max-width: 560px){
+      .card-actions{
+        flex-direction:column;
+        gap:8px;
+      }
+    }
+    .card-actions button, .card-actions a{
+      flex:1;
+      min-width:120px;
+      padding:12px 16px;
+      font-size:14px;
+      font-weight:600;
+      border-radius:12px;
+      transition:all .2s var(--ease);
+    }
+    @media (max-width: 560px){
+      .card-actions button, .card-actions a{
+        width:100%;
+        min-width:100%;
+        padding:14px 16px;
+      }
+    }
+    .card-actions button:hover, .card-actions a:hover{
+      transform:translateY(-2px);
+      box-shadow:var(--shadow-soft);
+    }
 
     /* Toast Notifications */
     .toast{
@@ -799,29 +963,63 @@
 
           <div class="stats">
             <div class="stat">
+              <div class="stat-icon">
+                <i class="fa-solid fa-ticket"></i>
+              </div>
               <div class="k">Total Bookings</div>
               <div class="v" id="statTotal">—</div>
             </div>
-            <div class="stat">
+            <div class="stat" style="border-color:color-mix(in srgb, var(--warn) 30%, var(--border));">
+              <div class="stat-icon" style="background:color-mix(in srgb, var(--warn) 15%, transparent);color:var(--warn);">
+                <i class="fa-solid fa-clock"></i>
+              </div>
               <div class="k">Pending Review</div>
-              <div class="v" id="statPending">—</div>
+              <div class="v" id="statPending" style="color:var(--warn);">—</div>
             </div>
-            <div class="stat">
+            <div class="stat" style="border-color:color-mix(in srgb, var(--ok) 30%, var(--border));">
+              <div class="stat-icon" style="background:color-mix(in srgb, var(--ok) 15%, transparent);color:var(--ok);">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
               <div class="k">Confirmed</div>
-              <div class="v" id="statConfirmed">—</div>
+              <div class="v" id="statConfirmed" style="color:var(--ok);">—</div>
             </div>
             <div class="stat">
+              <div class="stat-icon">
+                <i class="fa-solid fa-user-check"></i>
+              </div>
               <div class="k">Checked In</div>
               <div class="v" id="statCheckedIn">—</div>
             </div>
-            <div class="stat">
+            <div class="stat" style="border-color:color-mix(in srgb, var(--ok) 30%, var(--border));background:linear-gradient(135deg, color-mix(in srgb, var(--ok) 8%, transparent), color-mix(in srgb, var(--bg-elev) 95%, transparent));">
+              <div class="stat-icon" style="background:color-mix(in srgb, var(--ok) 15%, transparent);color:var(--ok);">
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </div>
               <div class="k">Total Revenue</div>
-              <div class="v" id="statRevenue">—</div>
+              <div class="v" id="statRevenue" style="color:var(--ok);">—</div>
               <div class="sub" id="statRevenueSub"></div>
             </div>
             <div class="stat">
+              <div class="stat-icon">
+                <i class="fa-solid fa-chart-line"></i>
+              </div>
               <div class="k">Avg Booking</div>
               <div class="v" id="statAvg">—</div>
+            </div>
+            <div class="stat" style="border-color:color-mix(in srgb, var(--bad) 30%, var(--border));">
+              <div class="stat-icon" style="background:color-mix(in srgb, var(--bad) 15%, transparent);color:var(--bad);">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div class="k">Contact Messages</div>
+              <div class="v" id="statContacts" style="color:var(--bad);">—</div>
+              <div class="sub" id="statContactsSub">New messages</div>
+            </div>
+            <div class="stat" style="border-color:color-mix(in srgb, var(--warn) 30%, var(--border));">
+              <div class="stat-icon" style="background:color-mix(in srgb, var(--warn) 15%, transparent);color:var(--warn);">
+                <i class="fa-solid fa-lock"></i>
+              </div>
+              <div class="k">APT Requests</div>
+              <div class="v" id="statApt" style="color:var(--warn);">—</div>
+              <div class="sub" id="statAptSub">Pending</div>
             </div>
           </div>
 
@@ -830,6 +1028,10 @@
             <button class="tab-btn" data-event="groove">Groove</button>
             <button class="tab-btn" data-event="tempo">Tempo</button>
             <button class="tab-btn" data-event="apt">APT</button>
+            <button class="tab-btn" data-event="contact" id="contactTabBtn">
+              <i class="fa-solid fa-envelope"></i> Contact Messages
+              <span class="contact-badge" id="contactBadge" style="display:none;margin-left:6px;padding:2px 6px;background:var(--bad);color:#fff;border-radius:8px;font-size:10px;">0</span>
+            </button>
           </div>
 
           <div class="toolbar">
@@ -868,7 +1070,7 @@
                 <i class="fa-solid fa-rotate"></i>
                 Refresh
               </button>
-              <button onclick="exportCsv()">
+              <button onclick="exportData()" title="Export current view to CSV">
                 <i class="fa-solid fa-file-csv"></i>
                 Export CSV
               </button>
@@ -945,6 +1147,53 @@
             <i class="fa-solid fa-inbox"></i>
             <h3>No bookings found</h3>
             <p>Try adjusting your filters or search terms.</p>
+          </div>
+
+          <!-- Contact Messages Section -->
+          <div id="contactMessagesSection" class="hidden" style="margin-top:24px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+              <div>
+                <h2 style="font-size:24px;font-weight:900;letter-spacing:-0.5px;margin-bottom:4px;">Contact Messages</h2>
+                <p style="color:var(--sub);font-size:14px;">All contact form submissions</p>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button onclick="exportContactMessages()" class="btn" style="padding:10px 16px;font-size:13px;">
+                  <i class="fa-solid fa-download"></i> Export
+                </button>
+                <button onclick="loadContactMessages()" class="btn primary" style="padding:10px 16px;font-size:13px;">
+                  <i class="fa-solid fa-arrow-rotate-right"></i> Refresh
+                </button>
+              </div>
+            </div>
+            
+            <!-- Contact Messages Filters -->
+            <div class="toolbar" style="margin-bottom:20px;">
+              <div class="filters">
+                <input id="contactSearch" placeholder="Search name, email, subject..." oninput="filterContactMessages()" style="flex:1;min-width:200px;">
+                <select id="contactStatusFilter" onchange="filterContactMessages()" style="min-width:150px;">
+                  <option value="">All Status</option>
+                  <option value="NEW">New</option>
+                  <option value="READ">Read</option>
+                  <option value="REPLIED">Replied</option>
+                </select>
+                <select id="contactSubjectFilter" onchange="filterContactMessages()" style="min-width:180px;">
+                  <option value="">All Subjects</option>
+                  <option value="booking">Booking Inquiry</option>
+                  <option value="support">Support Request</option>
+                  <option value="partnership">Partnership</option>
+                  <option value="media">Media & Press</option>
+                  <option value="feedback">Feedback</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            
+            <div id="contactMessagesList" style="display:grid;gap:16px;"></div>
+            <div id="contactEmptyState" class="empty-state hidden">
+              <i class="fa-solid fa-envelope"></i>
+              <h3>No contact messages</h3>
+              <p>Contact form submissions will appear here.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -1069,6 +1318,18 @@
         });
         load();
         
+        // Load contact messages badge count on login (don't show section unless on contact tab)
+        setTimeout(() => {
+          loadContactMessages().then(() => {
+            const contactSection = document.getElementById("contactMessagesSection");
+            if(contactSection && currentEvent !== "contact"){
+              contactSection.classList.add("hidden");
+            }
+          }).catch(() => {
+            // Silently fail - contact messages are optional
+          });
+        }, 500);
+        
         // Show install prompt after successful login (only if not already installed)
         // Delay to ensure dashboard is loaded
         setTimeout(() => {
@@ -1175,6 +1436,263 @@
       renderTimeout = setTimeout(render, 300);
     }
 
+    // Contact Messages Functions
+    let contactMessages = [];
+    
+    async function loadContactMessages(){
+      const listEl = document.getElementById("contactMessagesList");
+      const emptyEl = document.getElementById("contactEmptyState");
+      
+      if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub);"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;">Loading messages...</p></div>';
+      
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getContactMessages",
+            adminPin: ADMIN_PASSWORD
+          })
+        });
+        
+        const result = await res.json();
+        
+        if(result.success && result.messages){
+          contactMessages = result.messages;
+          filteredContactMessages = [];
+          filterContactMessages();
+          updateContactBadge();
+          updateContactStats();
+        } else {
+          throw new Error(result.error || "Failed to load messages");
+        }
+      } catch(err) {
+        console.error("Load contact messages error:", err);
+        if(listEl) listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--bad);"><i class="fa-solid fa-triangle-exclamation"></i><p style="margin-top:12px;">${err.message}</p></div>`;
+        if(emptyEl) emptyEl.classList.add("hidden");
+      }
+    }
+    
+    let filteredContactMessages = [];
+    
+    function filterContactMessages(){
+      const search = (document.getElementById("contactSearch")?.value || "").toLowerCase();
+      const statusFilter = document.getElementById("contactStatusFilter")?.value || "";
+      const subjectFilter = document.getElementById("contactSubjectFilter")?.value || "";
+      
+      filteredContactMessages = contactMessages.filter(msg => {
+        if(statusFilter && msg.status !== statusFilter) return false;
+        if(subjectFilter && msg.subject !== subjectFilter) return false;
+        if(search && !(
+          (msg.name || "").toLowerCase().includes(search) ||
+          (msg.email || "").toLowerCase().includes(search) ||
+          (msg.subject || "").toLowerCase().includes(search) ||
+          (msg.message || "").toLowerCase().includes(search)
+        )) return false;
+        return true;
+      });
+      
+      renderContactMessages();
+    }
+    
+    function renderContactMessages(){
+      const listEl = document.getElementById("contactMessagesList");
+      const emptyEl = document.getElementById("contactEmptyState");
+      
+      if(!listEl) return;
+      
+      const messagesToRender = filteredContactMessages.length > 0 ? filteredContactMessages : contactMessages;
+      
+      if(messagesToRender.length === 0){
+        listEl.innerHTML = "";
+        if(emptyEl) emptyEl.classList.remove("hidden");
+        return;
+      }
+      
+      if(emptyEl) emptyEl.classList.add("hidden");
+      
+      listEl.innerHTML = messagesToRender.map(msg => {
+        const date = new Date(msg.timestamp);
+        const dateStr = date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+        const timeStr = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+        
+        const subjectLabels = {
+          "booking": "Booking Inquiry",
+          "support": "Support Request",
+          "partnership": "Partnership Opportunity",
+          "media": "Media & Press",
+          "feedback": "Feedback",
+          "other": "Other"
+        };
+        
+        const subjectLabel = subjectLabels[msg.subject] || msg.subject;
+        const isNew = msg.status === "NEW";
+        const statusColors = {
+          "NEW": "var(--bad)",
+          "READ": "var(--warn)",
+          "REPLIED": "var(--ok)"
+        };
+        
+        const statusClass = msg.status.toLowerCase();
+        const statusIcon = {
+          "NEW": "fa-circle",
+          "READ": "fa-check",
+          "REPLIED": "fa-check-double"
+        }[msg.status] || "fa-circle";
+        
+        return `
+          <div class="booking-card ${statusClass}" style="border-left:4px solid ${statusColors[msg.status] || "var(--border)"};">
+            <div class="card-header">
+              <div style="flex:1;">
+                <div class="card-title" style="display:flex;align-items:center;gap:10px;">
+                  ${isNew ? '<span style="display:inline-block;width:10px;height:10px;background:var(--bad);border-radius:50%;animation:pulse 2s ease-in-out infinite;"></span>' : ''}
+                  <i class="fa-solid fa-user" style="color:var(--sub);font-size:14px;"></i>
+                  ${msg.name}
+                </div>
+                <div class="card-meta">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-tag" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Subject:</b> ${subjectLabel}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-envelope" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Email:</b> <a href="mailto:${msg.email}" style="color:var(--accent);text-decoration:none;">${msg.email}</a></span>
+                  </div>
+                  ${msg.phone ? `
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-phone" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Phone:</b> <a href="tel:${msg.phone}" style="color:var(--accent);text-decoration:none;">${msg.phone}</a></span>
+                  </div>
+                  ` : ''}
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-clock" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Date:</b> ${dateStr} at ${timeStr}</span>
+                  </div>
+                  <div style="margin-top:14px;padding:16px;background:linear-gradient(135deg, color-mix(in srgb, var(--bg-alt) 80%, transparent), color-mix(in srgb, var(--bg-elev) 90%, transparent));border-radius:14px;border:1px solid var(--border);">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--sub);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">
+                      <i class="fa-solid fa-message"></i>
+                      <span>Message</span>
+                    </div>
+                    <div style="color:var(--text);font-size:14px;line-height:1.7;white-space:pre-wrap;">${msg.message}</div>
+                  </div>
+                </div>
+              </div>
+              <span class="status ${statusClass}" style="background:${statusColors[msg.status] || "var(--sub)"};color:#fff;padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
+                <i class="fa-solid ${statusIcon}"></i>
+                ${msg.status}
+              </span>
+            </div>
+            <div class="card-actions">
+              <a href="mailto:${msg.email}?subject=Re: ${subjectLabel}" class="btn primary" style="flex:1;">
+                <i class="fa-solid fa-reply"></i> Reply Email
+              </a>
+              ${msg.phone ? `
+              <a href="https://wa.me/${msg.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn" style="background:#25D366;color:#fff;border:none;flex:1;">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+              </a>
+              ` : ''}
+              ${msg.status === "NEW" ? `
+              <button onclick="updateContactStatus(${msg.rowIndex}, 'READ')" class="btn" style="flex:1;">
+                <i class="fa-solid fa-check"></i> Mark Read
+              </button>
+              ` : ''}
+              ${msg.status !== "REPLIED" ? `
+              <button onclick="updateContactStatus(${msg.rowIndex}, 'REPLIED')" class="btn" style="background:var(--ok);color:#fff;border:none;flex:1;">
+                <i class="fa-solid fa-check-double"></i> Mark Replied
+              </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+    
+    async function updateContactStatus(rowIndex, status){
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "updateContactStatus",
+            adminPin: ADMIN_PASSWORD,
+            rowIndex: rowIndex,
+            status: status
+          })
+        });
+        
+        const result = await res.json();
+        
+        if(result.success){
+          showToast(`Message marked as ${status}`, "success");
+          loadContactMessages(); // Reload to refresh
+        } else {
+          throw new Error(result.error || "Failed to update status");
+        }
+      } catch(err) {
+        console.error("Update contact status error:", err);
+        showToast(err.message || "Failed to update status", "error");
+      }
+    }
+    
+    function updateContactBadge(){
+      const badge = document.getElementById("contactBadge");
+      if(!badge) return;
+      
+      const newCount = contactMessages.filter(m => m.status === "NEW").length;
+      if(newCount > 0){
+        badge.textContent = newCount;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+    
+    function updateContactStats(){
+      const newCount = contactMessages.filter(m => m.status === "NEW").length;
+      const totalCount = contactMessages.length;
+      animateStat("statContacts", totalCount);
+      document.getElementById("statContactsSub").textContent = `${newCount} new`;
+    }
+    
+    // Animate stat numbers
+    function animateStat(id, target){
+      const el = document.getElementById(id);
+      if(!el) return;
+      
+      const current = el.textContent;
+      if(current === target || current === "—") {
+        el.textContent = target;
+        return;
+      }
+      
+      // Simple animation - just update immediately for now
+      el.textContent = target;
+      
+      // Add pulse animation
+      el.style.animation = "statPulse 0.3s var(--ease)";
+      setTimeout(() => {
+        el.style.animation = "";
+      }, 300);
+    }
+    
+    // Add pulse animation keyframes
+    const style = document.createElement("style");
+    style.textContent += `
+      @keyframes statPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.1); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Make functions globally accessible
+    window.loadContactMessages = loadContactMessages;
+    window.updateContactStatus = updateContactStatus;
+
     function calculateExpectedAmount(booking){
       if(!booking) return 0;
       // Amount is calculated automatically in booking.html based on type
@@ -1252,30 +1770,40 @@
         .reduce((s,b) => s + (Number(b.amount)||0), 0);
       const avgBooking = confirmed > 0 ? Math.round(revenue / confirmed) : 0;
 
-      document.getElementById("statTotal").textContent = total;
-      document.getElementById("statPending").textContent = pending;
-      document.getElementById("statConfirmed").textContent = confirmed;
-      document.getElementById("statCheckedIn").textContent = checkedIn;
+      // Update booking stats with animation
+      animateStat("statTotal", total);
+      animateStat("statPending", pending);
+      animateStat("statConfirmed", confirmed);
+      animateStat("statCheckedIn", checkedIn);
+      
       if(revenue > 0){
-        if(revenue >= 1000000){
-          document.getElementById("statRevenue").textContent = (revenue / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
-        } else {
-          document.getElementById("statRevenue").textContent = (revenue / 1000).toFixed(0) + "K";
-        }
+        const revenueText = revenue >= 1000000 
+          ? (revenue / 1000000).toFixed(1).replace(/\.0$/, "") + "M"
+          : (revenue / 1000).toFixed(0) + "K";
+        animateStat("statRevenue", revenueText);
         document.getElementById("statRevenueSub").textContent = "TZS";
       } else {
         document.getElementById("statRevenue").textContent = "—";
         document.getElementById("statRevenueSub").textContent = "";
       }
+      
       if(avgBooking > 0){
-        if(avgBooking >= 1000000){
-          document.getElementById("statAvg").textContent = (avgBooking / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
-        } else {
-          document.getElementById("statAvg").textContent = (avgBooking / 1000).toFixed(0) + "K";
-        }
+        const avgText = avgBooking >= 1000000
+          ? (avgBooking / 1000000).toFixed(1).replace(/\.0$/, "") + "M"
+          : (avgBooking / 1000).toFixed(0) + "K";
+        animateStat("statAvg", avgText);
       } else {
         document.getElementById("statAvg").textContent = "—";
       }
+      
+      // Update APT requests stat
+      const aptPending = bookings.filter(b => b.eventKey === "apt" && b.status === "PENDING").length;
+      const aptTotal = bookings.filter(b => b.eventKey === "apt").length;
+      animateStat("statApt", aptTotal);
+      document.getElementById("statAptSub").textContent = `${aptPending} pending`;
+      
+      // Update contact messages stat (will be updated when contact messages load)
+      updateContactStats();
 
       const rowsEl = document.getElementById("rows");
       const cardRowsEl = document.getElementById("cardRows");
@@ -2308,19 +2836,23 @@
     }
 
     function exportCsv(){
-      const rows = [["Event","Booking ID","Type","Description","Name","Phone","Amount","Transaction Code","Status","Checked In"]];
+      const rows = [["Event","Booking ID","Type","Tier","Description","Quantity","Name","Phone","Email","Amount","Transaction Code","Status","Checked In","Timestamp"]];
       filteredBookings.forEach(b=>{
         rows.push([
           b.eventKey || "",
           b.bookingId || "",
           b.bookingType || "",
+          b.tier || "",
           b.description || "",
+          b.quantity || "",
           b.name || "",
           b.phone || "",
+          b.email || "",
           b.amount || "",
           b.transactionCode || "",
           b.status || "",
-          b.checkedInCount || 0
+          b.checkedInCount || 0,
+          b.timestamp || ""
         ]);
       });
       const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(",")).join("\n");
@@ -2328,11 +2860,45 @@
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       const filterInfo = currentEvent ? currentEvent : "all";
-      a.download = `byz-${filterInfo}-export-${new Date().toISOString().split("T")[0]}.csv`;
+      a.download = `byz-${filterInfo}-bookings-${new Date().toISOString().split("T")[0]}.csv`;
       a.click();
       URL.revokeObjectURL(a.href);
-      showToast("Export downloaded", "success");
+      showToast("Bookings exported successfully", "success");
     }
+    
+    function exportContactMessages(){
+      const rows = [["Timestamp","Name","Email","Phone","Subject","Message","Status"]];
+      contactMessages.forEach(msg => {
+        rows.push([
+          msg.timestamp || "",
+          msg.name || "",
+          msg.email || "",
+          msg.phone || "",
+          msg.subject || "",
+          msg.message || "",
+          msg.status || ""
+        ]);
+      });
+      const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `byz-contact-messages-${new Date().toISOString().split("T")[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast("Contact messages exported successfully", "success");
+    }
+    
+    // Global export function that handles current view
+    function exportData(){
+      if(currentEvent === "contact"){
+        exportContactMessages();
+      } else {
+        exportCsv();
+      }
+    }
+    
+    window.exportData = exportData;
 
     function showToast(message, type = "success"){
       const container = document.getElementById("toastContainer");
@@ -2379,7 +2945,20 @@
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         currentEvent = btn.dataset.event || "";
-        load();
+        
+        // Show/hide contact messages section
+        const contactSection = document.getElementById("contactMessagesSection");
+        const bookingsSection = document.querySelector(".table-wrap, .card-view, #emptyState");
+        
+        if(currentEvent === "contact"){
+          if(contactSection) contactSection.classList.remove("hidden");
+          if(bookingsSection) bookingsSection.style.display = "none";
+          loadContactMessages();
+        } else {
+          if(contactSection) contactSection.classList.add("hidden");
+          if(bookingsSection) bookingsSection.style.display = "";
+          load();
+        }
       });
     });
 
