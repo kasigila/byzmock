@@ -1468,8 +1468,9 @@
   // ============================================
   function normalizePhone(phone) {
     if (!phone) return "";
-    // Remove spaces, dashes, parentheses, and other formatting
-    return phone.replace(/[\s\-\(\)]/g, "");
+    // Remove spaces, dashes, parentheses, plus sign, and other formatting
+    // This ensures "+12698613487" matches "12698613487" from Google Sheets
+    return phone.replace(/[\s\-\(\)\+]/g, "");
   }
 
   // ============================================
