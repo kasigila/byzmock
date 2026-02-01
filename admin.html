@@ -1275,7 +1275,10 @@
         // Render navigation
         renderAdminNav("bookings");
         
+        // Setup tab buttons after dashboard is shown
         requestAnimationFrame(() => {
+          setupTabButtons(); // Re-setup tabs now that dashboard is visible
+          
           const dash = document.getElementById("dashboard");
           if(dash){
             dash.scrollIntoView({ behavior: "auto", block: "start" });
@@ -1316,8 +1319,10 @@
     function updateConnectionStatus(){
       const status = navigator.onLine ? "online" : "offline";
       const el = document.getElementById("connectionStatus");
-      el.className = `connection-status ${status}`;
-      el.innerHTML = `<i class="fa-solid fa-circle"></i> <span>${status === "online" ? "Online" : "Offline"}</span>`;
+      if(el){
+        el.className = `connection-status ${status}`;
+        el.innerHTML = `<i class="fa-solid fa-circle"></i> <span>${status === "online" ? "Online" : "Offline"}</span>`;
+      }
     }
     window.addEventListener("online", updateConnectionStatus);
     window.addEventListener("offline", updateConnectionStatus);
@@ -3018,16 +3023,36 @@
       }
     }
 
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentEvent = btn.dataset.event || "";
+    // Setup tab button event listeners
+    function setupTabButtons(){
+      const tabButtons = document.querySelectorAll(".tab-btn");
+      if(tabButtons.length === 0){
+        console.log("Tab buttons not found yet, will retry after login");
+        return; // Buttons don't exist yet (dashboard is hidden)
+      }
+      
+      tabButtons.forEach(btn => {
+        // Remove existing listeners by cloning
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
         
-        // Load bookings for selected event
-        load();
+        // Add fresh event listener
+        newBtn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          newBtn.classList.add("active");
+          currentEvent = newBtn.dataset.event || "";
+          
+          console.log("Tab clicked:", currentEvent); // Debug log
+          
+          // Load bookings for selected event
+          load();
+        });
       });
-    });
+      console.log("Tab buttons setup complete:", tabButtons.length, "buttons");
+    }
+    
+    // Don't setup tabs immediately - they're inside hidden dashboard
+    // Will be setup after login when dashboard is shown
 
     document.getElementById("confirmModal").addEventListener("click", (e) => {
       if(e.target.id === "confirmModal"){
@@ -3059,8 +3084,7 @@
     cleanupExpiredRejections();
     
     // PWA Install Functionality - Only show after successful login
-    let deferredPrompt;
-    let installPromptShown = false;
+    // Variables already declared at top of script
     
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
