@@ -1312,10 +1312,10 @@
         `;
         feedback.innerHTML = `
           <span>Was this helpful?</span>
-          <button onclick="faqFeedback(this, true)" style="padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); cursor: pointer; transition: all .2s var(--ease); display: flex; align-items: center; gap: 6px;">
+          <button onclick="faqFeedback(this, true)" style="padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); cursor: pointer; transition: all .3s cubic-bezier(.2,.8,.2,1); display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; min-height: 36px;">
             <i class="fa-solid fa-thumbs-up"></i> Yes
           </button>
-          <button onclick="faqFeedback(this, false)" style="padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); cursor: pointer; transition: all .2s var(--ease); display: flex; align-items: center; gap: 6px;">
+          <button onclick="faqFeedback(this, false)" style="padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); cursor: pointer; transition: all .3s cubic-bezier(.2,.8,.2,1); display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; min-height: 36px;">
             <i class="fa-solid fa-thumbs-down"></i> No
           </button>
         `;
@@ -1326,27 +1326,47 @@
     function faqFeedback(btn, helpful){
       const item = btn.closest(".faq-item");
       const question = item.querySelector(".faq-question h3").textContent;
+      const feedbackContainer = btn.closest(".faq-feedback");
       
-      btn.disabled = true;
-      btn.style.opacity = "0.6";
+      // Disable both buttons
+      feedbackContainer.querySelectorAll("button").forEach(b => {
+        b.disabled = true;
+        b.style.pointerEvents = "none";
+      });
+      
+      // Apply visual feedback with tint
       if(helpful){
+        // Green tint for helpful
         btn.innerHTML = '<i class="fa-solid fa-check"></i> Thanks!';
         btn.style.background = "var(--ok)";
         btn.style.borderColor = "var(--ok)";
         btn.style.color = "#fff";
+        btn.style.transform = "scale(1.05)";
+        
+        // Add green tint overlay to FAQ item
+        item.style.background = "linear-gradient(135deg, color-mix(in srgb, var(--ok) 8%, transparent) 0%, var(--bg-elev) 100%)";
+        item.style.borderColor = "color-mix(in srgb, var(--ok) 30%, var(--border))";
       } else {
+        // Red tint for not helpful
         btn.innerHTML = '<i class="fa-solid fa-check"></i> Noted';
-        btn.style.background = "var(--warn)";
-        btn.style.borderColor = "var(--warn)";
+        btn.style.background = "var(--bad)";
+        btn.style.borderColor = "var(--bad)";
         btn.style.color = "#fff";
+        btn.style.transform = "scale(1.05)";
+        
+        // Add red tint overlay to FAQ item
+        item.style.background = "linear-gradient(135deg, color-mix(in srgb, var(--bad) 8%, transparent) 0%, var(--bg-elev) 100%)";
+        item.style.borderColor = "color-mix(in srgb, var(--bad) 30%, var(--border))";
       }
       
-      // Store feedback (could send to analytics)
+      // Store feedback in localStorage (for now - could send to backend later)
       try {
         const feedback = JSON.parse(localStorage.getItem("byz_faq_feedback") || "{}");
         feedback[question] = helpful;
         localStorage.setItem("byz_faq_feedback", JSON.stringify(feedback));
-      } catch(e){}
+      } catch(e){
+        console.error("Failed to save FAQ feedback:", e);
+      }
     }
 
     if(searchInput){
