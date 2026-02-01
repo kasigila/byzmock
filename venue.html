@@ -213,6 +213,110 @@
       .card-body{padding:16px}
     }
 
+    /* Collapsible Sections (like FAQ) */
+    .collapsible-card{
+      position: relative;
+      overflow: hidden;
+    }
+    .collapsible-card::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity .3s var(--ease);
+    }
+    .collapsible-card.expanded::before{
+      opacity: 1;
+    }
+    .collapsible-card.expanded{
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 8%, var(--bg-elev)) 0%,
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+      );
+    }
+    .collapsible-head{
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: background .3s var(--ease);
+    }
+    .collapsible-head:hover{
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 60%, transparent) 0%,
+        color-mix(in srgb, var(--border) 20%, transparent) 100%
+      );
+    }
+    .collapsible-head > div:first-child{
+      flex: 1;
+    }
+    .venue-toggle{
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 80%, transparent) 0%,
+        color-mix(in srgb, var(--border) 30%, transparent) 100%
+      );
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .3s var(--ease);
+      flex-shrink: 0;
+    }
+    @media (max-width: 560px){
+      .venue-toggle{
+        width: 40px;
+        height: 40px;
+      }
+    }
+    .venue-toggle i{
+      color: var(--sub);
+      font-size: 12px;
+      transition: transform .3s var(--ease);
+    }
+    .collapsible-card.expanded .venue-toggle{
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 20%, var(--bg-alt)) 0%,
+        color-mix(in srgb, var(--accent) 10%, var(--border)) 100%
+      );
+      border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+    }
+    .collapsible-card.expanded .venue-toggle i{
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+    .collapsible-body{
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 20px;
+      transition: max-height .4s var(--ease), padding .4s var(--ease);
+    }
+    @media (max-width: 560px){
+      .collapsible-body{
+        padding: 0 16px;
+      }
+    }
+    .collapsible-card.expanded .collapsible-body{
+      max-height: 2000px;
+      padding: 20px;
+    }
+    @media (max-width: 560px){
+      .collapsible-card.expanded .collapsible-body{
+        padding: 16px;
+      }
+    }
+
     /* Map Container */
     .map-container{
       width:100%;
@@ -486,7 +590,7 @@
               </div>
 
               <div class="map-container">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.5!2d39.2!3d-6.8!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwNDgnMDAuMCJTIDM5wrAxMicwMC4wIkU!5e0!3m2!1sen!2stz!4v1234567890123!5m2!1sen!2stz" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.0079875839765!2d39.279239775243035!3d-6.768878993227907!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4de6306def9b%3A0xdcc1e0ccab9468af!2sTips%20Lounge%20Coco%20Beach!5e0!3m2!1sen!2sus!4v1769966009434!5m2!1sen!2sus" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);">
                   <a href="https://maps.app.goo.gl/ZcUNLwz82YBjwrA96" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:8px 14px;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);">
                     <i class="fa-solid fa-external-link"></i> Open in Google Maps
@@ -497,12 +601,17 @@
           </div>
 
           <!-- Getting There -->
-          <div class="card">
-            <div class="card-head">
-              <h2>Getting There</h2>
-              <p>Directions and transportation options</p>
+          <div class="card collapsible-card">
+            <div class="card-head collapsible-head" onclick="toggleVenueSection(this)">
+              <div>
+                <h2>Getting There</h2>
+                <p>Directions and transportation options</p>
+              </div>
+              <div class="venue-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
             </div>
-            <div class="card-body">
+            <div class="card-body collapsible-body">
               <div class="directions-steps">
                 <div class="direction-step">
                   <div class="direction-step-number">1</div>
@@ -533,12 +642,17 @@
           </div>
 
           <!-- Parking Information -->
-          <div class="card">
-            <div class="card-head">
-              <h2>Parking Information</h2>
-              <p>Where to park</p>
+          <div class="card collapsible-card">
+            <div class="card-head collapsible-head" onclick="toggleVenueSection(this)">
+              <div>
+                <h2>Parking Information</h2>
+                <p>Where to park</p>
+              </div>
+              <div class="venue-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
             </div>
-            <div class="card-body">
+            <div class="card-body collapsible-body">
               <div class="info-list">
                 <div class="info-item">
                   <div class="info-item-icon">
@@ -573,12 +687,17 @@
         <!-- Sidebar -->
         <div>
           <!-- Venue Features -->
-          <div class="card">
-            <div class="card-head">
-              <h2>Venue Features</h2>
-              <p>What to expect</p>
+          <div class="card collapsible-card">
+            <div class="card-head collapsible-head" onclick="toggleVenueSection(this)">
+              <div>
+                <h2>Venue Features</h2>
+                <p>What to expect</p>
+              </div>
+              <div class="venue-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
             </div>
-            <div class="card-body">
+            <div class="card-body collapsible-body">
               <div class="features-grid">
                 <div class="feature-item">
                   <i class="fa-solid fa-users"></i>
@@ -609,11 +728,16 @@
           </div>
 
           <!-- Quick Actions -->
-          <div class="card">
-            <div class="card-head">
-              <h2>Quick Actions</h2>
+          <div class="card collapsible-card">
+            <div class="card-head collapsible-head" onclick="toggleVenueSection(this)">
+              <div>
+                <h2>Quick Actions</h2>
+              </div>
+              <div class="venue-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
             </div>
-            <div class="card-body">
+            <div class="card-body collapsible-body">
               <div class="quick-actions">
                 <a class="quick-action" href="events.html">
                   <i class="fa-solid fa-calendar-days"></i>
@@ -676,6 +800,22 @@
       });
     }
   })();
+
+  // Collapsible sections (like FAQ)
+  function toggleVenueSection(element){
+    const card = element.closest(".collapsible-card");
+    if(card){
+      card.classList.toggle("expanded");
+    }
+  }
+
+  // Initialize: expand first section by default
+  document.addEventListener("DOMContentLoaded", () => {
+    const firstCard = document.querySelector(".collapsible-card");
+    if(firstCard){
+      firstCard.classList.add("expanded");
+    }
+  });
 </script>
 
 </body>
