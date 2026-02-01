@@ -40,6 +40,15 @@
     .container{max-width:var(--max);margin:0 auto;padding:0 24px}
     @media (max-width: 560px){
       .container{padding:0 28px}
+      /* Safe area for notched devices */
+      body{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      header{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
     }
 
     /* Header */
