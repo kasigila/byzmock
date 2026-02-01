@@ -1235,7 +1235,7 @@
       </div>
 
       <!-- Upcoming Bookings -->
-      <div id="upcomingBookings" class="bookings-list">
+      <div id="upcomingBookings" class="bookings-list" data-pull-refresh="true">
         <!-- Bookings will be loaded here -->
       </div>
 
@@ -1719,8 +1719,20 @@
     } catch (error) {
       console.error("Verification error:", error);
       document.querySelector(".lookup-form").style.display = "block";
-      document.getElementById("upcomingBookings").innerHTML = "";
       const errorMsg = error.message || "Error verifying code. Please check your connection and try again.";
+      
+      // Show error state with retry button
+      document.getElementById("upcomingBookings").innerHTML = `
+        <div class="byz-empty-state" style="padding: 60px 24px;">
+          <i class="fa-solid fa-exclamation-triangle" style="color: var(--warn);"></i>
+          <h3>Connection Error</h3>
+          <p>${errorMsg}</p>
+          <button class="btn primary" onclick="verifyAndLoadBookings()" style="margin-top: 20px; min-height: 48px;">
+            <i class="fa-solid fa-rotate-right"></i> Retry
+          </button>
+        </div>
+      `;
+      
       byzShowToast("Connection Error", errorMsg, "error", 4000);
       btn.innerHTML = originalText;
       btn.disabled = false;
@@ -1828,6 +1840,128 @@
       document.getElementById("emptyState").style.display = "";
     }
   }
+
+  // ============================================
+  // PULL-TO-REFRESH
+  // ============================================
+  (function(){
+    let pullStartY = 0;
+    let pullDistance = 0;
+    let isPulling = false;
+    let refreshIndicator = null;
+    
+    function createRefreshIndicator(){
+      if(refreshIndicator) return refreshIndicator;
+      refreshIndicator = document.createElement("div");
+      refreshIndicator.id = "pullRefreshIndicator";
+      refreshIndicator.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,20,0.95) 100%);
+        backdrop-filter: blur(20px);
+        z-index: 1000;
+        transform: translateY(-100%);
+        transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
+        border-bottom: 1px solid var(--border);
+      `;
+      refreshIndicator.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px; color: var(--text); font-size: 14px; font-weight: 600;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 16px;"></i>
+          <span>Refreshing bookings...</span>
+        </div>
+      `;
+      document.body.appendChild(refreshIndicator);
+      return refreshIndicator;
+    }
+    
+    function showRefreshIndicator(){
+      const indicator = createRefreshIndicator();
+      indicator.style.transform = "translateY(0)";
+    }
+    
+    function hideRefreshIndicator(){
+      if(refreshIndicator){
+        refreshIndicator.style.transform = "translateY(-100%)";
+      }
+    }
+    
+    async function refreshBookings(){
+      const email = sessionStorage.getItem("byz_verify_email");
+      if(!email) return;
+      
+      showRefreshIndicator();
+      
+      try {
+        const code = sessionStorage.getItem("byz_last_verification_code");
+        if(!code) {
+          hideRefreshIndicator();
+          return;
+        }
+        
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "getBookingsByEmail",
+            email: email,
+            verificationCode: code
+          })
+        });
+        
+        if(!res.ok) throw new Error("Failed to refresh");
+        
+        const data = await res.json();
+        if(data.success){
+          localStorage.setItem("byz_my_bookings", JSON.stringify(data.bookings));
+          processBookings(data.bookings);
+          byzShowToast("Bookings Refreshed", "Your bookings have been updated", "success", 2000);
+        }
+      } catch(error){
+        console.error("Refresh error:", error);
+        byzShowToast("Refresh Failed", "Could not refresh bookings", "error", 3000);
+      } finally {
+        hideRefreshIndicator();
+      }
+    }
+    
+    const containers = document.querySelectorAll("[data-pull-refresh='true']");
+    containers.forEach(container => {
+      let touchStartY = 0;
+      let touchCurrentY = 0;
+      let isAtTop = false;
+      
+      container.addEventListener("touchstart", (e) => {
+        touchStartY = e.touches[0].clientY;
+        isAtTop = container.scrollTop === 0;
+      }, { passive: true });
+      
+      container.addEventListener("touchmove", (e) => {
+        if(!isAtTop) return;
+        touchCurrentY = e.touches[0].clientY;
+        pullDistance = touchCurrentY - touchStartY;
+        
+        if(pullDistance > 0 && pullDistance < 100){
+          isPulling = true;
+          container.style.transform = `translateY(${Math.min(pullDistance, 80)}px)`;
+        }
+      }, { passive: true });
+      
+      container.addEventListener("touchend", () => {
+        if(isPulling && pullDistance > 60){
+          refreshBookings();
+        }
+        container.style.transform = "";
+        pullDistance = 0;
+        isPulling = false;
+      }, { passive: true });
+    });
+  })();
 
   // ============================================
   // RENDER BOOKING CARD
