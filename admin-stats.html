@@ -630,28 +630,30 @@
             mode: "cors",
             credentials: "omit"
           }),
-          fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "getContactMessages",
-              adminPin: window.ADMIN_PASSWORD
-            }),
-            cache: "no-store",
-            mode: "cors",
-            credentials: "omit"
-          }),
-          fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "getFAQFeedback",
-              adminPin: window.ADMIN_PASSWORD
-            }),
-            cache: "no-store",
-            mode: "cors",
-            credentials: "omit"
-          })
+          (() => {
+            // Use GET instead of POST to avoid CORS preflight
+            const url = new URL(SCRIPT_URL);
+            url.searchParams.set("action", "getContactMessages");
+            url.searchParams.set("adminPin", window.ADMIN_PASSWORD);
+            return fetch(url.toString(), {
+              method: "GET",
+              cache: "no-store",
+              mode: "cors",
+              credentials: "omit"
+            });
+          })(),
+          (() => {
+            // Use GET instead of POST to avoid CORS preflight
+            const url = new URL(SCRIPT_URL);
+            url.searchParams.set("action", "getFAQFeedback");
+            url.searchParams.set("adminPin", window.ADMIN_PASSWORD);
+            return fetch(url.toString(), {
+              method: "GET",
+              cache: "no-store",
+              mode: "cors",
+              credentials: "omit"
+            });
+          })()
         ]);
         
         // Parse responses
