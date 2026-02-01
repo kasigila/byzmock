@@ -1190,6 +1190,9 @@
     }
   })();
 
+  // Backend API URL
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+
   // FAQ Toggle
   function toggleFaq(element){
     const faqItem = element.closest(".faq-item");
@@ -1323,12 +1326,12 @@
       });
     }
 
-    function faqFeedback(btn, helpful){
+    async function faqFeedback(btn, helpful){
       const item = btn.closest(".faq-item");
       const question = item.querySelector(".faq-question h3").textContent;
       const feedbackContainer = btn.closest(".faq-feedback");
       
-      // Disable both buttons
+      // Disable both buttons immediately for better UX
       feedbackContainer.querySelectorAll("button").forEach(b => {
         b.disabled = true;
         b.style.pointerEvents = "none";
@@ -1359,13 +1362,51 @@
         item.style.borderColor = "color-mix(in srgb, var(--bad) 30%, var(--border))";
       }
       
-      // Store feedback in localStorage (for now - could send to backend later)
+      // Send feedback to backend
       try {
-        const feedback = JSON.parse(localStorage.getItem("byz_faq_feedback") || "{}");
-        feedback[question] = helpful;
-        localStorage.setItem("byz_faq_feedback", JSON.stringify(feedback));
-      } catch(e){
-        console.error("Failed to save FAQ feedback:", e);
+        const response = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "submitFAQFeedback",
+            question: question,
+            helpful: helpful
+          }),
+          cache: "no-store"
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Also store in localStorage as backup
+          try {
+            const feedback = JSON.parse(localStorage.getItem("byz_faq_feedback") || "{}");
+            feedback[question] = helpful;
+            localStorage.setItem("byz_faq_feedback", JSON.stringify(feedback));
+          } catch(e){
+            // Ignore localStorage errors
+          }
+        } else {
+          console.error("Failed to submit FAQ feedback:", result.error);
+          // Still store in localStorage as fallback
+          try {
+            const feedback = JSON.parse(localStorage.getItem("byz_faq_feedback") || "{}");
+            feedback[question] = helpful;
+            localStorage.setItem("byz_faq_feedback", JSON.stringify(feedback));
+          } catch(e){
+            console.error("Failed to save FAQ feedback to localStorage:", e);
+          }
+        }
+      } catch(err) {
+        console.error("Error submitting FAQ feedback:", err);
+        // Fallback to localStorage if network fails
+        try {
+          const feedback = JSON.parse(localStorage.getItem("byz_faq_feedback") || "{}");
+          feedback[question] = helpful;
+          localStorage.setItem("byz_faq_feedback", JSON.stringify(feedback));
+        } catch(e){
+          console.error("Failed to save FAQ feedback to localStorage:", e);
+        }
       }
     }
 
