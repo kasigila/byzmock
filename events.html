@@ -41,6 +41,15 @@
     .container{max-width:var(--max);margin:0 auto;padding:0 24px}
     @media (max-width: 560px){
       .container{padding:0 28px}
+      /* Safe area for notched devices */
+      body{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      header{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
     }
 
     /* Header */
@@ -196,6 +205,30 @@
       background:var(--accent);
       color:var(--bg);
       border-color:transparent;
+    }
+    .filter-count{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.2);
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: 6px;
+    }
+    .filter-btn.active .filter-count{
+      background: rgba(0,0,0,0.3);
+    }
+    #eventSearch:focus{
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+    }
+    #clearSearch:hover{
+      background: var(--bg-alt);
+      color: var(--text);
     }
 
     /* Section Dividers */
@@ -534,19 +567,41 @@
         </a>
       </div>
 
-      <div class="filters">
-        <button class="filter-btn active" data-filter="all">
-          <i class="fa-solid fa-fire"></i> All Events
-        </button>
-        <button class="filter-btn" data-filter="groove">
-          <i class="fa-solid fa-music"></i> Groove Series
-        </button>
-        <button class="filter-btn" data-filter="tempo">
-          <i class="fa-solid fa-bolt"></i> Tempo
-        </button>
-        <button class="filter-btn" data-filter="apt">
-          <i class="fa-solid fa-lock"></i> APT
-        </button>
+      <div class="search-sort-container" style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px;">
+        <div class="search-bar" style="position: relative;">
+          <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--sub); font-size: 14px; pointer-events: none;"></i>
+          <input type="text" id="eventSearch" placeholder="Search events..." style="width: 100%; padding: 14px 16px 14px 44px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); font-size: 15px; outline: none; transition: all .3s var(--ease); min-height: 48px;" />
+          <button id="clearSearch" style="display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--bg-alt); color: var(--sub); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s var(--ease);">
+            <i class="fa-solid fa-times" style="font-size: 12px;"></i>
+          </button>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <div class="filters" style="flex: 1; min-width: 0;">
+            <button class="filter-btn active" data-filter="all">
+              <i class="fa-solid fa-fire"></i> All Events
+              <span class="filter-count" data-count="all">0</span>
+            </button>
+            <button class="filter-btn" data-filter="groove">
+              <i class="fa-solid fa-music"></i> Groove Series
+              <span class="filter-count" data-count="groove">0</span>
+            </button>
+            <button class="filter-btn" data-filter="tempo">
+              <i class="fa-solid fa-bolt"></i> Tempo
+              <span class="filter-count" data-count="tempo">0</span>
+            </button>
+            <button class="filter-btn" data-filter="apt">
+              <i class="fa-solid fa-lock"></i> APT
+              <span class="filter-count" data-count="apt">0</span>
+            </button>
+          </div>
+          <select id="sortEvents" style="padding: 10px 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); font-size: 14px; outline: none; cursor: pointer; min-height: 48px; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path fill=\"%23a1a1a6\" d=\"M6 9L1 4h10z\"/></svg>'); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;">
+            <option value="date-asc">Date: Soonest First</option>
+            <option value="date-desc">Date: Latest First</option>
+            <option value="name-asc">Name: A-Z</option>
+            <option value="name-desc">Name: Z-A</option>
+            <option value="popularity">Most Popular</option>
+          </select>
+        </div>
       </div>
     </div>
   </section>
@@ -870,84 +925,165 @@
     }
   })();
 
-  // Filter functionality
+  // Search, Filter, and Sort functionality
   (function(){
     const filterBtns = document.querySelectorAll(".filter-btn");
     const eventCards = document.querySelectorAll(".event-card[data-event]");
+    const searchInput = document.getElementById("eventSearch");
+    const clearSearchBtn = document.getElementById("clearSearch");
+    const sortSelect = document.getElementById("sortEvents");
+    let currentFilter = "all";
+    let currentSearch = "";
+    let currentSort = "date-asc";
 
+    // Update filter counts
+    function updateFilterCounts(){
+      const counts = { all: 0, groove: 0, tempo: 0, apt: 0 };
+      eventCards.forEach(card => {
+        const eventType = card.dataset.event;
+        if(eventType && counts.hasOwnProperty(eventType)){
+          counts[eventType]++;
+        }
+        counts.all++;
+      });
+      
+      filterBtns.forEach(btn => {
+        const filter = btn.dataset.filter;
+        const countEl = btn.querySelector(".filter-count");
+        if(countEl && counts.hasOwnProperty(filter)){
+          countEl.textContent = counts[filter];
+        }
+      });
+    }
+
+    // Filter and search events
+    function filterAndSearchEvents(){
+      const searchTerm = currentSearch.toLowerCase().trim();
+      
+      eventCards.forEach(card => {
+        const eventType = card.dataset.event;
+        const title = card.querySelector("h3")?.textContent?.toLowerCase() || "";
+        const description = card.querySelector("p")?.textContent?.toLowerCase() || "";
+        const matchesFilter = currentFilter === "all" || eventType === currentFilter;
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || description.includes(searchTerm);
+        
+        if(matchesFilter && matchesSearch){
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      // Sort visible events
+      sortEvents();
+
+      // Update UI
+      updateEmptyStates();
+      updateFilterCounts();
+    }
+
+    // Sort events
+    function sortEvents(){
+      const grids = document.querySelectorAll(".events-grid");
+      grids.forEach(grid => {
+        const visibleCards = Array.from(grid.querySelectorAll(".event-card:not([style*='display: none'])"));
+        
+        visibleCards.sort((a, b) => {
+          if(currentSort === "date-asc" || currentSort === "date-desc"){
+            const dateA = a.querySelector(".meta-row")?.textContent || "";
+            const dateB = b.querySelector(".meta-row")?.textContent || "";
+            return currentSort === "date-asc" ? dateA.localeCompare(dateB) : dateB.localeCompare(dateA);
+          } else if(currentSort === "name-asc" || currentSort === "name-desc"){
+            const nameA = a.querySelector("h3")?.textContent || "";
+            const nameB = b.querySelector("h3")?.textContent || "";
+            return currentSort === "name-asc" ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+          } else if(currentSort === "popularity"){
+            const statA = a.querySelector(".stat-item")?.textContent || "";
+            const statB = b.querySelector(".stat-item")?.textContent || "";
+            return statB.localeCompare(statA);
+          }
+          return 0;
+        });
+
+        visibleCards.forEach(card => grid.appendChild(card));
+      });
+    }
+
+    // Update empty states
+    function updateEmptyStates(){
+      const sections = document.querySelectorAll("section");
+      sections.forEach(section => {
+        const sectionGrid = section.querySelector(".events-grid");
+        if(sectionGrid){
+          const visibleInSection = sectionGrid.querySelectorAll(".event-card:not([style*='display: none'])").length;
+          const sectionDivider = section.querySelector(".section-divider");
+          if(visibleInSection === 0 && sectionDivider){
+            sectionDivider.style.display = "none";
+            if(currentFilter !== "all" || currentSearch){
+              sectionGrid.innerHTML = `
+                <div class="empty-state" style="grid-column:1/-1;">
+                  <i class="fa-solid fa-calendar-plus"></i>
+                  <h3>No events found</h3>
+                  <p>Try adjusting your search or filter. Check back for updates on upcoming events.</p>
+                  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+                    <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+                      <i class="fa-brands fa-instagram"></i> Instagram
+                    </a>
+                    <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+                      <i class="fa-brands fa-tiktok"></i> TikTok
+                    </a>
+                    <a href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+                      <i class="fa-brands fa-facebook"></i> Facebook
+                    </a>
+                  </div>
+                </div>
+              `;
+            }
+          } else if(sectionDivider){
+            sectionDivider.style.display = "";
+          }
+        }
+      });
+    }
+
+    // Filter buttons
     filterBtns.forEach(btn => {
       btn.addEventListener("click", () => {
-        // Update active state
         filterBtns.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-
-        const filter = btn.dataset.filter;
-
-        // Show loading state during filter
-        const grid = document.querySelector(".events-grid");
-        if(grid){
-          grid.style.opacity = "0.6";
-          grid.style.pointerEvents = "none";
-        }
-        
-        // Filter events with slight delay for smooth transition
-        setTimeout(() => {
-          let visibleCount = 0;
-          eventCards.forEach(card => {
-            if(filter === "all" || card.dataset.event === filter){
-              card.style.display = "";
-              visibleCount++;
-            } else {
-              card.style.display = "none";
-            }
-          });
-          
-          // Hide section headers if no events visible
-          const sections = document.querySelectorAll("section");
-          sections.forEach(section => {
-            const sectionGrid = section.querySelector(".events-grid");
-            if(sectionGrid){
-              const visibleInSection = sectionGrid.querySelectorAll(".event-card[style=''], .event-card:not([style*='display: none'])").length;
-              const sectionDivider = section.querySelector(".section-divider");
-              if(visibleInSection === 0 && sectionDivider){
-                sectionDivider.style.display = "none";
-                // Show empty state if this is the filtered section
-                if(filter !== "all"){
-                  sectionGrid.innerHTML = `
-                    <div class="empty-state" style="grid-column:1/-1;">
-                      <i class="fa-solid fa-calendar-plus"></i>
-                      <h3>More events coming soon</h3>
-                      <p>Check back for updates on next month's lineup. Follow us on social media for the latest announcements.</p>
-                      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
-                        <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
-                          <i class="fa-brands fa-instagram"></i> Instagram
-                        </a>
-                        <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
-                          <i class="fa-brands fa-tiktok"></i> TikTok
-                        </a>
-                        <a href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
-                          <i class="fa-brands fa-facebook"></i> Facebook
-                        </a>
-                      </div>
-                      <a class="btn primary" href="booking.html" style="margin-top:16px;font-size:13px;padding:10px 16px;">
-                        <i class="fa-solid fa-ticket"></i> Book Current Events
-                      </a>
-                    </div>
-                  `;
-                }
-              } else if(sectionDivider){
-                sectionDivider.style.display = "";
-              }
-            }
-          });
-          
-          if(grid){
-            grid.style.opacity = "1";
-            grid.style.pointerEvents = "";
-          }
-        }, 150);
+        currentFilter = btn.dataset.filter;
+        filterAndSearchEvents();
       });
     });
+
+    // Search input
+    let searchTimeout;
+    searchInput.addEventListener("input", (e) => {
+      currentSearch = e.target.value;
+      clearSearchBtn.style.display = currentSearch ? "flex" : "none";
+      
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        filterAndSearchEvents();
+      }, 300);
+    });
+
+    // Clear search
+    clearSearchBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      currentSearch = "";
+      clearSearchBtn.style.display = "none";
+      filterAndSearchEvents();
+    });
+
+    // Sort select
+    sortSelect.addEventListener("change", (e) => {
+      currentSort = e.target.value;
+      sortEvents();
+    });
+
+    // Initialize
+    updateFilterCounts();
   })();
 </script>
 
