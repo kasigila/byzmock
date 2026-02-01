@@ -23,14 +23,10 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Bypass service worker for Google Apps Script API calls
-  if (url.hostname === 'script.google.com' || url.hostname.includes('googleapis.com')) {
-    // Always fetch from network for API calls
-    event.respondWith(fetch(event.request).catch(err => {
-      console.error('Service Worker fetch error:', err);
-      throw err;
-    }));
-    return;
+  // Bypass service worker completely for Google Apps Script API calls
+  // Don't call event.respondWith() at all - this lets the browser handle it natively
+  if (url.hostname === 'script.google.com' || url.hostname.includes('googleapis.com') || url.hostname.includes('google.com')) {
+    return; // Don't intercept - let browser handle directly
   }
   
   // For static assets, use cache-first strategy
