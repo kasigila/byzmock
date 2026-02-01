@@ -319,23 +319,6 @@
     </a>
 
     <div class="header-actions">
-      <button class="theme-btn" id="themeToggle" type="button" aria-label="Toggle theme" aria-pressed="false" title="Switch to dark mode">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-glyph">
-          <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2" />
-          <circle cx="12" cy="12" r="6" fill="currentColor" />
-          <defs>
-            <clipPath id="themeHalfClip">
-              <circle cx="12" cy="12" r="6" />
-            </clipPath>
-          </defs>
-          <g clip-path="url(#themeHalfClip)">
-            <rect x="12" y="6" width="6" height="12" style="fill: var(--bg-elev);" />
-          </g>
-        </svg>
-      </button>
-      <a class="btn ghost" href="gallery.html" style="font-size: 13px; padding: 10px 14px;">
-        <i class="fa-solid fa-images"></i> Find Your Pics
-      </a>
       <a class="btn ghost" href="index.html"><i class="fa-solid fa-arrow-left"></i> Back</a>
     </div>
   </div>
@@ -348,7 +331,6 @@
         <div class="hero-title">Rate the BYZ Experience</div>
         <p class="hero-sub">Tell us how it felt. Your feedback shapes the next wave.</p>
         <div class="hero-row">
-          <span class="hero-pill"><i class="fa-solid fa-sparkles"></i> Quick + meaningful</span>
           <span class="hero-pill"><i class="fa-solid fa-user-check"></i> Anonymous allowed</span>
           <span class="hero-pill"><i class="fa-solid fa-heart"></i> BYZ listens</span>
         </div>
@@ -500,35 +482,7 @@
 </div>
 
 <script>
-(function(){
-  const root = document.documentElement;
-  const toggle = document.getElementById("themeToggle");
-  const stored = localStorage.getItem("theme");
-
-  function applyTheme(theme) {
-    if (theme === "dark") root.setAttribute("data-theme","dark");
-    else root.setAttribute("data-theme","light");
-    if (toggle){
-      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-      toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
-    }
-  }
-
-  if (stored) applyTheme(stored);
-  else {
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(prefersDark ? "dark" : "light");
-  }
-
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      const isDark = root.getAttribute("data-theme") === "dark";
-      const next = isDark ? "light" : "dark";
-      applyTheme(next);
-      localStorage.setItem("theme", next);
-    });
-  }
-})();
+// Theme toggle removed per user request
 
 (function(){
   const emojiRow = document.getElementById("emojiRow");
@@ -590,7 +544,9 @@
   const sumSite = document.getElementById("summarySite");
   const sumTags = document.getElementById("summaryTags");
 
-  submit.addEventListener("click", ()=>{
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZrMcFlYkjxAOq6UC/exec";
+
+  submit.addEventListener("click", async ()=>{
     if(score === 0){
       // Show toast notification
       if(typeof showToast !== 'undefined'){
@@ -610,16 +566,70 @@
       }
       return;
     }
+    
     const selectedTags = Array.from(tags).filter(t=>t.classList.contains("active")).map(t=>t.textContent.trim());
     const siteScore = Math.round((Number(speed.value)+Number(clarity.value)+Number(design.value))/3);
+    const nameEl = document.getElementById("name");
+    const emailEl = document.getElementById("email");
+    const notesEl = document.getElementById("notes");
 
-    sumScore.textContent = score + "/5";
-    sumSite.textContent = siteScore + "/10";
-    sumTags.textContent = selectedTags.length ? selectedTags.join(", ") : "—";
+    // Show loading state
+    const originalText = submit.innerHTML;
+    submit.disabled = true;
+    submit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
 
-    modal.classList.remove("hidden");
-    modal.setAttribute("aria-hidden","false");
-    document.body.style.overflow = "hidden";
+    // Prepare data
+    const ratingData = {
+      score: score,
+      siteScore: siteScore,
+      nps: Number(nps.value),
+      tags: selectedTags,
+      speed: Number(speed.value),
+      clarity: Number(clarity.value),
+      design: Number(design.value),
+      notes: notesEl ? notesEl.value.trim() : "",
+      email: emailEl ? emailEl.value.trim() : "",
+      name: nameEl ? nameEl.value.trim() : ""
+    };
+
+    try {
+      // Submit to backend
+      const response = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "submitRating",
+          data: ratingData
+        })
+      });
+
+      const result = await response.json();
+
+      if(result.success){
+        sumScore.textContent = score + "/5";
+        sumSite.textContent = siteScore + "/10";
+        sumTags.textContent = selectedTags.length ? selectedTags.join(", ") : "—";
+
+        modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden","false");
+        document.body.style.overflow = "hidden";
+      } else {
+        throw new Error(result.error || "Failed to submit rating");
+      }
+    } catch (error) {
+      console.error("Rating submission error:", error);
+      // Show error but still show modal
+      sumScore.textContent = score + "/5";
+      sumSite.textContent = siteScore + "/10";
+      sumTags.textContent = selectedTags.length ? selectedTags.join(", ") : "—";
+
+      modal.classList.remove("hidden");
+      modal.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+    } finally {
+      submit.disabled = false;
+      submit.innerHTML = originalText;
+    }
   });
 
   function closeModal(){
