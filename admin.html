@@ -1826,6 +1826,12 @@
       const amountFilter = document.getElementById("amountFilter").value;
 
       filteredBookings = bookings.filter(b => {
+        // Filter by event type (All, Groove, Tempo, APT)
+        if(currentEvent){
+          const eventKey = (b.eventKey || "").toLowerCase();
+          if(eventKey !== currentEvent.toLowerCase()) return false;
+        }
+        
         if(status && b.status !== status) return false;
         if(q && !(
           (b.name||"").toLowerCase().includes(q) ||
