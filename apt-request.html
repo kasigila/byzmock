@@ -131,7 +131,7 @@
     display:block;
   }
 
-  main{padding-top:calc(var(--header-h) + 22px)}
+  main{padding-top:calc(var(--header-h) + 40px)}
 
   .hero{
     padding: 24px 0 16px;
@@ -447,6 +447,11 @@
         <span class="hero-pill"><i class="fa-solid fa-location-dot"></i> Dar es Salaam</span>
         <span class="hero-pill"><i class="fa-brands fa-whatsapp"></i> WhatsApp Reply</span>
       </div>
+      <div style="margin-top: 14px;">
+        <a class="btn ghost" href="gallery.html?event=apt" style="font-size: 13px; padding: 10px 14px;">
+          <i class="fa-solid fa-images"></i> Peep Past Sessions
+        </a>
+      </div>
     </div>
   </section>
 
@@ -551,7 +556,7 @@
           
           <div class="note" style="display: flex; align-items: flex-start; gap: 8px; margin-top: 8px;">
             <i class="fa-solid fa-circle-info" style="color: var(--sub); margin-top: 2px; flex-shrink: 0;"></i>
-            <span>Submitting opens WhatsApp with your details. Your request will be reviewed and you'll receive a response via WhatsApp.</span>
+            <span>Your request will be reviewed and you'll receive a response via WhatsApp or Instagram if a slot opens.</span>
           </div>
         </div>
       </form>
@@ -755,34 +760,7 @@
       });
     });
 
-    // Sticky submit button on mobile scroll
-    const submitBtn = document.getElementById("aptSubmitBtn");
-    if(submitBtn && window.innerWidth <= 640){
-      let lastScroll = window.scrollY;
-      window.addEventListener("scroll", () => {
-        const currentScroll = window.scrollY;
-        if(currentScroll > lastScroll && currentScroll > 200){
-          submitBtn.style.position = "fixed";
-          submitBtn.style.bottom = "20px";
-          submitBtn.style.left = "50%";
-          submitBtn.style.transform = "translateX(-50%)";
-          submitBtn.style.width = "calc(100% - 48px)";
-          submitBtn.style.maxWidth = "500px";
-          submitBtn.style.zIndex = "1000";
-          submitBtn.style.boxShadow = "0 8px 24px rgba(0,0,0,.4)";
-        } else {
-          submitBtn.style.position = "";
-          submitBtn.style.bottom = "";
-          submitBtn.style.left = "";
-          submitBtn.style.transform = "";
-          submitBtn.style.width = "";
-          submitBtn.style.maxWidth = "";
-          submitBtn.style.zIndex = "";
-          submitBtn.style.boxShadow = "";
-        }
-        lastScroll = currentScroll;
-      }, { passive: true });
-    }
+    // Sticky submit button removed per user request
   });
 
   // Warn before leaving with unsaved data
