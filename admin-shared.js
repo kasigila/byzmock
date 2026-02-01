@@ -5,6 +5,9 @@ const ADMIN_SESSION_KEY = "byz_admin_session";
 const ADMIN_REMEMBER_KEY = "byz_admin_remember";
 const ADMIN_PASSWORD = "weballwithbyz";
 
+// Make ADMIN_PASSWORD globally accessible
+window.ADMIN_PASSWORD = ADMIN_PASSWORD;
+
 // Session Management
 function checkAuth() {
   // Check sessionStorage first (active session)
