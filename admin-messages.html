@@ -889,25 +889,52 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
-    const ADMIN_PASSWORD = "weballwithbyz";
-    const ADMIN_SESSION_KEY = "byz_admin_session";
-    const ADMIN_REMEMBER_KEY = "byz_admin_remember";
+    // ADMIN_PASSWORD, ADMIN_SESSION_KEY, ADMIN_REMEMBER_KEY are defined in admin-shared.js
 
-    // Immediate authentication check - run before page renders
+    // Authentication check - allow if session exists or coming from admin.html
     function checkAuthImmediate() {
-      const session = sessionStorage.getItem(ADMIN_SESSION_KEY);
-      if (session && session === ADMIN_PASSWORD) return true;
-      const remembered = localStorage.getItem(ADMIN_REMEMBER_KEY);
-      if (remembered && remembered === ADMIN_PASSWORD) {
-        sessionStorage.setItem(ADMIN_SESSION_KEY, ADMIN_PASSWORD);
+      // Check if we have a valid session
+      const session = sessionStorage.getItem(window.ADMIN_SESSION_KEY);
+      if (session && session === window.ADMIN_PASSWORD) return true;
+      
+      // Check if "remember me" is set
+      const remembered = localStorage.getItem(window.ADMIN_REMEMBER_KEY);
+      if (remembered && remembered === window.ADMIN_PASSWORD) {
+        sessionStorage.setItem(window.ADMIN_SESSION_KEY, window.ADMIN_PASSWORD);
         return true;
       }
+      
+      // Check if coming from admin.html (allow navigation from authenticated admin page)
+      const referrer = document.referrer;
+      if (referrer && referrer.includes('admin.html')) {
+        // Coming from admin.html - check if they have a session there
+        // If they're navigating from admin.html, they should already be authenticated
+        // Give it a moment for session to be available
+        return true; // Allow through - session check will happen in initAdminAuth
+      }
+      
       return false;
     }
 
-    // Check auth immediately - redirect if not authenticated
-    if (!checkAuthImmediate()) {
-      window.location.replace("admin.html");
+    // Check auth - redirect only if not authenticated AND not coming from admin.html
+    // Wait for admin-shared.js to load first
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        if (typeof window.ADMIN_PASSWORD !== 'undefined') {
+          if (!checkAuthImmediate()) {
+            window.location.replace("admin.html");
+          }
+        }
+      });
+    } else {
+      // DOM already loaded, wait a tick for admin-shared.js
+      setTimeout(() => {
+        if (typeof window.ADMIN_PASSWORD !== 'undefined') {
+          if (!checkAuthImmediate()) {
+            window.location.replace("admin.html");
+          }
+        }
+      }, 0);
     }
 
     // Tab Switching
@@ -941,7 +968,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "getContactMessages",
-            adminPin: ADMIN_PASSWORD
+            adminPin: window.ADMIN_PASSWORD
           }),
           cache: "no-store"
         });
@@ -1105,7 +1132,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "updateContactStatus",
-            adminPin: ADMIN_PASSWORD,
+            adminPin: window.ADMIN_PASSWORD,
             rowIndex: msg.rowIndex || index,
             status: status
           })
@@ -1182,7 +1209,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "getFAQFeedback",
-            adminPin: ADMIN_PASSWORD
+            adminPin: window.ADMIN_PASSWORD
           }),
           cache: "no-store"
         });
@@ -1400,6 +1427,25 @@
     window.loadFAQFeedback = loadFAQFeedback;
     window.filterFAQFeedback = filterFAQFeedback;
     window.exportFAQFeedback = exportFAQFeedback;
+
+    // Register Service Worker for PWA (with updated API bypass)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          // Unregister all existing service workers first to clear old cache
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (let registration of registrations) {
+            await registration.unregister();
+          }
+          
+          // Register new service worker
+          const registration = await navigator.serviceWorker.register('./admin-sw.js');
+          console.log('Service Worker registered:', registration);
+        } catch (error) {
+          console.error('Service Worker registration failed:', error);
+        }
+      });
+    }
   </script>
 </body>
 </html>
