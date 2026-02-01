@@ -1,26 +1,30 @@
 // BYZ Admin - Shared Session Management & Navigation
 // Include this in all admin pages
 
-const ADMIN_SESSION_KEY = "byz_admin_session";
-const ADMIN_REMEMBER_KEY = "byz_admin_remember";
-const ADMIN_PASSWORD = "weballwithbyz";
-
-// Make ADMIN_PASSWORD globally accessible
-window.ADMIN_PASSWORD = ADMIN_PASSWORD;
+// Prevent duplicate declarations - use window properties only
+if (typeof window.ADMIN_SESSION_KEY === 'undefined') {
+  window.ADMIN_SESSION_KEY = "byz_admin_session";
+}
+if (typeof window.ADMIN_REMEMBER_KEY === 'undefined') {
+  window.ADMIN_REMEMBER_KEY = "byz_admin_remember";
+}
+if (typeof window.ADMIN_PASSWORD === 'undefined') {
+  window.ADMIN_PASSWORD = "weballwithbyz";
+}
 
 // Session Management
 function checkAuth() {
   // Check sessionStorage first (active session)
-  const session = sessionStorage.getItem(ADMIN_SESSION_KEY);
-  if (session && session === ADMIN_PASSWORD) {
+  const session = sessionStorage.getItem(window.ADMIN_SESSION_KEY);
+  if (session && session === window.ADMIN_PASSWORD) {
     return true;
   }
   
   // Check localStorage for "remember me"
-  const remembered = localStorage.getItem(ADMIN_REMEMBER_KEY);
-  if (remembered && remembered === ADMIN_PASSWORD) {
+  const remembered = localStorage.getItem(window.ADMIN_REMEMBER_KEY);
+  if (remembered && remembered === window.ADMIN_PASSWORD) {
     // Restore session
-    sessionStorage.setItem(ADMIN_SESSION_KEY, ADMIN_PASSWORD);
+    sessionStorage.setItem(window.ADMIN_SESSION_KEY, window.ADMIN_PASSWORD);
     return true;
   }
   
@@ -28,15 +32,15 @@ function checkAuth() {
 }
 
 function setAuth(remember = false) {
-  sessionStorage.setItem(ADMIN_SESSION_KEY, ADMIN_PASSWORD);
+  sessionStorage.setItem(window.ADMIN_SESSION_KEY, window.ADMIN_PASSWORD);
   if (remember) {
-    localStorage.setItem(ADMIN_REMEMBER_KEY, ADMIN_PASSWORD);
+    localStorage.setItem(window.ADMIN_REMEMBER_KEY, window.ADMIN_PASSWORD);
   }
 }
 
 function clearAuth() {
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
-  localStorage.removeItem(ADMIN_REMEMBER_KEY);
+  sessionStorage.removeItem(window.ADMIN_SESSION_KEY);
+  localStorage.removeItem(window.ADMIN_REMEMBER_KEY);
 }
 
 function logout() {
