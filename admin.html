@@ -1302,6 +1302,12 @@
     }
 
     function login(){
+      const password = document.getElementById("password");
+      if(!password){
+        console.error("Password input not found");
+        showToast("Login error: Password input not found", "error");
+        return;
+      }
       if(password.value === ADMIN_PASSWORD){
         document.getElementById("login").classList.add("hidden");
         document.getElementById("dashboard").classList.remove("hidden");
@@ -1345,15 +1351,19 @@
     }
     
     // Add shake animation
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-10px); }
-        75% { transform: translateX(10px); }
-      }
-    `;
-    document.head.appendChild(style);
+    let shakeStyle = document.getElementById('admin-shake-style');
+    if(!shakeStyle){
+      shakeStyle = document.createElement('style');
+      shakeStyle.id = 'admin-shake-style';
+      shakeStyle.textContent = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-10px); }
+          75% { transform: translateX(10px); }
+        }
+      `;
+      document.head.appendChild(shakeStyle);
+    }
 
     function updateConnectionStatus(){
       const status = navigator.onLine ? "online" : "offline";
@@ -1676,8 +1686,11 @@
     }
     
     // Add pulse animation keyframes
-    const style = document.createElement("style");
-    style.textContent += `
+    let statStyle = document.getElementById('admin-stat-style');
+    if(!statStyle){
+      statStyle = document.createElement("style");
+      statStyle.id = 'admin-stat-style';
+      statStyle.textContent = `
       @keyframes statPulse {
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.05); }
@@ -1687,7 +1700,8 @@
         50% { opacity: 0.6; transform: scale(1.1); }
       }
     `;
-    document.head.appendChild(style);
+      document.head.appendChild(statStyle);
+    }
     
     // Make functions globally accessible
     window.loadContactMessages = loadContactMessages;
