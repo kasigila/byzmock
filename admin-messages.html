@@ -246,6 +246,82 @@
         font-size:16px;
       }
     }
+    /* Reply Modal Styles */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.2s var(--ease);
+    }
+    .modal.hidden {
+      display: none;
+    }
+    .modal-content {
+      background: var(--bg-elev);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalSlideUp 0.3s var(--ease);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes modalSlideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+    }
+    .modal-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      transition: all 0.2s var(--ease);
+    }
+    .modal-close:hover {
+      background: var(--accent);
+      color: var(--bg);
+      transform: scale(1.05);
+    }
+    .modal-body {
+      padding: 24px;
+    }
+
     input:focus, select:focus{
       border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
       box-shadow: 
@@ -891,6 +967,65 @@
   <!-- Toast Container -->
   <div class="toast" id="toastContainer"></div>
 
+  <!-- Reply Modal -->
+  <div id="replyModal" class="modal hidden" onclick="if(event.target.id === 'replyModal') closeReplyModal()">
+    <div class="modal-content" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+      <div class="modal-header">
+        <h2 style="font-size:22px;font-weight:900;letter-spacing:-0.4px;">
+          <i class="fa-solid fa-reply" style="margin-right:10px;color:var(--accent);"></i>
+          Reply to Message
+        </h2>
+        <button onclick="closeReplyModal()" class="modal-close" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="replyRecipientInfo" style="padding:16px;background:linear-gradient(135deg, color-mix(in srgb, var(--bg-alt) 80%, transparent), color-mix(in srgb, var(--bg-elev) 90%, transparent));border-radius:14px;border:1px solid var(--border);margin-bottom:20px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <i class="fa-solid fa-user" style="color:var(--sub);font-size:14px;"></i>
+            <strong>To:</strong> <span id="replyToName"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <i class="fa-solid fa-envelope" style="color:var(--sub);font-size:14px;"></i>
+            <strong>Email:</strong> <span id="replyToEmail"></span>
+          </div>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);">
+            Subject
+          </label>
+          <input type="text" id="replySubject" placeholder="Re: Your inquiry" style="width:100%;padding:14px 16px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-elev);color:var(--text);outline:none;font-size:14px;">
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);">
+            Message
+          </label>
+          <textarea id="replyMessage" rows="8" placeholder="Type your reply here..." style="width:100%;padding:14px 16px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-elev);color:var(--text);outline:none;font-size:14px;font-family:inherit;resize:vertical;min-height:150px;"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+            <span style="font-size:12px;color:var(--sub);">
+              <span id="replyCharCount">0</span> characters
+            </span>
+            <button onclick="sendReplyViaEmail()" class="btn" style="background:var(--accent);color:var(--bg);border:none;padding:10px 16px;font-size:13px;">
+              <i class="fa-solid fa-envelope"></i> Open Email Client
+            </button>
+          </div>
+        </div>
+        
+        <div style="padding:14px;background:linear-gradient(135deg, color-mix(in srgb, var(--bg-alt) 60%, transparent), color-mix(in srgb, var(--bg-elev) 80%, transparent));border-radius:12px;border:1px solid var(--border);margin-top:20px;">
+          <div style="display:flex;align-items:start;gap:10px;">
+            <i class="fa-solid fa-info-circle" style="color:var(--sub);font-size:16px;margin-top:2px;"></i>
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:12px;color:var(--text);margin-bottom:4px;">Original Message</div>
+              <div id="replyOriginalMessage" style="font-size:13px;color:var(--sub);line-height:1.6;white-space:pre-wrap;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
     // ADMIN_PASSWORD, ADMIN_SESSION_KEY, ADMIN_REMEMBER_KEY are defined in admin-shared.js
@@ -1143,9 +1278,9 @@
               </span>
             </div>
             <div class="message-actions">
-              <a href="mailto:${msg.email}?subject=Re: ${encodeURIComponent(subjectLabel)}" class="btn primary" style="flex:1;">
+              <button onclick="openReplyModal(${index})" class="btn primary" style="flex:1;">
                 <i class="fa-solid fa-reply"></i> Reply Email
-              </a>
+              </button>
               ${msg.phone ? `
               <a href="https://wa.me/${msg.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn" style="background:#25D366;color:#fff;border:none;flex:1;">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
@@ -1429,6 +1564,127 @@
       div.textContent = text;
       return div.innerHTML;
     }
+    
+    // Reply Modal Functions
+    let currentReplyMessage = null;
+    
+    function openReplyModal(index) {
+      const msg = filteredContactMessages[index] || contactMessages[index];
+      if (!msg) return;
+      
+      currentReplyMessage = msg;
+      
+      // Populate modal
+      document.getElementById("replyToName").textContent = escapeHtml(msg.name || "Unknown");
+      document.getElementById("replyToEmail").textContent = escapeHtml(msg.email || "");
+      
+      const subjectLabels = {
+        "booking": "Booking Inquiry",
+        "support": "Support Request",
+        "partnership": "Partnership",
+        "media": "Media & Press",
+        "feedback": "Feedback",
+        "other": "Other"
+      };
+      const subjectLabel = subjectLabels[msg.subject] || msg.subject || "Your inquiry";
+      document.getElementById("replySubject").value = `Re: ${subjectLabel}`;
+      
+      // Show original message
+      document.getElementById("replyOriginalMessage").textContent = msg.message || "";
+      
+      // Clear reply message
+      document.getElementById("replyMessage").value = "";
+      updateReplyCharCount();
+      
+      // Show modal
+      const modal = document.getElementById("replyModal");
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      
+      // Focus on message textarea
+      setTimeout(() => {
+        document.getElementById("replyMessage").focus();
+      }, 100);
+    }
+    
+    function closeReplyModal() {
+      const modal = document.getElementById("replyModal");
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+      currentReplyMessage = null;
+    }
+    
+    function updateReplyCharCount() {
+      const message = document.getElementById("replyMessage").value;
+      document.getElementById("replyCharCount").textContent = message.length;
+    }
+    
+    function sendReplyViaEmail() {
+      if (!currentReplyMessage) return;
+      
+      const subject = document.getElementById("replySubject").value.trim();
+      const message = document.getElementById("replyMessage").value.trim();
+      const email = currentReplyMessage.email;
+      
+      if (!subject) {
+        showToast("Please enter a subject", "error");
+        document.getElementById("replySubject").focus();
+        return;
+      }
+      
+      if (!message) {
+        showToast("Please enter a message", "error");
+        document.getElementById("replyMessage").focus();
+        return;
+      }
+      
+      // Create mailto link with pre-filled content
+      const originalMessage = currentReplyMessage.message || "";
+      const emailBody = encodeURIComponent(
+        `${message}\n\n---\nOriginal Message:\n${originalMessage}`
+      );
+      const emailSubject = encodeURIComponent(subject);
+      
+      const mailtoLink = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
+      
+      // Open email client
+      window.location.href = mailtoLink;
+      
+      // Mark as replied if not already
+      if (currentReplyMessage.status !== "REPLIED") {
+        const index = contactMessages.findIndex(m => 
+          m.email === currentReplyMessage.email && 
+          m.timestamp === currentReplyMessage.timestamp
+        );
+        if (index !== -1) {
+          updateContactStatus(index, "REPLIED");
+        }
+      }
+      
+      // Close modal after a short delay
+      setTimeout(() => {
+        closeReplyModal();
+        showToast("Email client opened. Don't forget to send!", "success");
+      }, 500);
+    }
+    
+    // Add character counter listener
+    document.addEventListener("DOMContentLoaded", () => {
+      const replyMessage = document.getElementById("replyMessage");
+      if (replyMessage) {
+        replyMessage.addEventListener("input", updateReplyCharCount);
+      }
+      
+      // Close modal on Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const modal = document.getElementById("replyModal");
+          if (modal && !modal.classList.contains("hidden")) {
+            closeReplyModal();
+          }
+        }
+      });
+    });
 
     function showToast(message, type = "success"){
       const container = document.getElementById("toastContainer");
