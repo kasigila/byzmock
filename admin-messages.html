@@ -812,6 +812,10 @@
                 <option value="feedback">Feedback</option>
                 <option value="other">Other</option>
               </select>
+              <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg-elev);cursor:pointer;user-select:none;white-space:nowrap;font-size:13px;font-weight:600;">
+                <input type="checkbox" id="hideTestEntries" onchange="filterContactMessages()" style="width:18px;height:18px;cursor:pointer;margin:0;">
+                <span>Hide Test Entries</span>
+              </label>
             </div>
           </div>
 
@@ -1006,16 +1010,43 @@
       const search = (document.getElementById("contactSearch")?.value || "").toLowerCase();
       const statusFilter = document.getElementById("contactStatusFilter")?.value || "";
       const subjectFilter = document.getElementById("contactSubjectFilter")?.value || "";
+      const hideTestFilter = document.getElementById("hideTestEntries")?.checked || false;
       
       filteredContactMessages = contactMessages.filter(msg => {
-        if(statusFilter && msg.status !== statusFilter) return false;
+        // Status filter
+        const status = String(msg.status || "NEW").toUpperCase();
+        if(statusFilter && status !== statusFilter) return false;
+        
+        // Subject filter
         if(subjectFilter && msg.subject !== subjectFilter) return false;
+        
+        // Search filter
         if(search && !(
           (msg.name || "").toLowerCase().includes(search) ||
           (msg.email || "").toLowerCase().includes(search) ||
           (msg.subject || "").toLowerCase().includes(search) ||
           (msg.message || "").toLowerCase().includes(search)
         )) return false;
+        
+        // Hide test entries filter
+        if(hideTestFilter) {
+          const nameLower = (msg.name || "").toLowerCase();
+          const emailLower = (msg.email || "").toLowerCase();
+          const messageLower = (msg.message || "").toLowerCase();
+          
+          // Filter out obvious test entries
+          if (
+            (nameLower.includes("test") && nameLower.length < 15) ||
+            emailLower.includes("test@") ||
+            emailLower.includes("example.com") ||
+            emailLower.includes("fake") ||
+            messageLower === "test" ||
+            (messageLower.includes("test message") && messageLower.length < 20)
+          ) {
+            return false;
+          }
+        }
+        
         return true;
       });
       
