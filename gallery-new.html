@@ -39,26 +39,8 @@
   </script>
 
   <style>
-/* ===================== DESIGN TOKENS ===================== */
+/* ===================== DESIGN TOKENS - DARK THEME ONLY ===================== */
 :root{
-  --bg:#ffffff;
-  --bg-alt:#f5f5f7;
-  --bg-elev:#ffffff;
-  --text:#1d1d1f;
-  --sub:#6e6e73;
-  --border:#d2d2d7;
-  --accent:#000000;
-  --radius: 22px;
-  --radius-lg: 28px;
-  --shadow: 0 18px 60px rgba(0,0,0,.08);
-  --shadow-soft: 0 10px 30px rgba(0,0,0,.08);
-  --ease: cubic-bezier(.2,.8,.2,1);
-  --max: 1100px;
-  --header-h: 64px;
-  --success: #25D366;
-  --error: #b42318;
-}
-[data-theme="dark"]{
   --bg:#000000;
   --bg-alt:#1c1c1e;
   --bg-elev:#0b0b0c;
@@ -66,9 +48,18 @@
   --sub:#a1a1a6;
   --border:#2c2c2e;
   --accent:#ffffff;
+  --radius: 22px;
+  --radius-lg: 28px;
   --shadow: 0 18px 60px rgba(0,0,0,.35);
   --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --max: 1100px;
+  --header-h: 64px;
+  --success: #25D366;
+  --error: #b42318;
 }
+.logo-light{display:none !important;}
+.logo-dark{display:block !important;}
 
 /* ===================== REDUCED MOTION SUPPORT ===================== */
 @media (prefers-reduced-motion: reduce) {
@@ -424,7 +415,7 @@ header{
 .board-favorite{
   position:absolute;
   top:12px;
-  right:12px;
+  left:12px;
   z-index:4;
   width:40px;
   height:40px;
@@ -438,11 +429,45 @@ header{
   justify-content:center;
   cursor:pointer;
   opacity:0;
-  transition:opacity .2s var(--ease);
+  transition:opacity .2s var(--ease), transform .2s var(--ease);
   font-size:16px;
 }
 .board:hover .board-favorite{opacity:1}
 .board-favorite.active{opacity:1;color:#ff3b30;background:rgba(255,59,48,.2)}
+.board-favorite:hover{transform:scale(1.1)}
+
+/* ===================== EVENT LOGO BADGE ===================== */
+.board-event-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#fff;
+  border:1px solid rgba(255,255,255,.65);
+  box-shadow: 0 6px 18px rgba(0,0,0,.25);
+  z-index:4;
+  transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+}
+.board:hover .board-event-badge{
+  transform:scale(1.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.board-event-badge::after{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.3) 0%, transparent 70%);
+  opacity:0;
+  transition:opacity .2s var(--ease);
+  pointer-events:none;
+}
+.board:hover .board-event-badge::after{
+  opacity:1;
+}
 
 .board-info{
   position:absolute;
@@ -549,11 +574,28 @@ header{
   grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
   gap:12px;
   margin-top:20px;
+  transition:grid-template-columns .3s var(--ease), gap .3s var(--ease);
+}
+.masonry-grid.compact{
+  grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+  gap:8px;
+}
+.masonry-grid.list{
+  grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+  gap:16px;
 }
 @media (max-width: 640px){
   .masonry-grid{
     grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
     gap:8px;
+  }
+  .masonry-grid.compact{
+    grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
+    gap:6px;
+  }
+  .masonry-grid.list{
+    grid-template-columns:1fr;
+    gap:12px;
   }
 }
 
@@ -1098,17 +1140,16 @@ header{
     <div class="container">
       <div class="header-inner">
         <a href="index.html" class="brand">
-          <img src="assets/byz-logo-black.png" alt="BYZ" class="logo-light">
-          <img src="assets/byz-logo-white.png" alt="BYZ" class="logo-dark" style="display:none;">
+          <img src="assets/byz-logo-white.png" alt="BYZ" class="logo-dark">
           <span>Memory Gallery</span>
         </a>
         <div style="display:flex;gap:12px;align-items:center">
           <button class="btn ghost" id="myLikesBtn" onclick="toggleMyLikes()">
-            <i class="fa-solid fa-heart"></i>
+            <i class="fa-solid fa-heart-circle-check"></i>
             <span id="likesCountBadge">0</span>
           </button>
           <button class="btn ghost" id="recentActivityBtn" onclick="toggleRecentActivity()">
-            <i class="fa-solid fa-clock"></i>
+            <i class="fa-solid fa-clock-rotate-left"></i>
           </button>
         </div>
       </div>
@@ -1133,17 +1174,17 @@ header{
     <!-- Toolbar -->
     <div class="toolbar">
       <div class="toolbar-left">
-        <div class="layout-toggle">
-          <button class="layout-btn active" data-layout="grid" onclick="setLayout('grid')" aria-label="Grid layout">
-            <i class="fa-solid fa-grid"></i>
-          </button>
-          <button class="layout-btn" data-layout="compact" onclick="setLayout('compact')" aria-label="Compact layout">
-            <i class="fa-solid fa-th"></i>
-          </button>
-          <button class="layout-btn" data-layout="list" onclick="setLayout('list')" aria-label="List layout">
-            <i class="fa-solid fa-list"></i>
-          </button>
-        </div>
+          <div class="layout-toggle">
+            <button class="layout-btn active" data-layout="grid" onclick="setLayout('grid')" aria-label="Grid layout">
+              <i class="fa-solid fa-grid-2"></i>
+            </button>
+            <button class="layout-btn" data-layout="compact" onclick="setLayout('compact')" aria-label="Compact layout">
+              <i class="fa-solid fa-grip"></i>
+            </button>
+            <button class="layout-btn" data-layout="list" onclick="setLayout('list')" aria-label="List layout">
+              <i class="fa-solid fa-list-ul"></i>
+            </button>
+          </div>
         <select class="sort-select" id="albumSort" onchange="handleSortChange()">
           <option value="new">Newest first</option>
           <option value="old">Oldest first</option>
@@ -1151,9 +1192,9 @@ header{
         </select>
       </div>
       <div class="toolbar-right">
-        <button class="btn" id="selectModeBtn" onclick="toggleSelectMode()">
-          <i class="fa-solid fa-check-square"></i> Select
-        </button>
+          <button class="btn" id="selectModeBtn" onclick="toggleSelectMode()">
+            <i class="fa-solid fa-square-check"></i> Select
+          </button>
       </div>
     </div>
 
@@ -1179,10 +1220,10 @@ header{
           </div>
           <div class="album-actions">
             <button class="btn" onclick="backToBoards()">
-              <i class="fa-solid fa-arrow-left"></i> Back
+              <i class="fa-solid fa-arrow-left-long"></i> Back
             </button>
             <button class="btn" onclick="startSlideshow()">
-              <i class="fa-solid fa-play"></i> Slideshow
+              <i class="fa-solid fa-play-circle"></i> Slideshow
             </button>
             <button class="btn" id="downloadAllAlbumZip" onclick="downloadAllZip()">
               <i class="fa-solid fa-download"></i> Download All
@@ -1200,14 +1241,14 @@ header{
       <div class="bulk-count"><span id="bulkCount">0</span> selected</div>
       <div class="bulk-sub">Select photos to download</div>
     </div>
-    <div class="bulk-actions">
-      <button class="btn" onclick="bulkDownload()">
-        <i class="fa-solid fa-download"></i> Download
-      </button>
-      <button class="btn ghost" onclick="bulkClear()">
-        <i class="fa-solid fa-times"></i> Clear
-      </button>
-    </div>
+      <div class="bulk-actions">
+         <button class="btn" onclick="bulkDownload()">
+           <i class="fa-solid fa-arrow-down-to-bracket"></i> Download
+         </button>
+         <button class="btn ghost" onclick="bulkClear()">
+           <i class="fa-solid fa-xmark"></i> Clear
+         </button>
+      </div>
   </div>
 
   <!-- Lightbox -->
@@ -1219,13 +1260,13 @@ header{
           <i class="fa-solid fa-heart"></i>
         </button>
         <button class="lb-btn" onclick="sharePhoto()" aria-label="Share">
-          <i class="fa-solid fa-share"></i>
+          <i class="fa-solid fa-share-nodes"></i>
         </button>
         <button class="lb-btn" onclick="downloadPhoto()" aria-label="Download">
-          <i class="fa-solid fa-download"></i>
+          <i class="fa-solid fa-arrow-down-to-bracket"></i>
         </button>
         <button class="lb-btn" onclick="closeLightbox()" aria-label="Close">
-          <i class="fa-solid fa-times"></i>
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div class="lb-media" id="lbMedia" onclick="toggleZoom()">
@@ -1239,23 +1280,23 @@ header{
       </button>
       <div class="lb-info" id="lbInfo"></div>
     </div>
-    <div class="slideshow-controls" id="slideshowControls" style="display:none">
-      <button class="btn" id="slideshowToggle" onclick="toggleSlideshow()">
-        <i class="fa-solid fa-pause"></i> Pause
-      </button>
-      <button class="btn ghost" onclick="stopSlideshow()">
-        <i class="fa-solid fa-stop"></i> Stop
-      </button>
-    </div>
+      <div class="slideshow-controls" id="slideshowControls" style="display:none">
+        <button class="btn" id="slideshowToggle" onclick="toggleSlideshow()">
+          <i class="fa-solid fa-circle-pause"></i> Pause
+        </button>
+        <button class="btn ghost" onclick="stopSlideshow()">
+          <i class="fa-solid fa-circle-stop"></i> Stop
+        </button>
+      </div>
   </div>
 
   <!-- My Likes Sidebar -->
   <div class="my-likes" id="myLikes">
     <div class="my-likes-header">
       <div class="my-likes-title">My Liked Photos</div>
-      <button class="my-likes-close" onclick="toggleMyLikes()" aria-label="Close">
-        <i class="fa-solid fa-times"></i>
-      </button>
+        <button class="my-likes-close" onclick="toggleMyLikes()" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
     <div class="my-likes-content" id="myLikesContent"></div>
   </div>
@@ -1309,9 +1350,9 @@ header{
       <i class="fa-solid fa-hand-pointer"></i>
       <span>Double-tap photos to like them</span>
     </div>
-    <button class="hint-close" onclick="dismissDoubleTapHint()" type="button" aria-label="Dismiss">
-      <i class="fa-solid fa-times"></i>
-    </button>
+        <button class="hint-close" onclick="dismissDoubleTapHint()" type="button" aria-label="Dismiss">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
   </div>
 
   <script>
@@ -1437,6 +1478,10 @@ function buildBoards() {
     return;
   }
   
+  const badgeSrc = currentEvent === "tempo"
+    ? "assets/assets/events/tempo.JPG"
+    : "assets/assets/events/groove.jpg";
+  
   grid.innerHTML = albums.map((albumKey, idx) => {
     const photos = getPhotos(currentEvent, albumKey);
     const firstPhoto = photos[0];
@@ -1453,13 +1498,14 @@ function buildBoards() {
           <img class="preview-img" src="${previewUrl}" alt="${titleizeAlbum(albumKey)}" loading="lazy" 
                onload="this.classList.add('loaded')" 
                onerror="this.style.display='none'" />
+          <img class="board-event-badge" src="${badgeSrc}" alt="${currentEvent}" aria-hidden="true" loading="lazy">
         </div>
         <div class="board-info">
           <div class="board-title">${titleizeAlbum(albumKey)}</div>
           <div class="board-sub">${photos.length} photo${photos.length !== 1 ? 's' : ''}</div>
         </div>
         <button class="board-share" onclick="event.stopPropagation();shareAlbum('${albumKey}')" aria-label="Share">
-          <i class="fa-solid fa-share"></i>
+          <i class="fa-solid fa-share-nodes"></i>
         </button>
         <button class="board-favorite ${isFavorite ? 'active' : ''}" 
                 onclick="event.stopPropagation();toggleFavoriteAlbum('${albumKey}')" 
@@ -1518,9 +1564,9 @@ function renderAlbum(albumKey) {
         ${isLiked ? '<div class="pin-liked" style="opacity:1;transform:scale(1);pointer-events:auto;" onclick="event.stopPropagation();togglePhotoLike(' + "'" + url + "'" + ')"><i class="fa-solid fa-heart"></i></div>' : ''}
         <img src="${url}" alt="${filename}" loading="lazy" decoding="async" 
              onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'400\\' height=\\'400\\'/%3E%3Ctext fill=\\'%23999\\' font-family=\\'sans-serif\\' font-size=\\'18\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\'%3EImage not available%3C/text%3E%3C/svg%3E';" />
-        <a class="pin-download" href="${url}" download onclick="event.stopPropagation()">
-          <i class="fa-solid fa-download"></i> Download
-        </a>
+          <a class="pin-download" href="${url}" download onclick="event.stopPropagation()">
+            <i class="fa-solid fa-arrow-down-to-bracket"></i> Download
+          </a>
       </div>
     `;
   }).join('');
@@ -1593,10 +1639,19 @@ function backToBoards() {
 // ===================== LAYOUT =====================
 function setLayout(layout) {
   currentLayout = layout;
-  const grid = document.getElementById('boardGrid');
-  if (!grid) return;
+  const boardGrid = document.getElementById('boardGrid');
+  const masonryGrid = document.getElementById('masonryGrid');
   
-  grid.className = `board-grid ${layout}`;
+  // Apply to board grid (album view)
+  if (boardGrid) {
+    boardGrid.className = `board-grid ${layout}`;
+  }
+  
+  // Apply to masonry grid (photo view)
+  if (masonryGrid) {
+    masonryGrid.className = `masonry-grid ${layout}`;
+  }
+  
   document.querySelectorAll('.layout-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.layout === layout);
   });
@@ -1648,9 +1703,9 @@ function openLightbox(index) {
           <div style="font-weight:600;margin-bottom:4px">${photo.filename}</div>
           <div style="font-size:13px;color:var(--sub)">${index + 1} of ${lightboxPhotos.length}</div>
         </div>
-        <button class="btn" onclick="downloadPhoto()">
-          <i class="fa-solid fa-download"></i> Download
-        </button>
+          <button class="btn" onclick="downloadPhoto()">
+            <i class="fa-solid fa-arrow-down-to-bracket"></i> Download
+          </button>
       </div>
     `;
   }
@@ -2208,6 +2263,10 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     return;
   }
   
+  const badgeSrc = currentEvent === "tempo"
+    ? "assets/assets/events/tempo.JPG"
+    : "assets/assets/events/groove.jpg";
+  
   // Rebuild with filtered albums
   grid.innerHTML = filtered.map((albumKey, idx) => {
     const photos = getPhotos(currentEvent, albumKey);
@@ -2220,6 +2279,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
           <img class="preview-img" src="${previewUrl}" alt="${titleizeAlbum(albumKey)}" loading="lazy" 
                onload="this.classList.add('loaded')" 
                onerror="this.style.display='none'" />
+          <img class="board-event-badge" src="${badgeSrc}" alt="${currentEvent}" aria-hidden="true" loading="lazy">
         </div>
         <div class="board-info">
           <div class="board-title">${titleizeAlbum(albumKey)}</div>
@@ -2236,6 +2296,9 @@ function init() {
   const savedLayout = localStorage.getItem('byz_gallery_layout');
   if (savedLayout) {
     setLayout(savedLayout);
+  } else {
+    // Apply default layout to both grids
+    setLayout('grid');
   }
   
   // Show double-tap hint if not dismissed
