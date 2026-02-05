@@ -1,0 +1,2272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Gallery - All Albums | BYZ Entertainment</title>
+  <meta name="description" content="Browse all photo albums from BYZ events. Download your memories from Groove, Tempo, and more." />
+  
+  <!-- SEO & Social Sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://byzentertainment.com/gallery.html" />
+  <meta property="og:title" content="Memory Gallery - All Albums | BYZ Entertainment" />
+  <meta property="og:description" content="Browse all photo albums from BYZ events. Download your memories from Groove, Tempo, and more." />
+  <meta property="og:image" content="https://byzentertainment.com/assets/byz-logo-white.png" />
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:title" content="Memory Gallery - All Albums | BYZ Entertainment" />
+  <meta property="twitter:description" content="Browse all photo albums from BYZ events." />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  
+  <!-- Gallery Manifest -->
+  <script src="gallery-manifest.js"></script>
+  
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    "name": "BYZ Memory Gallery",
+    "description": "Photo albums from BYZ events in Dar es Salaam"
+  }
+  </script>
+
+  <style>
+/* ===================== DESIGN TOKENS ===================== */
+:root{
+  --bg:#ffffff;
+  --bg-alt:#f5f5f7;
+  --bg-elev:#ffffff;
+  --text:#1d1d1f;
+  --sub:#6e6e73;
+  --border:#d2d2d7;
+  --accent:#000000;
+  --radius: 22px;
+  --radius-lg: 28px;
+  --shadow: 0 18px 60px rgba(0,0,0,.08);
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.08);
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --max: 1100px;
+  --header-h: 64px;
+  --success: #25D366;
+  --error: #b42318;
+}
+[data-theme="dark"]{
+  --bg:#000000;
+  --bg-alt:#1c1c1e;
+  --bg-elev:#0b0b0c;
+  --text:#f5f5f7;
+  --sub:#a1a1a6;
+  --border:#2c2c2e;
+  --accent:#ffffff;
+  --shadow: 0 18px 60px rgba(0,0,0,.35);
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+}
+
+/* ===================== REDUCED MOTION SUPPORT ===================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===================== HIGH CONTRAST SUPPORT ===================== */
+@media (prefers-contrast: high) {
+  :root { --border: #000000; }
+  [data-theme="dark"] { --border: #ffffff; }
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.55;
+  transition: background .35s var(--ease), color .35s var(--ease);
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+.container{max-width:var(--max);margin:0 auto;padding:0 24px}
+
+/* ===================== HEADER ===================== */
+header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:16px 0;
+}
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:700;
+  font-size:18px;
+  color:var(--text);
+}
+.brand img{height:32px;width:auto}
+
+/* ===================== BREADCRUMB ===================== */
+.breadcrumb{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+  font-size:13px;
+  color:var(--sub);
+}
+.breadcrumb a{
+  color:var(--sub);
+  transition:color .2s var(--ease);
+  text-decoration:none;
+}
+.breadcrumb a:hover{color:var(--text)}
+.breadcrumb-sep{opacity:.5}
+
+/* ===================== SEARCH FUNCTIONALITY ===================== */
+.search-bar{
+  margin-bottom:16px;
+  position:relative;
+}
+.search-input{
+  width:100%;
+  padding:14px 16px 14px 48px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  background:var(--bg-elev);
+  color:var(--text);
+  font-size:14px;
+  outline:none;
+  box-shadow:var(--shadow-soft);
+  transition:box-shadow .2s var(--ease),border-color .2s var(--ease);
+}
+.search-input:focus{
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
+  border-color:var(--accent);
+}
+.search-icon{
+  position:absolute;
+  left:16px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--sub);
+  pointer-events:none;
+}
+.search-clear{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  border:none;
+  background:color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  color:var(--sub);
+  cursor:pointer;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+}
+.search-clear.show{display:flex}
+
+/* ===================== TOOLBAR ===================== */
+.toolbar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+  flex-wrap:wrap;
+}
+.toolbar-left{display:flex;gap:10px;flex-wrap:wrap;flex:1}
+.toolbar-right{display:flex;gap:10px;flex-wrap:wrap}
+
+.layout-toggle{
+  display:flex;
+  gap:4px;
+  padding:4px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--bg-elev);
+}
+.layout-btn{
+  padding:8px 12px;
+  border:none;
+  background:transparent;
+  color:var(--sub);
+  cursor:pointer;
+  border-radius:8px;
+  transition:all .2s var(--ease);
+  font-size:13px;
+}
+.layout-btn.active{
+  background:var(--accent);
+  color:var(--bg);
+}
+
+.sort-select, .filter-select{
+  padding:10px 14px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:var(--bg-elev);
+  color:var(--text);
+  font-size:13px;
+  outline:none;
+  cursor:pointer;
+}
+
+/* ===================== GALLERY TABS ===================== */
+.gallery-shell{margin-top: 24px;}
+
+.gallery-tabs{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom: 14px;
+  border:1px solid var(--border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  padding: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+.tab{
+  padding:10px 14px;
+  border-radius: 999px;
+  border:1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -.2px;
+  cursor:pointer;
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+  color: var(--text);
+}
+.tab:hover{ transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+.tab.active{
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  font-weight: 600;
+}
+[data-theme="dark"] .tab.active{
+  background: var(--accent);
+  color: var(--bg);
+  border-color: transparent;
+}
+
+.gallery-meta{
+  margin-left:auto;
+  color: var(--sub);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* ===================== BOARD GRID LAYOUTS ===================== */
+.board-grid{display:grid;grid-template-columns: repeat(3, 1fr);gap: 16px;}
+.board-grid.compact{grid-template-columns: repeat(4, 1fr);gap: 12px;}
+.board-grid.list{grid-template-columns: 1fr;}
+@media (max-width: 980px){ 
+  .board-grid{ grid-template-columns: repeat(2, 1fr); }
+  .board-grid.compact{ grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 560px){ 
+  .board-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .board-grid.compact{ grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ===================== BOARD CARDS ===================== */
+.board{
+  border-radius: var(--radius-lg);
+  border:none;
+  background: none;
+  box-shadow: none;
+  overflow:visible;
+  cursor:pointer;
+  text-align:left;
+  padding:0;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+  position:relative;
+  opacity:0;
+  animation: fadeInUp 0.4s var(--ease) forwards;
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.board:nth-child(1){animation-delay:0.05s}
+.board:nth-child(2){animation-delay:0.1s}
+.board:nth-child(3){animation-delay:0.15s}
+.board:nth-child(4){animation-delay:0.2s}
+.board:nth-child(5){animation-delay:0.25s}
+.board:nth-child(6){animation-delay:0.3s}
+
+.board:hover{ transform: translateY(-4px); }
+
+.board-badge-new{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:4;
+  padding:6px 10px;
+  border-radius:999px;
+  background:var(--success);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.board-badge-popular{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:4;
+  padding:6px 10px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ff6b6b,#ee5a6f);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+
+.board-preview{
+  position:relative;
+  width:100%;
+  aspect-ratio: 4 / 5;
+  overflow:hidden;
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+@media (max-width: 560px){.board-preview{ aspect-ratio: 1 / 1; }}
+
+.board-preview::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 52%, rgba(0,0,0,.58) 100%);
+  pointer-events:none;
+  z-index:1;
+}
+
+.board-preview .preview-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition: opacity 420ms ease, filter 420ms ease, transform 420ms ease;
+  will-change: opacity;
+  border-radius: 0;
+  z-index: 0;
+  filter:blur(10px);
+  transform:scale(1.1);
+  background: var(--bg-alt);
+}
+.board-preview .preview-img.active{
+  opacity:0.4;
+}
+.board-preview .preview-img.loaded{
+  filter:blur(0);
+  transform:scale(1);
+}
+.board-preview .preview-img.active.loaded{
+  opacity:1;
+}
+
+.board-share{
+  position:absolute;
+  bottom:60px;
+  right:12px;
+  z-index:3;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.3);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity .2s var(--ease);
+  font-size:14px;
+}
+.board:hover .board-share{opacity:1}
+
+.board-favorite{
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:4;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.3);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity .2s var(--ease);
+  font-size:16px;
+}
+.board:hover .board-favorite{opacity:1}
+.board-favorite.active{opacity:1;color:#ff3b30;background:rgba(255,59,48,.2)}
+
+.board-info{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:16px;
+  z-index:2;
+  color:#fff;
+}
+.board-title{
+  font-weight:600;
+  font-size:16px;
+  margin-bottom:4px;
+}
+.board-sub{
+  font-size:13px;
+  opacity:.9;
+}
+
+/* ===================== SKELETON SCREENS ===================== */
+.skeleton{
+  background:linear-gradient(90deg,var(--bg-alt) 25%,var(--bg-elev) 50%,var(--bg-alt) 75%);
+  background-size:200% 100%;
+  animation:loading 1.5s ease-in-out infinite;
+  border-radius:16px;
+}
+@keyframes loading{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+.skeleton-board{
+  aspect-ratio:4/5;
+  border-radius:16px;
+}
+
+/* ===================== QUICK PREVIEW TOOLTIP ===================== */
+.quick-preview{
+  position:fixed;
+  z-index:998;
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow);
+  padding:16px;
+  max-width:320px;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity .2s var(--ease),transform .2s var(--ease);
+}
+.quick-preview.show{
+  opacity:1;
+  transform:translateY(0);
+}
+.quick-preview img{
+  width:100%;
+  border-radius:12px;
+  margin-bottom:8px;
+}
+.quick-preview-title{
+  font-weight:600;
+  font-size:14px;
+  margin-bottom:4px;
+}
+.quick-preview-sub{
+  font-size:12px;
+  color:var(--sub);
+}
+
+/* ===================== ALBUM VIEW ===================== */
+.album-view{ margin-top: 14px; }
+.album-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+  gap:16px;
+}
+.album-title-wrap{
+  flex:1;
+  min-width:200px;
+}
+.album-title{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:8px;
+  letter-spacing:-.5px;
+}
+.album-sub{
+  color:var(--sub);
+  font-size:14px;
+}
+.album-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* ===================== MASONRY GRID ===================== */
+.masonry-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
+  gap:12px;
+  margin-top:20px;
+}
+@media (max-width: 640px){
+  .masonry-grid{
+    grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+    gap:8px;
+  }
+}
+
+.pin{
+  position:relative;
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  background:var(--bg-alt);
+  aspect-ratio:1;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+.pin:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--shadow);
+}
+.pin img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:filter .3s var(--ease);
+}
+.pin[data-liked="true"] .pin-liked,
+.pin-liked[style*="opacity:1"]{
+  opacity:1 !important;
+  transform:scale(1) !important;
+  pointer-events:auto !important;
+}
+.pin-liked{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:rgba(255,59,48,.9);
+  backdrop-filter:blur(10px);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:5;
+  opacity:0;
+  transform:scale(0);
+  pointer-events:none;
+  transition:all .2s var(--ease);
+  cursor:pointer;
+}
+.pin-liked:hover{
+  transform:scale(1.1);
+  background:rgba(255,59,48,1);
+}
+
+.pin-download{
+  position:absolute;
+  bottom:12px;
+  right:12px;
+  padding:8px 12px;
+  border-radius:8px;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(10px);
+  color:#fff;
+  font-size:12px;
+  opacity:0;
+  transition:opacity .2s var(--ease);
+  z-index:5;
+}
+.pin:hover .pin-download{opacity:1}
+
+/* ===================== BULK ACTIONS BAR ===================== */
+.bulkbar{
+  position: sticky;
+  bottom: 14px;
+  margin-top: 14px;
+  border-radius: 22px;
+  border:1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  z-index: 950;
+}
+.bulk-left{ display:flex; flex-direction:column; gap:2px; }
+.bulk-count{ font-weight: 600; letter-spacing:-.3px; }
+.bulk-sub{ color: var(--sub); font-size: 13px; font-weight: 400; }
+#bulkbar[aria-hidden="true"]{ display:none; }
+
+.bulk-actions{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.bulk-actions .btn{
+  padding: 12px 18px;
+}
+@media (max-width: 520px) {
+  .bulkbar{ flex-direction: column; align-items: stretch; }
+  .bulk-actions{ width: 100%; }
+  .bulk-actions .btn{ flex: 1; }
+}
+
+/* ===================== LIGHTBOX ===================== */
+.lightbox{ position: fixed; inset: 0; z-index: 2000; display:none; }
+.lightbox.show{ display:block; animation:fadeIn .2s var(--ease); }
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.lb-backdrop{ position:absolute; inset:0; background: rgba(0,0,0,.72); backdrop-filter: blur(6px); }
+
+.lb-panel{
+  position: relative;
+  width: min(980px, calc(100% - 26px));
+  margin: 40px auto;
+  border-radius: 22px;
+  background: var(--bg-elev);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+}
+
+.lb-media{
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-x pan-y pinch-zoom;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: var(--bg-alt);
+}
+
+.lb-media img{
+  max-width: 100%;
+  max-height: calc(100vh - 200px);
+  object-fit: contain;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: zoom-in;
+}
+
+.lb-media.zoomed img{
+  cursor: zoom-out;
+  transform: scale(2);
+}
+
+.lb-controls{
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.lb-btn{
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s var(--ease);
+}
+.lb-btn:hover{
+  background: rgba(0,0,0,.8);
+  transform: scale(1.1);
+}
+
+.lb-nav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s var(--ease);
+  z-index: 10;
+}
+.lb-nav:hover{
+  background: rgba(0,0,0,.8);
+  transform: scale(1.1);
+}
+.lb-prev{ left: 20px; }
+.lb-next{ right: 20px; }
+
+.lb-info{
+  padding: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.slideshow-controls{
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2001;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 24px;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+}
+@media (max-width: 640px){
+  .slideshow-controls{
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* ===================== MY LIKES SIDEBAR ===================== */
+.my-likes{
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  height: 100vh;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  box-shadow: -8px 0 32px rgba(0,0,0,.2);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.my-likes.show{
+  transform: translateX(0);
+}
+.my-likes-header{
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.my-likes-title{
+  font-weight: 700;
+  font-size: 18px;
+}
+.my-likes-close{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-alt);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.my-likes-content{
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+.liked-photo-item{
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .2s var(--ease);
+  margin-bottom: 8px;
+}
+.liked-photo-item:hover{
+  background: var(--bg-alt);
+}
+.liked-photo-item img{
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.liked-photo-info{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.liked-photo-name{
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.liked-photo-date{
+  font-size: 12px;
+  color: var(--sub);
+}
+
+/* ===================== RECENT ACTIVITY ===================== */
+.recent-activity{
+  position:fixed;
+  right:-320px;
+  top:calc(var(--header-h) + 20px);
+  width:300px;
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow);
+  padding:20px;
+  transition:right .3s var(--ease);
+  z-index:998;
+  max-height:calc(100vh - var(--header-h) - 40px);
+  overflow-y:auto;
+}
+.recent-activity.show{right:20px}
+.recent-activity h4{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:16px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--sub);
+}
+.recent-item{
+  display:flex;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  transition:background .2s var(--ease);
+}
+.recent-item:hover{background:var(--bg-alt);border-radius:8px;padding-left:8px;padding-right:8px;}
+
+/* ===================== TOAST NOTIFICATIONS ===================== */
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%) translateY(100px);
+  padding:14px 20px;
+  border-radius:16px;
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  z-index:10000;
+  opacity:0;
+  pointer-events:none;
+  transition:all .3s var(--ease);
+  max-width:90vw;
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+  pointer-events:auto;
+}
+.toast.success{background:var(--success);color:#fff;border-color:var(--success)}
+.toast.error{background:var(--error);color:#fff;border-color:var(--error)}
+
+/* ===================== BUTTONS ===================== */
+.btn{
+  padding:12px 20px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:var(--bg-elev);
+  color:var(--text);
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .2s var(--ease);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  text-decoration:none;
+}
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-soft);
+}
+.btn.primary{
+  background:var(--accent);
+  color:var(--bg);
+  border-color:var(--accent);
+}
+.btn.ghost{
+  background:transparent;
+  border-color:var(--border);
+}
+
+/* ===================== PWA INSTALL PROMPT ===================== */
+.pwa-install-prompt{
+  position:fixed;
+  bottom:24px;
+  left:24px;
+  right:24px;
+  max-width:400px;
+  margin:0 auto;
+  padding:20px;
+  border-radius:20px;
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  z-index:10001;
+  display:none;
+}
+.pwa-install-prompt.show{display:block}
+.pwa-install-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+.pwa-install-title{
+  font-weight:600;
+  font-size:16px;
+}
+.pwa-install-desc{
+  color:var(--sub);
+  font-size:13px;
+  margin-bottom:16px;
+}
+.pwa-install-close{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:none;
+  background:var(--bg-alt);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.pwa-install-actions{
+  display:flex;
+  gap:10px;
+}
+
+/* ===================== ACHIEVEMENT BADGES ===================== */
+.achievement-badge{
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  padding: 16px 20px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--bg-elev) 95%, transparent) 0%,
+    color-mix(in srgb, var(--bg-elev) 90%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  backdrop-filter: blur(30px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  z-index: 10001;
+  transform: translateY(150%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 300px;
+}
+.achievement-badge.show{
+  transform: translateY(0);
+}
+.achievement-badge-header{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.achievement-badge-icon{
+  font-size: 24px;
+}
+.achievement-badge-title{
+  font-weight: 600;
+  font-size: 16px;
+}
+.achievement-badge-desc{
+  font-size: 13px;
+  color: var(--sub);
+}
+
+/* ===================== DOUBLE-TAP HINT ===================== */
+.double-tap-hint{
+  margin: 16px 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--bg-elev) 95%, transparent) 0%,
+    color-mix(in srgb, var(--bg-elev) 90%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hint-content{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hint-content i{
+  font-size: 20px;
+  color: var(--accent);
+}
+.hint-close{
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-alt);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px){
+  .container{padding:0 16px}
+  .album-title{font-size:24px}
+  .toolbar{flex-direction:column;align-items:stretch}
+  .toolbar-left,.toolbar-right{width:100%}
+}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="brand">
+          <img src="assets/byz-logo-black.png" alt="BYZ" class="logo-light">
+          <img src="assets/byz-logo-white.png" alt="BYZ" class="logo-dark" style="display:none;">
+          <span>Memory Gallery</span>
+        </a>
+        <div style="display:flex;gap:12px;align-items:center">
+          <button class="btn ghost" id="myLikesBtn" onclick="toggleMyLikes()">
+            <i class="fa-solid fa-heart"></i>
+            <span id="likesCountBadge">0</span>
+          </button>
+          <button class="btn ghost" id="recentActivityBtn" onclick="toggleRecentActivity()">
+            <i class="fa-solid fa-clock"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top:32px;padding-bottom:80px">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" id="breadcrumb">
+      <a href="gallery.html">Gallery</a>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search albums and photos..." />
+      <button class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="Clear search">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="layout-toggle">
+          <button class="layout-btn active" data-layout="grid" onclick="setLayout('grid')" aria-label="Grid layout">
+            <i class="fa-solid fa-grid"></i>
+          </button>
+          <button class="layout-btn" data-layout="compact" onclick="setLayout('compact')" aria-label="Compact layout">
+            <i class="fa-solid fa-th"></i>
+          </button>
+          <button class="layout-btn" data-layout="list" onclick="setLayout('list')" aria-label="List layout">
+            <i class="fa-solid fa-list"></i>
+          </button>
+        </div>
+        <select class="sort-select" id="albumSort" onchange="handleSortChange()">
+          <option value="new">Newest first</option>
+          <option value="old">Oldest first</option>
+          <option value="photos">Most photos</option>
+        </select>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn" id="selectModeBtn" onclick="toggleSelectMode()">
+          <i class="fa-solid fa-check-square"></i> Select
+        </button>
+      </div>
+    </div>
+
+    <!-- Gallery Tabs -->
+    <div class="gallery-shell">
+      <div class="gallery-tabs">
+        <button class="tab active" data-event="groove" onclick="switchEvent('groove')">Groove</button>
+        <button class="tab" data-event="tempo" onclick="switchEvent('tempo')">Tempo</button>
+        <div class="gallery-meta">
+          <span id="albumCount">0</span> albums · <span id="photoCount">0</span> photos
+        </div>
+      </div>
+
+      <!-- Boards Grid -->
+      <div class="board-grid" id="boardGrid"></div>
+
+      <!-- Album View -->
+      <div class="album-view" id="albumView" style="display:none">
+        <div class="album-top">
+          <div class="album-title-wrap">
+            <h1 class="album-title" id="albumTitle"></h1>
+            <div class="album-sub" id="albumSub"></div>
+          </div>
+          <div class="album-actions">
+            <button class="btn" onclick="backToBoards()">
+              <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <button class="btn" onclick="startSlideshow()">
+              <i class="fa-solid fa-play"></i> Slideshow
+            </button>
+            <button class="btn" id="downloadAllAlbumZip" onclick="downloadAllZip()">
+              <i class="fa-solid fa-download"></i> Download All
+            </button>
+          </div>
+        </div>
+        <div class="masonry-grid" id="masonryGrid"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bulk Actions Bar -->
+  <div class="bulkbar" id="bulkbar" aria-hidden="true">
+    <div class="bulk-left">
+      <div class="bulk-count"><span id="bulkCount">0</span> selected</div>
+      <div class="bulk-sub">Select photos to download</div>
+    </div>
+    <div class="bulk-actions">
+      <button class="btn" onclick="bulkDownload()">
+        <i class="fa-solid fa-download"></i> Download
+      </button>
+      <button class="btn ghost" onclick="bulkClear()">
+        <i class="fa-solid fa-times"></i> Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lb-backdrop" onclick="closeLightbox()"></div>
+    <div class="lb-panel">
+      <div class="lb-controls">
+        <button class="lb-btn" onclick="togglePhotoLike()" id="lbLikeBtn" aria-label="Like">
+          <i class="fa-solid fa-heart"></i>
+        </button>
+        <button class="lb-btn" onclick="sharePhoto()" aria-label="Share">
+          <i class="fa-solid fa-share"></i>
+        </button>
+        <button class="lb-btn" onclick="downloadPhoto()" aria-label="Download">
+          <i class="fa-solid fa-download"></i>
+        </button>
+        <button class="lb-btn" onclick="closeLightbox()" aria-label="Close">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="lb-media" id="lbMedia" onclick="toggleZoom()">
+        <img id="lbImage" src="" alt="Photo" />
+      </div>
+      <button class="lb-nav lb-prev" onclick="prevPhoto()" aria-label="Previous">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <button class="lb-nav lb-next" onclick="nextPhoto()" aria-label="Next">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+      <div class="lb-info" id="lbInfo"></div>
+    </div>
+    <div class="slideshow-controls" id="slideshowControls" style="display:none">
+      <button class="btn" id="slideshowToggle" onclick="toggleSlideshow()">
+        <i class="fa-solid fa-pause"></i> Pause
+      </button>
+      <button class="btn ghost" onclick="stopSlideshow()">
+        <i class="fa-solid fa-stop"></i> Stop
+      </button>
+    </div>
+  </div>
+
+  <!-- My Likes Sidebar -->
+  <div class="my-likes" id="myLikes">
+    <div class="my-likes-header">
+      <div class="my-likes-title">My Liked Photos</div>
+      <button class="my-likes-close" onclick="toggleMyLikes()" aria-label="Close">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+    <div class="my-likes-content" id="myLikesContent"></div>
+  </div>
+
+  <!-- Recent Activity Sidebar -->
+  <div class="recent-activity" id="recentActivity">
+    <h4>Recent Activity</h4>
+    <div id="recentActivityContent"></div>
+    <button class="btn ghost" style="width:100%;margin-top:12px;" onclick="clearRecentActivity()">
+      Clear History
+    </button>
+  </div>
+
+  <!-- Quick Preview Tooltip -->
+  <div class="quick-preview" id="quickPreview">
+    <img id="quickPreviewImg" src="" alt="Preview" />
+    <div class="quick-preview-title" id="quickPreviewTitle"></div>
+    <div class="quick-preview-sub" id="quickPreviewSub"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" aria-hidden="true"></div>
+
+  <!-- PWA Install Prompt -->
+  <div class="pwa-install-prompt" id="pwaInstallPrompt">
+    <div class="pwa-install-header">
+      <div>
+        <div class="pwa-install-title">Install BYZ Gallery</div>
+        <div class="pwa-install-desc">Add to home screen for quick access</div>
+      </div>
+      <button class="pwa-install-close" onclick="closePWAInstall()" aria-label="Close">×</button>
+    </div>
+    <div class="pwa-install-actions">
+      <button class="btn primary" id="pwaInstallBtn">Install</button>
+      <button class="btn ghost" onclick="closePWAInstall()">Not now</button>
+    </div>
+  </div>
+
+  <!-- Achievement Badge -->
+  <div class="achievement-badge" id="achievementBadge">
+    <div class="achievement-badge-header">
+      <div class="achievement-badge-icon">🏆</div>
+      <div class="achievement-badge-title" id="achievementTitle"></div>
+    </div>
+    <div class="achievement-badge-desc" id="achievementDesc"></div>
+  </div>
+
+  <!-- Double-tap Hint -->
+  <div class="double-tap-hint" id="doubleTapHint" style="display:none">
+    <div class="hint-content">
+      <i class="fa-solid fa-hand-pointer"></i>
+      <span>Double-tap photos to like them</span>
+    </div>
+    <button class="hint-close" onclick="dismissDoubleTapHint()" type="button" aria-label="Dismiss">
+      <i class="fa-solid fa-times"></i>
+    </button>
+  </div>
+
+  <script>
+// ===================== GLOBAL STATE =====================
+let currentEvent = 'groove';
+let currentAlbum = null;
+let currentLayout = 'grid';
+let selectMode = false;
+let selected = new Set();
+let photoLikes = JSON.parse(localStorage.getItem('byz_photo_likes') || '{}');
+let favorites = JSON.parse(localStorage.getItem('byz_favorites') || '[]');
+let recentActivity = JSON.parse(localStorage.getItem('byz_recent_activity') || '[]');
+let lightboxIndex = 0;
+let lightboxPhotos = [];
+let slideshowInterval = null;
+let isSlideshowPlaying = false;
+let quickPreviewTimeout = null;
+
+// ===================== UTILITY FUNCTIONS =====================
+function showToast(msg, type = 'info') {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.className = `toast show ${type}`;
+  toast.setAttribute('aria-hidden', 'false');
+  setTimeout(() => {
+    toast.classList.remove('show');
+    toast.setAttribute('aria-hidden', 'true');
+  }, 2000);
+}
+
+function titleizeAlbum(key) {
+  const [m, d, y] = key.split('-');
+  const monthNames = {
+    'january': 'January', 'february': 'February', 'march': 'March', 'april': 'April',
+    'may': 'May', 'june': 'June', 'july': 'July', 'august': 'August',
+    'september': 'September', 'october': 'October', 'november': 'November', 'december': 'December'
+  };
+  const month = monthNames[m.toLowerCase()] || m.charAt(0).toUpperCase() + m.slice(1);
+  return `${month} ${Number(d)}, ${y}`;
+}
+
+function parseAlbumKey(key) {
+  const [m, d, y] = key.split('-');
+  const monthIndex = {
+    'january': 0, 'february': 1, 'march': 2, 'april': 3,
+    'may': 4, 'june': 5, 'july': 6, 'august': 7,
+    'september': 8, 'october': 9, 'november': 10, 'december': 11
+  };
+  const mi = monthIndex[m.toLowerCase()];
+  if (mi === undefined) return new Date(0);
+  return new Date(Number(y), mi, Number(d));
+}
+
+function formatTimeAgo(timestamp) {
+  const now = Date.now();
+  const diff = now - timestamp;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  
+  if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  return 'Just now';
+}
+
+// ===================== GALLERY DATA =====================
+function getAlbums(event) {
+  if (!window.BYZ_GALLERY || !window.BYZ_GALLERY.BOARDS || !window.BYZ_GALLERY.BOARDS[event]) {
+    return [];
+  }
+  const albums = Object.keys(window.BYZ_GALLERY.BOARDS[event]);
+  albums.sort((a, b) => parseAlbumKey(b) - parseAlbumKey(a));
+  return albums;
+}
+
+function getPhotos(event, albumKey) {
+  if (!window.BYZ_GALLERY || !window.BYZ_GALLERY.BOARDS || !window.BYZ_GALLERY.BOARDS[event] || !window.BYZ_GALLERY.BOARDS[event][albumKey]) {
+    return [];
+  }
+  return window.BYZ_GALLERY.BOARDS[event][albumKey];
+}
+
+function getPhotoUrl(event, albumKey, filename) {
+  if (!window.BYZ_GALLERY || !window.BYZ_GALLERY.ROOTS || !window.BYZ_GALLERY.ROOTS[event]) {
+    return '';
+  }
+  return `${window.BYZ_GALLERY.ROOTS[event]}${albumKey}/${filename}`;
+}
+
+function countPhotos(event) {
+  const albums = getAlbums(event);
+  let count = 0;
+  albums.forEach(album => {
+    count += getPhotos(event, album).length;
+  });
+  return count;
+}
+
+// ===================== RENDER FUNCTIONS =====================
+function updateMeta() {
+  const albums = getAlbums(currentEvent);
+  const photoCount = countPhotos(currentEvent);
+  document.getElementById('albumCount').textContent = albums.length;
+  document.getElementById('photoCount').textContent = photoCount;
+  updateLikesCount();
+}
+
+function updateLikesCount() {
+  const count = Object.keys(photoLikes).filter(k => photoLikes[k]).length;
+  document.getElementById('likesCountBadge').textContent = count;
+}
+
+function buildBoards() {
+  const grid = document.getElementById('boardGrid');
+  if (!grid) return;
+  
+  const albums = getAlbums(currentEvent);
+  if (albums.length === 0) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub)">No albums found</div>';
+    return;
+  }
+  
+  grid.innerHTML = albums.map((albumKey, idx) => {
+    const photos = getPhotos(currentEvent, albumKey);
+    const firstPhoto = photos[0];
+    const previewUrl = firstPhoto ? getPhotoUrl(currentEvent, albumKey, firstPhoto) : '';
+    const isFavorite = favorites.includes(`${currentEvent}:${albumKey}`);
+    const isNew = isNewAlbum(albumKey);
+    const isPopular = photos.length > 20;
+    
+    return `
+      <div class="board" data-album="${albumKey}" onclick="openAlbum('${albumKey}')">
+        ${isNew ? '<div class="board-badge-new">New</div>' : ''}
+        ${isPopular ? '<div class="board-badge-popular">Popular</div>' : ''}
+        <div class="board-preview">
+          <img class="preview-img" src="${previewUrl}" alt="${titleizeAlbum(albumKey)}" loading="lazy" 
+               onload="this.classList.add('loaded')" 
+               onerror="this.style.display='none'" />
+        </div>
+        <div class="board-info">
+          <div class="board-title">${titleizeAlbum(albumKey)}</div>
+          <div class="board-sub">${photos.length} photo${photos.length !== 1 ? 's' : ''}</div>
+        </div>
+        <button class="board-share" onclick="event.stopPropagation();shareAlbum('${albumKey}')" aria-label="Share">
+          <i class="fa-solid fa-share"></i>
+        </button>
+        <button class="board-favorite ${isFavorite ? 'active' : ''}" 
+                onclick="event.stopPropagation();toggleFavoriteAlbum('${albumKey}')" 
+                aria-label="Favorite">
+          <i class="fa-solid fa-heart"></i>
+        </button>
+      </div>
+    `;
+  }).join('');
+  
+  // Load preview images progressively
+  const previewImgs = grid.querySelectorAll('.preview-img');
+  previewImgs.forEach(img => {
+    if (img.src && !img.complete) {
+      img.classList.add('active');
+      const tempImg = new Image();
+      tempImg.onload = () => {
+        img.classList.add('loaded');
+      };
+      tempImg.src = img.src;
+    }
+  });
+}
+
+function renderAlbum(albumKey) {
+  currentAlbum = albumKey;
+  const photos = getPhotos(currentEvent, albumKey);
+  const grid = document.getElementById('masonryGrid');
+  const albumView = document.getElementById('albumView');
+  const boardGrid = document.getElementById('boardGrid');
+  
+  if (!grid || !albumView || !boardGrid) return;
+  
+  boardGrid.style.display = 'none';
+  albumView.style.display = 'block';
+  
+  document.getElementById('albumTitle').textContent = titleizeAlbum(albumKey);
+  document.getElementById('albumSub').textContent = `${photos.length} photo${photos.length !== 1 ? 's' : ''}`;
+  
+  updateBreadcrumb(albumKey);
+  
+  grid.innerHTML = photos.map((filename, idx) => {
+    const url = getPhotoUrl(currentEvent, albumKey, filename);
+    const isLiked = photoLikes[url] === true;
+    const isSelected = selected.has(url);
+    
+    return `
+      <div class="pin ${selectMode ? 'selectable' : ''} ${isSelected ? 'selected' : ''}" 
+           data-src="${url}" 
+           data-liked="${isLiked}"
+           onclick="${selectMode ? `toggleSelect('${url}')` : `openLightbox(${idx})`}"
+           ondblclick="handleDoubleTap('${url}')"
+           tabindex="0"
+           role="button"
+           aria-label="Open photo">
+        ${isLiked ? '<div class="pin-liked" style="opacity:1;transform:scale(1);pointer-events:auto;" onclick="event.stopPropagation();togglePhotoLike(' + "'" + url + "'" + ')"><i class="fa-solid fa-heart"></i></div>' : ''}
+        <img src="${url}" alt="${filename}" loading="lazy" decoding="async" 
+             onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'400\\' height=\\'400\\'/%3E%3Ctext fill=\\'%23999\\' font-family=\\'sans-serif\\' font-size=\\'18\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\'%3EImage not available%3C/text%3E%3C/svg%3E';" />
+        <a class="pin-download" href="${url}" download onclick="event.stopPropagation()">
+          <i class="fa-solid fa-download"></i> Download
+        </a>
+      </div>
+    `;
+  }).join('');
+  
+  // Store photos for lightbox
+  lightboxPhotos = photos.map((filename, idx) => ({
+    url: getPhotoUrl(currentEvent, albumKey, filename),
+    filename: filename,
+    index: idx
+  }));
+  
+  addToRecent('viewed', albumKey);
+}
+
+function updateBreadcrumb(albumKey = null) {
+  const breadcrumb = document.getElementById('breadcrumb');
+  if (!breadcrumb) return;
+  
+  if (albumKey) {
+    breadcrumb.innerHTML = `
+      <a href="gallery.html" onclick="backToBoards();return false">Gallery</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>${titleizeAlbum(albumKey)}</span>
+    `;
+  } else {
+    breadcrumb.innerHTML = '<a href="gallery.html">Gallery</a>';
+  }
+}
+
+// ===================== NAVIGATION =====================
+function switchEvent(event) {
+  currentEvent = event;
+  currentAlbum = null;
+  selected.clear();
+  updateBulkUI();
+  
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.event === event);
+  });
+  
+  updateMeta();
+  buildBoards();
+  updateBreadcrumb();
+  
+  const albumView = document.getElementById('albumView');
+  const boardGrid = document.getElementById('boardGrid');
+  if (albumView) albumView.style.display = 'none';
+  if (boardGrid) boardGrid.style.display = 'grid';
+}
+
+function openAlbum(albumKey) {
+  renderAlbum(albumKey);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function backToBoards() {
+  currentAlbum = null;
+  selected.clear();
+  updateBulkUI();
+  
+  const albumView = document.getElementById('albumView');
+  const boardGrid = document.getElementById('boardGrid');
+  if (albumView) albumView.style.display = 'none';
+  if (boardGrid) boardGrid.style.display = 'grid';
+  
+  updateBreadcrumb();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===================== LAYOUT =====================
+function setLayout(layout) {
+  currentLayout = layout;
+  const grid = document.getElementById('boardGrid');
+  if (!grid) return;
+  
+  grid.className = `board-grid ${layout}`;
+  document.querySelectorAll('.layout-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.layout === layout);
+  });
+  
+  localStorage.setItem('byz_gallery_layout', layout);
+}
+
+// ===================== SEARCH =====================
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  const clear = document.getElementById('searchClear');
+  if (input) input.value = '';
+  if (clear) clear.classList.remove('show');
+  buildBoards();
+}
+
+// ===================== SORT =====================
+function handleSortChange() {
+  buildBoards();
+}
+
+function isNewAlbum(albumKey) {
+  const date = parseAlbumKey(albumKey);
+  const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+  return date.getTime() > weekAgo;
+}
+
+// ===================== LIGHTBOX =====================
+function openLightbox(index) {
+  if (!lightboxPhotos || lightboxPhotos.length === 0) return;
+  
+  lightboxIndex = index;
+  const photo = lightboxPhotos[index];
+  const lightbox = document.getElementById('lightbox');
+  const lbImage = document.getElementById('lbImage');
+  const lbInfo = document.getElementById('lbInfo');
+  const lbMedia = document.getElementById('lbMedia');
+  
+  if (!lightbox || !lbImage) return;
+  
+  lbImage.src = photo.url;
+  lbImage.alt = photo.filename;
+  lbMedia.classList.remove('zoomed');
+  
+  if (lbInfo) {
+    lbInfo.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:600;margin-bottom:4px">${photo.filename}</div>
+          <div style="font-size:13px;color:var(--sub)">${index + 1} of ${lightboxPhotos.length}</div>
+        </div>
+        <button class="btn" onclick="downloadPhoto()">
+          <i class="fa-solid fa-download"></i> Download
+        </button>
+      </div>
+    `;
+  }
+  
+  updateLightboxLikeButton(photo.url);
+  lightbox.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  
+  // Setup swipe gestures
+  setupLightboxSwipe();
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox) {
+    lightbox.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  stopSlideshow();
+}
+
+function prevPhoto() {
+  if (lightboxIndex > 0) {
+    openLightbox(lightboxIndex - 1);
+  } else {
+    openLightbox(lightboxPhotos.length - 1);
+  }
+}
+
+function nextPhoto() {
+  if (lightboxIndex < lightboxPhotos.length - 1) {
+    openLightbox(lightboxIndex + 1);
+  } else {
+    openLightbox(0);
+  }
+}
+
+function toggleZoom() {
+  const lbMedia = document.getElementById('lbMedia');
+  if (lbMedia) {
+    lbMedia.classList.toggle('zoomed');
+  }
+}
+
+function setupLightboxSwipe() {
+  const lbMedia = document.getElementById('lbMedia');
+  if (!lbMedia) return;
+  
+  let startX = 0;
+  let startY = 0;
+  
+  lbMedia.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  });
+  
+  lbMedia.addEventListener('touchend', (e) => {
+    if (!startX || !startY) return;
+    
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = startX - endX;
+    const diffY = startY - endY;
+    
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0) {
+        nextPhoto();
+      } else {
+        prevPhoto();
+      }
+    }
+    
+    startX = 0;
+    startY = 0;
+  });
+}
+
+// ===================== LIKES =====================
+function togglePhotoLike(url) {
+  if (!url) {
+    url = lightboxPhotos[lightboxIndex]?.url;
+  }
+  if (!url) return;
+  
+  photoLikes[url] = !photoLikes[url];
+  if (!photoLikes[url]) {
+    delete photoLikes[url];
+  }
+  
+  localStorage.setItem('byz_photo_likes', JSON.stringify(photoLikes));
+  updateLikesCount();
+  updateMyLikes();
+  
+  if (photoLikes[url]) {
+    showToast('Photo liked!', 'success');
+    showAchievement('Photo Liker', 'You liked your first photo!');
+  }
+  
+  // Update UI
+  const pin = document.querySelector(`.pin[data-src="${url}"]`);
+  if (pin) {
+    pin.setAttribute('data-liked', photoLikes[url] ? 'true' : 'false');
+    const likedEl = pin.querySelector('.pin-liked');
+    if (likedEl) {
+      if (photoLikes[url]) {
+        likedEl.style.opacity = '1';
+        likedEl.style.transform = 'scale(1)';
+        likedEl.style.pointerEvents = 'auto';
+      } else {
+        likedEl.style.opacity = '0';
+        likedEl.style.transform = 'scale(0)';
+        likedEl.style.pointerEvents = 'none';
+      }
+    }
+  }
+  
+  updateLightboxLikeButton(url);
+}
+
+function updateLightboxLikeButton(url) {
+  const btn = document.getElementById('lbLikeBtn');
+  if (!btn) return;
+  const isLiked = photoLikes[url] === true;
+  btn.innerHTML = isLiked 
+    ? '<i class="fa-solid fa-heart" style="color:#ff3b30"></i>'
+    : '<i class="fa-regular fa-heart"></i>';
+}
+
+function handleDoubleTap(url) {
+  togglePhotoLike(url);
+  
+  // Show double-tap animation
+  const pin = document.querySelector(`.pin[data-src="${url}"]`);
+  if (pin) {
+    const badge = document.createElement('div');
+    badge.className = 'pin-double-tap-badge';
+    badge.innerHTML = '<i class="fa-solid fa-heart"></i>';
+    badge.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;color:#ff3b30;z-index:10;pointer-events:none;animation:heartBeat 0.6s ease;';
+    pin.appendChild(badge);
+    setTimeout(() => badge.remove(), 600);
+  }
+}
+
+// ===================== FAVORITES =====================
+function toggleFavoriteAlbum(albumKey) {
+  const key = `${currentEvent}:${albumKey}`;
+  const index = favorites.indexOf(key);
+  
+  if (index > -1) {
+    favorites.splice(index, 1);
+    showToast('Removed from favorites');
+  } else {
+    favorites.push(key);
+    showToast('Added to favorites', 'success');
+  }
+  
+  localStorage.setItem('byz_favorites', JSON.stringify(favorites));
+  buildBoards();
+}
+
+// ===================== SHARING =====================
+function shareAlbum(albumKey) {
+  const url = window.location.href.split('?')[0];
+  const text = `Check out ${titleizeAlbum(albumKey)} from BYZ Events!`;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: titleizeAlbum(albumKey),
+      text: text,
+      url: url
+    }).catch(() => {});
+  } else {
+    copyShareLink(url, text);
+  }
+}
+
+function sharePhoto() {
+  const photo = lightboxPhotos[lightboxIndex];
+  if (!photo) return;
+  
+  const url = photo.url;
+  const text = 'Check out this photo from BYZ Events!';
+  
+  if (navigator.share) {
+    navigator.share({
+      title: 'BYZ Photo',
+      text: text,
+      url: url
+    }).catch(() => {});
+  } else {
+    copyShareLink(url, text);
+  }
+}
+
+function copyShareLink(url, text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Link copied!', 'success');
+    });
+  } else {
+    showToast('Sharing not supported', 'error');
+  }
+}
+
+// ===================== DOWNLOAD =====================
+function downloadPhoto() {
+  const photo = lightboxPhotos[lightboxIndex];
+  if (!photo) return;
+  
+  const a = document.createElement('a');
+  a.href = photo.url;
+  a.download = photo.filename;
+  a.click();
+  showToast('Download started', 'success');
+}
+
+async function downloadAllZip() {
+  if (!currentAlbum) return;
+  
+  const photos = getPhotos(currentEvent, currentAlbum);
+  showToast('Preparing download...', 'info');
+  
+  // For now, download individually
+  // In production, you'd create a ZIP server-side
+  for (let i = 0; i < photos.length; i++) {
+    const url = getPhotoUrl(currentEvent, currentAlbum, photos[i]);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = photos[i];
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    // Small delay to avoid browser blocking
+    if (i < photos.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+  
+  showToast('All photos downloaded!', 'success');
+}
+
+// ===================== BULK OPERATIONS =====================
+function toggleSelectMode() {
+  selectMode = !selectMode;
+  selected.clear();
+  updateBulkUI();
+  
+  const btn = document.getElementById('selectModeBtn');
+  if (btn) {
+    btn.setAttribute('aria-pressed', selectMode ? 'true' : 'false');
+  }
+  
+  if (currentAlbum) {
+    renderAlbum(currentAlbum);
+  }
+  
+  showToast(selectMode ? 'Select mode on' : 'Select mode off');
+}
+
+function toggleSelect(url) {
+  if (selected.has(url)) {
+    selected.delete(url);
+  } else {
+    selected.add(url);
+  }
+  updateBulkUI();
+  
+  const pin = document.querySelector(`.pin[data-src="${url}"]`);
+  if (pin) {
+    pin.classList.toggle('selected', selected.has(url));
+  }
+}
+
+function updateBulkUI() {
+  const bulkbar = document.getElementById('bulkbar');
+  const bulkCount = document.getElementById('bulkCount');
+  
+  if (bulkbar && bulkCount) {
+    if (selectMode && selected.size > 0) {
+      bulkbar.setAttribute('aria-hidden', 'false');
+      bulkCount.textContent = selected.size;
+    } else {
+      bulkbar.setAttribute('aria-hidden', 'true');
+    }
+  }
+}
+
+function bulkDownload() {
+  if (selected.size === 0) return;
+  
+  selected.forEach(url => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = url.split('/').pop();
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+  
+  showToast(`Downloaded ${selected.size} photo${selected.size !== 1 ? 's' : ''}`, 'success');
+  selected.clear();
+  updateBulkUI();
+  toggleSelectMode();
+}
+
+function bulkClear() {
+  selected.clear();
+  updateBulkUI();
+  if (currentAlbum) {
+    renderAlbum(currentAlbum);
+  }
+}
+
+// ===================== SLIDESHOW =====================
+function startSlideshow() {
+  if (!currentAlbum || lightboxPhotos.length === 0) return;
+  
+  openLightbox(0);
+  isSlideshowPlaying = true;
+  const controls = document.getElementById('slideshowControls');
+  if (controls) controls.style.display = 'flex';
+  
+  slideshowInterval = setInterval(() => {
+    nextPhoto();
+  }, 3000);
+  
+  showToast('Slideshow started', 'info');
+}
+
+function stopSlideshow() {
+  isSlideshowPlaying = false;
+  if (slideshowInterval) {
+    clearInterval(slideshowInterval);
+    slideshowInterval = null;
+  }
+  const controls = document.getElementById('slideshowControls');
+  if (controls) controls.style.display = 'none';
+}
+
+function toggleSlideshow() {
+  if (isSlideshowPlaying) {
+    stopSlideshow();
+    showToast('Slideshow paused', 'info');
+  } else {
+    startSlideshow();
+  }
+}
+
+// ===================== MY LIKES =====================
+function toggleMyLikes() {
+  const sidebar = document.getElementById('myLikes');
+  if (!sidebar) return;
+  sidebar.classList.toggle('show');
+}
+
+function updateMyLikes() {
+  const content = document.getElementById('myLikesContent');
+  if (!content) return;
+  
+  const likedUrls = Object.keys(photoLikes).filter(url => photoLikes[url]);
+  
+  if (likedUrls.length === 0) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub)">No liked photos yet</div>';
+    return;
+  }
+  
+  content.innerHTML = likedUrls.map(url => {
+    const filename = url.split('/').pop();
+    return `
+      <div class="liked-photo-item" onclick="openLikedPhoto('${url}')">
+        <img src="${url}" alt="${filename}" onerror="this.style.display='none'" />
+        <div class="liked-photo-info">
+          <div class="liked-photo-name">${filename}</div>
+          <div class="liked-photo-date">Tap to view</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openLikedPhoto(url) {
+  // Find which album this photo belongs to
+  for (const event of ['groove', 'tempo']) {
+    const albums = getAlbums(event);
+    for (const albumKey of albums) {
+      const photos = getPhotos(event, albumKey);
+      const photo = photos.find(f => getPhotoUrl(event, albumKey, f) === url);
+      if (photo) {
+        switchEvent(event);
+        openAlbum(albumKey);
+        const index = photos.indexOf(photo);
+        setTimeout(() => openLightbox(index), 300);
+        toggleMyLikes();
+        return;
+      }
+    }
+  }
+}
+
+// ===================== RECENT ACTIVITY =====================
+function toggleRecentActivity() {
+  const sidebar = document.getElementById('recentActivity');
+  if (!sidebar) return;
+  sidebar.classList.toggle('show');
+  updateRecentActivity();
+}
+
+function addToRecent(event, albumKey) {
+  recentActivity.unshift({
+    event: event,
+    album: albumKey,
+    timestamp: Date.now()
+  });
+  
+  // Keep only last 20
+  recentActivity = recentActivity.slice(0, 20);
+  localStorage.setItem('byz_recent_activity', JSON.stringify(recentActivity));
+  updateRecentActivity();
+}
+
+function updateRecentActivity() {
+  const content = document.getElementById('recentActivityContent');
+  if (!content) return;
+  
+  if (recentActivity.length === 0) {
+    content.innerHTML = '<div style="text-align:center;padding:20px;color:var(--sub);font-size:13px">No recent activity</div>';
+    return;
+  }
+  
+  content.innerHTML = recentActivity.map(item => {
+    return `
+      <div class="recent-item" onclick="openRecentAlbum('${item.event}','${item.album}')">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;margin-bottom:4px">${titleizeAlbum(item.album)}</div>
+          <div style="font-size:11px;color:var(--sub)">${formatTimeAgo(item.timestamp)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openRecentAlbum(event, album) {
+  switchEvent(event);
+  openAlbum(album);
+  toggleRecentActivity();
+}
+
+function clearRecentActivity() {
+  recentActivity = [];
+  localStorage.setItem('byz_recent_activity', JSON.stringify(recentActivity));
+  updateRecentActivity();
+  showToast('Recent activity cleared', 'info');
+}
+
+// ===================== ACHIEVEMENTS =====================
+function showAchievement(title, desc) {
+  const badge = document.getElementById('achievementBadge');
+  const titleEl = document.getElementById('achievementTitle');
+  const descEl = document.getElementById('achievementDesc');
+  
+  if (!badge || !titleEl || !descEl) return;
+  
+  titleEl.textContent = title;
+  descEl.textContent = desc;
+  badge.classList.add('show');
+  
+  setTimeout(() => {
+    badge.classList.remove('show');
+  }, 3000);
+}
+
+// ===================== DOUBLE-TAP HINT =====================
+function dismissDoubleTapHint() {
+  const hint = document.getElementById('doubleTapHint');
+  if (hint) hint.style.display = 'none';
+  localStorage.setItem('byz_dismissed_double_tap_hint', 'true');
+}
+
+// ===================== PWA =====================
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const prompt = document.getElementById('pwaInstallPrompt');
+  if (prompt && !localStorage.getItem('byz_pwa_dismissed')) {
+    prompt.classList.add('show');
+  }
+});
+
+function closePWAInstall() {
+  const prompt = document.getElementById('pwaInstallPrompt');
+  if (prompt) prompt.classList.remove('show');
+  localStorage.setItem('byz_pwa_dismissed', 'true');
+}
+
+document.getElementById('pwaInstallBtn')?.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      showToast('App installed!', 'success');
+    }
+    deferredPrompt = null;
+    closePWAInstall();
+  }
+});
+
+// ===================== KEYBOARD SHORTCUTS =====================
+document.addEventListener('keydown', (e) => {
+  const lightbox = document.getElementById('lightbox');
+  if (!lightbox || !lightbox.classList.contains('show')) return;
+  
+  if (e.key === 'Escape') {
+    closeLightbox();
+  } else if (e.key === 'ArrowLeft') {
+    prevPhoto();
+  } else if (e.key === 'ArrowRight') {
+    nextPhoto();
+  } else if (e.key === ' ') {
+    e.preventDefault();
+    toggleSlideshow();
+  }
+});
+
+// ===================== SEARCH FUNCTIONALITY =====================
+document.getElementById('searchInput')?.addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase().trim();
+  const clear = document.getElementById('searchClear');
+  
+  if (clear) {
+    clear.classList.toggle('show', query.length > 0);
+  }
+  
+  if (query.length === 0) {
+    buildBoards();
+    return;
+  }
+  
+  // Filter albums
+  const albums = getAlbums(currentEvent);
+  const filtered = albums.filter(albumKey => {
+    const title = titleizeAlbum(albumKey).toLowerCase();
+    return title.includes(query);
+  });
+  
+  const grid = document.getElementById('boardGrid');
+  if (!grid) return;
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub)">No albums found</div>';
+    return;
+  }
+  
+  // Rebuild with filtered albums
+  grid.innerHTML = filtered.map((albumKey, idx) => {
+    const photos = getPhotos(currentEvent, albumKey);
+    const firstPhoto = photos[0];
+    const previewUrl = firstPhoto ? getPhotoUrl(currentEvent, albumKey, firstPhoto) : '';
+    
+    return `
+      <div class="board" data-album="${albumKey}" onclick="openAlbum('${albumKey}')">
+        <div class="board-preview">
+          <img class="preview-img" src="${previewUrl}" alt="${titleizeAlbum(albumKey)}" loading="lazy" 
+               onload="this.classList.add('loaded')" 
+               onerror="this.style.display='none'" />
+        </div>
+        <div class="board-info">
+          <div class="board-title">${titleizeAlbum(albumKey)}</div>
+          <div class="board-sub">${photos.length} photo${photos.length !== 1 ? 's' : ''}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+});
+
+// ===================== INITIALIZATION =====================
+function init() {
+  // Load saved layout
+  const savedLayout = localStorage.getItem('byz_gallery_layout');
+  if (savedLayout) {
+    setLayout(savedLayout);
+  }
+  
+  // Show double-tap hint if not dismissed
+  if (!localStorage.getItem('byz_dismissed_double_tap_hint')) {
+    const hint = document.getElementById('doubleTapHint');
+    if (hint) hint.style.display = 'flex';
+  }
+  
+  // Initialize
+  updateMeta();
+  buildBoards();
+  updateMyLikes();
+  updateRecentActivity();
+  
+  // Check if we need to open an album from URL
+  const params = new URLSearchParams(window.location.search);
+  const album = params.get('album');
+  const event = params.get('event');
+  if (album && event) {
+    switchEvent(event);
+    setTimeout(() => openAlbum(album), 100);
+  }
+}
+
+// Wait for manifest to load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+  </script>
+</body>
+</html>
+
