@@ -470,37 +470,61 @@ header{
 }
 
 .board-info{
-  position:absolute;
-  bottom:12px;
-  left:12px;
-  z-index:2;
-  color:#fff;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(0,0,0,.5);
-  backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.2);
-  font-size:12px;
-  font-weight:600;
-  letter-spacing:-.2px;
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: #fff;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.35);
+  box-shadow: 0 8px 22px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+  text-align: center;
+  white-space: nowrap;
+  min-height: 30px;
+  line-height: 1;
+  max-width: calc(100% - 24px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform .18s var(--ease),
+    box-shadow .18s var(--ease),
+    background .18s var(--ease),
+    border-color .18s var(--ease);
 }
-.board-title{
-  font-weight:600;
-  font-size:13px;
+@media (max-width: 560px){
+  .board-info{
+    min-height: 28px;
+    padding: 7px 12px;
+    font-size: 11px;
+  }
 }
-.board-sub{
-  font-size:12px;
-  opacity:.8;
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
+@media (hover: hover) and (pointer: fine){
+  .board:hover .board-info{
+    transform: translateX(-50%) translateY(-2px);
+    background: rgba(0,0,0,.70);
+    border-color: rgba(255,255,255,.6);
+    box-shadow: 0 12px 26px rgba(0,0,0,.45);
+  }
 }
-.board-sub::before{
-  content:'•';
-  opacity:.5;
+.board:focus-visible .board-info{
+  outline: 2px solid rgba(255,255,255,.7);
+  outline-offset: 2px;
+}
+@media (hover: none) and (pointer: coarse){
+  .board:active .board-info{
+    transform: translateX(-50%) scale(0.98);
+    background: rgba(0,0,0,.78);
+    border-color: rgba(255,255,255,.8);
+    box-shadow: 0 6px 18px rgba(0,0,0,.4);
+  }
 }
 
 /* ===================== SKELETON SCREENS ===================== */
@@ -871,6 +895,24 @@ header{
 .my-likes-title{
   font-weight: 700;
   font-size: 18px;
+}
+.my-likes-download{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-alt);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s var(--ease);
+}
+.my-likes-download:hover{
+  background: var(--accent);
+  color: var(--bg);
+  transform: scale(1.1);
 }
 .my-likes-close{
   width: 36px;
@@ -1375,9 +1417,14 @@ header{
   <div class="my-likes" id="myLikes">
     <div class="my-likes-header">
       <div class="my-likes-title">My Liked Photos</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="my-likes-download" onclick="downloadAllLikedPhotos()" aria-label="Download all liked photos" title="Download all liked photos">
+          <i class="fa-solid fa-download"></i>
+        </button>
         <button class="my-likes-close" onclick="toggleMyLikes()" aria-label="Close">
           <i class="fa-solid fa-xmark"></i>
         </button>
+      </div>
     </div>
     <div class="my-likes-content" id="myLikesContent"></div>
   </div>
@@ -1583,10 +1630,7 @@ function buildBoards() {
                onerror="this.style.display='none'" />
           <img class="board-event-badge" src="${badgeSrc}" alt="${currentEvent}" aria-hidden="true" loading="lazy">
         </div>
-        <div class="board-info">
-          <div class="board-title">${titleizeAlbum(albumKey)}</div>
-          <div class="board-sub">${photos.length} photo${photos.length !== 1 ? 's' : ''}</div>
-        </div>
+        <div class="board-info">${titleizeAlbum(albumKey)} • ${photos.length} <i class="fa-solid fa-image" aria-label="photos"></i></div>
         <button class="board-share" onclick="event.stopPropagation();shareAlbum('${albumKey}')" aria-label="Share">
           <i class="fa-solid fa-share-nodes"></i>
         </button>
@@ -2207,6 +2251,43 @@ function openLikedPhoto(url) {
   }
 }
 
+// ===================== DOWNLOAD ALL LIKED PHOTOS =====================
+async function downloadAllLikedPhotos() {
+  const likedUrls = Object.keys(photoLikes).filter(url => photoLikes[url]);
+  
+  if (likedUrls.length === 0) {
+    showToast('<i class="fa-solid fa-info-circle"></i> No liked photos to download', 'info');
+    return;
+  }
+  
+  showToast(`<i class="fa-solid fa-download"></i> Downloading ${likedUrls.length} photo${likedUrls.length !== 1 ? 's' : ''}...`, 'info');
+  
+  // Download each photo with a small delay to avoid browser blocking
+  for (let i = 0; i < likedUrls.length; i++) {
+    const url = likedUrls[i];
+    const filename = url.split('/').pop();
+    
+    try {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      // Small delay between downloads to avoid browser blocking
+      if (i < likedUrls.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 150));
+      }
+    } catch (error) {
+      console.error('Error downloading photo:', url, error);
+    }
+  }
+  
+  showToast(`<i class="fa-solid fa-check"></i> Downloaded ${likedUrls.length} photo${likedUrls.length !== 1 ? 's' : ''}!`, 'success');
+}
+
 // ===================== RECENT ACTIVITY =====================
 function toggleRecentActivity() {
   const sidebar = document.getElementById('recentActivity');
@@ -2389,10 +2470,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
                onerror="this.style.display='none'" />
           <img class="board-event-badge" src="${badgeSrc}" alt="${currentEvent}" aria-hidden="true" loading="lazy">
         </div>
-        <div class="board-info">
-          <span class="board-title">${titleizeAlbum(albumKey)}</span>
-          <span class="board-sub">${photos.length} <i class="fa-solid fa-image" style="font-size:10px;"></i></span>
-        </div>
+        <div class="board-info">${titleizeAlbum(albumKey)} • ${photos.length} <i class="fa-solid fa-image" aria-label="photos"></i></div>
       </div>
     `;
   }).join('');
