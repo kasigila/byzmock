@@ -17,13 +17,16 @@
       --sub:#a1a1a6;
       --border:#2c2c2e;
       --accent:#ffffff;
+      --glow: 0 0 20px rgba(255,255,255,.06);
       --shadow: 0 18px 60px rgba(0,0,0,.35);
       --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
       --ease: cubic-bezier(.2,.8,.2,1);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
       --max: 1100px;
-      --radius: 22px;
-      --radius-lg: 28px;
+      --radius: 16px;
+      --radius-lg: 20px;
+      --radius-sm: 10px;
       --header-h: 64px;
     }
 
@@ -37,6 +40,22 @@
       overflow-x:hidden;
       word-wrap:break-word;
       overflow-wrap:break-word;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events:none;
+      z-index:0;
+      opacity:0.4;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 15%, transparent 65%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 70%);
     }
     a{color:inherit;text-decoration:none}
     .container{
@@ -106,8 +125,9 @@
     header{
       position:fixed;top:0;left:0;right:0;
       height:var(--header-h);
-      background: color-mix(in srgb, var(--bg) 86%, transparent);
-      backdrop-filter: blur(18px);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-bottom:1px solid var(--border);
       z-index:999;
     }
@@ -178,29 +198,31 @@
     /* Buttons */
     .btn{
       display:inline-flex;align-items:center;justify-content:center;
-      gap:10px;padding:12px 18px;border-radius:999px;
+      gap:10px;padding:14px 22px;border-radius:var(--radius-sm);
       border:1px solid var(--border);
       background:var(--bg-elev);
       font-size:14px;font-weight:600;
+      letter-spacing:.02em;
       cursor:pointer;
-      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+      transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out), border-color .2s var(--ease);
       word-wrap:normal;
     }
-    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+    .btn:hover{transform: translateY(-1px); box-shadow: var(--shadow-soft)}
     .btn.primary{
       background:var(--accent);
       border-color:transparent;
       color:var(--bg);
+      letter-spacing:.03em;
     }
-    .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
-    .btn.ghost{background: transparent}
+    .btn.primary:hover{box-shadow: 0 8px 32px rgba(0,0,0,.25)}
+    .btn.ghost{background: transparent;border-color:color-mix(in srgb, var(--border) 80%, transparent)}
 
     /* Section Dividers */
     .section-divider{
       height:1px;
       background: linear-gradient(90deg, 
         transparent 0%,
-        color-mix(in srgb, var(--border) 60%, transparent) 50%,
+        color-mix(in srgb, var(--border) 45%, transparent) 50%,
         transparent 100%
       );
       margin: 80px 0;
@@ -213,57 +235,56 @@
     }
 
     /* Main */
-    main{padding-top:var(--header-h)}
+    main{padding-top:var(--header-h);position:relative;z-index:1}
 
-    /* Hero Section - Enhanced */
+    /* Scroll progress bar */
+    .scroll-progress{
+      position:fixed;
+      top:var(--header-h);
+      left:0;right:0;
+      height:1px;
+      background:color-mix(in srgb, var(--border) 40%, transparent);
+      z-index:1000;
+      pointer-events:none;
+    }
+    .scroll-progress-bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, transparent));
+      box-shadow: var(--glow);
+      transition:width .06s var(--ease-in-out);
+    }
+
+    /* Hero Section */
     .hero{
       padding: 100px 0 70px;
       position:relative;
       overflow:hidden;
       background:
-        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
-        linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
+        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 20%, transparent), transparent 65%),
+        linear-gradient(180deg, transparent 0%, var(--bg) 100%);
     }
-    .hero::before{
+    .hero::after{
       content:'';
       position:absolute;
-      top:0;left:0;right:0;bottom:0;
-      background: 
-        radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--border) 8%, transparent) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--border) 6%, transparent) 0%, transparent 50%);
-      animation: gradientShift 20s ease-in-out infinite;
-      pointer-events:none;
-    }
-    @keyframes gradientShift{
-      0%, 100%{opacity:1;transform:scale(1)}
-      50%{opacity:0.8;transform:scale(1.1)}
-    }
-    .hero-decorative{
-      position:absolute;
-      width:200px;height:200px;
-      border-radius:50%;
-      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 3%, transparent), transparent 70%);
-      filter:blur(60px);
-      top:10%;right:10%;
-      opacity:0.4;
-      animation: float 15s ease-in-out infinite;
-    }
-    @keyframes float{
-      0%, 100%{transform:translate(0,0) scale(1)}
-      50%{transform:translate(30px, -30px) scale(1.1)}
+      bottom:0;left:0;right:0;
+      height:1px;
+      background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--border) 50%, transparent) 20%, color-mix(in srgb, var(--border) 50%, transparent) 80%, transparent);
+      opacity:0.6;
     }
     @media (max-width: 560px){
       .hero{padding: 60px 0 48px}
-      .hero-decorative{width:150px;height:150px;top:5%;right:5%}
     }
+    .hero .scroll-reveal.from-bottom:nth-child(1){ transition-delay: 0ms; }
+    .hero .scroll-reveal.from-bottom:nth-child(2){ transition-delay: 80ms; }
     .hero .container{
       position:relative;z-index:1;
     }
     .hero h1{
       font-size: clamp(2.2rem, 5.5vw, 3.8rem);
-      letter-spacing:-1.2px;
-      font-weight:900;
-      line-height:1.1;
+      letter-spacing:-1.5px;
+      font-weight:800;
+      line-height:1.08;
       margin-bottom:20px;
       text-align:center;
       word-wrap:break-word;
@@ -333,8 +354,8 @@
     }
     .story-content h2{
       font-size: clamp(1.9rem, 4.5vw, 2.6rem);
-      letter-spacing:-.8px;
-      font-weight:900;
+      letter-spacing:-.06em;
+      font-weight:800;
       margin-bottom:28px;
       text-align:center;
       word-wrap:break-word;
@@ -359,17 +380,32 @@
     @media (max-width: 560px){
       .story-content p{font-size:16px;margin-bottom:18px;line-height:1.7}
     }
+    .story-lead{
+      font-size:18px;
+      color:color-mix(in srgb, var(--text) 90%, transparent);
+    }
+    @media (max-width: 560px){
+      .story-lead{font-size:17px}
+    }
 
-    /* Horizontal Scroll Gallery - Scroll Linked with Loop */
+    /* Horizontal Scroll Gallery */
     .story-gallery{
       position:relative;
       border-radius: var(--radius-lg);
       overflow:hidden;
       border:1px solid var(--border);
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow), inset 0 0 0 1px color-mix(in srgb, var(--border) 30%, transparent);
       background:var(--bg-elev);
       height:500px;
       margin-top:40px;
+    }
+    .story-gallery::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--accent) 8%, transparent);
+      pointer-events:none;
     }
     @media (max-width: 980px){
       .story-gallery{height:400px}
@@ -397,396 +433,145 @@
       display:block;
     }
 
-    /* Timeline Card Container */
-    .timeline-card{
-      background: 
-        linear-gradient(135deg, 
-          color-mix(in srgb, var(--bg-elev) 95%, transparent) 0%,
-          color-mix(in srgb, var(--bg-alt) 90%, transparent) 100%
-        );
-      backdrop-filter: blur(40px) saturate(180%);
-      border:1px solid color-mix(in srgb, var(--border) 40%, transparent);
-      border-radius: var(--radius-lg);
-      padding:40px 32px 40px 72px;
-      margin:40px 0;
-      position:relative;
-      overflow:visible;
-      box-shadow: var(--shadow-soft);
-      width:100%;
-      max-width:100%;
-      box-sizing:border-box;
-    }
-    @media (max-width: 560px){
-      .timeline-card{
-        padding:32px 24px 32px 56px;
-        margin:32px 0;
-      }
-    }
-    /* Timeline Element - Dotted Vertical */
-    .timeline{
-      margin:0;
-      padding:0;
-      position:relative;
-      overflow:visible;
-      width:100%;
-      max-width:100%;
-    }
-    .timeline::before{
-      content:'';
-      position:absolute;
-      left:-40px;top:0;bottom:0;
-      width:2px;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--accent) 60%, transparent) 0px,
-        color-mix(in srgb, var(--accent) 60%, transparent) 6px,
-        transparent 6px,
-        transparent 14px
-      );
-      opacity:0.8;
-      transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
-      height:0;
-    }
-    .timeline.revealed::before{
-      height:100%;
-    }
-    @media (max-width: 560px){
-      .timeline::before{
-        left:-32px;
-        background-image: repeating-linear-gradient(
-          to bottom,
-          color-mix(in srgb, var(--accent) 60%, transparent) 0px,
-          color-mix(in srgb, var(--accent) 60%, transparent) 5px,
-          transparent 5px,
-          transparent 12px
-        );
-      }
-    }
-    .timeline-item{
-      position:relative;
-      padding-left:0;
-      padding-right:0;
-      margin-bottom:48px;
-      width:100%;
-      max-width:100%;
-      box-sizing:border-box;
-      opacity:0;
-      transform:translateY(20px);
-      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .timeline-item.revealed{
-      opacity:1;
-      transform:translateY(0);
-    }
-    .timeline-item:last-child{
-        margin-bottom:0;
-      }
-    .timeline-item::before{
-      content:'';
-      position:absolute;
-      left:-48px;top:8px;
-      width:14px;height:14px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:
-        0 0 0 4px var(--bg),
-        0 0 0 5px color-mix(in srgb, var(--accent) 40%, transparent),
-        0 2px 8px rgba(255,255,255,0.2);
-      opacity:0;
-      transform:scale(0);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .timeline-item.revealed::before{
-      opacity:1;
-      transform:scale(1);
-    }
-    @media (max-width: 560px){
-      .timeline-item::before{
-        left:-40px;
-        width:12px;
-        height:12px;
-        box-shadow:
-          0 0 0 3px var(--bg),
-          0 0 0 4px color-mix(in srgb, var(--accent) 40%, transparent),
-          0 2px 6px rgba(255,255,255,0.2);
-      }
-    }
-    .timeline-year{
-      font-size:18px;
-      font-weight:700;
-      color:var(--accent);
-      margin-bottom:12px;
-      text-align:center;
-      word-wrap:break-word;
-      overflow-wrap:break-word;
-      width:100%;
-      max-width:100%;
-    }
-    .timeline-text{
-      font-size:15px;
-      color:var(--sub);
-      line-height:1.7;
-      word-wrap:break-word;
-      overflow-wrap:break-word;
-      width:100%;
-      max-width:100%;
-      text-align:center;
-      padding:0;
-        margin:0;
-      }
-    @media (max-width: 560px){
-      .timeline-item{
-        margin-bottom:40px;
-      }
-      .timeline-year{
-        font-size:16px;
-        margin-bottom:10px;
-      }
-      .timeline-text{
-        font-size:14px;
-        line-height:1.65;
-      }
-    }
-
-    /* ===================== OUR VALUES SECTION - GLASSMORPHIC REDESIGN ===================== */
+    /* Values Header */
     .values-header{
       text-align:center;
-      margin-bottom:48px;
+      margin-bottom:40px;
     }
     @media (max-width: 560px){
-      .values-header{
-        margin-bottom:32px;
-        padding: 0 8px;
-      }
+      .values-header{margin-bottom:28px;padding:0 8px}
     }
     .values-header h2{
       font-size: clamp(1.9rem, 4.5vw, 2.6rem);
-      font-weight:900;
+      font-weight:800;
       margin-bottom:12px;
-      letter-spacing:-.8px;
-    }
-    @media (max-width: 560px){
-      .values-header h2{
-        font-size: clamp(1.65rem, 7vw, 2rem);
-      }
+      letter-spacing:-.06em;
     }
     .values-header p{
       color:var(--sub);
-      font-size:17px;
-      max-width:60ch;
-      margin:0 auto;
+      font-size:16px;
     }
-    @media (max-width: 560px){
-      .values-header p{
-        font-size:15px;
-    }
-    }
-    
-    /* Values Grid - Mobile First */
+
+    /* Expandable Value Accordions */
     .values-grid{
       display:flex;
       flex-direction:column;
-      gap:24px;
-      max-width:900px;
+      gap:10px;
+      max-width:640px;
       margin:0 auto;
     }
-    @media (max-width: 560px){
-      .values-grid{
-        gap:20px;
-        padding: 0 4px;
-      }
-    }
-    
-    /* Glassmorphic Value Card */
-    .value-card-glass{
-      position:relative;
-      border-radius: var(--radius-lg);
+    .value-accordion{
+      border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      background:color-mix(in srgb, var(--bg-elev) 98%, var(--bg-alt));
       overflow:hidden;
-      min-height:380px;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-end;
-      box-shadow: var(--shadow);
-      border:1px solid color-mix(in srgb, var(--border) 50%, transparent);
-      will-change:transform, opacity;
-      opacity:0;
-      transform:translateY(40px) scale(0.95);
-      transition: transform .4s cubic-bezier(.2,.8,.2,1), opacity .4s cubic-bezier(.2,.8,.2,1);
-    }
-    @media (max-width: 560px){
-      .value-card-glass{
-        min-height:320px;
-        border-radius: 20px;
-      }
-    }
-    .value-card-glass.revealed{
-      opacity:1;
-      transform:translateY(0) scale(1);
-    }
-    
-    /* Background Image */
-    .value-card-bg{
-      position:absolute;
-      inset:0;
-      z-index:0;
-    }
-    .value-card-bg img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      transform:scale(1.05);
-      transition:transform .6s cubic-bezier(.2,.8,.2,1);
-    }
-    .value-card-glass:hover .value-card-bg img{
-      transform:scale(1.1);
-    }
-    
-    /* Gradient Overlay */
-    .value-card-overlay{
-      position:absolute;
-      inset:0;
-      background:linear-gradient(
-        180deg,
-        transparent 0%,
-        color-mix(in srgb, var(--bg) 20%, transparent) 40%,
-        color-mix(in srgb, var(--bg) 85%, transparent) 100%
-      );
-      z-index:1;
-    }
-    
-    /* Glass Content Panel */
-    .value-card-content{
       position:relative;
-      z-index:2;
-      padding:32px 24px 28px;
-      background:linear-gradient(
-        180deg,
-        transparent 0%,
-        color-mix(in srgb, var(--bg-elev) 75%, transparent) 100%
-      );
-      backdrop-filter:blur(20px) saturate(180%);
-      -webkit-backdrop-filter:blur(20px) saturate(180%);
-      border-top:1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+      transition: border-color .25s var(--ease), box-shadow .25s var(--ease);
     }
-    @media (max-width: 560px){
-      .value-card-content{
-        padding:28px 20px 24px;
-      }
-    }
-    
-    /* Icon Badge - Top Center */
-    .value-icon-badge{
+    .value-accordion::before{
+      content:'';
       position:absolute;
-      top:20px;
-      left:50%;
-      transform:translateX(-50%);
-      z-index:3;
-      width:64px;
-      height:64px;
-      border-radius:50%;
-      background:linear-gradient(135deg,
-        color-mix(in srgb, var(--accent) 95%, transparent) 0%,
-        color-mix(in srgb, var(--accent) 85%, transparent) 100%
-      );
-      border:3px solid color-mix(in srgb, var(--bg-elev) 90%, transparent);
+      left:0;top:0;bottom:0;
+      width:2px;
+      background:transparent;
+      transition: background .25s var(--ease);
+    }
+    .value-accordion:hover{
+      border-color:color-mix(in srgb, var(--border) 70%, var(--accent) 15%);
+    }
+    .value-accordion.is-open{
+      border-color:color-mix(in srgb, var(--border) 50%, var(--accent) 25%);
+      box-shadow: 0 4px 24px rgba(0,0,0,.25), var(--glow);
+    }
+    .value-accordion.is-open::before{
+      background:var(--accent);
+    }
+    .value-accordion-btn{
+      width:100%;
       display:flex;
       align-items:center;
-      justify-content:center;
-      box-shadow: 
-        0 8px 24px rgba(0,0,0,.3),
-        0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
-        inset 0 1px 0 rgba(255,255,255,.1);
-      will-change:transform, opacity;
-      opacity:0;
-      transform:translateX(-50%) scale(0.5);
-      transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .5s cubic-bezier(.2,.8,.2,1);
-    }
-    @media (max-width: 560px){
-      .value-icon-badge{
-        width:56px;
-        height:56px;
-        top:16px;
-        border-width:2.5px;
-      }
-    }
-    .value-card-glass.revealed .value-icon-badge{
-      opacity:1;
-      transform:translateX(-50%) scale(1);
-    }
-    .value-icon-badge i{
-      color:var(--accent);
-      font-size:28px;
-      filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));
-      animation:iconPulse 3s ease-in-out infinite;
-    }
-    @media (max-width: 560px){
-      .value-icon-badge i{
-      font-size:24px;
-      }
-    }
-    @keyframes iconPulse{
-      0%, 100%{
-        transform:scale(1);
-        filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));
-      }
-      50%{
-        transform:scale(1.1);
-        filter:drop-shadow(0 4px 12px color-mix(in srgb, var(--accent) 40%, transparent));
-      }
-    }
-    
-    /* Title */
-    .value-card-title{
-      font-size:24px;
-      font-weight:900;
-      margin-bottom:8px;
-      letter-spacing:-.4px;
+      justify-content:space-between;
+      gap:16px;
+      padding:20px 24px;
+      background:transparent;
+      border:none;
       color:var(--text);
-      text-shadow:0 2px 12px rgba(0,0,0,.4);
-      line-height:1.2;
+      font-family:inherit;
+      font-size:16px;
+      font-weight:600;
+      letter-spacing:-.02em;
+      text-align:left;
+      cursor:pointer;
+      transition: background .2s var(--ease);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .value-accordion-btn:hover{
+      background:color-mix(in srgb, var(--border) 15%, transparent);
+    }
+    .value-accordion-btn .chevron{
+      flex-shrink:0;
+      width:20px;
+      height:20px;
+      color:var(--sub);
+      transition: transform .35s var(--ease-out), color .2s var(--ease);
+    }
+    .value-accordion.is-open .value-accordion-btn .chevron{
+      transform:rotate(180deg);
+      color:var(--text);
+    }
+    .value-accordion-body{
+      max-height:0;
+      overflow:hidden;
+      transition: max-height .4s var(--ease-out);
+    }
+    .value-accordion-body-inner{
+      padding:0 24px 20px;
+      padding-top:0;
+    }
+    .value-accordion-desc{
+      font-size:15px;
+      color:var(--sub);
+      line-height:1.65;
     }
     @media (max-width: 560px){
-      .value-card-title{
-        font-size:20px;
-        margin-bottom:6px;
-      }
+      .value-accordion-btn{padding:18px 20px;font-size:16px}
+      .value-accordion-body-inner{padding:0 20px 18px}
+      .value-accordion-desc{font-size:14px}
     }
-    
-    /* Description */
-    .value-card-desc{
-        font-size:15px;
-      color:color-mix(in srgb, var(--text) 85%, transparent);
-      line-height:1.6;
-      text-shadow:0 1px 6px rgba(0,0,0,.3);
-    }
-    @media (max-width: 560px){
-      .value-card-desc{
-        font-size:14px;
-        line-height:1.5;
-      }
-    }
-    
-    /* Hover Effects */
-    .value-card-glass:hover{
-      transform:translateY(-4px) scale(1.01);
-      box-shadow:
-        0 24px 48px rgba(0,0,0,.4),
-        0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
-    }
-    .value-card-glass:hover .value-icon-badge{
-      transform:translateX(-50%) scale(1.1);
-      box-shadow:
-        0 12px 32px rgba(0,0,0,.4),
-        0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent),
-        inset 0 1px 0 rgba(255,255,255,.2);
-    }
+    .value-accordion[data-index="0"]{ transition-delay: 0ms; }
+    .value-accordion[data-index="1"]{ transition-delay: 60ms; }
+    .value-accordion[data-index="2"]{ transition-delay: 120ms; }
+    .value-accordion[data-index="3"]{ transition-delay: 180ms; }
+    .value-accordion[data-index="4"]{ transition-delay: 240ms; }
 
-    /* Partnership Carousel */
+    /* Partnership Carousel - Standalone Section */
+    .partnership-section{
+      padding:60px 0 80px;
+      text-align:center;
+    }
+    @media (max-width: 560px){
+      .partnership-section{padding:48px 0 60px}
+    }
+    .partnership-section h3{
+      font-size:11px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.2em;
+      color:var(--sub);
+      margin-bottom:36px;
+      position:relative;
+    }
+    .partnership-section h3::after{
+      content:'';
+      display:block;
+      width:24px;
+      height:1px;
+      background:var(--border);
+      margin:16px auto 0;
+    }
     .partnership-carousel-section{
       width:100%;
-      margin:40px auto 60px;
-      padding:32px 0;
+      padding:0;
       overflow:hidden;
       position:relative;
     }
@@ -805,14 +590,14 @@
       width:120px;
       height:120px;
       border-radius:50%;
-      border:3px solid white;
+      border:1px solid color-mix(in srgb, var(--border) 60%, var(--accent) 20%);
       overflow:hidden;
       flex-shrink:0;
       background:var(--bg);
       display:flex;
       align-items:center;
       justify-content:center;
-      box-shadow:0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent), 0 8px 24px rgba(0,0,0,.25);
     }
     .partnership-logo-circle img{
       width:100%;
@@ -828,7 +613,6 @@
       .partnership-logo-circle{
         width:100px;
         height:100px;
-        border-width:2px;
       }
       .partnership-carousel-track{
         gap:32px;
@@ -882,16 +666,17 @@
     }
     .stat-circle-bg{
       fill:none;
-      stroke:color-mix(in srgb, var(--border) 40%, transparent);
-      stroke-width:6;
+      stroke:color-mix(in srgb, var(--border) 50%, transparent);
+      stroke-width:4;
     }
     .stat-circle-progress{
       fill:none;
       stroke:var(--accent);
-      stroke-width:6;
+      stroke-width:4;
       stroke-linecap:round;
       stroke-dasharray:314;
       stroke-dashoffset:314;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.15));
       transition: stroke-dashoffset 2s var(--ease-out);
     }
     .stat-number-wrapper{
@@ -901,17 +686,19 @@
     }
     .stat-number{
       font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight:900;
+      font-weight:800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing:-.03em;
       color:var(--accent);
       line-height:1;
     }
     .stat-label{
-      font-size:13px;
+      font-size:11px;
       color:var(--sub);
       text-transform:uppercase;
-      letter-spacing:.12em;
+      letter-spacing:.16em;
       font-weight:600;
-      margin-top:8px;
+      margin-top:10px;
       word-wrap:break-word;
       overflow-wrap:break-word;
     }
@@ -929,9 +716,9 @@
     }
     .cta-section h2{
       font-size: clamp(1.9rem, 4.5vw, 2.6rem);
-      font-weight:900;
+      font-weight:800;
       margin-bottom:20px;
-      letter-spacing:-.8px;
+      letter-spacing:-.06em;
       word-wrap:break-word;
       overflow-wrap:break-word;
     }
@@ -970,6 +757,7 @@
 </head>
 
 <body>
+<div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar" id="scrollProgressBar"></div></div>
 <header>
   <div class="container header-inner">
     <a class="brand" href="index.html" aria-label="BYZ Home">
@@ -1011,7 +799,6 @@
 
 <main>
   <section class="hero">
-    <div class="hero-decorative"></div>
     <div class="container">
       <h1 class="scroll-reveal from-bottom">About BYZ Entertainment</h1>
       <p class="scroll-reveal from-bottom">Creating unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam.</p>
@@ -1025,30 +812,15 @@
       <div class="story-grid">
         <div class="story-content">
           <h2 class="scroll-reveal from-top">Our Story</h2>
-          <div class="timeline-card">
-            <div class="timeline" id="timeline">
-              <div class="timeline-item" id="timeline-2018">
-                <div class="timeline-year">2018</div>
-                <div class="timeline-text">BYZ Entertainment was founded with a simple vision: to create unforgettable experiences that bring people together through music, culture, and community.</div>
-              </div>
-              <div class="timeline-item" id="timeline-today">
-                <div class="timeline-year">Today</div>
-                <div class="timeline-text">We've grown into one of Dar's most trusted event brands, partnering with major brands like Guinness and creating nights that people remember.</div>
-              </div>
-            </div>
-          </div>
-          <p class="scroll-reveal from-left">
-            Born in the heart of Dar es Salaam, we saw an opportunity to elevate the city's nightlife scene and give people spaces where they could truly connect.
+          <p class="scroll-reveal from-left story-lead">
+            Born in Dar es Salaam in 2018, we set out to elevate the city's nightlife—creating spaces where music, community, and culture intersect.
           </p>
           <p class="scroll-reveal from-left">
-            What makes BYZ unique? We're not just throwing parties—we're building a community. Every Groove night, every Tempo event, every exclusive APT session is crafted with intention. We know our crowd, we know our city, and we know how to create moments that matter.
-          </p>
-          <p class="scroll-reveal from-left">
-            Our mission is to create spaces where music, community, and culture intersect—where every night becomes a memory worth keeping.
+            Every Groove night, Tempo event, and APT session is crafted with intention. We're not just throwing parties—we're building a community. Today we've grown into one of Dar's most trusted event brands, partnering with names like Guinness to create nights people remember.
           </p>
         </div>
         <div>
-          <div class="story-gallery" id="horizontalScrollGallery">
+          <div class="story-gallery scroll-reveal from-right" id="horizontalScrollGallery">
             <div class="horizontal-scroll-container" id="horizontalScrollContainer">
               <div class="horizontal-scroll-item">
                 <img id="scroll-img-1" src="" alt="BYZ Event" loading="lazy">
@@ -1075,87 +847,75 @@
     <div class="container">
       <div class="values-header">
         <h2 class="scroll-reveal from-bottom">Our Values</h2>
-        <p class="scroll-reveal from-bottom">What drives us every day</p>
+        <p class="scroll-reveal from-bottom">What drives us every day — tap to expand</p>
       </div>
 
       <div class="values-grid">
-        <!-- Music First -->
-        <div class="value-card-glass" data-value="music">
-          <div class="value-card-bg">
-            <img src="groove-memory-gallery/december-26-2025/FYRM9994.jpg" alt="Music First" loading="lazy" onerror="this.src='groove-memory-gallery/may-24-2025/692A0026.jpg'">
+        <div class="value-accordion scroll-reveal from-bottom" data-index="0">
+          <button class="value-accordion-btn" type="button" aria-expanded="false">
+            <span>Music First</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="value-accordion-body">
+            <div class="value-accordion-body-inner">
+              <p class="value-accordion-desc">We believe music is the universal language that brings people together. Every event is built around the sound.</p>
+            </div>
           </div>
-          <div class="value-card-overlay"></div>
-          <div class="value-icon-badge">
-            <i class="fa-solid fa-music"></i>
+        </div>
+        <div class="value-accordion scroll-reveal from-bottom" data-index="1">
+          <button class="value-accordion-btn" type="button" aria-expanded="false">
+            <span>Community</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="value-accordion-body">
+            <div class="value-accordion-body-inner">
+              <p class="value-accordion-desc">BYZ is more than events—it's a community where everyone belongs.</p>
+            </div>
           </div>
-          <div class="value-card-content">
-            <h3 class="value-card-title">Music First</h3>
-            <p class="value-card-desc">We believe music is the universal language that brings people together.</p>
         </div>
+        <div class="value-accordion scroll-reveal from-bottom" data-index="2">
+          <button class="value-accordion-btn" type="button" aria-expanded="false">
+            <span>Excellence</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="value-accordion-body">
+            <div class="value-accordion-body-inner">
+              <p class="value-accordion-desc">We never compromise on the details. Every experience exceeds expectations.</p>
+            </div>
+          </div>
         </div>
+        <div class="value-accordion scroll-reveal from-bottom" data-index="3">
+          <button class="value-accordion-btn" type="button" aria-expanded="false">
+            <span>Authenticity</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="value-accordion-body">
+            <div class="value-accordion-body-inner">
+              <p class="value-accordion-desc">We stay true to our roots while pushing boundaries.</p>
+            </div>
+          </div>
+        </div>
+        <div class="value-accordion scroll-reveal from-bottom" data-index="4">
+          <button class="value-accordion-btn" type="button" aria-expanded="false">
+            <span>Partnership</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="value-accordion-body">
+            <div class="value-accordion-body-inner">
+              <p class="value-accordion-desc">We collaborate with the best to showcase the best of Dar es Salaam.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <!-- Community -->
-        <div class="value-card-glass" data-value="community">
-          <div class="value-card-bg">
-            <img src="tempo-memory-gallery/july-11-2025/FYRM1227.jpg" alt="Community" loading="lazy" onerror="this.src='groove-memory-gallery/december-6-2025/FYRM8506.jpg'">
-          </div>
-          <div class="value-card-overlay"></div>
-          <div class="value-icon-badge">
-            <i class="fa-solid fa-users"></i>
-          </div>
-          <div class="value-card-content">
-            <h3 class="value-card-title">Community</h3>
-            <p class="value-card-desc">BYZ is more than events—it's a community where everyone belongs.</p>
-        </div>
-        </div>
+  <div class="section-divider scroll-reveal"></div>
 
-        <!-- Excellence -->
-        <div class="value-card-glass" data-value="excellence">
-          <div class="value-card-bg">
-            <img src="groove-memory-gallery/may-24-2025/692A0026.jpg" alt="Excellence" loading="lazy" onerror="this.src='tempo-memory-gallery/july-11-2025/FYRM1227.jpg'">
-          </div>
-          <div class="value-card-overlay"></div>
-          <div class="value-icon-badge">
-            <i class="fa-solid fa-star"></i>
-          </div>
-          <div class="value-card-content">
-            <h3 class="value-card-title">Excellence</h3>
-            <p class="value-card-desc">We never compromise on the details. Every experience exceeds expectations.</p>
-          </div>
-        </div>
-
-        <!-- Authenticity -->
-        <div class="value-card-glass" data-value="authenticity">
-          <div class="value-card-bg">
-            <img src="groove-memory-gallery/december-6-2025/FYRM8506.jpg" alt="Authenticity" loading="lazy" onerror="this.src='groove-memory-gallery/december-26-2025/FYRM9994.jpg'">
-          </div>
-          <div class="value-card-overlay"></div>
-          <div class="value-icon-badge">
-            <i class="fa-solid fa-heart"></i>
-          </div>
-          <div class="value-card-content">
-            <h3 class="value-card-title">Authenticity</h3>
-            <p class="value-card-desc">We stay true to our roots while pushing boundaries.</p>
-          </div>
-        </div>
-
-        <!-- Partnership -->
-        <div class="value-card-glass" data-value="partnership">
-          <div class="value-card-bg">
-            <img src="tempo-memory-gallery/june-27-2025/692A9856.jpg" alt="Partnership" loading="lazy" onerror="this.src='groove-memory-gallery/may-24-2025/692A0037.jpg'">
-          </div>
-          <div class="value-card-overlay"></div>
-          <div class="value-icon-badge">
-            <i class="fa-solid fa-handshake"></i>
-          </div>
-          <div class="value-card-content">
-            <h3 class="value-card-title">Partnership</h3>
-            <p class="value-card-desc">We collaborate with the best to showcase the best of Dar es Salaam.</p>
-          </div>
-        </div>
-
-        <!-- Partnership Brand Carousel -->
-        <div class="partnership-carousel-section">
+  <section class="content-section partnership-section">
+    <div class="container">
+      <h3 class="scroll-reveal from-bottom">Trusted by</h3>
+      <div class="partnership-carousel-section">
           <div class="partnership-carousel-container">
             <div class="partnership-carousel-track" id="partnership-carousel-track">
               <div class="partnership-logo-circle">
@@ -1182,7 +942,6 @@
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
   </section>
@@ -1251,13 +1010,10 @@
   <section class="cta-section">
     <div class="container">
       <h2 class="scroll-reveal from-bottom">Join the BYZ Community</h2>
-      <p class="scroll-reveal from-bottom">Experience the energy, connect with the community, and create memories that last a lifetime.</p>
+      <p class="scroll-reveal from-bottom">Experience the energy. Connect with the community.</p>
       <div class="cta-buttons">
         <a class="btn primary scroll-reveal from-bottom" href="events.html">
           <i class="fa-solid fa-calendar-days"></i> View Upcoming Events
-        </a>
-        <a class="btn ghost scroll-reveal from-bottom" href="my-bookings.html">
-          <i class="fa-solid fa-calendar-check"></i> My Bookings
         </a>
         <a class="btn ghost scroll-reveal from-bottom" href="contact.html">
           <i class="fa-solid fa-envelope"></i> Get in Touch
@@ -1315,33 +1071,37 @@
     }, 100);
   })();
   
-  // Timeline Progressive Reveal
+  // Value accordions - click to expand/collapse
   (function(){
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    
-    const timeline = document.getElementById('timeline');
-    const timeline2018 = document.getElementById('timeline-2018');
-    const timelineToday = document.getElementById('timeline-today');
-    
-    if(!timeline || !timeline2018 || !timelineToday) return;
-    
-    // Show 2018 immediately
-    setTimeout(() => {
-      timeline2018.classList.add('revealed');
-      timeline.classList.add('revealed');
-    }, 300);
-    
-    // Show Today when scrolled into view
-    const todayObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if(entry.isIntersecting){
-          timelineToday.classList.add('revealed');
-          todayObserver.unobserve(entry.target);
+    document.querySelectorAll('.value-accordion-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const accordion = btn.closest('.value-accordion');
+        const body = accordion.querySelector('.value-accordion-body');
+        const isOpen = accordion.classList.contains('is-open');
+        document.querySelectorAll('.value-accordion').forEach(a => {
+          a.classList.remove('is-open');
+          a.querySelector('.value-accordion-body').style.maxHeight = '0';
+          a.querySelector('.value-accordion-btn').setAttribute('aria-expanded', 'false');
+        });
+        if(!isOpen){
+          accordion.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+          body.style.maxHeight = body.scrollHeight + 'px';
         }
       });
-    }, { threshold: 0.3 });
-    
-    todayObserver.observe(timelineToday);
+    });
+  })();
+  
+  // Scroll progress bar
+  (function(){
+    const bar = document.getElementById('scrollProgressBar');
+    if(!bar) return;
+    function update(){
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (h > 0 ? (window.pageYOffset / h) * 100 : 0) + '%';
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
   })();
   
   // Random Images for Horizontal Scroll Gallery
@@ -1462,30 +1222,6 @@
     } else {
       initHorizontalScroll();
     }
-  })();
-  
-  // ===================== OUR VALUES - SCROLL REVEAL ANIMATIONS =====================
-  (function(){
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    
-    const valueCards = document.querySelectorAll('.value-card-glass');
-    if(!valueCards.length) return;
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, index) => {
-        if(entry.isIntersecting){
-          setTimeout(() => {
-            entry.target.classList.add('revealed');
-          }, index * 100);
-          observer.unobserve(entry.target);
-        }
-      });
-    }, {
-      threshold: 0.2,
-      rootMargin: '0px 0px -50px 0px'
-    });
-    
-    valueCards.forEach(card => observer.observe(card));
   })();
   
   // Partnership Carousel - Scroll-Driven Horizontal Animation
@@ -1649,36 +1385,6 @@
   const statsSection = document.querySelector(".stats-section");
   if(statsSection) statsObserver.observe(statsSection);
   
-  // Parallax effect for hero (mobile-friendly)
-  (function(){
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    
-    let ticking = false;
-    const hero = document.querySelector('.hero');
-    const decorative = document.querySelector('.hero-decorative');
-    
-    function updateParallax(){
-      if(!hero || !decorative) return;
-      
-      const scrolled = window.pageYOffset;
-      const rate = scrolled * 0.3;
-      
-      if(scrolled < window.innerHeight){
-        decorative.style.transform = `translateY(${rate}px)`;
-      }
-      
-      ticking = false;
-    }
-    
-    function requestTick(){
-      if(!ticking){
-        requestAnimationFrame(updateParallax);
-        ticking = true;
-      }
-    }
-    
-    window.addEventListener('scroll', requestTick, { passive: true });
-  })();
 </script>
 
 <script src="gallery-manifest.js"></script>
