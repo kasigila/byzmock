@@ -17,16 +17,15 @@
       --sub:#a1a1a6;
       --border:#2c2c2e;
       --accent:#ffffff;
-      --glow: 0 0 20px rgba(255,255,255,.06);
-      --shadow: 0 18px 60px rgba(0,0,0,.35);
-      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
-      --ease: cubic-bezier(.2,.8,.2,1);
+      --shadow: 0 24px 80px rgba(0,0,0,.4);
+      --shadow-soft: 0 4px 24px rgba(0,0,0,.2);
+      --ease: cubic-bezier(.25,.1,.25,1);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
       --max: 1100px;
-      --radius: 16px;
-      --radius-lg: 20px;
-      --radius-sm: 10px;
+      --radius: 20px;
+      --radius-lg: 24px;
+      --radius-sm: 12px;
       --header-h: 64px;
     }
 
@@ -47,15 +46,9 @@
       content:'';
       position:fixed;
       inset:0;
-      background-image: 
-        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-      background-size: 64px 64px;
+      background-image: radial-gradient(ellipse 120% 80% at 50% -20%, rgba(255,255,255,.03) 0%, transparent 50%);
       pointer-events:none;
       z-index:0;
-      opacity:0.4;
-      mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 15%, transparent 65%);
-      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 70%);
     }
     a{color:inherit;text-decoration:none}
     .container{
@@ -89,10 +82,10 @@
         transform:translateY(0) translateX(0) scale(1);
       }
       .scroll-reveal.from-bottom{
-        transform:translateY(40px) scale(0.96);
+        transform:translateY(28px);
       }
       .scroll-reveal.from-left{
-        transform:translateX(-20px);
+        transform:translateX(-16px);
       }
       @media (max-width: 560px){
         .scroll-reveal.from-left{
@@ -100,7 +93,7 @@
         }
       }
       .scroll-reveal.from-right{
-        transform:translateX(20px);
+        transform:translateX(16px);
       }
       @media (max-width: 560px){
         .scroll-reveal.from-right{
@@ -108,7 +101,7 @@
         }
       }
       .scroll-reveal.from-top{
-        transform:translateY(-40px);
+        transform:translateY(-24px);
       }
       .scroll-reveal.scale-in{
         transform:scale(0.92);
@@ -198,40 +191,45 @@
     /* Buttons */
     .btn{
       display:inline-flex;align-items:center;justify-content:center;
-      gap:10px;padding:14px 22px;border-radius:var(--radius-sm);
-      border:1px solid var(--border);
-      background:var(--bg-elev);
-      font-size:14px;font-weight:600;
-      letter-spacing:.02em;
+      gap:10px;padding:14px 24px;border-radius:980px;
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.08);
+      font-size:15px;font-weight:500;
+      letter-spacing:-.01em;
       cursor:pointer;
-      transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out), border-color .2s var(--ease);
+      transition: all .3s var(--ease);
       word-wrap:normal;
     }
-    .btn:hover{transform: translateY(-1px); box-shadow: var(--shadow-soft)}
+    .btn:hover{
+      background:rgba(255,255,255,.12);
+      transform:translateY(-1px);
+    }
     .btn.primary{
       background:var(--accent);
       border-color:transparent;
       color:var(--bg);
-      letter-spacing:.03em;
+      font-weight:600;
     }
-    .btn.primary:hover{box-shadow: 0 8px 32px rgba(0,0,0,.25)}
-    .btn.ghost{background: transparent;border-color:color-mix(in srgb, var(--border) 80%, transparent)}
+    .btn.primary:hover{
+      background:#fff;
+      box-shadow:0 4px 20px rgba(255,255,255,.25);
+    }
+    .btn.ghost{
+      background:transparent;
+      border-color:rgba(255,255,255,.2);
+    }
 
     /* Section Dividers */
     .section-divider{
       height:1px;
-      background: linear-gradient(90deg, 
-        transparent 0%,
-        color-mix(in srgb, var(--border) 45%, transparent) 50%,
-        transparent 100%
-      );
-      margin: 80px 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.08) 30%, rgba(255,255,255,.08) 70%, transparent);
+      margin: 96px 0;
       opacity:0;
       transition: opacity 0.8s var(--ease-out);
     }
     .section-divider.revealed{opacity:1}
     @media (max-width: 560px){
-      .section-divider{margin: 60px 0}
+      .section-divider{margin: 64px 0}
     }
 
     /* Main */
@@ -250,30 +248,19 @@
     .scroll-progress-bar{
       height:100%;
       width:0%;
-      background:linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, transparent));
-      box-shadow: var(--glow);
-      transition:width .06s var(--ease-in-out);
+      background:var(--accent);
+      transition:width .12s var(--ease-out);
     }
 
     /* Hero Section */
     .hero{
-      padding: 100px 0 70px;
+      padding: 120px 0 80px;
       position:relative;
       overflow:hidden;
-      background:
-        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 20%, transparent), transparent 65%),
-        linear-gradient(180deg, transparent 0%, var(--bg) 100%);
-    }
-    .hero::after{
-      content:'';
-      position:absolute;
-      bottom:0;left:0;right:0;
-      height:1px;
-      background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--border) 50%, transparent) 20%, color-mix(in srgb, var(--border) 50%, transparent) 80%, transparent);
-      opacity:0.6;
+      background: radial-gradient(1000px 400px at 50% -15%, rgba(255,255,255,.04) 0%, transparent 60%);
     }
     @media (max-width: 560px){
-      .hero{padding: 60px 0 48px}
+      .hero{padding: 80px 0 56px}
     }
     .hero .scroll-reveal.from-bottom:nth-child(1){ transition-delay: 0ms; }
     .hero .scroll-reveal.from-bottom:nth-child(2){ transition-delay: 80ms; }
@@ -281,11 +268,11 @@
       position:relative;z-index:1;
     }
     .hero h1{
-      font-size: clamp(2.2rem, 5.5vw, 3.8rem);
-      letter-spacing:-1.5px;
-      font-weight:800;
-      line-height:1.08;
-      margin-bottom:20px;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      letter-spacing:-.04em;
+      font-weight:700;
+      line-height:1.1;
+      margin-bottom:24px;
       text-align:center;
       word-wrap:break-word;
       overflow-wrap:break-word;
@@ -304,9 +291,9 @@
     }
     .hero p{
       color:var(--sub);
-      max-width:65ch;
-      font-size:16px;
-      line-height:1.6;
+      max-width:42ch;
+      font-size:17px;
+      line-height:1.5;
       word-wrap:break-word;
       overflow-wrap:break-word;
       text-align:center;
@@ -318,7 +305,7 @@
 
     /* Content Sections */
     .content-section{
-      padding: 80px 0;
+      padding: 96px 0;
       position:relative;
       overflow-x:hidden;
       width:100%;
@@ -332,7 +319,7 @@
       position:relative;
     }
     @media (max-width: 560px){
-      .content-section{padding: 50px 0}
+      .content-section{padding: 64px 0}
     }
 
     /* Story Grid - Enhanced */
@@ -353,9 +340,9 @@
       position:relative;
     }
     .story-content h2{
-      font-size: clamp(1.9rem, 4.5vw, 2.6rem);
-      letter-spacing:-.06em;
-      font-weight:800;
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      letter-spacing:-.04em;
+      font-weight:700;
       margin-bottom:28px;
       text-align:center;
       word-wrap:break-word;
@@ -393,19 +380,10 @@
       position:relative;
       border-radius: var(--radius-lg);
       overflow:hidden;
-      border:1px solid var(--border);
-      box-shadow: var(--shadow), inset 0 0 0 1px color-mix(in srgb, var(--border) 30%, transparent);
-      background:var(--bg-elev);
+      background:var(--bg);
       height:500px;
       margin-top:40px;
-    }
-    .story-gallery::before{
-      content:'';
-      position:absolute;
-      inset:0;
-      border-radius:inherit;
-      box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--accent) 8%, transparent);
-      pointer-events:none;
+      box-shadow: var(--shadow);
     }
     @media (max-width: 980px){
       .story-gallery{height:400px}
@@ -436,55 +414,46 @@
     /* Values Header */
     .values-header{
       text-align:center;
-      margin-bottom:40px;
+      margin-bottom:56px;
     }
     @media (max-width: 560px){
-      .values-header{margin-bottom:28px;padding:0 8px}
+      .values-header{margin-bottom:40px;padding:0 8px}
     }
     .values-header h2{
-      font-size: clamp(1.9rem, 4.5vw, 2.6rem);
-      font-weight:800;
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      font-weight:700;
       margin-bottom:12px;
-      letter-spacing:-.06em;
+      letter-spacing:-.04em;
     }
     .values-header p{
       color:var(--sub);
-      font-size:16px;
+      font-size:17px;
     }
 
-    /* Expandable Value Accordions */
+    /* Value Cards - Apple-style */
     .values-grid{
       display:flex;
       flex-direction:column;
-      gap:10px;
-      max-width:640px;
+      gap:16px;
+      max-width:680px;
       margin:0 auto;
     }
     .value-accordion{
-      border:1px solid var(--border);
-      border-radius:var(--radius-sm);
-      background:color-mix(in srgb, var(--bg-elev) 98%, var(--bg-alt));
+      border-radius:var(--radius-lg);
       overflow:hidden;
       position:relative;
-      transition: border-color .25s var(--ease), box-shadow .25s var(--ease);
-    }
-    .value-accordion::before{
-      content:'';
-      position:absolute;
-      left:0;top:0;bottom:0;
-      width:2px;
-      background:transparent;
-      transition: background .25s var(--ease);
+      background:rgba(28,28,30,.6);
+      backdrop-filter:blur(20px) saturate(180%);
+      -webkit-backdrop-filter:blur(20px) saturate(180%);
+      transition: transform .4s var(--ease-out), box-shadow .4s var(--ease-out);
     }
     .value-accordion:hover{
-      border-color:color-mix(in srgb, var(--border) 70%, var(--accent) 15%);
+      transform:translateY(-2px);
+      box-shadow: var(--shadow-soft);
     }
     .value-accordion.is-open{
-      border-color:color-mix(in srgb, var(--border) 50%, var(--accent) 25%);
-      box-shadow: 0 4px 24px rgba(0,0,0,.25), var(--glow);
-    }
-    .value-accordion.is-open::before{
-      background:var(--accent);
+      box-shadow: var(--shadow);
+      transform:translateY(-2px);
     }
     .value-accordion-btn{
       width:100%;
@@ -492,28 +461,28 @@
       align-items:center;
       justify-content:space-between;
       gap:16px;
-      padding:20px 24px;
+      padding:24px 28px;
       background:transparent;
       border:none;
       color:var(--text);
       font-family:inherit;
-      font-size:16px;
+      font-size:17px;
       font-weight:600;
-      letter-spacing:-.02em;
+      letter-spacing:-.025em;
       text-align:left;
       cursor:pointer;
-      transition: background .2s var(--ease);
+      transition: background .3s var(--ease);
       -webkit-tap-highlight-color:transparent;
     }
     .value-accordion-btn:hover{
-      background:color-mix(in srgb, var(--border) 15%, transparent);
+      background:rgba(255,255,255,.03);
     }
     .value-accordion-btn .chevron{
       flex-shrink:0;
       width:20px;
       height:20px;
       color:var(--sub);
-      transition: transform .35s var(--ease-out), color .2s var(--ease);
+      transition: transform .5s var(--ease-out), color .3s var(--ease);
     }
     .value-accordion.is-open .value-accordion-btn .chevron{
       transform:rotate(180deg);
@@ -522,21 +491,40 @@
     .value-accordion-body{
       max-height:0;
       overflow:hidden;
-      transition: max-height .4s var(--ease-out);
+      transition: max-height .5s var(--ease-out);
     }
     .value-accordion-body-inner{
-      padding:0 24px 20px;
-      padding-top:0;
+      padding:0;
+    }
+    .value-accordion-img-wrap{
+      width:100%;
+      height:180px;
+      overflow:hidden;
+      background:var(--bg);
+    }
+    .value-accordion-img-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition: transform .8s var(--ease-out);
+    }
+    .value-accordion.is-open:hover .value-accordion-img-wrap img{
+      transform:scale(1.02);
+    }
+    .value-accordion-desc-wrap{
+      padding:24px 28px 28px;
     }
     .value-accordion-desc{
-      font-size:15px;
+      font-size:16px;
       color:var(--sub);
-      line-height:1.65;
+      line-height:1.6;
     }
     @media (max-width: 560px){
-      .value-accordion-btn{padding:18px 20px;font-size:16px}
-      .value-accordion-body-inner{padding:0 20px 18px}
-      .value-accordion-desc{font-size:14px}
+      .value-accordion-btn{padding:20px 24px;font-size:16px}
+      .value-accordion-img-wrap{height:160px}
+      .value-accordion-desc-wrap{padding:20px 24px 24px}
+      .value-accordion-desc{font-size:15px}
     }
     .value-accordion[data-index="0"]{ transition-delay: 0ms; }
     .value-accordion[data-index="1"]{ transition-delay: 60ms; }
@@ -553,21 +541,12 @@
       .partnership-section{padding:48px 0 60px}
     }
     .partnership-section h3{
-      font-size:11px;
-      font-weight:600;
+      font-size:12px;
+      font-weight:500;
       text-transform:uppercase;
-      letter-spacing:.2em;
+      letter-spacing:.18em;
       color:var(--sub);
-      margin-bottom:36px;
-      position:relative;
-    }
-    .partnership-section h3::after{
-      content:'';
-      display:block;
-      width:24px;
-      height:1px;
-      background:var(--border);
-      margin:16px auto 0;
+      margin-bottom:40px;
     }
     .partnership-carousel-section{
       width:100%;
@@ -590,14 +569,14 @@
       width:120px;
       height:120px;
       border-radius:50%;
-      border:1px solid color-mix(in srgb, var(--border) 60%, var(--accent) 20%);
       overflow:hidden;
       flex-shrink:0;
-      background:var(--bg);
+      background:rgba(28,28,30,.8);
       display:flex;
       align-items:center;
       justify-content:center;
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent), 0 8px 24px rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
     }
     .partnership-logo-circle img{
       width:100%;
@@ -676,7 +655,6 @@
       stroke-linecap:round;
       stroke-dasharray:314;
       stroke-dashoffset:314;
-      filter: drop-shadow(0 0 6px rgba(255,255,255,.15));
       transition: stroke-dashoffset 2s var(--ease-out);
     }
     .stat-number-wrapper{
@@ -706,19 +684,19 @@
       .stat-label{font-size:12px;margin-top:6px}
     }
 
-    /* CTA Section - Enhanced */
+    /* CTA Section */
     .cta-section{
       text-align:center;
-      padding:80px 0;
+      padding: 96px 0 120px;
     }
     @media (max-width: 560px){
-      .cta-section{padding:60px 0}
+      .cta-section{padding: 64px 0 80px}
     }
     .cta-section h2{
-      font-size: clamp(1.9rem, 4.5vw, 2.6rem);
-      font-weight:800;
-      margin-bottom:20px;
-      letter-spacing:-.06em;
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      font-weight:700;
+      margin-bottom:16px;
+      letter-spacing:-.04em;
       word-wrap:break-word;
       overflow-wrap:break-word;
     }
@@ -738,7 +716,7 @@
     }
     .cta-buttons{
       display:flex;
-      gap:14px;
+      gap:16px;
       justify-content:center;
       flex-wrap:wrap;
     }
@@ -847,7 +825,7 @@
     <div class="container">
       <div class="values-header">
         <h2 class="scroll-reveal from-bottom">Our Values</h2>
-        <p class="scroll-reveal from-bottom">What drives us every day — tap to expand</p>
+        <p class="scroll-reveal from-bottom">What we stand for</p>
       </div>
 
       <div class="values-grid">
@@ -858,7 +836,12 @@
           </button>
           <div class="value-accordion-body">
             <div class="value-accordion-body-inner">
-              <p class="value-accordion-desc">We believe music is the universal language that brings people together. Every event is built around the sound.</p>
+              <div class="value-accordion-img-wrap">
+                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
+              </div>
+              <div class="value-accordion-desc-wrap">
+                <p class="value-accordion-desc">We believe music is the universal language that brings people together. Every event is built around the sound.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -869,7 +852,12 @@
           </button>
           <div class="value-accordion-body">
             <div class="value-accordion-body-inner">
-              <p class="value-accordion-desc">BYZ is more than events—it's a community where everyone belongs.</p>
+              <div class="value-accordion-img-wrap">
+                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
+              </div>
+              <div class="value-accordion-desc-wrap">
+                <p class="value-accordion-desc">BYZ is more than events—it's a community where everyone belongs.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -880,7 +868,12 @@
           </button>
           <div class="value-accordion-body">
             <div class="value-accordion-body-inner">
-              <p class="value-accordion-desc">We never compromise on the details. Every experience exceeds expectations.</p>
+              <div class="value-accordion-img-wrap">
+                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
+              </div>
+              <div class="value-accordion-desc-wrap">
+                <p class="value-accordion-desc">We never compromise on the details. Every experience exceeds expectations.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -891,7 +884,12 @@
           </button>
           <div class="value-accordion-body">
             <div class="value-accordion-body-inner">
-              <p class="value-accordion-desc">We stay true to our roots while pushing boundaries.</p>
+              <div class="value-accordion-img-wrap">
+                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
+              </div>
+              <div class="value-accordion-desc-wrap">
+                <p class="value-accordion-desc">We stay true to our roots while pushing boundaries.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -902,7 +900,12 @@
           </button>
           <div class="value-accordion-body">
             <div class="value-accordion-body-inner">
-              <p class="value-accordion-desc">We collaborate with the best to showcase the best of Dar es Salaam.</p>
+              <div class="value-accordion-img-wrap">
+                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
+              </div>
+              <div class="value-accordion-desc-wrap">
+                <p class="value-accordion-desc">We collaborate with the best to showcase the best of Dar es Salaam.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -1015,6 +1018,9 @@
         <a class="btn primary scroll-reveal from-bottom" href="events.html">
           <i class="fa-solid fa-calendar-days"></i> View Upcoming Events
         </a>
+        <a class="btn ghost scroll-reveal from-bottom" href="my-bookings.html">
+          <i class="fa-solid fa-calendar-check"></i> My Bookings
+        </a>
         <a class="btn ghost scroll-reveal from-bottom" href="contact.html">
           <i class="fa-solid fa-envelope"></i> Get in Touch
         </a>
@@ -1069,6 +1075,37 @@
         el.classList.add('revealed');
       });
     }, 100);
+  })();
+  
+  // Random images for Values section - different every page refresh
+  (function(){
+    const valueImagesPool = [
+      'groove-memory-gallery/december-26-2025/FYRM0007.jpg','groove-memory-gallery/december-26-2025/FYRM0021.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0056.jpg','groove-memory-gallery/december-26-2025/FYRM0071.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0079.jpg','groove-memory-gallery/december-26-2025/FYRM0084.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0091.jpg','groove-memory-gallery/december-26-2025/FYRM0135.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM9994.jpg','groove-memory-gallery/december-26-2025/FYRM9580.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8087.jpg','groove-memory-gallery/december-6-2025/FYRM8089.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8095.jpg','groove-memory-gallery/december-6-2025/FYRM8101.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8506.jpg','groove-memory-gallery/december-6-2025/FYRM8230.jpg',
+      'groove-memory-gallery/may-24-2025/692A0026.jpg','groove-memory-gallery/may-24-2025/692A0461.jpg',
+      'groove-memory-gallery/may-24-2025/692A0512.jpg','groove-memory-gallery/may-24-2025/692A0560.jpg',
+      'groove-memory-gallery/may-24-2025/692A0037.jpg','groove-memory-gallery/may-24-2025/692A9920.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0874.jpg','tempo-memory-gallery/july-11-2025/FYRM0884.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0903.jpg','tempo-memory-gallery/july-11-2025/FYRM1227.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM1023.jpg','tempo-memory-gallery/july-11-2025/FYRM1131.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9856.jpg','tempo-memory-gallery/june-27-2025/692A9843.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9660.jpg','tempo-memory-gallery/june-27-2025/692A9755.jpg',
+      'tempo-memory-gallery/may-16-2025/692A9698.jpg','tempo-memory-gallery/may-16-2025/692A9690.jpg',
+      'tempo-memory-gallery/may-16-2025/692A9677.jpg','tempo-memory-gallery/may-30-2025/692A0187.jpg',
+      'tempo-memory-gallery/may-30-2025/692A0308.jpg'
+    ];
+    const imgs = document.querySelectorAll('.value-accordion-img');
+    const shuffled = [...valueImagesPool].sort(() => Math.random() - 0.5);
+    imgs.forEach((img, i) => {
+      img.src = shuffled[i % shuffled.length];
+      img.onerror = () => { img.src = valueImagesPool[0]; };
+    });
   })();
   
   // Value accordions - click to expand/collapse
