@@ -764,7 +764,8 @@ header{
 .lb-media{
   position: relative;
   overflow: hidden;
-  touch-action: pan-x pan-y;
+  touch-action: manipulation;
+  cursor: pointer;
   flex: 1;
   display: flex;
   align-items: center;
@@ -960,6 +961,89 @@ header{
   margin-bottom: 4px;
 }
 .liked-photo-date{
+  font-size: 12px;
+  color: var(--sub);
+}
+
+/* ===================== FAVORITE ALBUMS SIDEBAR ===================== */
+.favorite-albums{
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  height: 100vh;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  box-shadow: -8px 0 32px rgba(0,0,0,.2);
+  z-index: 2999;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.favorite-albums.show{
+  transform: translateX(0);
+}
+.favorite-albums.show ~ .my-likes{ z-index: 2998; }
+.favorite-albums-header{
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.favorite-albums-title{
+  font-weight: 700;
+  font-size: 18px;
+}
+.favorite-albums-close{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-alt);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.favorite-albums-content{
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+.favorite-album-item{
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .2s var(--ease);
+  margin-bottom: 8px;
+}
+.favorite-album-item:hover{
+  background: var(--bg-alt);
+}
+.favorite-album-item img{
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.favorite-album-info{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.favorite-album-name{
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.favorite-album-event{
   font-size: 12px;
   color: var(--sub);
 }
@@ -1267,6 +1351,10 @@ header{
           <span>Memory Gallery</span>
         </a>
         <div style="display:flex;gap:12px;align-items:center">
+          <button class="btn ghost" id="favoriteAlbumsBtn" onclick="toggleFavoriteAlbums()" title="Favorite albums">
+            <i class="fa-solid fa-star"></i>
+            <span id="favoritesCountBadge">0</span>
+          </button>
           <button class="btn ghost" id="myLikesBtn" onclick="toggleMyLikes()">
             <i class="fa-solid fa-heart-circle-check"></i>
             <span id="likesCountBadge">0</span>
@@ -1413,6 +1501,17 @@ header{
       </div>
   </div>
 
+  <!-- Favorite Albums Sidebar -->
+  <div class="favorite-albums" id="favoriteAlbums">
+    <div class="favorite-albums-header">
+      <div class="favorite-albums-title">Favorite Albums</div>
+      <button class="favorite-albums-close" onclick="toggleFavoriteAlbums()" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="favorite-albums-content" id="favoriteAlbumsContent"></div>
+  </div>
+
   <!-- My Likes Sidebar -->
   <div class="my-likes" id="myLikes">
     <div class="my-likes-header">
@@ -1516,13 +1615,15 @@ function showToast(msg, type = 'info') {
 
 function titleizeAlbum(key) {
   const [m, d, y] = key.split('-');
-  const monthNames = {
-    'january': 'January', 'february': 'February', 'march': 'March', 'april': 'April',
-    'may': 'May', 'june': 'June', 'july': 'July', 'august': 'August',
-    'september': 'September', 'october': 'October', 'november': 'November', 'december': 'December'
+  const monthIndex = {
+    'january': 0, 'february': 1, 'march': 2, 'april': 3,
+    'may': 4, 'june': 5, 'july': 6, 'august': 7,
+    'september': 8, 'october': 9, 'november': 10, 'december': 11
   };
-  const month = monthNames[m.toLowerCase()] || m.charAt(0).toUpperCase() + m.slice(1);
-  return `${month} ${Number(d)}, ${y}`;
+  const monthShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const mi = monthIndex[m?.toLowerCase()];
+  if (mi === undefined) return "—";
+  return `${monthShort[mi]} ${Number(d)}, ${y}`;
 }
 
 function parseAlbumKey(key) {
@@ -1841,8 +1942,10 @@ function openLightbox(index) {
   lightbox.classList.add('show');
   document.body.style.overflow = 'hidden';
   
-  // Setup swipe gestures
   setupLightboxSwipe();
+  if (lbMedia) {
+    lbMedia.ondblclick = handleLightboxDoubleTap;
+  }
 }
 
 function closeLightbox() {
@@ -1888,17 +1991,37 @@ function handleLightboxDoubleTap() {
   }
 }
 
+let lightboxSwipeSetup = false;
 function setupLightboxSwipe() {
   const lbMedia = document.getElementById('lbMedia');
-  if (!lbMedia) return;
+  if (!lbMedia || lightboxSwipeSetup) return;
+  lightboxSwipeSetup = true;
   
   let startX = 0;
   let startY = 0;
+  let lastTapTime = 0;
+  let tapResetTimer;
+  const DOUBLE_TAP_MS = 400;
   
   lbMedia.addEventListener('touchstart', (e) => {
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapTime;
+    
+    if (lastTapTime > 0 && timeSinceLastTap < DOUBLE_TAP_MS) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (tapResetTimer) clearTimeout(tapResetTimer);
+      lastTapTime = 0;
+      handleLightboxDoubleTap();
+      return;
+    }
+    
+    if (tapResetTimer) clearTimeout(tapResetTimer);
+    tapResetTimer = setTimeout(() => { lastTapTime = 0; }, DOUBLE_TAP_MS);
+    lastTapTime = now;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
-  });
+  }, { passive: false });
   
   lbMedia.addEventListener('touchend', (e) => {
     if (!startX || !startY) return;
@@ -1908,6 +2031,7 @@ function setupLightboxSwipe() {
     const diffX = startX - endX;
     const diffY = startY - endY;
     
+    // Only swipe if it's a significant horizontal movement (not a tap)
     if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
       if (diffX > 0) {
         nextPhoto();
@@ -2006,7 +2130,60 @@ function toggleFavoriteAlbum(albumKey) {
   }
   
   localStorage.setItem('byz_favorites', JSON.stringify(favorites));
+  updateFavoritesCount();
   buildBoards();
+  const faSidebar = document.getElementById('favoriteAlbums');
+  if (faSidebar && faSidebar.classList.contains('show')) updateFavoriteAlbums();
+}
+
+// ===================== FAVORITE ALBUMS SIDEBAR =====================
+function updateFavoritesCount() {
+  const el = document.getElementById('favoritesCountBadge');
+  if (el) el.textContent = favorites.length;
+}
+
+function toggleFavoriteAlbums() {
+  const sidebar = document.getElementById('favoriteAlbums');
+  if (!sidebar) return;
+  sidebar.classList.toggle('show');
+  if (sidebar.classList.contains('show')) updateFavoriteAlbums();
+}
+
+function updateFavoriteAlbums() {
+  const content = document.getElementById('favoriteAlbumsContent');
+  if (!content) return;
+
+  if (favorites.length === 0) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub)">No favorite albums yet. Tap the star on any album to add it here.</div>';
+    return;
+  }
+
+  const eventLabel = (e) => e === 'groove' ? 'Groove' : e === 'tempo' ? 'Tempo' : e;
+
+  content.innerHTML = favorites.map(key => {
+    const idx = key.indexOf(':');
+    const event = key.slice(0, idx);
+    const albumKey = key.slice(idx + 1);
+    const photos = getPhotos(event, albumKey);
+    const firstPhoto = photos && photos[0];
+    const previewUrl = firstPhoto ? getPhotoUrl(event, albumKey, firstPhoto) : '';
+    const title = titleizeAlbum(albumKey);
+    return `
+      <div class="favorite-album-item" data-event="${event}" data-album="${albumKey.replace(/"/g, '&quot;')}" onclick="openFavoriteAlbum(this.dataset.event, this.dataset.album)">
+        <img src="${previewUrl}" alt="${title.replace(/"/g, '&quot;')}" onerror="this.style.display='none'" />
+        <div class="favorite-album-info">
+          <div class="favorite-album-name">${title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+          <div class="favorite-album-event">${eventLabel(event)} · ${photos ? photos.length : 0} photos</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openFavoriteAlbum(event, albumKey) {
+  switchEvent(event);
+  openAlbum(albumKey);
+  toggleFavoriteAlbums();
 }
 
 // ===================== SHARING =====================
@@ -2496,6 +2673,7 @@ function init() {
   // Initialize
   updateMeta();
   buildBoards();
+  updateFavoritesCount();
   updateMyLikes();
   updateRecentActivity();
   
