@@ -941,7 +941,7 @@
                 <div class="stat-number" data-target="10">0</div>
               </div>
             </div>
-            <div class="stat-label">Total Attendees (K+)</div>
+            <div class="stat-label">Total Attendees</div>
           </div>
           <div class="stat-item">
             <div class="stat-circle-wrapper">
@@ -1313,9 +1313,9 @@
     
     function getSuffix(labelText){
       const t = labelText.toLowerCase();
-      if(t.includes("(k+)")) return "K+";
       if(t.includes("attendees")) return "K+";
-      if(t.includes("events hosted") || t.includes("djs featured") || t.includes("years")) return "+";
+      if(t.includes("djs featured")) return "+";
+      if(t.includes("events hosted")) return "+";
       return "";
     }
     
