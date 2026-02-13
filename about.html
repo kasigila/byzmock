@@ -532,13 +532,14 @@
     }
     .partnership-carousel-section{
       width:100%;
-      padding:48px 0;
-      min-height:216px;
+      padding:64px 0;
+      min-height:248px;
       overflow:hidden;
       position:relative;
     }
     .partnership-carousel-container{
       width:100%;
+      padding:20px 0;
       overflow:hidden;
       position:relative;
     }
@@ -573,8 +574,11 @@
     @media (max-width: 560px){
       .partnership-carousel-section{
         margin:60px auto 40px;
-        padding:40px 0;
-        min-height:200px;
+        padding:56px 0;
+        min-height:232px;
+      }
+      .partnership-carousel-container{
+        padding:18px 0;
       }
       .partnership-logo-ring{
         width:100px;
@@ -617,12 +621,12 @@
     }
     .stat-circle-wrapper{
       position:relative;
-      width:88px;
-      height:88px;
-      margin:0 auto 16px;
+      width:120px;
+      height:120px;
+      margin:0 auto 20px;
     }
     @media (max-width: 560px){
-      .stat-circle-wrapper{width:80px;height:80px;margin-bottom:14px}
+      .stat-circle-wrapper{width:100px;height:100px;margin-bottom:16px}
     }
     .stat-circle{
       width:100%;
@@ -640,9 +644,9 @@
       stroke:var(--accent);
       stroke-width:3;
       stroke-linecap:round;
-      stroke-dasharray:251;
-      stroke-dashoffset:251;
-      transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      stroke-dasharray:283;
+      stroke-dashoffset:283;
+      transition: stroke-dashoffset 0.15s ease-out;
     }
     .stat-number-wrapper{
       position:absolute;
@@ -650,7 +654,7 @@
       transform:translate(-50%, -50%);
     }
     .stat-number{
-      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight:700;
       font-variant-numeric: tabular-nums;
       letter-spacing:-.02em;
@@ -914,8 +918,8 @@
           <div class="stat-item">
             <div class="stat-circle-wrapper">
               <svg class="stat-circle" viewBox="0 0 100 100">
-                <circle class="stat-circle-bg" cx="50" cy="50" r="40"></circle>
-                <circle class="stat-circle-progress" cx="50" cy="50" r="40" data-target="55" data-max="100"></circle>
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="55" data-max="100" data-speed="0.8"></circle>
               </svg>
               <div class="stat-number-wrapper">
                 <div class="stat-number" data-target="55">0</div>
@@ -926,8 +930,8 @@
           <div class="stat-item">
             <div class="stat-circle-wrapper">
               <svg class="stat-circle" viewBox="0 0 100 100">
-                <circle class="stat-circle-bg" cx="50" cy="50" r="40"></circle>
-                <circle class="stat-circle-progress" cx="50" cy="50" r="40" data-target="10" data-max="10"></circle>
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="10" data-max="10" data-speed="1.2"></circle>
               </svg>
               <div class="stat-number-wrapper">
                 <div class="stat-number" data-target="10">0</div>
@@ -938,8 +942,8 @@
           <div class="stat-item">
             <div class="stat-circle-wrapper">
               <svg class="stat-circle" viewBox="0 0 100 100">
-                <circle class="stat-circle-bg" cx="50" cy="50" r="40"></circle>
-                <circle class="stat-circle-progress" cx="50" cy="50" r="40" data-target="30" data-max="50"></circle>
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="30" data-max="50" data-speed="1.5"></circle>
               </svg>
               <div class="stat-number-wrapper">
                 <div class="stat-number" data-target="30">0</div>
@@ -1282,70 +1286,63 @@
     }
   })();
   
-  // Animate statistics counter and circular progress
-  function animateCounter(el, target, suffix = ""){
-    const duration = 2000;
-    const start = 0;
-    const increment = target / (duration / 16);
-    let current = start;
+  // Scroll-driven stats: fill/unfill based on scroll position, different speeds per stat
+  (function(){
+    const statsSection = document.querySelector(".stats-section");
+    if(!statsSection) return;
     
-    const timer = setInterval(() => {
-      current += increment;
-      if(current >= target){
-        el.textContent = target + suffix;
-        clearInterval(timer);
-      } else {
-        el.textContent = Math.floor(current) + suffix;
-      }
-    }, 16);
-  }
-  
-  function animateProgress(circle, target, max){
-    const r = parseInt(circle.getAttribute('r')) || 40;
-    const circumference = 2 * Math.PI * r;
-    const percentage = (target / max) * 100;
-    const offset = circumference - (percentage / 100) * circumference;
+    const statItems = statsSection.querySelectorAll(".stat-item");
+    const circumference = 2 * Math.PI * 45;
     
-    circle.style.strokeDashoffset = offset;
-  }
-  
-  // Intersection Observer for stats animation
-  const statsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        const statItems = entry.target.querySelectorAll(".stat-item");
-        statItems.forEach((item, index) => {
-          setTimeout(() => {
-          const stat = item.querySelector(".stat-number");
-          const label = item.querySelector(".stat-label");
-            const progressCircle = item.querySelector(".stat-circle-progress");
-            
-          if(!stat || !label) return;
-          
-          const target = parseInt(stat.dataset.target);
-            const max = progressCircle ? parseInt(progressCircle.dataset.max) : 100;
-            
-          // Determine suffix from label text
-          const labelText = label.textContent.toLowerCase();
-          let suffix = "";
-          if(labelText.includes("(k+)")) suffix = "K+";
-          else if(labelText.includes("events hosted") || labelText.includes("djs featured")) suffix = "+";
-          else if(labelText.includes("attendees")) suffix = "K+";
-          
-          animateCounter(stat, target, suffix);
-            
-            if(progressCircle){
-              animateProgress(progressCircle, target, max);
-            }
-          }, index * 150);
-        });
-        statsObserver.unobserve(entry.target);
+    function getSuffix(labelText){
+      const t = labelText.toLowerCase();
+      if(t.includes("(k+)")) return "K+";
+      if(t.includes("attendees")) return "K+";
+      if(t.includes("events hosted") || t.includes("djs featured")) return "+";
+      return "";
+    }
+    
+    function updateStats(scrollProgress){
+      statItems.forEach((item) => {
+        const stat = item.querySelector(".stat-number");
+        const label = item.querySelector(".stat-label");
+        const progressCircle = item.querySelector(".stat-circle-progress");
+        if(!stat || !label || !progressCircle) return;
+        
+        const target = parseInt(stat.dataset.target);
+        const max = parseInt(progressCircle.dataset.max) || 100;
+        const speed = parseFloat(progressCircle.dataset.speed) || 1;
+        const suffix = getSuffix(label.textContent);
+        
+        const statProgress = Math.min(1, Math.max(0, scrollProgress * (2 - speed)));
+        const displayVal = Math.round(statProgress * target);
+        stat.textContent = displayVal + suffix;
+        
+        const pct = (target / max) * statProgress * 100;
+        const offset = circumference - (pct / 100) * circumference;
+        progressCircle.style.strokeDashoffset = offset;
+      });
+    }
+    
+    function onScroll(){
+      const rect = statsSection.getBoundingClientRect();
+      const windowH = window.innerHeight;
+      const sectionH = rect.height;
+      const totalRange = windowH + sectionH;
+      const scrollAmount = rect.top + sectionH;
+      const progress = Math.min(1, Math.max(0, 1 - scrollAmount / totalRange));
+      updateStats(progress);
+    }
+    
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+      if(!ticking){
+        requestAnimationFrame(() => { onScroll(); ticking = false; });
+        ticking = true;
       }
-    });
-  }, { threshold: 0.4 });
-  
-  const statsSection = document.querySelector(".stats-section");
-  if(statsSection) statsObserver.observe(statsSection);
+    }, { passive: true });
+    onScroll();
+  })();
   
 </script>
 
