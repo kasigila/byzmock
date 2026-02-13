@@ -430,107 +430,79 @@
       font-size:17px;
     }
 
-    /* Value Cards - Apple-style */
+    /* Value Cards - Full view with rings */
     .values-grid{
       display:flex;
       flex-direction:column;
-      gap:16px;
-      max-width:680px;
+      gap:48px;
+      max-width:720px;
       margin:0 auto;
     }
-    .value-accordion{
-      border-radius:var(--radius-lg);
-      overflow:hidden;
-      position:relative;
-      background:rgba(28,28,30,.6);
-      backdrop-filter:blur(20px) saturate(180%);
-      -webkit-backdrop-filter:blur(20px) saturate(180%);
-      transition: transform .4s var(--ease-out), box-shadow .4s var(--ease-out);
+    @media (max-width: 560px){
+      .values-grid{gap:40px}
     }
-    .value-accordion:hover{
-      transform:translateY(-2px);
-      box-shadow: var(--shadow-soft);
-    }
-    .value-accordion.is-open{
-      box-shadow: var(--shadow);
-      transform:translateY(-2px);
-    }
-    .value-accordion-btn{
-      width:100%;
+    .value-card{
       display:flex;
+      flex-direction:column;
       align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      padding:24px 28px;
-      background:transparent;
-      border:none;
-      color:var(--text);
-      font-family:inherit;
-      font-size:17px;
-      font-weight:600;
-      letter-spacing:-.025em;
-      text-align:left;
-      cursor:pointer;
-      transition: background .3s var(--ease);
-      -webkit-tap-highlight-color:transparent;
+      text-align:center;
     }
-    .value-accordion-btn:hover{
-      background:rgba(255,255,255,.03);
-    }
-    .value-accordion-btn .chevron{
-      flex-shrink:0;
-      width:20px;
-      height:20px;
-      color:var(--sub);
-      transition: transform .5s var(--ease-out), color .3s var(--ease);
-    }
-    .value-accordion.is-open .value-accordion-btn .chevron{
-      transform:rotate(180deg);
-      color:var(--text);
-    }
-    .value-accordion-body{
-      max-height:0;
-      overflow:hidden;
-      transition: max-height .5s var(--ease-out);
-    }
-    .value-accordion-body-inner{
-      padding:0;
-    }
-    .value-accordion-img-wrap{
-      width:100%;
+    .value-card-ring-wrap{
+      position:relative;
+      margin-bottom:28px;
+      width:180px;
       height:180px;
-      overflow:hidden;
-      background:var(--bg);
+      border-radius:50%;
+      padding:0;
+      box-shadow: 
+        0 0 0 2px rgba(255,255,255,.2),
+        0 0 0 10px transparent,
+        0 0 0 12px rgba(255,255,255,.1),
+        0 0 0 22px transparent,
+        0 0 0 24px rgba(255,255,255,.06);
     }
-    .value-accordion-img-wrap img{
+    .value-card-img-wrap{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      overflow:hidden;
+    }
+    .value-card-img-wrap img{
       width:100%;
       height:100%;
       object-fit:cover;
       display:block;
-      transition: transform .8s var(--ease-out);
+      border-radius:50%;
+      transition: transform .6s var(--ease-out);
     }
-    .value-accordion.is-open:hover .value-accordion-img-wrap img{
-      transform:scale(1.02);
+    .value-card:hover .value-card-img-wrap img{
+      transform:scale(1.04);
     }
-    .value-accordion-desc-wrap{
-      padding:24px 28px 28px;
+    @media (max-width: 560px){
+      .value-card-ring-wrap{width:160px;height:160px;margin-bottom:24px}
     }
-    .value-accordion-desc{
+    .value-card-title{
+      font-size:20px;
+      font-weight:600;
+      letter-spacing:-.03em;
+      margin-bottom:12px;
+      color:var(--text);
+    }
+    .value-card-desc{
       font-size:16px;
       color:var(--sub);
       line-height:1.6;
+      max-width:42ch;
     }
     @media (max-width: 560px){
-      .value-accordion-btn{padding:20px 24px;font-size:16px}
-      .value-accordion-img-wrap{height:160px}
-      .value-accordion-desc-wrap{padding:20px 24px 24px}
-      .value-accordion-desc{font-size:15px}
+      .value-card-title{font-size:18px;margin-bottom:10px}
+      .value-card-desc{font-size:15px}
     }
-    .value-accordion[data-index="0"]{ transition-delay: 0ms; }
-    .value-accordion[data-index="1"]{ transition-delay: 60ms; }
-    .value-accordion[data-index="2"]{ transition-delay: 120ms; }
-    .value-accordion[data-index="3"]{ transition-delay: 180ms; }
-    .value-accordion[data-index="4"]{ transition-delay: 240ms; }
+    .value-card[data-index="0"]{ transition-delay: 0ms; }
+    .value-card[data-index="1"]{ transition-delay: 80ms; }
+    .value-card[data-index="2"]{ transition-delay: 160ms; }
+    .value-card[data-index="3"]{ transition-delay: 240ms; }
+    .value-card[data-index="4"]{ transition-delay: 320ms; }
 
     /* Partnership Carousel - Standalone Section */
     .partnership-section{
@@ -829,85 +801,50 @@
       </div>
 
       <div class="values-grid">
-        <div class="value-accordion scroll-reveal from-bottom" data-index="0">
-          <button class="value-accordion-btn" type="button" aria-expanded="false">
-            <span>Music First</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="value-accordion-body">
-            <div class="value-accordion-body-inner">
-              <div class="value-accordion-img-wrap">
-                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
-              </div>
-              <div class="value-accordion-desc-wrap">
-                <p class="value-accordion-desc">We believe music is the universal language that brings people together. Every event is built around the sound.</p>
-              </div>
+        <div class="value-card scroll-reveal from-bottom" data-index="0">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
             </div>
           </div>
+          <h3 class="value-card-title">Music First</h3>
+          <p class="value-card-desc">We believe music is the universal language that brings people together. Every event is built around the sound.</p>
         </div>
-        <div class="value-accordion scroll-reveal from-bottom" data-index="1">
-          <button class="value-accordion-btn" type="button" aria-expanded="false">
-            <span>Community</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="value-accordion-body">
-            <div class="value-accordion-body-inner">
-              <div class="value-accordion-img-wrap">
-                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
-              </div>
-              <div class="value-accordion-desc-wrap">
-                <p class="value-accordion-desc">BYZ is more than events—it's a community where everyone belongs.</p>
-              </div>
+        <div class="value-card scroll-reveal from-bottom" data-index="1">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
             </div>
           </div>
+          <h3 class="value-card-title">Community</h3>
+          <p class="value-card-desc">BYZ is more than events—it's a community where everyone belongs.</p>
         </div>
-        <div class="value-accordion scroll-reveal from-bottom" data-index="2">
-          <button class="value-accordion-btn" type="button" aria-expanded="false">
-            <span>Excellence</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="value-accordion-body">
-            <div class="value-accordion-body-inner">
-              <div class="value-accordion-img-wrap">
-                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
-              </div>
-              <div class="value-accordion-desc-wrap">
-                <p class="value-accordion-desc">We never compromise on the details. Every experience exceeds expectations.</p>
-              </div>
+        <div class="value-card scroll-reveal from-bottom" data-index="2">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
             </div>
           </div>
+          <h3 class="value-card-title">Excellence</h3>
+          <p class="value-card-desc">We never compromise on the details. Every experience exceeds expectations.</p>
         </div>
-        <div class="value-accordion scroll-reveal from-bottom" data-index="3">
-          <button class="value-accordion-btn" type="button" aria-expanded="false">
-            <span>Authenticity</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="value-accordion-body">
-            <div class="value-accordion-body-inner">
-              <div class="value-accordion-img-wrap">
-                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
-              </div>
-              <div class="value-accordion-desc-wrap">
-                <p class="value-accordion-desc">We stay true to our roots while pushing boundaries.</p>
-              </div>
+        <div class="value-card scroll-reveal from-bottom" data-index="3">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
             </div>
           </div>
+          <h3 class="value-card-title">Authenticity</h3>
+          <p class="value-card-desc">We stay true to our roots while pushing boundaries.</p>
         </div>
-        <div class="value-accordion scroll-reveal from-bottom" data-index="4">
-          <button class="value-accordion-btn" type="button" aria-expanded="false">
-            <span>Partnership</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="value-accordion-body">
-            <div class="value-accordion-body-inner">
-              <div class="value-accordion-img-wrap">
-                <img class="value-accordion-img" src="" alt="BYZ Event" loading="lazy">
-              </div>
-              <div class="value-accordion-desc-wrap">
-                <p class="value-accordion-desc">We collaborate with the best to showcase the best of Dar es Salaam.</p>
-              </div>
+        <div class="value-card scroll-reveal from-bottom" data-index="4">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
             </div>
           </div>
+          <h3 class="value-card-title">Partnership</h3>
+          <p class="value-card-desc">We collaborate with the best to showcase the best of Dar es Salaam.</p>
         </div>
       </div>
     </div>
@@ -1100,32 +1037,11 @@
       'tempo-memory-gallery/may-16-2025/692A9677.jpg','tempo-memory-gallery/may-30-2025/692A0187.jpg',
       'tempo-memory-gallery/may-30-2025/692A0308.jpg'
     ];
-    const imgs = document.querySelectorAll('.value-accordion-img');
+    const imgs = document.querySelectorAll('.value-card-img');
     const shuffled = [...valueImagesPool].sort(() => Math.random() - 0.5);
     imgs.forEach((img, i) => {
       img.src = shuffled[i % shuffled.length];
       img.onerror = () => { img.src = valueImagesPool[0]; };
-    });
-  })();
-  
-  // Value accordions - click to expand/collapse
-  (function(){
-    document.querySelectorAll('.value-accordion-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const accordion = btn.closest('.value-accordion');
-        const body = accordion.querySelector('.value-accordion-body');
-        const isOpen = accordion.classList.contains('is-open');
-        document.querySelectorAll('.value-accordion').forEach(a => {
-          a.classList.remove('is-open');
-          a.querySelector('.value-accordion-body').style.maxHeight = '0';
-          a.querySelector('.value-accordion-btn').setAttribute('aria-expanded', 'false');
-        });
-        if(!isOpen){
-          accordion.classList.add('is-open');
-          btn.setAttribute('aria-expanded', 'true');
-          body.style.maxHeight = body.scrollHeight + 'px';
-        }
-      });
     });
   })();
   
