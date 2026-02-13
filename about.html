@@ -568,6 +568,7 @@
       width:100%;
       height:100%;
       object-fit:cover;
+      object-position:center 40%;
       display:block;
       border-radius:50%;
     }
@@ -607,10 +608,13 @@
     }
     .stats-grid{
       display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:40px;
-      max-width:520px;
+      grid-template-columns: repeat(4, 1fr);
+      gap:32px;
+      max-width:800px;
       margin:0 auto;
+    }
+    @media (max-width: 980px){
+      .stats-grid{grid-template-columns:repeat(2, 1fr);gap:28px}
     }
     @media (max-width: 560px){
       .stats-grid{grid-template-columns:1fr;gap:36px;max-width:100%}
@@ -938,6 +942,18 @@
               </div>
             </div>
             <div class="stat-label">Total Attendees (K+)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="6" data-max="10" data-speed="1.1"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="6">0</div>
+              </div>
+            </div>
+            <div class="stat-label">Years of Experience</div>
           </div>
           <div class="stat-item">
             <div class="stat-circle-wrapper">
@@ -1286,24 +1302,25 @@
     }
   })();
   
-  // Scroll-driven stats: fill/unfill based on scroll position, different speeds per stat
+  // Stats: numbers lock once loaded; only ring animation reverts on scroll up
   (function(){
     const statsSection = document.querySelector(".stats-section");
     if(!statsSection) return;
     
     const statItems = statsSection.querySelectorAll(".stat-item");
     const circumference = 2 * Math.PI * 45;
+    const maxReached = {};
     
     function getSuffix(labelText){
       const t = labelText.toLowerCase();
       if(t.includes("(k+)")) return "K+";
       if(t.includes("attendees")) return "K+";
-      if(t.includes("events hosted") || t.includes("djs featured")) return "+";
+      if(t.includes("events hosted") || t.includes("djs featured") || t.includes("years")) return "+";
       return "";
     }
     
     function updateStats(scrollProgress){
-      statItems.forEach((item) => {
+      statItems.forEach((item, i) => {
         const stat = item.querySelector(".stat-number");
         const label = item.querySelector(".stat-label");
         const progressCircle = item.querySelector(".stat-circle-progress");
@@ -1315,11 +1332,13 @@
         const suffix = getSuffix(label.textContent);
         
         const statProgress = Math.min(1, Math.max(0, scrollProgress * (2 - speed)));
-        const displayVal = Math.round(statProgress * target);
+        maxReached[i] = Math.max(maxReached[i] || 0, statProgress);
+        const lockProgress = maxReached[i];
+        const displayVal = Math.round(lockProgress * target);
         stat.textContent = displayVal + suffix;
         
-        const pct = (target / max) * statProgress * 100;
-        const offset = circumference - (pct / 100) * circumference;
+        const ringPct = (target / max) * statProgress * 100;
+        const offset = circumference - (ringPct / 100) * circumference;
         progressCircle.style.strokeDashoffset = offset;
       });
     }
