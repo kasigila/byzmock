@@ -947,10 +947,10 @@
             <div class="stat-circle-wrapper">
               <svg class="stat-circle" viewBox="0 0 100 100">
                 <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
-                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="6" data-max="10" data-speed="1.1"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="8" data-max="10" data-speed="1.1"></circle>
               </svg>
               <div class="stat-number-wrapper">
-                <div class="stat-number" data-target="6">0</div>
+                <div class="stat-number" data-target="8">0</div>
               </div>
             </div>
             <div class="stat-label">Years of Experience</div>
@@ -1354,19 +1354,23 @@
       } else if(lastRect && lastRect.top <= windowH) {
         progress = 1;
       } else if(lastRect) {
-        progress = Math.min(1, (windowH - rect.top) / (lastRect.top - rect.top));
+        const denom = lastRect.top - rect.top;
+        progress = denom > 0 ? Math.min(1, (windowH - rect.top) / denom) : 1;
       }
       progress = Math.max(0, Math.min(1, progress));
       updateStats(progress);
     }
     
     let ticking = false;
-    window.addEventListener("scroll", () => {
+    function requestTick(){
       if(!ticking){
-        requestAnimationFrame(() => { onScroll(); ticking = false; });
         ticking = true;
+        requestAnimationFrame(() => { onScroll(); ticking = false; });
       }
-    }, { passive: true });
+    }
+    window.addEventListener("scroll", requestTick, { passive: true });
+    window.addEventListener("resize", requestTick);
+    window.addEventListener("load", requestTick);
     onScroll();
   })();
   
