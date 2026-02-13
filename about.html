@@ -1345,11 +1345,18 @@
     
     function onScroll(){
       const rect = statsSection.getBoundingClientRect();
+      const lastStat = statItems[statItems.length - 1];
+      const lastRect = lastStat ? lastStat.getBoundingClientRect() : null;
       const windowH = window.innerHeight;
-      const sectionH = rect.height;
-      const totalRange = windowH + sectionH;
-      const scrollAmount = rect.top + sectionH;
-      const progress = Math.min(1, Math.max(0, 1 - scrollAmount / totalRange));
+      let progress = 0;
+      if(rect.top >= windowH) {
+        progress = 0;
+      } else if(lastRect && lastRect.top <= windowH) {
+        progress = 1;
+      } else if(lastRect) {
+        progress = Math.min(1, (windowH - rect.top) / (lastRect.top - rect.top));
+      }
+      progress = Math.max(0, Math.min(1, progress));
       updateStats(progress);
     }
     
