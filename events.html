@@ -1009,7 +1009,26 @@
       });
     }
 
-    // Update empty states
+    // Update empty states (preserve event cards - never destroy DOM)
+    const filterEmptyStateHTML = `
+      <div class="empty-state filter-empty-state" data-empty-type="filter-empty" style="grid-column:1/-1;">
+        <i class="fa-solid fa-calendar-plus"></i>
+        <h3>No events found</h3>
+        <p>Try adjusting your search or filter. Check back for updates on upcoming events.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+          <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+            <i class="fa-brands fa-instagram"></i> Instagram
+          </a>
+          <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+            <i class="fa-brands fa-tiktok"></i> TikTok
+          </a>
+          <a href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
+            <i class="fa-brands fa-facebook"></i> Facebook
+          </a>
+        </div>
+      </div>
+    `;
+
     function updateEmptyStates(){
       const sections = document.querySelectorAll("section");
       sections.forEach(section => {
@@ -1017,30 +1036,36 @@
         if(sectionGrid){
           const visibleInSection = sectionGrid.querySelectorAll(".event-card:not([style*='display: none'])").length;
           const sectionDivider = section.querySelector(".section-divider");
+          const existingFilterEmpty = sectionGrid.querySelector(".filter-empty-state");
+          const comingSoonEmpty = sectionGrid.querySelector(".empty-state:not(.filter-empty-state)");
+
           if(visibleInSection === 0 && sectionDivider){
             sectionDivider.style.display = "none";
             if(currentFilter !== "all" || currentSearch){
-              sectionGrid.innerHTML = `
-                <div class="empty-state" style="grid-column:1/-1;">
-                  <i class="fa-solid fa-calendar-plus"></i>
-                  <h3>No events found</h3>
-                  <p>Try adjusting your search or filter. Check back for updates on upcoming events.</p>
-                  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
-                    <a href="https://www.instagram.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
-                      <i class="fa-brands fa-instagram"></i> Instagram
-                    </a>
-                    <a href="https://www.tiktok.com/@byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
-                      <i class="fa-brands fa-tiktok"></i> TikTok
-                    </a>
-                    <a href="https://www.facebook.com/byzinthehood" target="_blank" rel="noopener" class="btn ghost" style="font-size:13px;padding:10px 14px;">
-                      <i class="fa-brands fa-facebook"></i> Facebook
-                    </a>
-                  </div>
-                </div>
-              `;
+              if(!existingFilterEmpty){
+                sectionGrid.insertAdjacentHTML("beforeend", filterEmptyStateHTML);
+              }
+              if(comingSoonEmpty){
+                comingSoonEmpty.style.display = "none";
+              }
+            } else {
+              if(existingFilterEmpty){
+                existingFilterEmpty.remove();
+              }
+              if(comingSoonEmpty){
+                comingSoonEmpty.style.display = "";
+              }
             }
-          } else if(sectionDivider){
-            sectionDivider.style.display = "";
+          } else {
+            if(sectionDivider){
+              sectionDivider.style.display = "";
+            }
+            if(existingFilterEmpty){
+              existingFilterEmpty.remove();
+            }
+            if(comingSoonEmpty){
+              comingSoonEmpty.style.display = "";
+            }
           }
         }
       });
