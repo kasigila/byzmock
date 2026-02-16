@@ -545,7 +545,7 @@
     }
     .partnership-carousel-track{
       display:flex;
-      gap:40px;
+      gap:0;
       width:fit-content;
       will-change:transform;
     }
@@ -586,7 +586,7 @@
         height:100px;
       }
       .partnership-carousel-track{
-        gap:32px;
+        gap:0;
       }
     }
 
@@ -902,9 +902,35 @@
                 <img src="assets/BE898943-27F8-4F12-B30D-47B8123AA19F.JPG" alt="Partner" loading="lazy">
               </div>
             </div>
+            <!-- Duplicate set for seamless loop -->
             <div class="partnership-logo-ring">
               <div class="partnership-logo-circle">
                 <img src="assets/53B77726-F55A-4780-BC26-7DC570313D83.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/5FA1DE97-E091-4A28-BF64-89FF89C359B8.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/0F763B3F-5631-4865-BD64-3BEBCAE08095.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/41D5838A-AAC5-4AE0-931F-7EC2F88F8729.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/A15A46B5-DEDD-47C9-BC56-05BACC63D259.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/BE898943-27F8-4F12-B30D-47B8123AA19F.JPG" alt="Partner" loading="lazy">
               </div>
             </div>
           </div>
@@ -1204,53 +1230,36 @@
     }
   })();
   
-  // Partnership Carousel - Scroll-Driven Horizontal Animation
+  // Partnership Carousel - Scroll-Driven, Seamless Loop (no gap)
   (function(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    
+
     function initPartnershipCarousel(){
       const carouselSection = document.querySelector('.partnership-carousel-section');
       const carouselTrack = document.getElementById('partnership-carousel-track');
-      
+
       if(!carouselSection || !carouselTrack) {
         setTimeout(initPartnershipCarousel, 100);
         return;
       }
-      
+
       const logos = carouselTrack.querySelectorAll('.partnership-logo-ring');
       if(logos.length === 0) return;
-      
-      function getLogoDimensions(){
-        const isMobile = window.innerWidth <= 560;
-        return {
-          width: isMobile ? 100 : 120,
-          gap: isMobile ? 32 : 40
-        };
-      }
-      
-      function updateCarouselDimensions(){
-        const dims = getLogoDimensions();
-        const totalWidth = (dims.width + dims.gap) * logos.length;
-        carouselTrack.style.width = `${totalWidth}px`;
-      }
-      
+
+      // One full loop = first 50% of track (duplicated content makes -50% seamless)
+      const loopWidthPct = 50;
+
       function updateCarousel(){
         const sectionRect = carouselSection.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        const dims = getLogoDimensions();
-        
-        // Start animation when section enters viewport
-        // End when section exits viewport (complete one full loop)
+
         const sectionTop = sectionRect.top;
         const sectionBottom = sectionRect.bottom;
         const sectionHeight = sectionRect.height;
-        
-        // Calculate scroll progress through the section
+
         let progress = 0;
         if(sectionTop < windowHeight && sectionBottom > 0){
-          // Section is in viewport
           const visibleTop = Math.max(0, windowHeight - sectionTop);
-          const visibleHeight = Math.min(sectionHeight, sectionBottom);
           progress = visibleTop / (sectionHeight + windowHeight);
           progress = Math.min(1, Math.max(0, progress));
         } else if(sectionTop >= windowHeight){
@@ -1258,27 +1267,11 @@
         } else if(sectionBottom <= 0){
           progress = 1;
         }
-        
-        // Calculate translateX for horizontal scroll
-        // One full loop = total width of 6 logos (excluding duplicate)
-        const loopWidth = (dims.width + dims.gap) * 6;
-        const translateX = -progress * loopWidth;
-        
-        carouselTrack.style.transform = `translateX(${translateX}px)`;
+
+        const translateX = -progress * loopWidthPct;
+        carouselTrack.style.transform = `translateX(${translateX}%)`;
       }
-      
-      // Update dimensions on resize
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          updateCarouselDimensions();
-          updateCarousel();
-        }, 100);
-      });
-      
-      updateCarouselDimensions();
-      
+
       let ticking = false;
       function requestTick(){
         if(!ticking){
@@ -1289,12 +1282,12 @@
           ticking = true;
         }
       }
-      
+
       window.addEventListener('scroll', requestTick, { passive: true });
+      window.addEventListener('resize', requestTick);
       updateCarousel();
     }
-    
-    // Initialize when DOM is ready
+
     if(document.readyState === 'loading'){
       document.addEventListener('DOMContentLoaded', initPartnershipCarousel);
     } else {
