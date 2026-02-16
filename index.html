@@ -7750,6 +7750,26 @@ document.addEventListener('keydown', (e) => {
     return currentMins >= startMins && currentMins < endMins;
   }
 
+  /*Minutes left in a slot (for LIVE pill)*/
+  function getMinutesRemaining(startStr, endStr, currentMins) {
+    const startMins = timeToMinutes(startStr);
+    const endMinsRaw = timeToMinutes(endStr);
+    let remaining;
+    if (endMinsRaw <= startMins) {
+      /* overnight slot */
+      if (currentMins >= startMins) {
+        remaining = (endMinsRaw + 24 * 60) - currentMins;
+      } else if (currentMins < endMinsRaw) {
+        remaining = endMinsRaw - currentMins;
+      } else {
+        return 0;
+      }
+    } else {
+      remaining = endMinsRaw - currentMins;
+    }
+    return remaining > 0 ? Math.ceil(remaining) : 0;
+  }
+
   /*Update LIVE indicator based on current time*/
   function updateLiveIndicator() {
     if (!grooveTimeline) return;
@@ -7763,26 +7783,40 @@ document.addEventListener('keydown', (e) => {
     slots.forEach((slot, index) => {
       const startStr = slot.getAttribute('data-start');
       const endStr = slot.getAttribute('data-end');
-      
+      const slotContent = slot.querySelector('.slot-content');
+
       if (!startStr || !endStr) return;
 
       const startMins = timeToMinutes(startStr);
       const endMins = timeToMinutes(endStr);
-      
-      /*Remove all classes*/
+
+      /*Remove all classes and any existing pill*/
       slot.classList.remove('live-now', 'past', 'next-up');
-      
+      const existingPill = slotContent?.querySelector('.live-now-pill');
+      if (existingPill) existingPill.remove();
+
       if (isTimeInRange(currentMins, startMins, endMins)) {
         /*Current slot is LIVE*/
         slot.classList.add('live-now');
         foundLive = true;
-        
+
+        /*Add pill to expanded timeline slot*/
+        if (slotContent) {
+          const minsLeft = getMinutesRemaining(startStr, endStr, currentMins);
+          const livePill = document.createElement('div');
+          livePill.className = 'live-now-pill';
+          livePill.innerHTML = `<i class="fa-solid fa-circle"></i><span>LIVE NOW</span>${minsLeft > 0 ? `<span class="live-minutes">${minsLeft}m left</span>` : ''}`;
+          const badge = slotContent.querySelector('.badge');
+          if (badge) slotContent.insertBefore(livePill, badge);
+          else slotContent.appendChild(livePill);
+        }
+
         /*Mark previous as past*/
         for (let i = 0; i < index; i++) {
           slots[i].classList.add('past');
           slots[i].classList.remove('next-up');
         }
-        
+
         /*Mark next as next-up*/
         if (index + 1 < slots.length) {
           slots[index + 1].classList.add('next-up');
@@ -7799,11 +7833,11 @@ document.addEventListener('keydown', (e) => {
       }
     });
 
-    /*Update preview with live/next slot*/
+    /*Update preview with live/next slot (collapsed state)*/
     updatePreview();
   }
 
-  /*Update preview slot (shown when collapsed)*/
+  /*Update preview slot (shown when collapsed) - always shows the currently playing DJ when live*/
   function updatePreview() {
     const preview = document.getElementById('groovePreview');
     const expectPreview = document.getElementById('expectPreview');
@@ -7813,13 +7847,37 @@ document.addEventListener('keydown', (e) => {
     const liveSlot = grooveTimeline.querySelector('.slot.live-now');
     const nextSlot = grooveTimeline.querySelector('.slot.next-up');
     const targetSlot = liveSlot || nextSlot || grooveTimeline.querySelector('.slot:first-child');
+    const isShowingLive = (targetSlot === liveSlot);
     
     if (targetSlot) {
       const slotContent = targetSlot.querySelector('.slot-content').cloneNode(true);
+      /*Remove any existing live pill from clone (we'll add our own)*/
+      const existingPill = slotContent.querySelector('.live-now-pill');
+      if (existingPill) existingPill.remove();
+      
       preview.innerHTML = '';
       const previewSlot = document.createElement('div');
-      previewSlot.className = 'slot';
+      previewSlot.className = 'slot' + (isShowingLive ? ' live-now' : '');
       previewSlot.appendChild(slotContent);
+      
+      /*When showing live slot: add pulsing LIVE pill to collapsed preview*/
+      if (isShowingLive) {
+        const startStr = targetSlot.getAttribute('data-start');
+        const endStr = targetSlot.getAttribute('data-end');
+        const now = new Date();
+        const currentMins = now.getHours() * 60 + now.getMinutes();
+        const minsLeft = (startStr && endStr) ? getMinutesRemaining(startStr, endStr, currentMins) : 0;
+        const livePill = document.createElement('div');
+        livePill.className = 'live-now-pill';
+        livePill.innerHTML = `<i class="fa-solid fa-circle"></i><span>LIVE NOW</span>${minsLeft > 0 ? `<span class="live-minutes">${minsLeft}m left</span>` : ''}`;
+        const badge = slotContent.querySelector('.badge');
+        if (badge) {
+          slotContent.insertBefore(livePill, badge);
+        } else {
+          slotContent.appendChild(livePill);
+        }
+      }
+      
       preview.appendChild(previewSlot);
     }
 
@@ -7959,8 +8017,7 @@ document.addEventListener('keydown', (e) => {
     /*Initialize when DOM is ready*/
   function initialize() {
     initAccordion();
-    updateLiveIndicator();
-    updatePreview();
+    updateLiveIndicator(); /* marks slots, adds pills, updates preview */
     // startAutoPreview(); // REMOVED - no auto-expansion
   }
   
@@ -10328,108 +10385,6 @@ function generateQRCode(url) {
     }
   }
 }
-
-// ============================================
-// LIVE DJ SLOT DETECTION
-// ============================================
-(function(){
-  function parseTime(timeStr){
-    // Parse "HH:MM" format
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    const now = new Date();
-    const time = new Date();
-    time.setHours(hours, minutes, 0, 0);
-    
-    // If time is before current time today, assume it's tomorrow (for late night sets)
-    if(time < now && hours < 12){
-      time.setDate(time.getDate() + 1);
-    }
-    return time;
-  }
-  
-  function isSlotLive(startStr, endStr){
-    const now = new Date();
-    const start = parseTime(startStr);
-    const end = parseTime(endStr);
-    
-    // Handle overnight sets (e.g., 11:30 PM - 1:00 AM)
-    if(end < start){
-      end.setDate(end.getDate() + 1);
-    }
-    
-    return now >= start && now <= end;
-  }
-  
-  function getMinutesRemaining(startStr, endStr){
-    const now = new Date();
-    const end = parseTime(endStr);
-    const start = parseTime(startStr);
-    
-    // Handle overnight sets (e.g., 11:30 PM - 1:00 AM)
-    if(end < start){
-      end.setDate(end.getDate() + 1);
-    }
-    
-    const diff = end - now;
-    if(diff <= 0) return 0;
-    return Math.ceil(diff / (1000 * 60));
-  }
-  
-  function updateLiveSlots(){
-    const slots = document.querySelectorAll('.slot[data-start][data-end]');
-    slots.forEach(slot => {
-      const start = slot.getAttribute('data-start');
-      const end = slot.getAttribute('data-end');
-      
-      if(!start || !end) return;
-      
-      const isLive = isSlotLive(start, end);
-      const slotContent = slot.querySelector('.slot-content');
-      
-      if(isLive){
-        slot.classList.add('live-now');
-        const minutesRemaining = getMinutesRemaining(start, end);
-        
-        // Remove existing live indicator
-        const existingLive = slotContent.querySelector('.live-now-pill');
-        if(existingLive) existingLive.remove();
-        
-        // Add live indicator pill
-        const livePill = document.createElement('div');
-        livePill.className = 'live-now-pill';
-        livePill.innerHTML = `
-          <i class="fa-solid fa-circle"></i>
-          <span>LIVE NOW</span>
-          ${minutesRemaining > 0 ? `<span class="live-minutes">${minutesRemaining}m left</span>` : ''}
-        `;
-        
-        // Insert before badge or at the end
-        const badge = slotContent.querySelector('.badge');
-        if(badge){
-          slotContent.insertBefore(livePill, badge);
-        } else {
-          slotContent.appendChild(livePill);
-        }
-      } else {
-        slot.classList.remove('live-now');
-        const existingLive = slotContent.querySelector('.live-now-pill');
-        if(existingLive) existingLive.remove();
-      }
-    });
-  }
-  
-  // Update on load
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', () => {
-      updateLiveSlots();
-      // Update every minute
-      setInterval(updateLiveSlots, 60000);
-    });
-  } else {
-    updateLiveSlots();
-    setInterval(updateLiveSlots, 60000);
-  }
-})();
 
 </script>
   <!-- Mobile Sticky CTA - REMOVED per user request -->
