@@ -1858,6 +1858,23 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   background: color-mix(in srgb, var(--bg-elev) 98%, transparent);
   border-color: color-mix(in srgb, var(--border) 90%, transparent);
 }
+
+/* Live pill at BOTTOM of active preview card (when set time matches) – same box, bottom middle aligned */
+.dj-card-preview .slot.live-now .slot-content {
+  position: relative;
+  padding-bottom: 44px;
+  overflow: visible;
+}
+.dj-card-preview .slot.live-now .slot-content::after {
+  display: none; /* Hide top-right LIVE NOW – we use pill at bottom */
+}
+.dj-card-preview .slot.live-now .live-now-pill {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+}
     
 /*Premium Expand Hint with Text*/
 .dj-card-expand-hint {
@@ -7870,12 +7887,8 @@ document.addEventListener('keydown', (e) => {
         const livePill = document.createElement('div');
         livePill.className = 'live-now-pill';
         livePill.innerHTML = `<i class="fa-solid fa-circle"></i><span>LIVE NOW</span>${minsLeft > 0 ? `<span class="live-minutes">${minsLeft}m left</span>` : ''}`;
-        const badge = slotContent.querySelector('.badge');
-        if (badge) {
-          slotContent.insertBefore(livePill, badge);
-        } else {
-          slotContent.appendChild(livePill);
-        }
+        /* Append at end – CSS positions it at bottom of card */
+        slotContent.appendChild(livePill);
       }
       
       preview.appendChild(previewSlot);
