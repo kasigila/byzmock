@@ -1198,19 +1198,19 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   background: var(--bg-elev);
 }
 
-/* Live Now Indicator */
-.live-now-pill{
+/* Live Now Indicator – slim pill at bottom of card, both preview + expanded */
+.live-now-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 4px;
+  padding: 4px 10px;
   border-radius: 999px;
   background: linear-gradient(135deg, 
     color-mix(in srgb, #ff3b30 95%, transparent) 0%,
     color-mix(in srgb, #ff3b30 85%, transparent) 100%
   );
   border: 1px solid color-mix(in srgb, #ff3b30 40%, transparent);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   color: #fff;
   text-transform: uppercase;
@@ -1218,8 +1218,13 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3),
               0 0 0 1px color-mix(in srgb, #ff3b30 20%, transparent);
   animation: livePulse 2s ease-in-out infinite;
-  position: relative;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .live-now-pill::before{
   content: '';
@@ -1237,20 +1242,20 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   animation: liveBlink 1.5s ease-in-out infinite;
   filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
 }
-.live-now-pill .live-minutes{
-  font-size: 10px;
+.live-now-pill .live-minutes {
+  font-size: 9px;
   opacity: 0.9;
   font-weight: 700;
   margin-left: 2px;
 }
 @keyframes livePulse{
   0%, 100%{
-    transform: scale(1);
+    transform: translateX(-50%) scale(1);
     box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3),
                 0 0 0 1px color-mix(in srgb, #ff3b30 20%, transparent);
   }
   50%{
-    transform: scale(1.02);
+    transform: translateX(-50%) scale(1.02);
     box-shadow: 0 4px 12px rgba(255, 59, 48, 0.4),
                 0 0 0 2px color-mix(in srgb, #ff3b30 30%, transparent);
   }
@@ -1263,13 +1268,16 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   0%, 100%{ opacity: 1; }
   50%{ opacity: 0.6; }
 }
-.slot.live-now .slot-content{
+.slot.live-now .slot-content {
   border-color: color-mix(in srgb, #ff3b30 30%, var(--border));
   background: linear-gradient(135deg, 
     color-mix(in srgb, #ff3b30 8%, var(--bg-elev)) 0%,
     color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
   );
   position: relative;
+  padding-bottom: 38px;
+  overflow: visible;
+  min-height: 64px;
 }
 .slot.live-now .slot-content::before{
   content: '';
@@ -1288,6 +1296,22 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
 @keyframes liveGlow{
   0%, 100%{ opacity: 0.6; }
   50%{ opacity: 1; }
+}
+
+/* Mobile: prevent pill from squeezing or pushing text */
+@media (max-width: 560px) {
+  .slot.live-now .slot-content {
+    padding-bottom: 36px;
+    min-height: 60px;
+  }
+  .live-now-pill {
+    padding: 3px 8px;
+    font-size: 9px;
+    gap: 3px;
+  }
+  .live-now-pill .live-minutes {
+    display: none; /* Keep pill compact on narrow screens */
+  }
 }
 
 /* ===================== DJ ACCORDION STYLES ===================== */
@@ -1587,22 +1611,7 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
 }
 
 .slot.live-now .slot-content::after {
-  content: "LIVE NOW";
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  padding: 5px 12px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--bg);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 50%, transparent),
-              0 0 0 2px var(--bg-elev);
-  animation: livePulse 2s ease-in-out infinite;
-  z-index: 2;
+  display: none; /* Use pill only – bottom aligned */
 }
 
 @keyframes livePulse {
@@ -1702,24 +1711,7 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
 }
 
 .slot.live-now .slot-content::after {
-  content: "LIVE NOW";
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  padding: 6px 14px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 80%, transparent));
-  color: var(--bg);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 50%, transparent),
-              0 0 0 2px var(--bg-elev),
-              0 0 20px color-mix(in srgb, var(--accent) 40%, transparent);
-  animation: liveTechPulse 2s ease-in-out infinite;
-  z-index: 2;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  display: none; /* Use pill only – bottom aligned */
 }
 
 @keyframes liveTechPulse {
@@ -1824,10 +1816,11 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
                  0 0 40px color-mix(in srgb, var(--accent) 30%, transparent);
   }
 }
-    /* Reduce glow when parent card is expanded */
+    /* Expanded live card: soundwaves background */
 .dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   background: color-mix(in srgb, var(--accent) 6%, var(--bg-elev));
+  overflow: hidden;
 }
 
 .dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content::before {
@@ -1835,10 +1828,37 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   filter: blur(2px);
 }
 
+/* Soundwaves equalizer visual – expanded live slot only */
 .dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content::after {
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent),
-              0 0 0 2px var(--bg-elev);
+  display: block;
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0%25' stop-color='%23ff3b30'/%3E%3Cstop offset='20%25' stop-color='%23ff9500'/%3E%3Cstop offset='40%25' stop-color='%23ffcc00'/%3E%3Cstop offset='60%25' stop-color='%2334c759'/%3E%3Cstop offset='80%25' stop-color='%23007aff'/%3E%3Cstop offset='100%25' stop-color='%23af52de'/%3E%3C/linearGradient%3E%3Cfilter id='blur'%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3C/filter%3E%3C/defs%3E%3Cg filter='url(%23blur)' fill='url(%23g)'%3E%3Crect x='15' y='55' width='10' height='10' rx='2'/%3E%3Crect x='35' y='48' width='10' height='24' rx='2'/%3E%3Crect x='55' y='40' width='10' height='40' rx='2'/%3E%3Crect x='75' y='32' width='10' height='56' rx='2'/%3E%3Crect x='95' y='25' width='10' height='70' rx='2'/%3E%3Crect x='115' y='18' width='10' height='84' rx='2'/%3E%3Crect x='135' y='15' width='10' height='90' rx='2'/%3E%3Crect x='155' y='18' width='10' height='84' rx='2'/%3E%3Crect x='175' y='25' width='10' height='70' rx='2'/%3E%3Crect x='195' y='32' width='10' height='56' rx='2'/%3E%3Crect x='215' y='40' width='10' height='40' rx='2'/%3E%3Crect x='235' y='48' width='10' height='24' rx='2'/%3E%3Crect x='255' y='55' width='10' height='10' rx='2'/%3E%3Crect x='275' y='42' width='10' height='36' rx='2'/%3E%3Crect x='295' y='50' width='10' height='20' rx='2'/%3E%3Crect x='315' y='52' width='10' height='16' rx='2'/%3E%3Crect x='335' y='48' width='10' height='24' rx='2'/%3E%3Crect x='355' y='55' width='10' height='10' rx='2'/%3E%3Crect x='375' y='52' width='10' height='16' rx='2'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: soundwavePulse 3s ease-in-out infinite;
 }
+
+@keyframes soundwavePulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(1.02); }
+}
+
+/* Ensure text and badge sit above soundwaves */
+.dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content .left,
+.dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content .badge {
+  position: relative;
+  z-index: 1;
+}
+.dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .live-now-pill {
+  z-index: 2;
+}
+
 /* Single Preview Card */
 .dj-card-preview {
   margin-top: 12px;
@@ -1859,22 +1879,7 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
   border-color: color-mix(in srgb, var(--border) 90%, transparent);
 }
 
-/* Live pill at BOTTOM of active preview card (when set time matches) – same box, bottom middle aligned */
-.dj-card-preview .slot.live-now .slot-content {
-  position: relative;
-  padding-bottom: 44px;
-  overflow: visible;
-}
-.dj-card-preview .slot.live-now .slot-content::after {
-  display: none; /* Hide top-right LIVE NOW – we use pill at bottom */
-}
-.dj-card-preview .slot.live-now .live-now-pill {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-}
+/* Preview uses same pill positioning – no overrides needed */
     
 /*Premium Expand Hint with Text*/
 .dj-card-expand-hint {
@@ -7823,9 +7828,7 @@ document.addEventListener('keydown', (e) => {
           const livePill = document.createElement('div');
           livePill.className = 'live-now-pill';
           livePill.innerHTML = `<i class="fa-solid fa-circle"></i><span>LIVE NOW</span>${minsLeft > 0 ? `<span class="live-minutes">${minsLeft}m left</span>` : ''}`;
-          const badge = slotContent.querySelector('.badge');
-          if (badge) slotContent.insertBefore(livePill, badge);
-          else slotContent.appendChild(livePill);
+          slotContent.appendChild(livePill);
         }
 
         /*Mark previous as past*/
