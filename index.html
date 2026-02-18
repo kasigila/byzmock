@@ -1219,9 +1219,8 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
               0 0 0 1px color-mix(in srgb, #ff3b30 20%, transparent);
   animation: livePulse 2s ease-in-out infinite;
   position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 8px;
+  right: 14px;
   overflow: hidden;
   white-space: nowrap;
   flex-shrink: 0;
@@ -1250,12 +1249,12 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
 }
 @keyframes livePulse{
   0%, 100%{
-    transform: translateX(-50%) scale(1);
+    transform: scale(1);
     box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3),
                 0 0 0 1px color-mix(in srgb, #ff3b30 20%, transparent);
   }
   50%{
-    transform: translateX(-50%) scale(1.02);
+    transform: scale(1.02);
     box-shadow: 0 4px 12px rgba(255, 59, 48, 0.4),
                 0 0 0 2px color-mix(in srgb, #ff3b30 30%, transparent);
   }
@@ -1308,6 +1307,8 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
     padding: 3px 8px;
     font-size: 9px;
     gap: 3px;
+    right: 12px;
+    bottom: 6px;
   }
   .live-now-pill .live-minutes {
     display: none; /* Keep pill compact on narrow screens */
@@ -1820,7 +1821,7 @@ body:has(.chat-window:not(.byz-hidden)) .social-dock,
 .dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   background: color-mix(in srgb, var(--accent) 6%, var(--bg-elev));
-  overflow: hidden;
+  overflow: visible;
 }
 
 .dj-card-header[aria-expanded="true"] ~ .dj-card-content .slot.live-now .slot-content::before {
