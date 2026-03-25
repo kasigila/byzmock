@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequently Asked Questions | BYZ Entertainment</title>
+  <meta name="description" content="Find answers to common questions about BYZ events, bookings, payments, and venue information." />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.35);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --max: 1100px;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --header-h: 64px;
+      --ok:#0a7f3f;
+      --warn:#b45309;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+    @media (max-width: 560px){
+      .container{padding:0 28px}
+      /* Safe area for notched devices */
+      body{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      header{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+    }
+
+    /* Header */
+    header{
+      position:fixed;top:0;left:0;right:0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:52px;height:52px;border-radius:14px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-light{display:none;}
+    .logo-dark{display:block;}
+
+    nav ul{display:flex;gap:26px;list-style:none;align-items:center}
+    nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
+    nav a:hover{color:var(--text)}
+    .header-actions{display:flex;align-items:center;gap:12px}
+
+    /* Mobile menu */
+    .mobile-btn{
+      display:none;
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      align-items:center;justify-content:center;
+      cursor:pointer;
+      transition: transform .2s var(--ease), background .2s var(--ease);
+    }
+    .mobile-btn:hover{transform: translateY(-1px)}
+    .mobile-panel{
+      display:none;
+      flex-direction:column;
+      position:fixed;
+      top:var(--header-h);
+      right:16px;
+      width:min(360px, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:14px;
+      z-index:998;
+    }
+    .mobile-panel a{
+      display:flex;
+      padding:12px 12px;
+      border-radius:14px;
+      color:var(--sub);
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .mobile-panel a:hover{
+      background: color-mix(in srgb, var(--border) 22%, transparent);
+      color:var(--text);
+    }
+    @media (max-width: 980px){
+      nav ul{display:none}
+      .mobile-btn{display:flex}
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:10px;padding:12px 18px;border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      font-size:14px;font-weight:600;
+      cursor:pointer;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+      min-height: 44px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    @media (max-width: 560px){
+      .btn{
+        min-height: 48px;
+        padding: 14px 20px;
+      }
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow-soft)}
+    .btn.primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--bg);
+    }
+    .btn.primary:hover{box-shadow: 0 18px 60px rgba(0,0,0,.18)}
+    .btn.ghost{background: transparent}
+
+    /* Main */
+    main{padding-top:var(--header-h)}
+    .hero{
+      padding: 78px 0 48px;
+      background:
+        radial-gradient(900px 380px at 50% -10%, color-mix(in srgb, var(--border) 35%, transparent), transparent 70%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg-alt) 70%, transparent), transparent 52%);
+    }
+    @media (max-width: 560px){
+      .hero{padding: 48px 0 32px}
+    }
+    .hero h1{
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      letter-spacing:-1px;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .hero p{
+      margin-top:14px;
+      color:var(--sub);
+      max-width:60ch;
+      font-size:15px;
+    }
+    @media (max-width: 560px){
+      .hero p{font-size:14px;max-width:100%}
+    }
+
+    /* Search Bar */
+    .search-bar{
+      margin-top:32px;
+      position:relative;
+    }
+    .search-input{
+      width:100%;
+      padding:16px 18px 16px 52px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+      );
+      color:var(--text);
+      font-size:15px;
+      outline:none;
+      box-shadow: var(--shadow-soft);
+      transition: all .3s var(--ease);
+      min-height: 44px;
+    }
+    @media (max-width: 560px){
+      .search-input{
+        min-height: 48px;
+        padding: 18px 20px 18px 56px;
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+    }
+    .search-input:focus{
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), 
+                  0 8px 32px rgba(255,255,255,.08);
+      border-color:var(--accent);
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 100%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 6%, var(--bg-alt)) 100%
+      );
+    }
+    .search-icon{
+      position:absolute;
+      left:20px;
+      top:50%;
+      transform:translateY(-50%);
+      color:var(--sub);
+      font-size:18px;
+      transition: color .3s var(--ease), transform .3s var(--ease);
+      pointer-events: none;
+    }
+    @media (max-width: 560px){
+      .search-icon{
+        left: 22px;
+        font-size: 20px;
+      }
+    }
+    .search-bar:has(.search-input:focus) .search-icon{
+      color: var(--accent);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    /* Category Filters */
+    .category-filters{
+      margin-top:24px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    @media (max-width: 560px){
+      .category-filters{
+        gap: 10px;
+      }
+    }
+    .category-btn{
+      padding:12px 18px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 95%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 90%, transparent) 100%
+      );
+      color:var(--sub);
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+      transition: all .3s var(--ease);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      position: relative;
+      overflow: hidden;
+    }
+    @media (max-width: 560px){
+      .category-btn{
+        min-height: 48px;
+        padding: 14px 20px;
+      }
+    }
+    .category-btn::before{
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent), transparent 70%);
+      opacity: 0;
+      transition: opacity .3s var(--ease);
+    }
+    .category-btn:hover{
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 80%, transparent) 0%,
+        color-mix(in srgb, var(--border) 30%, transparent) 100%
+      );
+      color:var(--text);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
+    .category-btn:hover::before{
+      opacity: 1;
+    }
+    .category-btn.active{
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 95%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 85%, transparent) 100%
+      );
+      color:var(--bg);
+      border-color:transparent;
+      box-shadow: 0 0 0 0 rgba(255,255,255,.4);
+      animation: categoryPulse 2s ease-in-out infinite;
+    }
+    .category-btn.active::before{
+      opacity: 0;
+    }
+    @keyframes categoryPulse{
+      0%, 100%{ box-shadow: 0 0 0 0 rgba(255,255,255,.3); }
+      50%{ box-shadow: 0 0 0 4px rgba(255,255,255,0); }
+    }
+    .category-btn i{
+      font-size: 14px;
+      transition: transform .3s var(--ease);
+    }
+    .category-btn.active i{
+      transform: scale(1.2);
+    }
+
+    /* FAQ Section */
+    .faq-section{
+      margin-top:48px;
+    }
+    @media (max-width: 560px){
+      .faq-section{margin-top:32px}
+    }
+    .faq-section-title{
+      font-size:24px;
+      letter-spacing:-.5px;
+      font-weight:900;
+      margin-bottom:20px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    @media (max-width: 560px){
+      .faq-section-title{font-size:20px;margin-bottom:16px}
+    }
+    .faq-section-title i{
+      color:var(--accent);
+      font-size:20px;
+    }
+
+    /* FAQ Items */
+    .faq-list{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    @media (max-width: 560px){
+      .faq-list{
+        gap: 12px;
+      }
+    }
+    .faq-item{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+      );
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      transition: all .3s var(--ease);
+      position: relative;
+    }
+    .faq-item::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity .3s var(--ease);
+    }
+    .faq-item:hover{
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+    }
+    .faq-item:hover::before{
+      opacity: 1;
+    }
+    .faq-item.expanded{
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 8%, var(--bg-elev)) 0%,
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+      );
+    }
+    .faq-item.expanded::before{
+      opacity: 1;
+    }
+    .faq-question{
+      padding:20px;
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      transition: background .3s var(--ease);
+      user-select:none;
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    @media (max-width: 560px){
+      .faq-question{
+        padding: 20px;
+        min-height: 52px;
+      }
+    }
+    .faq-question:hover{
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 60%, transparent) 0%,
+        color-mix(in srgb, var(--border) 20%, transparent) 100%
+      );
+    }
+    .faq-question h3{
+      font-size:16px;
+      font-weight:700;
+      color:var(--text);
+      flex:1;
+      line-height:1.4;
+    }
+    @media (max-width: 560px){
+      .faq-question h3{font-size:15px}
+    }
+    .faq-toggle{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 80%, transparent) 0%,
+        color-mix(in srgb, var(--border) 30%, transparent) 100%
+      );
+      border:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: all .3s var(--ease);
+      flex-shrink:0;
+      position: relative;
+    }
+    @media (max-width: 560px){
+      .faq-toggle{
+        width: 40px;
+        height: 40px;
+      }
+    }
+    .faq-toggle::before{
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%);
+      opacity: 0;
+      transition: opacity .3s var(--ease);
+    }
+    .faq-question:hover .faq-toggle::before{
+      opacity: 1;
+    }
+    .faq-item.expanded .faq-toggle{
+      transform: rotate(180deg) scale(1.1);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 15%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 8%, transparent) 100%
+      );
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+    .faq-toggle i{
+      color:var(--accent);
+      transition: transform .3s var(--ease), color .3s var(--ease);
+      font-size: 12px;
+    }
+    @media (max-width: 560px){
+      .faq-toggle i{
+        font-size: 14px;
+      }
+    }
+    .faq-item.expanded .faq-toggle i{
+      transform: scale(1.2);
+    }
+    .faq-answer{
+      max-height:0;
+      overflow:hidden;
+      transition: max-height .3s var(--ease), padding .3s var(--ease);
+      padding:0 20px;
+    }
+    @media (max-width: 560px){
+      .faq-answer{padding:0 16px}
+    }
+    .faq-item.expanded .faq-answer{
+      max-height:1200px;
+      padding:0 20px 20px 20px;
+    }
+    @media (max-width: 560px){
+      .faq-item.expanded .faq-answer{padding:0 16px 16px 16px}
+    }
+    .faq-answer-content{
+      font-size:13px;
+      color:var(--sub);
+      line-height:1.7;
+    }
+    .faq-answer-content p{
+      margin-bottom:12px;
+    }
+    .faq-answer-content p:last-child{
+      margin-bottom:0;
+    }
+    .faq-answer-content ul{
+      margin:12px 0;
+      padding-left:24px;
+      list-style:disc;
+    }
+    .faq-answer-content ol{
+      margin:12px 0;
+      padding-left:28px;
+      list-style:decimal;
+    }
+    @media (max-width: 560px){
+      .faq-answer-content ol{
+        padding-left:24px;
+      }
+    }
+    .faq-answer-content li{
+      margin-bottom:8px;
+    }
+    .faq-answer-content strong{
+      color:var(--text);
+      font-weight:700;
+    }
+
+    /* Empty State */
+    .empty-state{
+      text-align:center;
+      padding:80px 20px;
+      color:var(--sub);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-alt) 60%, transparent) 0%,
+        color-mix(in srgb, var(--bg-elev) 80%, transparent) 100%
+      );
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    @media (max-width: 560px){
+      .empty-state{
+        padding: 60px 20px;
+      }
+    }
+    .empty-state::before{
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 5%, transparent), transparent 70%);
+      animation: emptyStatePulse 4s ease-in-out infinite;
+    }
+    @keyframes emptyStatePulse{
+      0%, 100%{ transform: scale(1); opacity: 0.4; }
+      50%{ transform: scale(1.05); opacity: 0.6; }
+    }
+    .empty-state > *{
+      position: relative;
+      z-index: 1;
+    }
+    .empty-state i{
+      font-size:64px;
+      margin-bottom:20px;
+      opacity:.6;
+      color: var(--accent);
+      animation: emptyStateIconFloat 3s ease-in-out infinite;
+      display: inline-block;
+    }
+    @media (max-width: 560px){
+      .empty-state i{
+        font-size: 48px;
+      }
+    }
+    @keyframes emptyStateIconFloat{
+      0%, 100%{ transform: translateY(0); }
+      50%{ transform: translateY(-8px); }
+    }
+    .empty-state h3{
+      font-size:24px;
+      color:var(--text);
+      margin-bottom:12px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+    @media (max-width: 560px){
+      .empty-state h3{
+        font-size: 20px;
+      }
+    }
+    .empty-state p{
+      font-size:15px;
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    @media (max-width: 560px){
+      .empty-state p{
+        font-size: 14px;
+      }
+    }
+
+    /* Contact CTA */
+    .contact-cta{
+      margin-top:60px;
+      padding:40px 32px;
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 80%, transparent) 50%,
+        color-mix(in srgb, var(--accent) 8%, transparent) 100%
+      );
+      text-align:center;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-cta::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), transparent, var(--accent));
+      animation: ctaShimmer 3s ease-in-out infinite;
+    }
+    @keyframes ctaShimmer{
+      0%, 100%{ transform: translateX(-100%); }
+      50%{ transform: translateX(100%); }
+    }
+    @media (max-width: 560px){
+      .contact-cta{
+        padding: 32px 24px;
+        margin-top:40px;
+      }
+    }
+    .contact-cta h2{
+      font-size:28px;
+      font-weight:900;
+      margin-bottom:12px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text), color-mix(in srgb, var(--accent) 30%, var(--text)));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    @media (max-width: 560px){
+      .contact-cta h2{
+        font-size: 22px;
+      }
+    }
+    .contact-cta p{
+      color:var(--sub);
+      font-size:16px;
+      margin-bottom:24px;
+      line-height: 1.6;
+    }
+    @media (max-width: 560px){
+      .contact-cta p{
+        font-size: 15px;
+        margin-bottom: 20px;
+      }
+    }
+    .contact-cta .btn{
+      min-height: 48px;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    @media (max-width: 560px){
+      .contact-cta .btn{
+        width: 100%;
+        min-height: 52px;
+        font-size: 16px;
+      }
+    }
+    .contact-cta-actions{
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    @media (max-width: 560px){
+      .contact-cta-actions{
+        flex-direction: column;
+        gap: 10px;
+      }
+      .contact-cta-actions .btn{
+        width: 100%;
+      }
+    }
+    .social-share{
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+    .social-share-btn{
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      transition: all .3s var(--ease);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    @media (max-width: 560px){
+      .social-share-btn{
+        width: 48px;
+        height: 48px;
+      }
+    }
+    .social-share-btn:hover{
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: var(--shadow-soft);
+    }
+    .social-share-btn.whatsapp:hover{
+      background: #25D366;
+      border-color: #25D366;
+      color: #fff;
+    }
+    .social-share-btn.instagram:hover{
+      background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    /* Section */
+    section{
+      padding: 60px 0;
+    }
+    @media (max-width: 560px){
+      section{padding: 40px 0}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark" src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-btn" id="mobileBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="rate.html">Rate Experience</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>Frequently Asked Questions</h1>
+      <p>Find answers to common questions about bookings, events, payments, and more.</p>
+
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" class="search-input" id="faqSearch" placeholder="Search FAQs..." />
+      </div>
+
+      <div class="category-filters">
+        <button class="category-btn active" data-category="all">
+          <i class="fa-solid fa-fire"></i> All
+        </button>
+        <button class="category-btn" data-category="booking">
+          <i class="fa-solid fa-ticket"></i> Booking & Payment
+        </button>
+        <button class="category-btn" data-category="event">
+          <i class="fa-solid fa-calendar-days"></i> Event Day
+        </button>
+        <button class="category-btn" data-category="vip">
+          <i class="fa-solid fa-champagne-glasses"></i> VIP Tables
+        </button>
+        <button class="category-btn" data-category="apt">
+          <i class="fa-solid fa-lock"></i> APT Sessions
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <!-- Booking & Payment -->
+      <div class="faq-section" data-category="booking">
+        <div class="faq-section-title">
+          <i class="fa-solid fa-ticket"></i>
+          <h2>Booking & Payment</h2>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item" data-keywords="how to book payment mpesa">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>How do I book tickets?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Booking is simple:</p>
+                <ol>
+                  <li>Go to the event page and click "Book Now"</li>
+                  <li>Choose between tickets or VIP table</li>
+                  <li>Complete M-Pesa payment using the provided Lipa Number</li>
+                  <li>Submit your details with the M-Pesa Transaction ID</li>
+                  <li>You'll receive a confirmation email with your QR code</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="mpesa payment method">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>What payment methods do you accept?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>We currently accept M-Pesa payments only. Use the Lipa na M-Pesa option and enter the business number provided during booking.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="refund cancel cancellation">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>Can I get a refund if I can't attend?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Refunds are available up to 48 hours before the event. Contact us via WhatsApp with your booking ID to request a refund. Refunds may take 3-5 business days to process.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="qr code email confirmation">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>When will I receive my QR code?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>After your booking is verified (usually within 48 hours), you'll receive a confirmation email with your QR code. Make sure to provide a valid email address during booking. If you don't receive it, check your spam folder or contact us via WhatsApp.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="booking confirmation status">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>How do I check my booking status?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>You can check your booking status on the <a href="my-bookings.html" style="color:var(--accent);text-decoration:underline;">My Bookings</a> page using your email address. You'll also receive email updates when your booking is confirmed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Day -->
+      <div class="faq-section" data-category="event">
+        <div class="faq-section-title">
+          <i class="fa-solid fa-calendar-days"></i>
+          <h2>Event Day</h2>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item" data-keywords="what time arrive doors open">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>What time should I arrive?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Doors typically open at 8:00 PM. We recommend arriving by 8:30 PM to secure your spot and enjoy the full experience. VIP table holders should arrive by 11 PM to secure their table.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="what to bring id dress code">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>What should I bring to the event?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Essential items:</p>
+                <ul>
+                  <li><strong>QR Code:</strong> Present on your phone or printed</li>
+                  <li><strong>Good vibes:</strong> Come ready to have a great time!</li>
+                </ul>
+                <p style="margin-top:12px;">Wear whatever makes you feel comfortable! If you want to follow the theme, that's great, but there's no strict dress code.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="entry process qr code scan">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>How does entry work?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>At the door, present your QR code (on your phone or printed). Our staff will scan it to verify your booking. Make sure your phone brightness is turned up if showing on screen. After verification, you'll receive a wristband for entry.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="parking available transportation">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>Is there parking available?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Limited parking is available at the venue. We strongly recommend using ride-sharing services (Uber, Bolt) or public transport for convenience. See our <a href="venue.html" style="color:var(--accent);text-decoration:underline;">Venue Information</a> page for detailed directions and parking options.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="age restriction minimum age">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>Is there an age restriction?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>All BYZ events are <strong>18+</strong>. We reserve the right to refuse entry to anyone who cannot provide valid identification if requested.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIP Tables -->
+      <div class="faq-section" data-category="vip">
+        <div class="faq-section-title">
+          <i class="fa-solid fa-champagne-glasses"></i>
+          <h2>VIP Tables</h2>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item" data-keywords="vip table what included package">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>What's included in a VIP table package?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>VIP table packages include:</p>
+                <ul>
+                  <li><strong>Reserved table:</strong> Your own dedicated space</li>
+                  <li><strong>Premium drinks:</strong> Cognac VS, mixers, and chasers (varies by tier)</li>
+                  <li><strong>Shisha:</strong> Included in all packages</li>
+                  <li><strong>Group capacity:</strong> 10-20 people depending on tier</li>
+                  <li><strong>Priority service:</strong> Dedicated staff attention</li>
+                </ul>
+                <p style="margin-top:12px;">See the booking page for specific details on each tier (Umlando, Yebo, Adiwele).</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="vip table group size people capacity">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>How many people can fit at a VIP table?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>VIP table capacity varies by tier:</p>
+                <ul>
+                  <li><strong>Umlando (700K):</strong> Up to 10 people</li>
+                  <li><strong>Yebo (1.2M):</strong> Up to 15 people</li>
+                  <li><strong>Adiwele (1.8M):</strong> Up to 20 people</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="vip table custom request special">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>Can I make special requests for my VIP table?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Yes! Contact us via WhatsApp after booking to discuss special requests like table location preferences or celebration arrangements. We'll do our best to accommodate your needs.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="vip table availability sold out">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>How do I know if VIP tables are available?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>VIP table availability is shown in real-time on the booking page. Each tier displays how many tables are left. Tables are limited (4 per tier), so book early to secure your spot.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APT Sessions -->
+      <div class="faq-section" data-category="apt">
+        <div class="faq-section-title">
+          <i class="fa-solid fa-lock"></i>
+          <h2>APT Sessions</h2>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item" data-keywords="apt what is invite only exclusive">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>What is an APT session?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>APT sessions are exclusive, invite-only events. These are intimate gatherings at private venues with a curated crowd, premium experience, and unique atmosphere. Access is by invitation only.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="apt how to get invited request">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>How do I get invited to an APT session?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Submit an invite request through our <a href="apt-request.html" style="color:var(--accent);text-decoration:underline;">APT Request</a> page. We review all requests and will contact you via WhatsApp or Instagram if a slot becomes available. Priority is given to returning BYZ attendees.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="apt approval timeline waitlist">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>How long does it take to get approved?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Approval timing varies based on availability. We typically review requests within 1-2 weeks. If approved, you'll receive a WhatsApp message with details. If no slots are available, you'll be added to our waitlist and notified when space opens up.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" data-keywords="apt location venue private">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>Where are APT sessions held?</h3>
+              <div class="faq-toggle">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>APT sessions are held at private, intimate venues in Dar es Salaam. The exact location is shared only with confirmed invitees via WhatsApp or email for security and exclusivity reasons.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact CTA -->
+      <div class="contact-cta">
+        <h2>Still have questions?</h2>
+        <p>Can't find what you're looking for? We're here to help.</p>
+        <div class="contact-cta-actions">
+          <a class="btn primary" href="contact.html">
+            <i class="fa-solid fa-envelope"></i> Contact Us
+          </a>
+          <a class="btn ghost" href="https://wa.me/255768464367" target="_blank" rel="noopener">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+          </a>
+        </div>
+        <div class="social-share">
+          <a href="https://wa.me/255768464367?text=Hi%20BYZ!" target="_blank" rel="noopener" class="social-share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+          <a href="https://www.instagram.com/byzentertainment/" target="_blank" rel="noopener" class="social-share-btn instagram" aria-label="Follow on Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mobile menu toggle
+  (function(){
+    const btn = document.getElementById("mobileBtn");
+    const panel = document.getElementById("mobilePanel");
+    if(btn && panel){
+      btn.addEventListener("click", () => {
+        panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if(!btn.contains(e.target) && !panel.contains(e.target)){
+          panel.style.display = "none";
+        }
+      });
+    }
+  })();
+
+  // Backend API URL
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
+
+  // FAQ Toggle
+  function toggleFaq(element){
+    const faqItem = element.closest(".faq-item");
+    faqItem.classList.toggle("expanded");
+  }
+
+  // Category Filter
+  (function(){
+    const categoryBtns = document.querySelectorAll(".category-btn");
+    const faqSections = document.querySelectorAll(".faq-section");
+
+    categoryBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        // Update active state
+        categoryBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const category = btn.dataset.category;
+
+        // Filter sections
+        faqSections.forEach(section => {
+          if(category === "all" || section.dataset.category === category){
+            section.style.display = "";
+          } else {
+            section.style.display = "none";
+          }
+        });
+      });
+    });
+  })();
+
+  // Search Functionality
+  (function(){
+    const searchInput = document.getElementById("faqSearch");
+    const faqItems = document.querySelectorAll(".faq-item");
+    const RECENT_SEARCHES_KEY = "byz_faq_recent_searches";
+    let searchTimeout;
+
+    // Load recent searches
+    function getRecentSearches(){
+      try {
+        const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
+        return saved ? JSON.parse(saved) : [];
+      } catch(e){
+        return [];
+      }
+    }
+
+    function saveRecentSearch(query){
+      if(!query.trim()) return;
+      const recent = getRecentSearches();
+      const filtered = recent.filter(s => s.toLowerCase() !== query.toLowerCase());
+      filtered.unshift(query);
+      if(filtered.length > 3) filtered.pop();
+      try {
+        localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(filtered));
+      } catch(e){}
+    }
+
+    function showRecentSearches(){
+      const recent = getRecentSearches();
+      if(recent.length === 0) return;
+      
+      let dropdown = document.getElementById("recentSearchesDropdown");
+      if(!dropdown){
+        dropdown = document.createElement("div");
+        dropdown.id = "recentSearchesDropdown";
+        dropdown.style.cssText = `
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          margin-top: 8px;
+          background: var(--bg-elev);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 8px;
+          box-shadow: var(--shadow);
+          z-index: 100;
+          display: none;
+        `;
+        document.querySelector(".search-bar").style.position = "relative";
+        document.querySelector(".search-bar").appendChild(dropdown);
+      }
+      
+      dropdown.innerHTML = `
+        <div style="padding: 8px 12px; font-size: 12px; font-weight: 600; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px;">Recent Searches</div>
+        ${recent.map(term => `
+          <button onclick="document.getElementById('faqSearch').value='${term.replace(/'/g, "\\'")}'; filterFAQs(); document.getElementById('recentSearchesDropdown').style.display='none';" style="width: 100%; padding: 12px; text-align: left; background: transparent; border: none; color: var(--text); font-size: 14px; cursor: pointer; border-radius: var(--radius); transition: background .2s var(--ease);">
+            <i class="fa-solid fa-clock" style="margin-right: 8px; color: var(--sub); font-size: 12px;"></i>${term}
+          </button>
+        `).join("")}
+      `;
+      dropdown.style.display = "block";
+    }
+
+    // Highlight search terms
+    function highlightText(text, query){
+      if(!query) return text;
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, "gi");
+      return text.replace(regex, '<mark style="background: rgba(255,255,255,0.2); color: var(--accent); padding: 2px 4px; border-radius: 4px; font-weight: 600;">$1</mark>');
+    }
+
+    // Add helpful feedback buttons
+    function addFeedbackButtons(){
+      faqItems.forEach(item => {
+        if(item.querySelector(".faq-feedback")) return;
+        
+        const feedback = document.createElement("div");
+        feedback.className = "faq-feedback";
+        feedback.style.cssText = `
+          margin-top: 16px;
+          padding-top: 16px;
+          border-top: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 13px;
+          color: var(--sub);
+        `;
+        feedback.innerHTML = `
+          <span>Was this helpful?</span>
+          <button onclick="faqFeedback(this, true)" style="padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); cursor: pointer; transition: all .3s cubic-bezier(.2,.8,.2,1); display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; min-height: 36px;">
+            <i class="fa-solid fa-thumbs-up"></i> Yes
+          </button>
+          <button onclick="faqFeedback(this, false)" style="padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); cursor: pointer; transition: all .3s cubic-bezier(.2,.8,.2,1); display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; min-height: 36px;">
+            <i class="fa-solid fa-thumbs-down"></i> No
+          </button>
+        `;
+        item.querySelector(".faq-answer").appendChild(feedback);
+      });
+    }
+
+    async function faqFeedback(btn, helpful){
+      const item = btn.closest(".faq-item");
+      const question = item.querySelector(".faq-question h3").textContent;
+      const feedbackContainer = btn.closest(".faq-feedback");
+      
+      // Disable both buttons immediately for better UX
+      feedbackContainer.querySelectorAll("button").forEach(b => {
+        b.disabled = true;
+        b.style.pointerEvents = "none";
+      });
+      
+      // Apply visual feedback with tint
+      if(helpful){
+        // Green tint for helpful
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Thanks!';
+        btn.style.background = "var(--ok)";
+        btn.style.borderColor = "var(--ok)";
+        btn.style.color = "#fff";
+        btn.style.transform = "scale(1.05)";
+        
+        // Add green tint overlay to FAQ item
+        item.style.background = "linear-gradient(135deg, color-mix(in srgb, var(--ok) 8%, transparent) 0%, var(--bg-elev) 100%)";
+        item.style.borderColor = "color-mix(in srgb, var(--ok) 30%, var(--border))";
+      } else {
+        // Red tint for not helpful
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Noted';
+        btn.style.background = "var(--bad)";
+        btn.style.borderColor = "var(--bad)";
+        btn.style.color = "#fff";
+        btn.style.transform = "scale(1.05)";
+        
+        // Add red tint overlay to FAQ item
+        item.style.background = "linear-gradient(135deg, color-mix(in srgb, var(--bad) 8%, transparent) 0%, var(--bg-elev) 100%)";
+        item.style.borderColor = "color-mix(in srgb, var(--bad) 30%, var(--border))";
+      }
+      
+      // Send feedback to backend
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "submitFAQFeedback",
+            question: question,
+            helpful: helpful
+          }),
+          cache: "no-store"
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Also store in localStorage as backup
+          try {
+            const feedback = JSON.parse(localStorage.getItem("byz_faq_feedback") || "{}");
+            feedback[question] = helpful;
+            localStorage.setItem("byz_faq_feedback", JSON.stringify(feedback));
+          } catch(e){
+            // Ignore localStorage errors
+          }
+        } else {
+          console.error("Failed to submit FAQ feedback:", result.error);
+          // Still store in localStorage as fallback
+          try {
+            const feedback = JSON.parse(localStorage.getItem("byz_faq_feedback") || "{}");
+            feedback[question] = helpful;
+            localStorage.setItem("byz_faq_feedback", JSON.stringify(feedback));
+          } catch(e){
+            console.error("Failed to save FAQ feedback to localStorage:", e);
+          }
+        }
+      } catch(err) {
+        console.error("Error submitting FAQ feedback:", err);
+        // Fallback to localStorage if network fails
+        try {
+          const feedback = JSON.parse(localStorage.getItem("byz_faq_feedback") || "{}");
+          feedback[question] = helpful;
+          localStorage.setItem("byz_faq_feedback", JSON.stringify(feedback));
+        } catch(e){
+          console.error("Failed to save FAQ feedback to localStorage:", e);
+        }
+      }
+    }
+
+    if(searchInput){
+      searchInput.addEventListener("focus", () => {
+        if(!searchInput.value) showRecentSearches();
+      });
+      
+      searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const dropdown = document.getElementById("recentSearchesDropdown");
+        if(dropdown) dropdown.style.display = "none";
+        
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          filterFAQs(query);
+          if(query) saveRecentSearch(query);
+        }, 300);
+      });
+      
+      document.addEventListener("click", (e) => {
+        if(!e.target.closest(".search-bar")){
+          const dropdown = document.getElementById("recentSearchesDropdown");
+          if(dropdown) dropdown.style.display = "none";
+        }
+      });
+    }
+
+    function filterFAQs(query = ""){
+      const searchTerm = query || (searchInput ? searchInput.value.toLowerCase().trim() : "");
+        
+      faqItems.forEach(item => {
+        const keywords = item.dataset.keywords || "";
+        const questionEl = item.querySelector(".faq-question h3");
+        const answerEl = item.querySelector(".faq-answer-content");
+        if(!questionEl || !answerEl) return;
+        
+        const question = questionEl.textContent.toLowerCase();
+        const answer = answerEl.textContent.toLowerCase();
+        
+        const matches = 
+          question.includes(searchTerm) || 
+          answer.includes(searchTerm) || 
+          keywords.includes(searchTerm);
+        
+        if(matches || !searchTerm){
+          item.style.display = "";
+          
+          // Highlight search terms
+          if(searchTerm){
+            const questionText = questionEl.textContent;
+            const answerText = answerEl.textContent;
+            questionEl.innerHTML = highlightText(questionText, searchTerm);
+            answerEl.innerHTML = highlightText(answerText, searchTerm);
+          }
+        } else {
+          item.style.display = "none";
+        }
+      });
+
+        // Show/hide sections based on visible items
+        document.querySelectorAll(".faq-section").forEach(section => {
+          const visibleItems = section.querySelectorAll(".faq-item[style=''], .faq-item:not([style*='display: none'])");
+          if(visibleItems.length === 0 && searchTerm){
+            section.style.display = "none";
+          } else {
+            section.style.display = "";
+          }
+        });
+    }
+    
+    // Add feedback buttons on load
+    addFeedbackButtons();
+  })();
+</script>
+
+</body>
+</html>
+

@@ -127,34 +127,25 @@
   .btn.primary{background:var(--accent);color:var(--bg);border-color:transparent}
   .btn.ghost{background:transparent}
 
-  .theme-btn{
-    width:44px;
-    height:44px;
-    border-radius:999px;
-    border:1px solid var(--border);
-    background: var(--bg-elev);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
-    box-shadow: var(--shadow-soft);
-    color: var(--text);
-  }
-  .theme-btn:hover{
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-  }
-  .theme-glyph{
-    width:20px;
     height:20px;
     display:block;
   }
 
-  main{padding-top:calc(var(--header-h) + 22px)}
+  main{padding-top:calc(var(--header-h) + 40px)}
+  @media (max-width: 560px){
+    main{padding-top:calc(var(--header-h) + 20px)}
+  }
 
   .hero{
     padding: 24px 0 16px;
+  }
+  @media (max-width: 560px){
+    .hero{
+      padding: 20px 0 12px;
+    }
+    .hero-card{
+      margin-top: 8px;
+    }
   }
   .hero-card{
     border-radius: var(--radius-lg);
@@ -251,14 +242,28 @@
   label{font-size:13px;color:var(--sub)}
   input, select, textarea{
     width:100%;
-    padding:14px;
+    padding:16px 18px;
     border-radius:18px;
     border:1px solid var(--border);
     background: var(--bg-elev);
     color: var(--text);
-    font-size:14px;
+    font-size:15px;
     outline:none;
     box-shadow: var(--shadow-soft);
+    transition: all 0.2s var(--ease);
+    min-height: 52px; /* Better touch target */
+  }
+  input:focus, select:focus, textarea:focus{
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-soft);
+    transform: translateY(-1px);
+  }
+  input.success, select.success, textarea.success{
+    border-color: var(--ok);
+    background: color-mix(in srgb, var(--ok) 5%, var(--bg-elev));
+  }
+  input.error, select.error, textarea.error{
+    border-color: var(--bad);
+    background: color-mix(in srgb, var(--bad) 5%, var(--bg-elev));
   }
   textarea{min-height:120px;resize:vertical}
 
@@ -358,10 +363,62 @@
     border-color: transparent;
   }
 
+  /* Form Validation Styles */
+  .field-error{
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--bad);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .field-error i{
+    font-size: 11px;
+  }
+  input.error, select.error, textarea.error{
+    border-color: var(--bad);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 15%, transparent), var(--shadow-soft);
+  }
+  input.success, select.success, textarea.success{
+    border-color: var(--ok);
+  }
+
+  /* Loading States */
+  .loading-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.3);
+    backdrop-filter: blur(8px);
+    display: none;
+    place-items: center;
+    z-index: 5000;
+  }
+  .loading-overlay.show{
+    display: grid;
+  }
+
+  /* Success Animation */
+  @keyframes successPulse{
+    0%, 100%{ transform: scale(1); }
+    50%{ transform: scale(1.05); }
+  }
+  .success-animation{
+    animation: successPulse .6s var(--ease);
+  }
+
+  :root{
+    --bad:#b42318;
+    --ok:#0a7f3f;
+  }
+  [data-theme="dark"]{
+    --bad:#ff453a;
+    --ok:#30d158;
+  }
+
   </style>
 </head>
 
-<body>
+<body data-theme="dark">
 <header>
   <div class="container header-inner">
     <a class="brand" href="index.html" aria-label="BYZ Home">
@@ -372,9 +429,6 @@
     </a>
 
     <div class="header-actions">
-      <button class="theme-btn" id="themeToggle" type="button" aria-label="Toggle theme" aria-pressed="false" title="Switch to dark mode">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-glyph">
-          <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2" />
           <circle cx="12" cy="12" r="6" fill="currentColor" />
           <defs>
             <clipPath id="themeHalfClip">
@@ -404,6 +458,11 @@
         <span class="hero-pill"><i class="fa-solid fa-location-dot"></i> Dar es Salaam</span>
         <span class="hero-pill"><i class="fa-brands fa-whatsapp"></i> WhatsApp Reply</span>
       </div>
+      <div style="margin-top: 14px;">
+        <a class="btn ghost" href="gallery.html?event=apt" style="font-size: 13px; padding: 10px 14px;">
+          <i class="fa-solid fa-images"></i> Peep Past Sessions
+        </a>
+      </div>
     </div>
   </section>
 
@@ -423,42 +482,93 @@
       <form id="aptForm">
         <div class="form-grid">
           <div class="field">
-            <label for="aptName">Full Name</label>
-            <input id="aptName" required />
+            <label for="aptName">Full Name <span style="color:var(--bad);">*</span></label>
+            <input id="aptName" required aria-required="true" aria-label="Full Name" autocomplete="name" />
+            <div class="field-error" id="aptNameError" role="alert" aria-live="polite"></div>
           </div>
           <div class="field">
-            <label for="aptPhone">WhatsApp Number</label>
-            <input id="aptPhone" required />
+            <label for="aptPhone">WhatsApp Number <span style="color:var(--bad);">*</span></label>
+            <div style="display:flex;gap:8px;align-items:stretch;">
+              <select id="aptPhoneCountryCode" style="width:140px;flex-shrink:0;padding:14px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-elev);color:var(--text);outline:none;font-size:14px;font-weight:500;cursor:pointer;" aria-label="Country Code">
+                <option value="+255">🇹🇿 +255 (TZ)</option>
+                <option value="+1">🇺🇸 +1 (US/CA)</option>
+                <option value="+44">🇬🇧 +44 (UK)</option>
+                <option value="+27">🇿🇦 +27 (ZA)</option>
+                <option value="+254">🇰🇪 +254 (KE)</option>
+                <option value="+256">🇺🇬 +256 (UG)</option>
+                <option value="+250">🇷🇼 +250 (RW)</option>
+                <option value="+234">🇳🇬 +234 (NG)</option>
+                <option value="+233">🇬🇭 +233 (GH)</option>
+                <option value="+91">🇮🇳 +91 (IN)</option>
+                <option value="+86">🇨🇳 +86 (CN)</option>
+                <option value="+971">🇦🇪 +971 (AE)</option>
+                <option value="+61">🇦🇺 +61 (AU)</option>
+                <option value="+49">🇩🇪 +49 (DE)</option>
+                <option value="+33">🇫🇷 +33 (FR)</option>
+                <option value="+39">🇮🇹 +39 (IT)</option>
+                <option value="+34">🇪🇸 +34 (ES)</option>
+                <option value="+31">🇳🇱 +31 (NL)</option>
+                <option value="+32">🇧🇪 +32 (BE)</option>
+                <option value="+41">🇨🇭 +41 (CH)</option>
+                <option value="+46">🇸🇪 +46 (SE)</option>
+                <option value="+47">🇳🇴 +47 (NO)</option>
+                <option value="+45">🇩🇰 +45 (DK)</option>
+                <option value="+358">🇫🇮 +358 (FI)</option>
+                <option value="+351">🇵🇹 +351 (PT)</option>
+                <option value="+353">🇮🇪 +353 (IE)</option>
+                <option value="+48">🇵🇱 +48 (PL)</option>
+                <option value="+7">🇷🇺 +7 (RU)</option>
+                <option value="+81">🇯🇵 +81 (JP)</option>
+                <option value="+82">🇰🇷 +82 (KR)</option>
+                <option value="+65">🇸🇬 +65 (SG)</option>
+                <option value="+60">🇲🇾 +60 (MY)</option>
+                <option value="+66">🇹🇭 +66 (TH)</option>
+                <option value="+84">🇻🇳 +84 (VN)</option>
+                <option value="+62">🇮🇩 +62 (ID)</option>
+                <option value="+55">🇧🇷 +55 (BR)</option>
+                <option value="+52">🇲🇽 +52 (MX)</option>
+                <option value="+54">🇦🇷 +54 (AR)</option>
+                <option value="+20">🇪🇬 +20 (EG)</option>
+              </select>
+              <input id="aptPhone" type="tel" placeholder="Phone number (without country code)" required aria-required="true" aria-label="WhatsApp Number" autocomplete="tel" style="flex:1;" />
+            </div>
+            <div class="field-error" id="aptPhoneError" role="alert" aria-live="polite"></div>
           </div>
           <div class="field">
             <label for="aptIg">Instagram Handle</label>
-            <input id="aptIg" placeholder="@handle" />
+            <input id="aptIg" placeholder="@handle" aria-label="Instagram Handle" />
+            <div class="field-error" id="aptIgError" role="alert" aria-live="polite"></div>
           </div>
           
           <div class="field">
-  <label for="aptBefore">Have you been to APT before?</label>
-  <select id="aptBefore" required>
-    <option value="" selected disabled>Select</option>
-    <option>Yes</option>
-    <option>No</option>
-  </select>
-</div>
+            <label for="aptBefore">Have you been to APT before? <span style="color:var(--bad);">*</span></label>
+            <select id="aptBefore" required aria-required="true" aria-label="Have you been to APT before">
+              <option value="" selected disabled>Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+            <div class="field-error" id="aptBeforeError" role="alert" aria-live="polite"></div>
+          </div>
 
           
           <div class="field">
             <label for="aptNotes">Notes</label>
-            <textarea id="aptNotes" placeholder="Any preferences or special requests"></textarea>
+            <textarea id="aptNotes" placeholder="Any preferences or special requests" aria-label="Notes"></textarea>
+            <div class="field-error" id="aptNotesError" role="alert" aria-live="polite"></div>
           </div>
         </div>
 
         <div class="form-actions">
           
-          <button id="aptSubmitBtn" class="btn primary" type="submit">
-  <i class="fa-solid fa-paper-plane"></i> Request Invite
-</button>
+          <button id="aptSubmitBtn" class="btn primary" type="submit" aria-label="Submit APT Request" style="min-height: 52px; font-size: 15px; padding: 16px 24px;">
+            <i class="fa-solid fa-paper-plane"></i> Request Invite
+          </button>
 
           
-          <span class="note">Submitting opens WhatsApp with your details.</span>
+          <div class="note" style="display: flex; align-items: flex-start; gap: 8px; margin-top: 8px;">
+            <i class="fa-solid fa-circle-info" style="color: var(--sub); margin-top: 2px; flex-shrink: 0;"></i>
+            <span>Your request will be reviewed and you'll receive a response via WhatsApp or Instagram if a slot opens.</span>
+          </div>
         </div>
       </form>
       
@@ -475,7 +585,208 @@
   const form = document.getElementById("aptForm");
     let __submittingApt = false;
 
-    const igInput = document.getElementById("aptIg");
+    // Form Validation Functions
+  function validateField(fieldId, value, type = "text"){
+    const errorEl = document.getElementById(fieldId + "Error");
+    const inputEl = document.getElementById(fieldId);
+    let isValid = true;
+    let errorMsg = "";
+
+    if(!inputEl) return true;
+
+    // Remove previous error state
+    inputEl.classList.remove("error", "success");
+    if(errorEl) errorEl.textContent = "";
+
+    // Required field validation
+    if(inputEl.hasAttribute("required") && !value.trim()){
+      isValid = false;
+      errorMsg = "This field is required";
+    }
+
+    // Type-specific validation
+    if(value.trim() && isValid){
+      switch(type){
+        case "tel":
+        case "phone":
+          const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+          if(!phoneRegex.test(value) || value.replace(/\D/g, "").length < 9){
+            isValid = false;
+            errorMsg = "Please enter a valid phone number";
+          }
+          break;
+        case "instagram":
+          if(value && value.trim()){
+            const cleanValue = value.trim();
+            // Allow with or without @, but normalize to @
+            if(!cleanValue.startsWith("@") && !cleanValue.match(/^[a-zA-Z0-9._]+$/)){
+              isValid = false;
+              errorMsg = "Invalid Instagram handle format";
+            } else if(cleanValue.length < 2){
+              isValid = false;
+              errorMsg = "Instagram handle too short";
+            } else if(cleanValue.length > 30){
+              isValid = false;
+              errorMsg = "Instagram handle too long";
+            }
+          }
+          break;
+      }
+    }
+
+    // Update UI
+    if(!isValid && errorMsg){
+      inputEl.classList.add("error");
+      if(errorEl){
+        errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${errorMsg}`;
+        errorEl.style.display = "flex";
+      }
+    } else if(value.trim() && isValid){
+      inputEl.classList.add("success");
+    }
+
+    return isValid;
+  }
+
+  function validateAllFields(){
+    const name = document.getElementById("aptName")?.value || "";
+    const phone = document.getElementById("aptPhone")?.value || "";
+    const ig = document.getElementById("aptIg")?.value || "";
+    const before = document.getElementById("aptBefore")?.value || "";
+
+    const nameValid = validateField("aptName", name);
+    const phoneValid = validateField("aptPhone", phone, "tel");
+    const igValid = !ig || validateField("aptIg", ig, "instagram");
+    const beforeValid = validateField("aptBefore", before);
+
+    return nameValid && phoneValid && igValid && beforeValid;
+  }
+
+  // Auto-save form data
+  function saveAptFormData(){
+    const formData = {
+      name: document.getElementById("aptName")?.value || "",
+      phone: (document.getElementById("aptPhoneCountryCode")?.value || "+255") + (document.getElementById("aptPhone")?.value || "").replace(/\D/g, ""),
+      ig: document.getElementById("aptIg")?.value || "",
+      before: document.getElementById("aptBefore")?.value || "",
+      notes: document.getElementById("aptNotes")?.value || "",
+      timestamp: Date.now()
+    };
+    localStorage.setItem("byz_apt_draft", JSON.stringify(formData));
+  }
+
+  function loadAptFormData(){
+    try {
+      const saved = localStorage.getItem("byz_apt_draft");
+      if(!saved) return;
+
+      const data = JSON.parse(saved);
+      // Only restore if less than 1 hour old
+      if(Date.now() - (data.timestamp || 0) > 3600000){
+        localStorage.removeItem("byz_apt_draft");
+        return;
+      }
+
+      if(data.name || data.phone){
+        const nameEl = document.getElementById("aptName");
+        const phoneEl = document.getElementById("aptPhone");
+        const countryCodeEl = document.getElementById("aptPhoneCountryCode");
+        const igEl = document.getElementById("aptIg");
+        const beforeEl = document.getElementById("aptBefore");
+        const notesEl = document.getElementById("aptNotes");
+
+        if(nameEl && data.name) nameEl.value = data.name;
+        if(phoneEl && data.phone) {
+          // Extract country code and phone number from saved data
+          const savedPhone = data.phone;
+          const countryCodeMatch = savedPhone.match(/^(\+\d{1,4})/);
+          if(countryCodeMatch && countryCodeEl) {
+            const code = countryCodeMatch[1];
+            countryCodeEl.value = code;
+            phoneEl.value = savedPhone.replace(/^\+\d{1,4}/, "").replace(/\D/g, "");
+          } else {
+            if(countryCodeEl) countryCodeEl.value = "+255";
+            phoneEl.value = savedPhone.replace(/\D/g, "");
+          }
+        }
+        if(igEl && data.ig) igEl.value = data.ig;
+        if(beforeEl && data.before) beforeEl.value = data.before;
+        if(notesEl && data.notes) notesEl.value = data.notes;
+      }
+    } catch(err){
+      console.error("Error loading form data:", err);
+      localStorage.removeItem("byz_apt_draft");
+    }
+  }
+
+  // Load saved form data on page load
+  window.addEventListener("DOMContentLoaded", () => {
+    loadAptFormData();
+  });
+
+  // Auto-save on input and enhancements
+  document.addEventListener("DOMContentLoaded", () => {
+    const inputs = ["aptName", "aptPhone", "aptIg", "aptBefore", "aptNotes"];
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      if(el){
+        el.addEventListener("input", () => {
+          saveAptFormData();
+          // Real-time validation
+          const type = id === "aptPhone" ? "tel" : id === "aptIg" ? "instagram" : "text";
+          validateField(id, el.value, type);
+        });
+        el.addEventListener("blur", () => {
+          const type = id === "aptPhone" ? "tel" : id === "aptIg" ? "instagram" : "text";
+          validateField(id, el.value, type);
+        });
+      }
+    });
+
+    // Auto-format phone numbers (only the number part, not country code)
+    const phoneInput = document.getElementById("aptPhone");
+    if(phoneInput){
+      phoneInput.addEventListener("input", (e) => {
+        // Only allow digits, remove all non-digits
+        let value = e.target.value.replace(/\D/g, "");
+        e.target.value = value;
+      });
+    }
+
+    // Smart field focus - auto-focus next field on Enter
+    const formInputs = Array.from(form.querySelectorAll("input, select, textarea"));
+    formInputs.forEach((input, index) => {
+      input.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" && !e.shiftKey && input.tagName !== "TEXTAREA"){
+          e.preventDefault();
+          const nextInput = formInputs[index + 1];
+          if(nextInput){
+            nextInput.focus();
+          } else {
+            // Last field - focus submit button
+            const submitBtn = document.getElementById("aptSubmitBtn");
+            if(submitBtn) submitBtn.focus();
+          }
+        }
+      });
+    });
+
+    // Sticky submit button removed per user request
+  });
+
+  // Warn before leaving with unsaved data
+  window.addEventListener("beforeunload", (e) => {
+    const name = document.getElementById("aptName")?.value || "";
+    const phone = document.getElementById("aptPhone")?.value || "";
+    
+    if(name || phone){
+      e.preventDefault();
+      e.returnValue = "You have unsaved form data. Are you sure you want to leave?";
+      return e.returnValue;
+    }
+  });
+
+  const igInput = document.getElementById("aptIg");
   if(igInput){
     igInput.addEventListener("input", () => {
       let v = igInput.value || "";
@@ -483,6 +794,7 @@
       if(!v.startsWith("@")){
         igInput.value = "@" + v.replace(/^@+/, "");
       }
+      saveAptFormData();
     });
   }
 
@@ -494,6 +806,19 @@
   form.addEventListener("submit", async (e) => {
   e.preventDefault();
   if(__submittingApt) return;
+  
+  // Validate all fields
+  if(!validateAllFields()){
+    showAptErrorToast("Please check the form fields and fix any errors");
+    // Scroll to first error
+    const firstError = document.querySelector("input.error, select.error, textarea.error");
+    if(firstError){
+      firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+      firstError.focus();
+    }
+    return;
+  }
+
   __submittingApt = true;
 
   const submitBtn = document.getElementById("aptSubmitBtn");
@@ -505,7 +830,7 @@
   }
 
   const name = document.getElementById("aptName").value.trim();
-  const phone = document.getElementById("aptPhone").value.trim();
+  const phone = (document.getElementById("aptPhoneCountryCode")?.value || "+255") + document.getElementById("aptPhone").value.replace(/\D/g, "");
   let ig = document.getElementById("aptIg").value.trim();
   if (ig && !ig.startsWith("@")) ig = "@" + ig;
 
@@ -521,14 +846,42 @@
     requestId: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2))
   };
 
+   // Clear saved form data
+   localStorage.removeItem("byz_apt_draft");
+   
+   // Show modal immediately
    showAptModal();
+   
+   // Reset button state after a short delay to show success
+   setTimeout(() => {
+     if(submitBtn){
+       submitBtn.disabled = false;
+       submitBtn.style.opacity = "";
+       submitBtn.style.pointerEvents = "";
+       submitBtn.classList.add("submitted");
+       submitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Request submitted`;
+     }
+   }, 500);
 
-  // fire-and-forget submit (don’t block popup)
+  // Submit to backend (fire-and-forget, don't block UI)
   fetch(SCRIPT_URL, {
     method:"POST",
     headers:{ "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify({ action:"addAptRequest", data })
-  }).catch(() => {});
+  }).then(() => {
+    console.log("APT request submitted successfully");
+  }).catch((err) => {
+    console.error("Submission error:", err);
+    // Show error if submission fails
+    if(submitBtn){
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "";
+      submitBtn.style.pointerEvents = "";
+      submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Request Invite`;
+      __submittingApt = false;
+    }
+    showAptErrorToast("Failed to submit. Please try again.");
+  });
 
 
  
@@ -549,16 +902,26 @@
     }
   }
 
+  function showAptErrorToast(message){
+    // Create a simple toast notification for errors
+    const toast = document.createElement("div");
+    toast.style.cssText = "position:fixed;top:20px;right:20px;padding:14px 18px;border-radius:18px;background:var(--bg-elev);border:1px solid var(--border);box-shadow:var(--shadow);z-index:10000;max-width:400px;";
+    toast.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-circle-exclamation" style="color:var(--bad);"></i><span>${message}</span></div>`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transition = "opacity 0.3s";
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+
   function closeAptModal(){
     if(modal){
       modal.classList.add("hidden");
       modal.setAttribute("aria-hidden","true");
       document.body.style.overflow = "";
     }
-    if(submitBtn){
-      submitBtn.classList.add("submitted");
-      submitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Booking submitted`;
-    }
+    // Button state is already set when modal opens, no need to set it again here
     __submittingApt = false;
     sessionStorage.setItem("apt_last_status","done");
   }
@@ -600,35 +963,11 @@
 /* =========================================================
    APPLE-STYLE DARK MODE (MATCH INDEX)
 ========================================================= */
+// Dark mode permanently enabled
 (function() {
   const root = document.documentElement;
-  const toggle = document.getElementById("themeToggle");
-  const stored = localStorage.getItem("theme");
-
-  function applyTheme(theme) {
-    if (theme === "dark") root.setAttribute("data-theme","dark");
-    else root.setAttribute("data-theme","light");
-    if (toggle){
-      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-      toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
-    }
-  }
-
-  if (stored) {
-    applyTheme(stored);
-  } else {
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(prefersDark ? "dark" : "light");
-  }
-
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      const isDark = root.getAttribute("data-theme") === "dark";
-      const next = isDark ? "light" : "dark";
-      applyTheme(next);
-      localStorage.setItem("theme", next);
-    });
-  }
+  root.setAttribute("data-theme","dark");
+  localStorage.removeItem("theme");
 })();
 </script>
 <div id="aptModalBackdrop" class="apt-modal-backdrop hidden" aria-hidden="true">

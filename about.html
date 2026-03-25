@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About BYZ Entertainment | Our Story</title>
+  <meta name="description" content="Learn about BYZ Entertainment. Creating unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam." />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#000000;
+      --bg-alt:#1c1c1e;
+      --bg-elev:#0b0b0c;
+      --text:#f5f5f7;
+      --sub:#a1a1a6;
+      --border:#2c2c2e;
+      --accent:#ffffff;
+      --shadow: 0 24px 80px rgba(0,0,0,.4);
+      --shadow-soft: 0 4px 24px rgba(0,0,0,.2);
+      --ease: cubic-bezier(.25,.1,.25,1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --max: 1100px;
+      --radius: 20px;
+      --radius-lg: 24px;
+      --radius-sm: 12px;
+      --header-h: 64px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      overflow-x:hidden;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background-image: radial-gradient(ellipse 120% 80% at 50% -20%, rgba(255,255,255,.03) 0%, transparent 50%);
+      pointer-events:none;
+      z-index:0;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:0 24px;
+      width:100%;
+    }
+    @media (max-width: 560px){
+      .container{padding:0 20px}
+      /* Safe area for notched devices */
+      body{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      header{
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+    }
+
+    /* Scroll Animation Base */
+    @media (prefers-reduced-motion: no-preference) {
+      .scroll-reveal{
+        opacity:0;
+        transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+        will-change: opacity, transform;
+      }
+      .scroll-reveal.revealed{
+        opacity:1;
+        transform:translateY(0) translateX(0) scale(1);
+      }
+      .scroll-reveal.from-bottom{
+        transform:translateY(28px);
+      }
+      .scroll-reveal.from-left{
+        transform:translateX(-16px);
+      }
+      @media (max-width: 560px){
+        .scroll-reveal.from-left{
+          transform:translateX(-10px);
+        }
+      }
+      .scroll-reveal.from-right{
+        transform:translateX(16px);
+      }
+      @media (max-width: 560px){
+        .scroll-reveal.from-right{
+          transform:translateX(10px);
+        }
+      }
+      .scroll-reveal.from-top{
+        transform:translateY(-24px);
+      }
+      .scroll-reveal.scale-in{
+        transform:scale(0.92);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-reveal{
+        opacity:1;
+        transform:none;
+      }
+    }
+
+    /* Header */
+    header{
+      position:fixed;top:0;left:0;right:0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
+    .header-inner{
+      height:var(--header-h);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;letter-spacing:-.4px;
+    }
+    .brand-logo-wrap{
+      width:52px;height:52px;border-radius:14px;
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .logo-light{display:none;}
+    .logo-dark{display:block;}
+
+    nav ul{display:flex;gap:26px;list-style:none;align-items:center}
+    nav a{font-size:15px;color:var(--sub);transition:color .2s var(--ease)}
+    nav a:hover{color:var(--text)}
+    nav a.active{color:var(--text);font-weight:700}
+    .header-actions{display:flex;align-items:center;gap:12px}
+
+    /* Mobile menu */
+    .mobile-btn{
+      display:none;
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--bg-elev);
+      align-items:center;justify-content:center;
+      cursor:pointer;
+      transition: transform .2s var(--ease), background .2s var(--ease);
+    }
+    .mobile-btn:hover{transform: translateY(-1px)}
+    .mobile-panel{
+      display:none;
+      flex-direction:column;
+      position:fixed;
+      top:var(--header-h);
+      right:16px;
+      width:min(360px, calc(100vw - 32px));
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:14px;
+      z-index:998;
+    }
+    .mobile-panel a{
+      display:flex;
+      padding:12px 12px;
+      border-radius:14px;
+      color:var(--sub);
+      transition: background .2s var(--ease), color .2s var(--ease);
+    }
+    .mobile-panel a:hover{
+      background: color-mix(in srgb, var(--border) 22%, transparent);
+      color:var(--text);
+    }
+    @media (max-width: 980px){
+      nav ul{display:none}
+      .mobile-btn{display:flex}
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:10px;padding:14px 24px;border-radius:980px;
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.08);
+      font-size:15px;font-weight:500;
+      letter-spacing:-.01em;
+      cursor:pointer;
+      transition: all .3s var(--ease);
+      word-wrap:normal;
+    }
+    .btn:hover{
+      background:rgba(255,255,255,.12);
+      transform:translateY(-1px);
+    }
+    .btn.primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--bg);
+      font-weight:600;
+    }
+    .btn.primary:hover{
+      background:#fff;
+      box-shadow:0 4px 20px rgba(255,255,255,.25);
+    }
+    .btn.ghost{
+      background:transparent;
+      border-color:rgba(255,255,255,.2);
+    }
+
+    /* Section Dividers */
+    .section-divider{
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.08) 30%, rgba(255,255,255,.08) 70%, transparent);
+      margin: 96px 0;
+      opacity:0;
+      transition: opacity 0.8s var(--ease-out);
+    }
+    .section-divider.revealed{opacity:1}
+    @media (max-width: 560px){
+      .section-divider{margin: 64px 0}
+    }
+
+    /* Main */
+    main{padding-top:var(--header-h);position:relative;z-index:1}
+
+    /* Scroll progress bar */
+    .scroll-progress{
+      position:fixed;
+      top:var(--header-h);
+      left:0;right:0;
+      height:1px;
+      background:color-mix(in srgb, var(--border) 40%, transparent);
+      z-index:1000;
+      pointer-events:none;
+    }
+    .scroll-progress-bar{
+      height:100%;
+      width:0%;
+      background:var(--accent);
+      transition:width .12s var(--ease-out);
+    }
+
+    /* Hero Section */
+    .hero{
+      padding: 120px 0 80px;
+      position:relative;
+      overflow:hidden;
+      background: radial-gradient(1000px 400px at 50% -15%, rgba(255,255,255,.04) 0%, transparent 60%);
+    }
+    @media (max-width: 560px){
+      .hero{padding: 80px 0 56px}
+    }
+    .hero .scroll-reveal.from-bottom:nth-child(1){ transition-delay: 0ms; }
+    .hero .scroll-reveal.from-bottom:nth-child(2){ transition-delay: 80ms; }
+    .hero .container{
+      position:relative;z-index:1;
+    }
+    .hero h1{
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      letter-spacing:-.04em;
+      font-weight:700;
+      line-height:1.1;
+      margin-bottom:24px;
+      text-align:center;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+      hyphens:none;
+      white-space:nowrap;
+    }
+    @media (max-width: 560px){
+      .hero h1{
+        font-size: clamp(1.9rem, 8vw, 2.6rem);
+        margin-bottom:16px;
+        line-height:1.15;
+        white-space:normal;
+        word-break:keep-all;
+        hyphens:none;
+      }
+    }
+    .hero p{
+      color:var(--sub);
+      max-width:42ch;
+      font-size:17px;
+      line-height:1.5;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+      text-align:center;
+      margin:0 auto;
+    }
+    @media (max-width: 560px){
+      .hero p{font-size:15px;max-width:100%}
+    }
+
+    /* Content Sections */
+    .content-section{
+      padding: 96px 0;
+      position:relative;
+      overflow-x:hidden;
+      width:100%;
+      min-height:auto;
+      background:var(--bg);
+    }
+    .content-section .container{
+      overflow-x:hidden;
+      width:100%;
+      max-width:100%;
+      position:relative;
+    }
+    @media (max-width: 560px){
+      .content-section{padding: 64px 0}
+    }
+
+    /* Story Grid - Enhanced */
+    .story-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:48px;
+      align-items:center;
+      margin-top:48px;
+    }
+    @media (max-width: 980px){
+      .story-grid{grid-template-columns:1fr;gap:40px;margin-top:32px}
+    }
+    .story-content{
+      width:100%;
+      max-width:100%;
+      overflow:visible;
+      position:relative;
+    }
+    .story-content h2{
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      letter-spacing:-.04em;
+      font-weight:700;
+      margin-bottom:28px;
+      text-align:center;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+      width:100%;
+      max-width:100%;
+    }
+    @media (max-width: 560px){
+      .story-content h2{font-size: clamp(1.65rem, 7vw, 2rem);margin-bottom:24px}
+    }
+    .story-content p{
+      font-size:17px;
+      color:var(--sub);
+      line-height:1.75;
+      margin-bottom:20px;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+      width:100%;
+      max-width:100%;
+      text-align:center;
+    }
+    @media (max-width: 560px){
+      .story-content p{font-size:16px;margin-bottom:18px;line-height:1.7}
+    }
+    .story-lead{
+      font-size:18px;
+      color:color-mix(in srgb, var(--text) 90%, transparent);
+    }
+    @media (max-width: 560px){
+      .story-lead{font-size:17px}
+    }
+
+    /* Horizontal Scroll Gallery */
+    .story-gallery{
+      position:relative;
+      border-radius: var(--radius-lg);
+      overflow:hidden;
+      background:var(--bg);
+      height:500px;
+      margin-top:40px;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 980px){
+      .story-gallery{height:400px}
+    }
+    @media (max-width: 560px){
+      .story-gallery{height:300px}
+    }
+    .horizontal-scroll-container{
+      display:flex;
+      width:400%;
+      height:100%;
+      will-change:transform;
+      position:relative;
+    }
+    .horizontal-scroll-item{
+      flex:0 0 25%;
+      height:100%;
+      position:relative;
+      overflow:hidden;
+    }
+    .horizontal-scroll-item img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    /* Values Header */
+    .values-header{
+      text-align:center;
+      margin-bottom:56px;
+    }
+    @media (max-width: 560px){
+      .values-header{margin-bottom:40px;padding:0 8px}
+    }
+    .values-header h2{
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      font-weight:700;
+      margin-bottom:12px;
+      letter-spacing:-.04em;
+    }
+    .values-header p{
+      color:var(--sub);
+      font-size:17px;
+    }
+
+    /* Value Cards - Full view with rings */
+    .values-grid{
+      display:flex;
+      flex-direction:column;
+      gap:48px;
+      max-width:720px;
+      margin:0 auto;
+    }
+    @media (max-width: 560px){
+      .values-grid{gap:40px}
+    }
+    .value-card{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+    }
+    .value-card-ring-wrap{
+      position:relative;
+      margin-bottom:28px;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      padding:0;
+      box-shadow: 
+        0 0 0 2px rgba(255,255,255,.2),
+        0 0 0 10px transparent,
+        0 0 0 12px rgba(255,255,255,.1),
+        0 0 0 22px transparent,
+        0 0 0 24px rgba(255,255,255,.06);
+    }
+    .value-card-img-wrap{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      overflow:hidden;
+    }
+    .value-card-img-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      border-radius:50%;
+      transition: transform .6s var(--ease-out);
+    }
+    .value-card:hover .value-card-img-wrap img{
+      transform:scale(1.04);
+    }
+    @media (max-width: 560px){
+      .value-card-ring-wrap{width:160px;height:160px;margin-bottom:24px}
+    }
+    .value-card-title{
+      font-size:20px;
+      font-weight:600;
+      letter-spacing:-.03em;
+      margin-bottom:8px;
+      color:var(--text);
+    }
+    .value-card-sub{
+      font-size:14px;
+      font-weight:500;
+      letter-spacing:.02em;
+      color:var(--sub);
+      margin-bottom:12px;
+    }
+    .value-card-desc{
+      font-size:16px;
+      color:var(--sub);
+      line-height:1.6;
+      max-width:42ch;
+    }
+    @media (max-width: 560px){
+      .value-card-title{font-size:18px;margin-bottom:10px}
+      .value-card-desc{font-size:15px}
+    }
+    .value-card[data-index="0"]{ transition-delay: 0ms; }
+    .value-card[data-index="1"]{ transition-delay: 80ms; }
+    .value-card[data-index="2"]{ transition-delay: 160ms; }
+    .value-card[data-index="3"]{ transition-delay: 240ms; }
+
+    /* Brands we've partnered with */
+    .partnership-section{
+      padding:96px 0 80px;
+      text-align:center;
+    }
+    @media (max-width: 560px){
+      .partnership-section{padding:64px 0 60px}
+    }
+    .partnership-section h2{
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      font-weight:700;
+      letter-spacing:-.04em;
+      margin-bottom:12px;
+    }
+    .partnership-sub{
+      font-size:17px;
+      color:var(--sub);
+      margin:0 auto 48px;
+      max-width:42ch;
+    }
+    .partnership-carousel-section{
+      width:100%;
+      padding:64px 0;
+      min-height:248px;
+      overflow:hidden;
+      position:relative;
+    }
+    .partnership-carousel-container{
+      width:100%;
+      padding:20px 0;
+      overflow:hidden;
+      position:relative;
+    }
+    .partnership-carousel-track{
+      display:flex;
+      gap:0;
+      width:fit-content;
+      will-change:transform;
+    }
+    .partnership-logo-ring{
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      flex-shrink:0;
+      border:2px solid rgba(255,255,255,.18);
+      box-shadow: 0 0 0 8px transparent, 0 0 0 10px rgba(255,255,255,.12);
+    }
+    .partnership-logo-circle{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      overflow:hidden;
+      background:var(--bg);
+    }
+    .partnership-logo-circle img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center 40%;
+      display:block;
+      border-radius:50%;
+    }
+    @media (max-width: 560px){
+      .partnership-carousel-section{
+        margin:60px auto 40px;
+        padding:56px 0;
+        min-height:232px;
+      }
+      .partnership-carousel-container{
+        padding:18px 0;
+      }
+      .partnership-logo-ring{
+        width:100px;
+        height:100px;
+      }
+      .partnership-carousel-track{
+        gap:0;
+      }
+    }
+
+    /* Stats Section - Borderless */
+    .stats-section{
+      padding:0;
+      margin-top:48px;
+      background:transparent;
+      border:none;
+      box-shadow:none;
+      position:relative;
+      min-height:auto;
+    }
+    .stats-section::before{
+      display:none;
+    }
+    @media (max-width: 560px){
+      .stats-section{margin-top:32px}
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:32px;
+      max-width:800px;
+      margin:0 auto;
+    }
+    @media (max-width: 980px){
+      .stats-grid{grid-template-columns:repeat(2, 1fr);gap:28px}
+    }
+    @media (max-width: 560px){
+      .stats-grid{grid-template-columns:1fr;gap:36px;max-width:100%}
+    }
+    .stat-item{
+      text-align:center;
+      position:relative;
+    }
+    .stat-circle-wrapper{
+      position:relative;
+      width:120px;
+      height:120px;
+      margin:0 auto 20px;
+    }
+    @media (max-width: 560px){
+      .stat-circle-wrapper{width:100px;height:100px;margin-bottom:16px}
+    }
+    .stat-circle{
+      width:100%;
+      height:100%;
+      transform:rotate(-90deg);
+    }
+    .stat-circle-bg{
+      fill:none;
+      stroke:rgba(255,255,255,.08);
+      stroke-width:3;
+      stroke-linecap:round;
+    }
+    .stat-circle-progress{
+      fill:none;
+      stroke:var(--accent);
+      stroke-width:3;
+      stroke-linecap:round;
+      stroke-dasharray:283;
+      stroke-dashoffset:283;
+      transition: stroke-dashoffset 0.15s ease-out;
+    }
+    .stat-number-wrapper{
+      position:absolute;
+      top:50%;left:50%;
+      transform:translate(-50%, -50%);
+    }
+    .stat-number{
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight:700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing:-.02em;
+      color:var(--text);
+      line-height:1;
+    }
+    .stat-label{
+      font-size:12px;
+      color:var(--sub);
+      font-weight:500;
+      margin-top:8px;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+    }
+    @media (max-width: 560px){
+      .stat-label{font-size:11px;margin-top:6px}
+    }
+
+    /* CTA Section */
+    .cta-section{
+      text-align:center;
+      padding: 96px 0 120px;
+    }
+    @media (max-width: 560px){
+      .cta-section{padding: 64px 0 80px}
+    }
+    .cta-section h2{
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      font-weight:700;
+      margin-bottom:16px;
+      letter-spacing:-.04em;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+    }
+    .cta-section p{
+      font-size:17px;
+      color:var(--sub);
+      margin-bottom:32px;
+      max-width:65ch;
+      margin-left:auto;
+      margin-right:auto;
+      line-height:1.7;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+    }
+    @media (max-width: 560px){
+      .cta-section p{font-size:16px;margin-bottom:24px}
+    }
+    .cta-buttons{
+      display:flex;
+      gap:16px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    @media (max-width: 560px){
+      .cta-buttons{
+        flex-direction:column;
+        gap:12px;
+      }
+      .cta-buttons .btn{
+        width:100%;
+        font-size:14px;
+        padding:14px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar" id="scrollProgressBar"></div></div>
+<header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="BYZ Home">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
+        <img class="brand-logo logo-dark" src="assets/byz-logo-white.png" alt="" />
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="mobile-btn" id="mobileBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 7h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm16 4H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2zm0 6H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="about.html" class="active">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="rate.html">Rate Experience</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1 class="scroll-reveal from-bottom">About BYZ Entertainment</h1>
+      <p class="scroll-reveal from-bottom">Creating unforgettable experiences through exclusive parties, legendary events, and vibrant community gatherings in Dar es Salaam.</p>
+    </div>
+  </section>
+
+  <div class="section-divider scroll-reveal"></div>
+
+  <section class="content-section">
+    <div class="container">
+      <div class="story-grid">
+        <div class="story-content">
+          <h2 class="scroll-reveal from-top">Our Story</h2>
+          <p class="scroll-reveal from-left story-lead">
+            Born in Dar es Salaam in 2018, we set out to elevate the city's nightlife—creating spaces where music, community, and culture intersect.
+          </p>
+          <p class="scroll-reveal from-left">
+            Every Groove night, Tempo event, and APT session is crafted with intention. We're not just throwing parties—we're building a community. Today we've grown into one of Dar's most trusted event brands, partnering with names like Guinness to create nights people remember.
+          </p>
+        </div>
+        <div>
+          <div class="story-gallery scroll-reveal from-right" id="horizontalScrollGallery">
+            <div class="horizontal-scroll-container" id="horizontalScrollContainer">
+              <div class="horizontal-scroll-item">
+                <img id="scroll-img-1" src="" alt="BYZ Event" loading="lazy">
+        </div>
+              <div class="horizontal-scroll-item">
+                <img id="scroll-img-2" src="" alt="BYZ Event" loading="lazy">
+              </div>
+              <div class="horizontal-scroll-item">
+                <img id="scroll-img-3" src="" alt="BYZ Event" loading="lazy">
+              </div>
+              <div class="horizontal-scroll-item">
+                <img id="scroll-img-1-duplicate" src="" alt="BYZ Event" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider scroll-reveal"></div>
+
+  <section class="content-section">
+    <div class="container">
+      <div class="values-header">
+        <h2 class="scroll-reveal from-bottom">Our Values</h2>
+        <p class="scroll-reveal from-bottom">What we stand for</p>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-card scroll-reveal from-bottom" data-index="0">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
+            </div>
+          </div>
+          <h3 class="value-card-title">Music First</h3>
+          <p class="value-card-desc">We believe music is the universal language that brings people together. Every event is built around the sound.</p>
+        </div>
+        <div class="value-card scroll-reveal from-bottom" data-index="1">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
+            </div>
+          </div>
+          <h3 class="value-card-title">Community</h3>
+          <p class="value-card-desc">BYZ is more than events—it's a community where everyone belongs.</p>
+        </div>
+        <div class="value-card scroll-reveal from-bottom" data-index="2">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
+            </div>
+          </div>
+          <h3 class="value-card-title">Excellence</h3>
+          <p class="value-card-desc">We never compromise on the details. Every experience exceeds expectations.</p>
+        </div>
+        <div class="value-card scroll-reveal from-bottom" data-index="3">
+          <div class="value-card-ring-wrap">
+            <div class="value-card-img-wrap">
+              <img class="value-card-img" src="" alt="BYZ Event" loading="lazy">
+            </div>
+          </div>
+          <h3 class="value-card-title">Authenticity</h3>
+          <p class="value-card-sub">Staying true to who we are</p>
+          <p class="value-card-desc">We stay true to our roots while pushing boundaries.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider scroll-reveal"></div>
+
+  <section class="content-section partnership-section">
+    <div class="container">
+      <h2 class="scroll-reveal from-bottom">Brands we've partnered with</h2>
+      <p class="partnership-sub scroll-reveal from-bottom">We collaborate with the best to showcase the best of Dar es Salaam</p>
+      <div class="partnership-carousel-section">
+        <div class="partnership-carousel-container">
+          <div class="partnership-carousel-track" id="partnership-carousel-track">
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/53B77726-F55A-4780-BC26-7DC570313D83.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/5FA1DE97-E091-4A28-BF64-89FF89C359B8.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/0F763B3F-5631-4865-BD64-3BEBCAE08095.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/41D5838A-AAC5-4AE0-931F-7EC2F88F8729.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/A15A46B5-DEDD-47C9-BC56-05BACC63D259.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/BE898943-27F8-4F12-B30D-47B8123AA19F.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <!-- Duplicate set for seamless loop -->
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/53B77726-F55A-4780-BC26-7DC570313D83.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/5FA1DE97-E091-4A28-BF64-89FF89C359B8.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/0F763B3F-5631-4865-BD64-3BEBCAE08095.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/41D5838A-AAC5-4AE0-931F-7EC2F88F8729.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/A15A46B5-DEDD-47C9-BC56-05BACC63D259.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+            <div class="partnership-logo-ring">
+              <div class="partnership-logo-circle">
+                <img src="assets/BE898943-27F8-4F12-B30D-47B8123AA19F.JPG" alt="Partner" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider scroll-reveal"></div>
+
+  <section class="content-section">
+    <div class="container">
+      <div class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="55" data-max="100" data-speed="0.8"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="55">0</div>
+              </div>
+            </div>
+            <div class="stat-label">Events Hosted</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="10" data-max="10" data-speed="1.2"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="10">0</div>
+              </div>
+            </div>
+            <div class="stat-label">Total Attendees</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="8" data-max="10" data-speed="1.1"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="8">0</div>
+              </div>
+            </div>
+            <div class="stat-label">Years of Experience</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-circle-wrapper">
+              <svg class="stat-circle" viewBox="0 0 100 100">
+                <circle class="stat-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="stat-circle-progress" cx="50" cy="50" r="45" data-target="30" data-max="50" data-speed="1.5"></circle>
+              </svg>
+              <div class="stat-number-wrapper">
+                <div class="stat-number" data-target="30">0</div>
+              </div>
+            </div>
+            <div class="stat-label">DJs Featured</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider scroll-reveal"></div>
+
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="scroll-reveal from-bottom">Join the BYZ Community</h2>
+      <p class="scroll-reveal from-bottom">Experience the energy. Connect with the community.</p>
+      <div class="cta-buttons">
+        <a class="btn primary scroll-reveal from-bottom" href="events.html">
+          <i class="fa-solid fa-calendar-days"></i> View Upcoming Events
+        </a>
+        <a class="btn ghost scroll-reveal from-bottom" href="my-bookings.html">
+          <i class="fa-solid fa-calendar-check"></i> My Bookings
+        </a>
+        <a class="btn ghost scroll-reveal from-bottom" href="contact.html">
+          <i class="fa-solid fa-envelope"></i> Get in Touch
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mobile menu toggle
+  (function(){
+    const btn = document.getElementById("mobileBtn");
+    const panel = document.getElementById("mobilePanel");
+    if(btn && panel){
+      btn.addEventListener("click", () => {
+        panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if(!btn.contains(e.target) && !panel.contains(e.target)){
+          panel.style.display = "none";
+        }
+      });
+    }
+  })();
+  
+  // Scroll Reveal Animation System
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: '0px 0px -80px 0px'
+    };
+    
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    // Observe all scroll-reveal elements
+    document.querySelectorAll('.scroll-reveal').forEach(el => {
+      revealObserver.observe(el);
+    });
+    
+    // Reveal hero immediately on load
+    setTimeout(() => {
+      document.querySelectorAll('.hero .scroll-reveal').forEach(el => {
+        el.classList.add('revealed');
+      });
+    }, 100);
+  })();
+  
+  // Random images for Values section - different every page refresh
+  (function(){
+    const valueImagesPool = [
+      'groove-memory-gallery/december-26-2025/FYRM0007.jpg','groove-memory-gallery/december-26-2025/FYRM0021.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0056.jpg','groove-memory-gallery/december-26-2025/FYRM0071.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0079.jpg','groove-memory-gallery/december-26-2025/FYRM0084.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0091.jpg','groove-memory-gallery/december-26-2025/FYRM0135.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM9994.jpg','groove-memory-gallery/december-26-2025/FYRM9580.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8087.jpg','groove-memory-gallery/december-6-2025/FYRM8089.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8095.jpg','groove-memory-gallery/december-6-2025/FYRM8101.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8506.jpg','groove-memory-gallery/december-6-2025/FYRM8230.jpg',
+      'groove-memory-gallery/may-24-2025/692A0026.jpg','groove-memory-gallery/may-24-2025/692A0461.jpg',
+      'groove-memory-gallery/may-24-2025/692A0512.jpg','groove-memory-gallery/may-24-2025/692A0560.jpg',
+      'groove-memory-gallery/may-24-2025/692A0037.jpg','groove-memory-gallery/may-24-2025/692A9920.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0874.jpg','tempo-memory-gallery/july-11-2025/FYRM0884.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0903.jpg','tempo-memory-gallery/july-11-2025/FYRM1227.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM1023.jpg','tempo-memory-gallery/july-11-2025/FYRM1131.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9856.jpg','tempo-memory-gallery/june-27-2025/692A9843.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9660.jpg','tempo-memory-gallery/june-27-2025/692A9755.jpg',
+      'tempo-memory-gallery/may-16-2025/692A9698.jpg','tempo-memory-gallery/may-16-2025/692A9690.jpg',
+      'tempo-memory-gallery/may-16-2025/692A9677.jpg','tempo-memory-gallery/may-30-2025/692A0187.jpg',
+      'tempo-memory-gallery/may-30-2025/692A0308.jpg'
+    ];
+    const imgs = document.querySelectorAll('.value-card-img');
+    const shuffled = [...valueImagesPool].sort(() => Math.random() - 0.5);
+    imgs.forEach((img, i) => {
+      img.src = shuffled[i % shuffled.length];
+      img.onerror = () => { img.src = valueImagesPool[0]; };
+    });
+  })();
+  
+  // Scroll progress bar
+  (function(){
+    const bar = document.getElementById('scrollProgressBar');
+    if(!bar) return;
+    function update(){
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (h > 0 ? (window.pageYOffset / h) * 100 : 0) + '%';
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
+  
+  // Random Images for Horizontal Scroll Gallery
+  (function(){
+    const allImages = [
+      'groove-memory-gallery/december-26-2025/FYRM0007.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0021.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0056.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0071.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0079.jpg',
+      'groove-memory-gallery/december-26-2025/FYRM0084.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8087.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8089.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8095.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8101.jpg',
+      'groove-memory-gallery/may-24-2025/692A0461.jpg',
+      'groove-memory-gallery/may-24-2025/692A0512.jpg',
+      'groove-memory-gallery/may-24-2025/692A0560.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0874.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0884.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM0903.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9856.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9843.jpg',
+      'tempo-memory-gallery/may-16-2025/692A9698.jpg',
+      'tempo-memory-gallery/may-16-2025/692A9690.jpg'
+    ];
+    
+    // Images already used on page (to avoid duplicates)
+    const usedImages = [
+      'groove-memory-gallery/december-26-2025/FYRM9994.jpg',
+      'tempo-memory-gallery/july-11-2025/FYRM1227.jpg',
+      'groove-memory-gallery/may-24-2025/692A0026.jpg',
+      'groove-memory-gallery/december-6-2025/FYRM8506.jpg',
+      'tempo-memory-gallery/june-27-2025/692A9856.jpg',
+      'groove-memory-gallery/may-24-2025/692A0037.jpg'
+    ];
+    
+    // Get available images
+    const availableImages = allImages.filter(img => !usedImages.includes(img));
+    
+    // Shuffle and pick 3 random
+    const shuffled = availableImages.sort(() => 0.5 - Math.random());
+    const selectedImages = shuffled.slice(0, 3);
+    
+    // Set images (including duplicate for seamless loop)
+    const img1 = document.getElementById('scroll-img-1');
+    const img2 = document.getElementById('scroll-img-2');
+    const img3 = document.getElementById('scroll-img-3');
+    const img1Dup = document.getElementById('scroll-img-1-duplicate');
+    
+    if(img1 && img2 && img3 && img1Dup){
+      img1.src = selectedImages[0];
+      img2.src = selectedImages[1];
+      img3.src = selectedImages[2];
+      img1Dup.src = selectedImages[0]; // Duplicate first image for seamless loop
+    }
+  })();
+  
+  // Horizontal Scroll Linked to Vertical Scroll with Loop
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    
+    function initHorizontalScroll(){
+      const gallery = document.getElementById('horizontalScrollGallery');
+      const container = document.getElementById('horizontalScrollContainer');
+      if(!gallery || !container) {
+        setTimeout(initHorizontalScroll, 100);
+        return;
+      }
+      
+      // Wait for layout
+      setTimeout(() => {
+        const galleryTop = gallery.offsetTop;
+        const scrollDistance = window.innerHeight * 2; // Distance to scroll for full loop
+        const maxTranslate = -75; // Move 3 images (75% of 400% width = 3/4)
+        
+        function updateHorizontalScroll(){
+          const scrollY = window.pageYOffset;
+          const windowHeight = window.innerHeight;
+          
+          // Calculate when gallery enters viewport
+          const galleryStart = galleryTop - windowHeight * 0.3;
+          const galleryEnd = galleryStart + scrollDistance;
+          
+          if(scrollY >= galleryStart && scrollY <= galleryEnd){
+            // Calculate progress (0 to 1)
+            const progress = (scrollY - galleryStart) / scrollDistance;
+            // Clamp between 0 and 1
+            const clampedProgress = Math.max(0, Math.min(1, progress));
+            // Calculate translate (0% to -75%) - scrolls through all 3 unique images
+            const translateX = clampedProgress * maxTranslate;
+            container.style.transform = `translateX(${translateX}%)`;
+          } else if(scrollY < galleryStart){
+            container.style.transform = 'translateX(0%)';
+          } else if(scrollY > galleryEnd){
+            container.style.transform = `translateX(${maxTranslate}%)`;
+          }
+        }
+        
+        let ticking = false;
+        function requestTick(){
+          if(!ticking){
+            requestAnimationFrame(() => {
+              updateHorizontalScroll();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }
+        
+        window.addEventListener('scroll', requestTick, { passive: true });
+        updateHorizontalScroll();
+      }, 200);
+    }
+    
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', initHorizontalScroll);
+    } else {
+      initHorizontalScroll();
+    }
+  })();
+  
+  // Partnership Carousel - Scroll-Driven, Seamless Loop (no gap)
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    function initPartnershipCarousel(){
+      const carouselSection = document.querySelector('.partnership-carousel-section');
+      const carouselTrack = document.getElementById('partnership-carousel-track');
+
+      if(!carouselSection || !carouselTrack) {
+        setTimeout(initPartnershipCarousel, 100);
+        return;
+      }
+
+      const logos = carouselTrack.querySelectorAll('.partnership-logo-ring');
+      if(logos.length === 0) return;
+
+      // One full loop = first 50% of track (duplicated content makes -50% seamless)
+      const loopWidthPct = 50;
+
+      function updateCarousel(){
+        const sectionRect = carouselSection.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        const sectionTop = sectionRect.top;
+        const sectionBottom = sectionRect.bottom;
+        const sectionHeight = sectionRect.height;
+
+        let progress = 0;
+        if(sectionTop < windowHeight && sectionBottom > 0){
+          const visibleTop = Math.max(0, windowHeight - sectionTop);
+          progress = visibleTop / (sectionHeight + windowHeight);
+          progress = Math.min(1, Math.max(0, progress));
+        } else if(sectionTop >= windowHeight){
+          progress = 0;
+        } else if(sectionBottom <= 0){
+          progress = 1;
+        }
+
+        const translateX = -progress * loopWidthPct;
+        carouselTrack.style.transform = `translateX(${translateX}%)`;
+      }
+
+      let ticking = false;
+      function requestTick(){
+        if(!ticking){
+          requestAnimationFrame(() => {
+            updateCarousel();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+
+      window.addEventListener('scroll', requestTick, { passive: true });
+      window.addEventListener('resize', requestTick);
+      updateCarousel();
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', initPartnershipCarousel);
+    } else {
+      initPartnershipCarousel();
+    }
+  })();
+  
+  // Stats: numbers lock once loaded; only ring animation reverts on scroll up
+  (function(){
+    const statsSection = document.querySelector(".stats-section");
+    if(!statsSection) return;
+    
+    const statItems = statsSection.querySelectorAll(".stat-item");
+    const circumference = 2 * Math.PI * 45;
+    const maxReached = {};
+    
+    function getSuffix(labelText){
+      const t = labelText.toLowerCase();
+      if(t.includes("attendees")) return "K+";
+      if(t.includes("djs featured")) return "+";
+      if(t.includes("events hosted")) return "+";
+      return "";
+    }
+    
+    function updateStats(scrollProgress){
+      statItems.forEach((item, i) => {
+        const stat = item.querySelector(".stat-number");
+        const label = item.querySelector(".stat-label");
+        const progressCircle = item.querySelector(".stat-circle-progress");
+        if(!stat || !label || !progressCircle) return;
+        
+        const target = parseInt(stat.dataset.target);
+        const max = parseInt(progressCircle.dataset.max) || 100;
+        const speed = parseFloat(progressCircle.dataset.speed) || 1;
+        const suffix = getSuffix(label.textContent);
+        
+        const statProgress = Math.min(1, Math.max(0, scrollProgress * (2 - speed)));
+        maxReached[i] = Math.max(maxReached[i] || 0, statProgress);
+        const lockProgress = maxReached[i];
+        const displayVal = Math.round(lockProgress * target);
+        stat.textContent = displayVal + suffix;
+        
+        const ringPct = (target / max) * statProgress * 100;
+        const offset = circumference - (ringPct / 100) * circumference;
+        progressCircle.style.strokeDashoffset = offset;
+      });
+    }
+    
+    function onScroll(){
+      const rect = statsSection.getBoundingClientRect();
+      const lastStat = statItems[statItems.length - 1];
+      const lastRect = lastStat ? lastStat.getBoundingClientRect() : null;
+      const windowH = window.innerHeight;
+      let progress = 0;
+      if(rect.top >= windowH) {
+        progress = 0;
+      } else if(lastRect && lastRect.top <= windowH) {
+        progress = 1;
+      } else if(lastRect) {
+        const denom = lastRect.top - rect.top;
+        progress = denom > 0 ? Math.min(1, (windowH - rect.top) / denom) : 1;
+      }
+      progress = Math.max(0, Math.min(1, progress));
+      updateStats(progress);
+    }
+    
+    let ticking = false;
+    function requestTick(){
+      if(!ticking){
+        ticking = true;
+        requestAnimationFrame(() => { onScroll(); ticking = false; });
+      }
+    }
+    window.addEventListener("scroll", requestTick, { passive: true });
+    window.addEventListener("resize", requestTick);
+    window.addEventListener("load", requestTick);
+    onScroll();
+  })();
+  
+</script>
+
+<script src="gallery-manifest.js"></script>
+</body>
+</html>

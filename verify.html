@@ -272,7 +272,7 @@
   }
 
   async function scanLoop(){
-    const detector = new BarcodeDetector({ formats: ["qr_code"] });
+    const detector = new BarcodeDetector({ formats: ["qr_code", "code_128", "code_39"] });
     const video = document.getElementById("cam");
 
     while(scanning){

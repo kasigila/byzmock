@@ -4,9 +4,17 @@
   <meta charset="UTF-8">
   <title>BYZ Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="description" content="BYZ Entertainment Admin Dashboard - Manage bookings and events">
+  <meta name="theme-color" content="#000000">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="admin-manifest.json">
+  <link rel="apple-touch-icon" href="assets/byz-logo-black.png">
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  
+  <!-- Admin Shared Utilities -->
+  <script src="admin-shared.js"></script>
 
   <style>
     :root{
@@ -56,19 +64,101 @@
     .container{max-width:var(--max);margin:0 auto;padding:0 24px}
 
     header{
-  position: sticky;
-  top: 0;
-  height:var(--header-h);
-  background: color-mix(in srgb, var(--bg) 86%, transparent);
-  backdrop-filter: blur(18px);
-  border-bottom:1px solid var(--border);
-  z-index:999;
-}
+      position: sticky;
+      top: 0;
+      height:var(--header-h);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom:1px solid var(--border);
+      z-index:999;
+    }
 
     .header-inner{
       height:var(--header-h);
       display:flex;align-items:center;justify-content:space-between;
       gap:16px;
+    }
+    
+    /* Admin Navigation */
+    .admin-nav-desktop{
+      display:flex;align-items:center;gap:4px;
+    }
+    @media (max-width: 768px){
+      .admin-nav-desktop{display:none}
+    }
+    .nav-link{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 16px;border-radius:12px;
+      font-size:14px;font-weight:600;
+      color:var(--sub);
+      transition:all .2s var(--ease);
+      text-decoration:none;
+    }
+    .nav-link:hover{
+      background:color-mix(in srgb, var(--accent) 8%, transparent);
+      color:var(--text);
+    }
+    .nav-link.active{
+      background:color-mix(in srgb, var(--accent) 12%, transparent);
+      color:var(--accent);
+      font-weight:700;
+    }
+    .nav-link i{font-size:13px}
+    .mobile-menu-btn{
+      display:none;
+      padding:8px;border:none;background:transparent;
+      color:var(--text);font-size:20px;cursor:pointer;
+    }
+    @media (max-width: 768px){
+      .mobile-menu-btn{display:block}
+    }
+    .logout-text{
+      @media (max-width: 560px){display:none}
+    }
+    
+    /* Mobile Navigation */
+    .mobile-nav-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.5);
+      backdrop-filter:blur(4px);z-index:9998;
+      animation:fadeIn .2s var(--ease);
+    }
+    .mobile-nav-panel{
+      position:fixed;top:0;right:0;bottom:0;
+      width:min(320px,85vw);background:var(--bg-elev);
+      border-left:1px solid var(--border);
+      z-index:9999;overflow-y:auto;
+      transform:translateX(100%);
+      transition:transform .3s var(--ease);
+      box-shadow:-4px 0 24px rgba(0,0,0,.1);
+    }
+    .mobile-nav-panel:not(.hidden){
+      transform:translateX(0);
+    }
+    .mobile-nav-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:20px;border-bottom:1px solid var(--border);
+    }
+    .mobile-nav-close{
+      padding:8px;border:none;background:transparent;
+      color:var(--text);font-size:20px;cursor:pointer;
+      border-radius:8px;transition:background .2s var(--ease);
+    }
+    .mobile-nav-close:hover{
+      background:color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+    .mobile-nav-links{
+      display:flex;flex-direction:column;padding:12px;
+    }
+    .mobile-nav-links .nav-link{
+      padding:14px 16px;margin-bottom:4px;
+      border-radius:12px;width:100%;
+    }
+    .mobile-nav-links .logout-btn{
+      margin-top:8px;color:var(--bad);
+      border-top:1px solid var(--border);padding-top:16px;
+    }
+    @keyframes fadeIn{
+      from{opacity:0}to{opacity:1}
     }
     .brand{
       display:flex;align-items:center;gap:10px;
@@ -127,103 +217,268 @@
     .card-head p{margin-top:8px;color:var(--sub);font-size:14px}
     .card-body{padding: 18px}
 
+    /* Login Page - Match Site Aesthetic */
+    body.login-page{
+      background: var(--bg);
+    }
+    
     .login-wrap{
       min-height: calc(100vh - var(--header-h) - 26px);
       display:grid;
       place-items:center;
+      padding: 40px 20px;
     }
+    @media (max-width: 560px){
+      .login-wrap{
+        padding: 20px 16px;
+      }
+    }
+    
     .login-box{
-      width: min(420px, 100%);
+      width: 100%;
+      max-width: 420px;
       border-radius: var(--radius-lg);
-      border:1px solid var(--border);
-      background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--bg-alt) 80%, transparent),
-        color-mix(in srgb, var(--bg) 92%, transparent)
-      );
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
       box-shadow: var(--shadow);
-      padding: 18px;
+      padding: 24px;
     }
+    @media (max-width: 560px){
+      .login-box{
+        padding: 20px;
+        max-width: 100%;
+      }
+    }
+    
     .login-inner{
-      border-radius: 22px;
-      border:1px solid var(--border);
+      border-radius: var(--radius);
       background: var(--bg-elev);
-      box-shadow: var(--shadow-soft);
-      padding: 18px;
+      padding: 24px;
+      border: 1px solid var(--border);
     }
+    @media (max-width: 560px){
+      .login-inner{
+        padding: 20px;
+      }
+    }
+    
     .lock-row{
-      display:flex;align-items:center;gap:12px;
-      margin-bottom: 10px;
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      margin-bottom: 24px;
     }
+    @media (max-width: 560px){
+      .lock-row{
+        gap:12px;
+        margin-bottom: 20px;
+      }
+    }
+    
     .lock-icon{
-      width:44px;height:44px;border-radius:16px;
-      border:1px solid var(--border);
-      display:grid;place-items:center;
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      border: 1px solid var(--border);
+      display:grid;
+      place-items:center;
       background: var(--bg-elev);
       box-shadow: var(--shadow-soft);
+      flex-shrink: 0;
     }
-    .lock-icon i{font-size:18px;color:var(--text)}
-    .login-inner h2{font-size:18px;letter-spacing:-.3px}
-    .login-inner .sub{color:var(--sub);font-size:13px;margin-top:4px}
+    @media (max-width: 560px){
+      .lock-icon{
+        width:44px;
+        height:44px;
+      }
+    }
+    
+    .lock-icon i{
+      font-size:20px;
+      color:var(--text);
+    }
+    
+    .login-inner h2{
+      font-size:20px;
+      letter-spacing:-0.4px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    @media (max-width: 560px){
+      .login-inner h2{
+        font-size:18px;
+      }
+    }
+    
+    .login-inner .sub{
+      color:var(--sub);
+      font-size:14px;
+      margin-top:4px;
+      line-height:1.5;
+    }
+    @media (max-width: 560px){
+      .login-inner .sub{
+        font-size:13px;
+      }
+    }
 
     input, select{
       width:100%;
-      padding:14px 14px;
-      border-radius: 18px;
-      border:1px solid var(--border);
+      padding:14px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
       background: var(--bg-elev);
       color: var(--text);
       outline: none;
       font-size:14px;
+      font-weight:500;
+      transition: all 0.25s var(--ease);
       box-shadow: var(--shadow-soft);
     }
-    button{
+    @media (max-width: 560px){
+      input, select{
+        padding:16px 18px;
+        font-size:16px; /* Prevents zoom on iOS */
+      }
+    }
+    input:focus, select:focus{
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+    input::placeholder{
+      color: var(--sub);
+    }
+    button, .btn{
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      padding:12px 16px;
+      padding:14px 20px;
       border-radius:999px;
-      border:1px solid var(--border);
+      border: 1px solid var(--border);
       background: var(--bg-elev);
       color: var(--text);
       font-weight:800;
+      font-size:14px;
       cursor:pointer;
-      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+      transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
       box-shadow: var(--shadow-soft);
+      text-decoration:none;
     }
-    button:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
+    @media (max-width: 560px){
+      button, .btn{
+        padding:16px 24px;
+        font-size:15px;
+        min-height: 48px; /* Better touch target */
+      }
+    }
+    button:hover, .btn:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    button:active, .btn:active{
+      transform: translateY(0);
+    }
+    button:disabled, .btn:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+    }
     .primary{
       background: var(--accent);
       color: var(--bg);
       border-color: transparent;
     }
-    .full{width:100%; margin-top: 12px;}
-    .hidden{display:none}
+    .primary:hover{
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+    .full{width:100%; margin-top: 18px;}
+    @media (max-width: 560px){
+      .full{
+        margin-top: 20px;
+      }
+    }
+    .hidden{display:none !important}
 
     .dash-grid{display:grid;grid-template-columns:1fr;gap:16px;}
-#dashboard{
-  scroll-margin-top: calc(var(--header-h) + 16px);
-}
+    #dashboard{
+      scroll-margin-top: calc(var(--header-h) + 16px);
+    }
 
     .stats{
       display:grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap:12px;
       margin-top: 14px;
     }
-    @media (max-width: 980px){ .stats{grid-template-columns:1fr 1fr;} }
+    @media (max-width: 980px){ .stats{grid-template-columns:repeat(2, 1fr);} }
     @media (max-width: 560px){ .stats{grid-template-columns:1fr;} }
 
     .stat{
       border-radius: 22px;
       border:1px solid var(--border);
-      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 95%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 90%, transparent) 100%
+      );
       box-shadow: var(--shadow-soft);
-      padding: 14px;
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+      transition: all .3s var(--ease);
     }
-    .stat .k{color:var(--sub);font-size:12px}
-    .stat .v{font-size:26px;font-weight:900;letter-spacing:-1px;margin-top:6px}
+    .stat::before{
+      content:'';
+      position:absolute;
+      top:0;right:0;
+      width:60px;height:60px;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
+      border-radius:50%;
+      transform:translate(20px, -20px);
+      opacity:0.6;
+    }
+    .stat:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: color-mix(in srgb, var(--accent) 20%, var(--border));
+    }
+    .stat-icon{
+      width:40px;height:40px;
+      border-radius:14px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      display:flex;align-items:center;justify-content:center;
+      margin-bottom:12px;
+      color:var(--accent);
+      font-size:18px;
+    }
+    .stat .k{
+      color:var(--sub);
+      font-size:12px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.05em;
+      margin-bottom:8px;
+    }
+    .stat .v{
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-1.2px;
+      margin-top:4px;
+      color:var(--text);
+      line-height:1.1;
+    }
+    .stat .sub{
+      color:var(--sub);
+      font-size:11px;
+      margin-top:6px;
+      font-weight:600;
+    }
+    @media (max-width: 560px){
+      .stat{padding:16px}
+      .stat .v{font-size:24px}
+      .stat-icon{width:36px;height:36px;font-size:16px;margin-bottom:10px}
+    }
 
     .tabs{
       display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;
@@ -232,6 +487,7 @@
       padding:10px 14px;border-radius:999px;border:1px solid var(--border);
       background: color-mix(in srgb, var(--bg) 92%, transparent);
       font-weight:800;font-size:13px;cursor:pointer;
+      transition: all .2s var(--ease);
     }
     .tab-btn.active{
       background: var(--accent);color: var(--bg);border-color: transparent;
@@ -243,7 +499,25 @@
     }
     .filters{
       display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+      flex: 1;
     }
+    .filters input, .filters select{
+      min-width: 180px;
+    }
+    @media (max-width: 768px){
+      .filters{flex-direction:column;align-items:stretch;}
+      .filters input, .filters select{width:100%;min-width:auto;}
+    }
+
+    .connection-status{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      font-size:11px;font-weight:700;
+      background: var(--bg-elev);
+      border:1px solid var(--border);
+    }
+    .connection-status.online{color:var(--ok)}
+    .connection-status.offline{color:var(--bad)}
 
     .table-wrap{
       margin-top: 14px;
@@ -261,68 +535,467 @@
       border-bottom:1px solid var(--border);
       font-size: 12px;letter-spacing:.06em;text-transform: uppercase;color: var(--sub);
       padding: 14px;text-align:left;
+      cursor:pointer;
+      user-select:none;
+      transition: background .2s var(--ease);
     }
+    thead th:hover{background: color-mix(in srgb, var(--bg-alt) 60%, transparent);}
+    thead th.sortable::after{
+      content:" ↕";
+      opacity:.3;
+      font-size:10px;
+    }
+    thead th.sort-asc::after{content:" ↑";opacity:1;}
+    thead th.sort-desc::after{content:" ↓";opacity:1;}
     tbody td{
       padding: 14px;border-bottom:1px solid var(--border);
       font-size: 14px;vertical-align: top;
     }
+    tbody tr{
+      transition: background .2s var(--ease);
+    }
     tbody tr:hover{background: color-mix(in srgb, var(--bg-alt) 60%, transparent);}
+    tbody tr.recent-action{
+      background: color-mix(in srgb, var(--ok) 15%, transparent);
+      animation: highlightFade 2s var(--ease);
+    }
+    @keyframes highlightFade{
+      0%{background: color-mix(in srgb, var(--ok) 30%, transparent);}
+      100%{background: color-mix(in srgb, var(--ok) 15%, transparent);}
+    }
     .scroll{overflow:auto;-webkit-overflow-scrolling: touch;}
 
-    .status{font-weight:900;letter-spacing:-.3px;}
-    .PENDING{color: var(--warn)}
-    .CONFIRMED{color: var(--ok)}
-    .REJECTED{color: var(--bad)}
+    .status{font-weight:900;letter-spacing:-.3px;display:inline-block;padding:4px 8px;border-radius:6px;}
+    .PENDING{color: var(--warn);background: color-mix(in srgb, var(--warn) 15%, transparent);}
+    .CONFIRMED{color: var(--ok);background: color-mix(in srgb, var(--ok) 15%, transparent);}
+    .REJECTED{color: var(--bad);background: color-mix(in srgb, var(--bad) 15%, transparent);}
 
     .approve{background:#eafff3;color:#0a7f3f;border:1px solid color-mix(in srgb, #0a7f3f 30%, var(--border));font-weight:900;}
     .reject{background:#ffecec;color:#b42318;border:1px solid color-mix(in srgb, #b42318 30%, var(--border));font-weight:900;}
     [data-theme="dark"] .approve{background: rgba(10,127,63,.14);color:#7dffb8;border:1px solid rgba(125,255,184,.22);}
     [data-theme="dark"] .reject{background: rgba(180,35,24,.18);color:#ff9b9b;border:1px solid rgba(255,155,155,.22);}
 
-    /* Scan panel */
-    .scan{margin-top:16px;border-radius: var(--radius-lg);border:1px solid var(--border);background: linear-gradient(180deg,color-mix(in srgb, var(--bg-alt) 80%, transparent),color-mix(in srgb, var(--bg) 92%, transparent));box-shadow: var(--shadow);padding:16px;}
-    .scan-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;}
-    .scan-badge{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;border:1px solid var(--border);background: var(--bg-elev);box-shadow: var(--shadow-soft);color: var(--sub);font-size:13px;width:fit-content;}
-    .scan-h{font-size:20px;font-weight:900;letter-spacing:-.6px;margin-top:10px}
-    .scan-sub{color:var(--sub);font-size:13px;margin-top:4px}
-    .scan-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .scan-grid{margin-top: 14px;display:grid;grid-template-columns: 1.1fr .9fr;gap:12px;}
-    @media (max-width: 980px){ .scan-grid{grid-template-columns:1fr;} }
-    .scan-video{border-radius: 22px;border:1px solid var(--border);background: var(--bg-elev);box-shadow: var(--shadow-soft);overflow:hidden;position:relative;min-height: 280px;}
-    #cam{width:100%;height:100%;object-fit:cover;display:block;background:#000;}
-    .scan-hint{position:absolute;left:14px;bottom:14px;padding:10px 12px;border-radius:999px;border:1px solid var(--border);background: color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter: blur(12px);box-shadow: var(--shadow-soft);color: var(--sub);font-size:13px;}
-    .scan-side{display:flex;flex-direction:column;gap:12px;}
-    .scan-manual{border-radius: 22px;border:1px solid var(--border);background: var(--bg-elev);box-shadow: var(--shadow-soft);padding: 14px;}
-    .scan-manual .k{color:var(--sub);font-size:12px;margin-bottom:10px}
-    .scan-manual .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .scan-manual input{margin-top:0}
-    .scan-result{border-radius: 22px;border:1px solid var(--border);background: color-mix(in srgb, var(--bg) 92%, transparent);box-shadow: var(--shadow-soft);padding: 14px;}
-    .scan-result .big{font-size:22px;font-weight:900;letter-spacing:-.6px}
-    .scan-result .sub{margin-top:6px;color:var(--sub);font-size:13px}
-    .scan-result .meta{margin-top:10px;color:var(--sub);font-size:13px;display:flex;flex-direction:column;gap:6px}
-    .scan-cta{display:flex;gap:10px;flex-wrap:wrap}
-    .scan-cta button:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+    /* Mobile Card View */
+    .card-view{display:none;}
+    @media (max-width: 768px){
+      .table-wrap{display:none;}
+      .card-view{display:block;}
+    }
+    .booking-card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--bg-elev) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg-alt) 95%, transparent) 100%
+      );
+      box-shadow: var(--shadow-soft);
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all .3s var(--ease);
+      position:relative;
+      overflow:hidden;
+    }
+    .booking-card::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:3px;
+      background:linear-gradient(90deg, var(--accent), transparent);
+      opacity:0;
+      transition:opacity .3s var(--ease);
+    }
+    .booking-card:hover{
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+    }
+    .booking-card:hover::before{
+      opacity:1;
+    }
+    .booking-card.pending{
+      border-left:4px solid var(--warn);
+    }
+    .booking-card.confirmed{
+      border-left:4px solid var(--ok);
+    }
+    .booking-card.rejected{
+      border-left:4px solid var(--bad);
+    }
+    @media (max-width: 560px){
+      .booking-card{
+        padding:16px;
+        margin-bottom:12px;
+      }
+    }
+    
+    /* Contact Message Cards */
+    .contact-message-card{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      padding:20px;
+      transition: all .2s var(--ease);
+    }
+    .contact-message-card:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .contact-message-card.new{
+      border-left:4px solid var(--bad);
+    }
+    .contact-message-card.read{
+      border-left:4px solid var(--warn);
+    }
+    .contact-message-card.replied{
+      border-left:4px solid var(--ok);
+    }
+    
+    .booking-card.recent-action{
+      background: color-mix(in srgb, var(--ok) 15%, transparent);
+      animation: highlightFade 2s var(--ease);
+    }
+    .card-header{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px;
+    }
+    @media (max-width: 560px){
+      .card-header{
+        flex-direction:column;
+        gap:12px;
+      }
+    }
+    .card-title{
+      font-weight:900;
+      font-size:18px;
+      letter-spacing:-.4px;
+      color:var(--text);
+      line-height:1.3;
+    }
+    @media (max-width: 560px){
+      .card-title{font-size:16px}
+    }
+    .card-meta{
+      display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--sub);
+      margin-top:12px;
+    }
+    @media (max-width: 560px){
+      .card-meta{
+        gap:8px;
+        font-size:13px;
+      }
+    }
+    .card-meta b{
+      color:var(--text);
+      font-weight:700;
+      margin-right:4px;
+    }
+    .card-actions{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;
+    }
+    @media (max-width: 560px){
+      .card-actions{
+        flex-direction:column;
+        gap:8px;
+      }
+    }
+    .card-actions button, .card-actions a{
+      flex:1;
+      min-width:120px;
+      padding:12px 16px;
+      font-size:14px;
+      font-weight:600;
+      border-radius:12px;
+      transition:all .2s var(--ease);
+    }
+    @media (max-width: 560px){
+      .card-actions button, .card-actions a{
+        width:100%;
+        min-width:100%;
+        padding:14px 16px;
+      }
+    }
+    .card-actions button:hover, .card-actions a:hover{
+      transform:translateY(-2px);
+      box-shadow:var(--shadow-soft);
+    }
+
+    /* Toast Notifications */
+    .toast{
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      pointer-events: none;
+    }
+    @media (max-width: 560px){
+      .toast{left:16px;right:16px;max-width:none;}
+    }
+    .toast-item{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      pointer-events: auto;
+      animation: toastSlideIn .3s var(--ease);
+    }
+    @keyframes toastSlideIn{
+      from{transform: translateX(400px);opacity:0;}
+      to{transform: translateX(0);opacity:1;}
+    }
+    .toast-item.success{
+      border-color: color-mix(in srgb, var(--ok) 40%, var(--border));
+      background: color-mix(in srgb, var(--ok) 8%, var(--bg-elev));
+    }
+    .toast-item.error{
+      border-color: color-mix(in srgb, var(--bad) 40%, var(--border));
+      background: color-mix(in srgb, var(--bad) 8%, var(--bg-elev));
+    }
+    .toast-icon{
+      width:20px;height:20px;flex-shrink:0;margin-top:2px;
+    }
+    .toast-icon.success{color:var(--ok)}
+    .toast-icon.error{color:var(--bad)}
+    .toast-content{flex:1}
+    .toast-title{font-weight:800;font-size:14px;margin-bottom:4px}
+    .toast-message{font-size:13px;color:var(--sub);line-height:1.4}
+    .toast-close{
+      width:20px;height:20px;flex-shrink:0;
+      border:none;background:none;color:var(--sub);
+      cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+    }
+    .toast-undo{
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .toast-undo:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:9998;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(8px);
+      display:none;place-items:center;padding:20px;
+      animation: fadeIn .2s var(--ease);
+    }
+    .modal-backdrop:not(.hidden){
+      display:grid;
+    }
+    /* Enhanced backdrop for verify modal */
+    #verifyModal.modal-backdrop{
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(10px);
+    }
+    @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+    .modal{
+      width: min(520px, 100%);
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      animation: modalSlideUp .3s var(--ease);
+    }
+    @keyframes modalSlideUp{from{transform: translateY(20px);opacity:0;} to{transform: translateY(0);opacity:1;}}
+    .modal-header{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;
+    }
+    .modal-title{font-weight:900;font-size:18px;letter-spacing:-.4px}
+    .modal-close{
+      width:32px;height:32px;border-radius:12px;
+      border:1px solid var(--border);background:var(--bg-elev);
+      display:grid;place-items:center;cursor:pointer;flex-shrink:0;
+    }
+    .modal-body{color:var(--sub);font-size:14px;line-height:1.6}
+    .modal-actions{
+      display:flex;gap:10px;justify-content:flex-end;margin-top:20px;
+    }
+
+    /* Verification Panel */
+    .verify-panel{
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-alt) 60%, transparent);
+      padding: 16px;
+      margin-top: 14px;
+    }
+    .verify-header{
+      display:flex;align-items:center;gap:10px;margin-bottom:12px;
+    }
+    .verify-title{font-weight:900;font-size:16px}
+    .verify-grid{
+      display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;
+    }
+    .verify-item{
+      padding:12px;border-radius:16px;
+      background: var(--bg-elev);
+      border:1px solid var(--border);
+    }
+    .verify-label{font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px}
+    .verify-value{
+      font-size:18px;font-weight:900;letter-spacing:-.3px;
+      word-break:break-all;
+    }
+    .verify-value.match{color:var(--ok)}
+    .verify-value.mismatch{color:var(--bad)}
+    .verify-warning{
+      margin-top:12px;padding:10px;border-radius:12px;
+      background: color-mix(in srgb, var(--bad) 15%, transparent);
+      border:1px solid color-mix(in srgb, var(--bad) 30%, var(--border));
+      color:var(--bad);font-size:12px;font-weight:700;
+      display:flex;align-items:center;gap:8px;
+    }
+
+    /* Glow effect for active verification */
+    tr.verify-active, .booking-card.verify-active{
+      position:relative;
+      animation: verifyGlow 2s ease-in-out infinite;
+    }
+    @keyframes verifyGlow{
+      0%, 100%{
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+      }
+      50%{
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent),
+                    0 0 0 6px color-mix(in srgb, var(--accent) 20%, transparent),
+                    0 0 0 9px color-mix(in srgb, var(--accent) 10%, transparent);
+      }
+    }
+    tr.verify-active{
+      outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+      outline-offset: -2px;
+    }
+    .booking-card.verify-active{
+      border: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+
+    /* Smart suggestion flags */
+    .suggestion-flag{
+      display:inline-flex;align-items:center;gap:4px;
+      padding:3px 8px;border-radius:8px;
+      font-size:10px;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    .suggestion-flag.amount-mismatch{
+      background:color-mix(in srgb, var(--bad) 15%, transparent);
+      color:var(--bad);
+      border:1px solid color-mix(in srgb, var(--bad) 30%, var(--border));
+    }
+    .suggestion-flag.duplicate-txn{
+      background:color-mix(in srgb, var(--warn) 15%, transparent);
+      color:var(--warn);
+      border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));
+    }
+    .suggestion-flag.old-pending{
+      background:color-mix(in srgb, var(--warn) 12%, transparent);
+      color:var(--warn);
+      border:1px solid color-mix(in srgb, var(--warn) 25%, var(--border));
+    }
+
+    /* Verify modal navigation arrows */
+    .verify-nav-arrows{
+      position:absolute;top:50%;left:0;right:0;
+      transform:translateY(-50%);
+      display:none;justify-content:space-between;padding:0 12px;
+      pointer-events:none;z-index:10;
+    }
+    .verify-nav-arrows.show{display:flex;}
+    .verify-nav-arrow{
+      width:44px;height:44px;border-radius:12px;
+      border:1px solid var(--border);background:var(--bg-elev);
+      display:grid;place-items:center;cursor:pointer;
+      box-shadow:var(--shadow);
+      transition:transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+      pointer-events:auto;
+      color:var(--text);
+    }
+    .verify-nav-arrow:hover:not(:disabled){
+      transform:scale(1.1);
+      box-shadow:var(--shadow-soft);
+      background:var(--bg-alt);
+    }
+    .verify-nav-arrow:disabled{
+      opacity:0.3;cursor:not-allowed;
+    }
+    .verify-nav-arrow:disabled:hover{transform:scale(1);}
+
+    /* Loading States */
+    .loading{opacity:.6;pointer-events:none;position:relative;}
+    .loading::after{
+      content:"";position:absolute;inset:0;
+      background: color-mix(in srgb, var(--bg) 80%, transparent);
+      backdrop-filter: blur(2px);
+    }
+    .spinner{
+      width:16px;height:16px;border:2px solid var(--border);
+      border-top-color:var(--accent);border-radius:50%;
+      animation: spin .6s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg);}}
+    button .spinner{margin:0;}
+
+    /* Empty State */
+    .empty-state{
+      text-align:center;padding:60px 20px;color:var(--sub);
+    }
+    .empty-state i{font-size:48px;opacity:.3;margin-bottom:16px}
+    .empty-state h3{font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
+    .empty-state p{font-size:14px}
+
+    /* Activity Log */
+    .activity-log{
+      max-height:200px;overflow-y:auto;margin-top:14px;
+      border-radius: var(--radius-lg);
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      padding: 12px;
+    }
+    .activity-item{
+      padding:10px;border-radius:12px;background:var(--bg-alt);
+      margin-bottom:8px;font-size:12px;
+      display:flex;justify-content:space-between;align-items:center;gap:12px;
+    }
+    .activity-item:last-child{margin-bottom:0}
+    .activity-action{font-weight:700}
+    .activity-time{color:var(--sub);font-size:11px}
+
+    /* Row Details */
+    .row-details{
+      background: var(--bg-alt);
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .details-grid{
+      display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;
+    }
+    .detail-item{font-size:13px}
+    .detail-label{color:var(--sub);font-size:11px;font-weight:700;margin-bottom:4px}
+    .detail-value{font-weight:700}
+
+    /* Auto-refresh Toggle */
+    .refresh-toggle{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 12px;border-radius:999px;
+      border:1px solid var(--border);
+      background: var(--bg-elev);
+      font-size:12px;cursor:pointer;
+    }
+    .refresh-toggle.active{background:var(--accent);color:var(--bg);border-color:transparent}
   </style>
 </head>
 
-<body data-theme="light">
-  <header>
-    <div class="container header-inner">
-      <a class="brand" href="./index.html" aria-label="BYZ Home">
-        <span class="brand-logo-wrap" aria-hidden="true">
-          <img class="brand-logo logo-light" src="assets/byz-logo-black.png" alt="" />
-          <img class="brand-logo logo-dark"  src="assets/byz-logo-white.png" alt="" />
-        </span>
-      </a>
-
-      <div class="top-actions">
-        <a class="pill" href="./index.html"><i class="fa-solid fa-house"></i> Home</a>
-        <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
-          <i class="fa-solid fa-circle-half-stroke"></i>
-        </button>
-      </div>
-    </div>
-  </header>
+<body data-theme="dark" class="login-page" id="adminBody">
+  <!-- Navigation will be rendered by admin-shared.js after login -->
 
   <main class="container">
     <!-- LOGIN -->
@@ -337,10 +1010,10 @@
             </div>
           </div>
 
-          <input id="password" type="password" placeholder="Admin password" autocomplete="current-password">
-          <button class="primary full" onclick="login()">
+          <input id="password" type="password" placeholder="Enter admin password" autocomplete="current-password" onkeypress="if(event.key==='Enter') handleLogin()" style="margin-top: 8px;">
+          <button class="primary full" onclick="handleLogin()" id="loginBtn">
             <i class="fa-solid fa-arrow-right-to-bracket"></i>
-            Enter Dashboard
+            <span>Enter Dashboard</span>
           </button>
         </div>
       </div>
@@ -348,19 +1021,10 @@
 
     <!-- DASHBOARD -->
     <div id="dashboard" class="dash-grid hidden">
-        
-
       <section class="card">
         <div class="card-head">
-          <h1>BYZ Admin Control Center</h1>
-          <p>Approvals, check‑ins, and live activity by event.</p>
-
-          <div class="stats">
-            <div class="stat"><div class="k">Total</div><div class="v" id="statTotal">—</div></div>
-            <div class="stat"><div class="k">Pending</div><div class="v" id="statPending">—</div></div>
-            <div class="stat"><div class="k">Confirmed</div><div class="v" id="statConfirmed">—</div></div>
-            <div class="stat"><div class="k">Checked‑in</div><div class="v" id="statCheckedIn">—</div></div>
-          </div>
+          <h1>Bookings Management</h1>
+          <p>Approve, reject, and manage all bookings and APT requests.</p>
 
           <div class="tabs">
             <button class="tab-btn active" data-event="">All</button>
@@ -371,107 +1035,101 @@
 
           <div class="toolbar">
             <div class="filters">
-              <input id="search" placeholder="Search name / booking ID / phone" oninput="render()">
+              <input id="search" placeholder="Search name / booking ID / phone / transaction" oninput="debouncedRender()">
               <select id="statusFilter" onchange="render()">
-                <option value="">All</option>
+                <option value="">All Status</option>
                 <option value="PENDING">Pending</option>
                 <option value="CONFIRMED">Confirmed</option>
                 <option value="REJECTED">Rejected</option>
               </select>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label for="dateFrom" style="font-size:12px;color:var(--sub);white-space:nowrap;">From:</label>
+                <input type="date" id="dateFrom" onchange="render()" style="min-width:140px;" title="Start date - Show bookings from this date onwards">
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label for="dateTo" style="font-size:12px;color:var(--sub);white-space:nowrap;">To:</label>
+                <input type="date" id="dateTo" onchange="render()" style="min-width:140px;" title="End date - Show bookings up to and including this date">
+              </div>
+              <select id="amountFilter" onchange="render()">
+                <option value="">All Amounts</option>
+                <option value="0-50000">0 - 50K</option>
+                <option value="50000-200000">50K - 200K</option>
+                <option value="200000-1000000">200K - 1M</option>
+                <option value="1000000-999999999">1M+</option>
+              </select>
             </div>
 
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="primary" onclick="load()">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <label class="refresh-toggle" id="autoRefreshToggle">
+                <input type="checkbox" id="autoRefreshCheck" onchange="toggleAutoRefresh()" style="display:none;">
+                <i class="fa-solid fa-rotate"></i>
+                <span>Auto-refresh</span>
+              </label>
+              <button class="primary" onclick="load()" id="refreshBtn">
                 <i class="fa-solid fa-rotate"></i>
                 Refresh
               </button>
-              <button onclick="exportCsv()">
+              <button onclick="exportData()" title="Export current view to CSV">
                 <i class="fa-solid fa-file-csv"></i>
                 Export CSV
               </button>
-              <button onclick="openScan()" class="primary">
+              <a href="./scan.html" class="btn primary" target="_self" rel="noopener">
                 <i class="fa-solid fa-qrcode"></i>
-                Scan Mode
-              </button>
+                Door Check-in Scanner
+              </a>
             </div>
           </div>
 
-          <div id="scanPanel" class="scan hidden">
-            <div class="scan-top">
-              <div class="scan-title">
-                <div class="scan-badge"><i class="fa-solid fa-sparkles"></i> Door Check‑in</div>
-                <div class="scan-h">Scan booking QR</div>
-                <div class="scan-sub">Choose event, scan QR, check in 1 or all</div>
-              </div>
-
-              <div class="scan-actions">
-                <select id="scanEvent">
-                  <option value="groove">Groove</option>
-                  <option value="tempo">Tempo</option>
-                  <option value="apt">APT</option>
-                </select>
-                <button onclick="startScan()" class="primary">
-                  <i class="fa-solid fa-camera"></i> Start Camera
-                </button>
-                <button onclick="stopScan()">
-                  <i class="fa-solid fa-circle-stop"></i> Stop
-                </button>
-                <button onclick="closeScan()">
-                  <i class="fa-solid fa-xmark"></i> Close
-                </button>
+          <div id="verifyPanel" class="verify-panel hidden">
+            <div class="verify-header">
+              <i class="fa-solid fa-shield-halved"></i>
+              <div class="verify-title">Transaction Verification</div>
+            </div>
+            <div class="verify-grid" id="verifyGrid"></div>
+          <div id="verifyWarning" class="verify-warning hidden">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span></span>
+          </div>
+          <div style="margin-top:16px;padding:16px;border-radius:16px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));">
+            <div style="display:flex;align-items:center;gap:8px;color:var(--warn);font-size:13px;font-weight:700;margin-bottom:12px;">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>M-Pesa Verification Steps:</span>
+            </div>
+            <ol style="margin:0;padding-left:20px;font-size:12px;color:var(--text);line-height:2;">
+              <li>Copy the transaction code above</li>
+              <li>Open M-Pesa on the BYZ phone</li>
+              <li>Search for the transaction using the code</li>
+              <li><b>Verify the M-Pesa transaction amount matches the expected amount shown above</b></li>
+              <li>Only approve if the amounts match exactly</li>
+            </ol>
+            <div style="margin-top:12px;padding:10px;background:color-mix(in srgb, var(--bad) 8%, transparent);border-radius:8px;border-left:3px solid var(--bad);">
+              <div style="font-size:11px;color:var(--bad);font-weight:600;">
+                <i class="fa-solid fa-shield-halved"></i> Fraud Prevention: Always verify the M-Pesa transaction amount before approving.
               </div>
             </div>
-
-            <div class="scan-grid">
-              <div class="scan-video">
-                <video id="cam" playsinline muted></video>
-                <canvas id="scanCanvas" class="hidden"></canvas>
-                <div class="scan-hint" id="scanHint">Point camera at the QR code</div>
-              </div>
-
-              <div class="scan-side">
-                <div class="scan-manual">
-                  <div class="k">Manual Booking ID</div>
-                  <div class="row">
-                    <input id="manualBid" placeholder="e.g., BYZ-GROOVE-TICKET-XXXX" />
-                    <button class="primary" onclick="verifyById(manualBid.value)">
-                      <i class="fa-solid fa-magnifying-glass"></i> Verify
-                    </button>
-                  </div>
-                </div>
-
-                <div id="scanResult" class="scan-result">
-                  <div class="big">Ready</div>
-                  <div class="sub">Scan a QR or search a Booking ID.</div>
-                </div>
-
-                <div class="scan-cta">
-                  <button id="btnOne" class="primary" onclick="checkIn(1)" disabled>
-                    <i class="fa-solid fa-right-to-bracket"></i> Check in 1
-                  </button>
-                  <button id="btnAll" onclick="checkIn('all')" disabled>
-                    <i class="fa-solid fa-people-group"></i> Check in all
-                  </button>
-                </div>
-              </div>
-            </div>
+          </div>
           </div>
         </div>
 
         <div class="card-body">
+          <div id="activityLog" class="activity-log hidden">
+            <div style="font-weight:800;font-size:12px;margin-bottom:10px;color:var(--text)">Recent Activity</div>
+            <div id="activityItems"></div>
+          </div>
+
           <div class="table-wrap">
             <div class="scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Event</th>
-                    <th>Booking ID</th>
-                    <th>Type</th>
+                    <th class="sortable" data-sort="eventKey">Event</th>
+                    <th class="sortable" data-sort="bookingId">Booking ID</th>
+                    <th class="sortable" data-sort="bookingType">Type</th>
                     <th>Description</th>
-                    <th>Name</th>
+                    <th class="sortable" data-sort="name">Name</th>
                     <th>Phone</th>
-                    <th>Amount</th>
-                    <th>Status</th>
+                    <th class="sortable" data-sort="amount">Amount</th>
+                    <th class="sortable" data-sort="status">Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -479,120 +1137,1488 @@
               </table>
             </div>
           </div>
+
+          <div class="card-view">
+            <div id="cardRows"></div>
+          </div>
+
+          <div id="emptyState" class="empty-state hidden">
+            <i class="fa-solid fa-inbox"></i>
+            <h3>No bookings found</h3>
+            <p>Try adjusting your filters or search terms.</p>
+          </div>
+
         </div>
       </section>
     </div>
   </main>
 
+  <!-- Toast Container -->
+  <div class="toast" id="toastContainer"></div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal-backdrop hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="confirmTitle">Confirm Action</div>
+        <button class="modal-close" onclick="closeConfirmModal()" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="confirmBody">Please confirm this action.</div>
+      <div class="modal-actions">
+        <button onclick="closeConfirmModal()">Cancel</button>
+        <button class="primary" id="confirmActionBtn" onclick="confirmAction()">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verify Modal -->
+  <div id="verifyModal" class="modal-backdrop hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal" style="width: min(500px, 90%); max-height: 85vh; overflow-y: auto; position:relative;">
+      <!-- Navigation Arrows -->
+      <div class="verify-nav-arrows" id="verifyNavArrows">
+        <button class="verify-nav-arrow prev" id="verifyNavPrev" onclick="navigateVerifyModal(-1)" aria-label="Previous booking">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="verify-nav-arrow next" id="verifyNavNext" onclick="navigateVerifyModal(1)" aria-label="Next booking">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+      
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex;align-items:center;gap:10px;">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Transaction Verification</span>
+          <span id="verifyModalBadge" style="margin-left:auto;font-size:11px;padding:4px 8px;border-radius:8px;background:color-mix(in srgb, var(--sub) 15%, transparent);color:var(--sub);font-weight:600;"></span>
+        </div>
+        <button class="modal-close" onclick="closeVerifyModal()" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="padding:0;">
+        <div class="verify-grid" id="verifyModalGrid"></div>
+        <div id="verifyModalWarning" class="verify-warning hidden" style="margin-top:12px;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span></span>
+        </div>
+        <div id="verifyModalSuggestions" style="margin-top:12px;"></div>
+        <div style="margin-top:12px;padding:12px;border-radius:12px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));">
+          <div style="display:flex;align-items:center;gap:6px;color:var(--warn);font-size:12px;font-weight:700;margin-bottom:8px;">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Quick Steps:</span>
+          </div>
+          <ol style="margin:0;padding-left:18px;font-size:11px;color:var(--text);line-height:1.6;">
+            <li>Copy transaction code</li>
+            <li>Check M-Pesa on BYZ phone</li>
+            <li><b>Verify amount matches the expected amount shown above</b></li>
+          </ol>
+        </div>
+      </div>
+      <div class="modal-actions" id="verifyModalActions" style="margin-top:20px;display:flex;gap:10px;justify-content:space-between;">
+        <button onclick="closeVerifyModal()" style="flex:1;">Close</button>
+        <button class="approve" id="verifyModalApprove" onclick="approveFromVerifyModal()" style="flex:1;">
+          <i class="fa-solid fa-check"></i> Approve
+        </button>
+        <button class="reject" id="verifyModalReject" onclick="showRejectModalFromVerify()" style="flex:1;">
+          <i class="fa-solid fa-xmark"></i> Reject
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl8qg5fxw8yWZJj-R98x0V0nBALjQv66xuJLiom5rkEh_BpYtZRrMcFlYkjxAOq6UC/exec";
-    const ADMIN_PASSWORD = "weballwithbyz";
+    // ADMIN_PASSWORD is defined in admin-shared.js - don't redeclare it
 
     let bookings = [];
+    let filteredBookings = [];
     let currentEvent = "";
+    let sortColumn = "";
+    let sortDirection = "asc";
+    let currentVerifyBooking = null;
+    let currentVerifyIndex = -1; // Index in pending bookings array
+    let pendingBookingsForVerify = []; // Array of pending bookings with transaction codes
+    let pendingConfirm = null;
+    let autoRefreshInterval = null;
+    let activityLog = JSON.parse(localStorage.getItem("byz_activity") || "[]");
+    let lastLoadTime = null;
+    let recentRejections = JSON.parse(localStorage.getItem("byz_recent_rejections") || "{}"); // Track rejections for undo
+    
+    // PWA Install variables - declare early to avoid hoisting issues
+    let deferredPrompt = null;
+    let installPromptShown = false;
 
     (function initTheme(){
-      const saved = localStorage.getItem("byz_theme");
-      if(saved === "dark"){ document.body.setAttribute("data-theme","dark"); }
+      document.body.setAttribute("data-theme", "dark");
+      localStorage.removeItem("byz_theme");
     })();
 
     function toggleTheme(){
-      const isDark = document.body.getAttribute("data-theme") === "dark";
-      document.body.setAttribute("data-theme", isDark ? "light" : "dark");
-      localStorage.setItem("byz_theme", isDark ? "light" : "dark");
+      return;
     }
 
-    function login(){
-  if(password.value === ADMIN_PASSWORD){
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("dashboard").classList.remove("hidden");
-
-        // ensure scrolling works + jump to top (below fixed header)
-    document.documentElement.style.overflow = "";
-    document.body.style.overflow = "";
-    
-    requestAnimationFrame(() => {
-      const dash = document.getElementById("dashboard");
-      if(dash){
-        dash.scrollIntoView({ behavior: "auto", block: "start" });
-      } else {
-            window.scrollTo({ top: 0, behavior: "auto" });
+    function handleLogin(){
+      const passwordInput = document.getElementById("password");
+      if(!passwordInput){
+        console.error("Password input not found");
+        showToast("Login error: Password input not found", "error");
+        return;
       }
-    });
+      if(passwordInput.value === window.ADMIN_PASSWORD){
+        // Set session (no remember me - session only)
+        setAuth(false);
+        
+        // Hide login, show dashboard
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        document.getElementById("adminBody").classList.remove("login-page");
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+        
+        // Render navigation
+        renderAdminNav("bookings");
+        
+        // Setup tab buttons after dashboard is shown
+        requestAnimationFrame(() => {
+          setupTabButtons(); // Re-setup tabs now that dashboard is visible
+          
+          const dash = document.getElementById("dashboard");
+          if(dash){
+            dash.scrollIntoView({ behavior: "auto", block: "start" });
+          } else {
+            window.scrollTo({ top: 0, behavior: "auto" });
+          }
+        });
+        load();
+        
+        // Show install prompt after successful login (only if not already installed)
+        setTimeout(() => {
+          showInstallPrompt();
+        }, 2000);
+      } else {
+        showToast("Incorrect password", "error");
+        // Shake animation on error
+        const loginBox = document.querySelector('.login-box');
+        loginBox.style.animation = 'shake 0.5s';
+        setTimeout(() => loginBox.style.animation = '', 500);
+      }
+    }
+    
+    // Add shake animation
+    let shakeStyle = document.getElementById('admin-shake-style');
+    if(!shakeStyle){
+      shakeStyle = document.createElement('style');
+      shakeStyle.id = 'admin-shake-style';
+      shakeStyle.textContent = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-10px); }
+          75% { transform: translateX(10px); }
+        }
+      `;
+      document.head.appendChild(shakeStyle);
+    }
 
-
-
-    load();
-  } else {
-    alert("Incorrect password");
-  }
-}
-
+    function updateConnectionStatus(){
+      const status = navigator.onLine ? "online" : "offline";
+      const el = document.getElementById("connectionStatus");
+      if(el){
+        el.className = `connection-status ${status}`;
+        el.innerHTML = `<i class="fa-solid fa-circle"></i> <span>${status === "online" ? "Online" : "Offline"}</span>`;
+      }
+    }
+    window.addEventListener("online", updateConnectionStatus);
+    window.addEventListener("offline", updateConnectionStatus);
+    updateConnectionStatus();
 
     async function load(){
+      const btn = document.getElementById("refreshBtn");
+      const originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Loading...';
+
       try{
         const url = currentEvent ? `${SCRIPT_URL}?event=${currentEvent}` : SCRIPT_URL;
         const res = await fetch(url, { cache: "no-store" });
-        const data = await res.json();
-
-        bookings = Array.isArray(data.bookings) ? data.bookings : [];
+        
+        if(!res.ok){
+          const errorText = await res.text();
+          console.error("Response not OK:", res.status, errorText);
+          throw new Error(`HTTP ${res.status}: ${errorText.substring(0, 100)}`);
+        }
+        
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch(parseErr){
+          console.error("JSON parse error:", parseErr, "Response text:", text.substring(0, 200));
+          throw new Error("Invalid JSON response from server");
+        }
+        
+        // Handle different response formats
+        if(Array.isArray(data)){
+          bookings = data;
+        } else if(data && Array.isArray(data.bookings)){
+          bookings = data.bookings;
+        } else if(data && typeof data === 'object'){
+          // Try to find bookings array in response
+          bookings = data.bookings || data.data || [];
+          // If still empty and we have event-specific data, try that
+          if(bookings.length === 0 && data.groove && Array.isArray(data.groove)){
+            bookings = data.groove;
+          }
+          if(bookings.length === 0 && data.tempo && Array.isArray(data.tempo)){
+            bookings = data.tempo;
+          }
+        } else {
+          bookings = [];
+        }
+        
+        console.log("Loaded bookings:", bookings.length, "from response:", data);
+        
+        lastLoadTime = Date.now();
         render();
-
+        showToast(`Loaded ${bookings.length} booking(s)`, "success");
       }catch(err){
-        console.error(err);
-        alert("Failed to load bookings");
+        console.error("Load error:", err);
+        const errorMsg = err.message || "Failed to load bookings. Check connection.";
+        showToast(errorMsg, "error");
+        updateConnectionStatus();
+        // Keep existing bookings if any
+        if(bookings.length === 0){
+          bookings = [];
+          render();
+        }
+      }finally{
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
       }
     }
 
-    function render(){
-      const q = search.value.toLowerCase();
-      const status = statusFilter.value;
-      rows.innerHTML="";
+    let renderTimeout = null;
+    function debouncedRender(){
+      clearTimeout(renderTimeout);
+      renderTimeout = setTimeout(render, 300);
+    }
 
-      const filtered = bookings.filter(b =>
-        (!status || b.status === status) &&
-        (!q ||
+    // Contact Messages Functions
+    let contactMessages = [];
+    
+    async function loadContactMessages(){
+      const listEl = document.getElementById("contactMessagesList");
+      const emptyEl = document.getElementById("contactEmptyState");
+      
+      if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub);"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;">Loading messages...</p></div>';
+      
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getContactMessages",
+            adminPin: ADMIN_PASSWORD
+          }),
+          cache: "no-store" // Ensure fresh request, bypass service worker cache
+        });
+        
+        const result = await res.json();
+        
+        if(result.success && result.messages){
+          contactMessages = result.messages;
+          filteredContactMessages = [];
+          filterContactMessages();
+          updateContactBadge();
+        } else {
+          throw new Error(result.error || "Failed to load messages");
+        }
+      } catch(err) {
+        console.error("Load contact messages error:", err);
+        if(listEl) listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--bad);"><i class="fa-solid fa-triangle-exclamation"></i><p style="margin-top:12px;">${err.message}</p></div>`;
+        if(emptyEl) emptyEl.classList.add("hidden");
+      }
+    }
+    
+    let filteredContactMessages = [];
+    
+    function filterContactMessages(){
+      const search = (document.getElementById("contactSearch")?.value || "").toLowerCase();
+      const statusFilter = document.getElementById("contactStatusFilter")?.value || "";
+      const subjectFilter = document.getElementById("contactSubjectFilter")?.value || "";
+      
+      filteredContactMessages = contactMessages.filter(msg => {
+        if(statusFilter && msg.status !== statusFilter) return false;
+        if(subjectFilter && msg.subject !== subjectFilter) return false;
+        if(search && !(
+          (msg.name || "").toLowerCase().includes(search) ||
+          (msg.email || "").toLowerCase().includes(search) ||
+          (msg.subject || "").toLowerCase().includes(search) ||
+          (msg.message || "").toLowerCase().includes(search)
+        )) return false;
+        return true;
+      });
+      
+      renderContactMessages();
+    }
+    
+    function renderContactMessages(){
+      const listEl = document.getElementById("contactMessagesList");
+      const emptyEl = document.getElementById("contactEmptyState");
+      
+      if(!listEl) return;
+      
+      const messagesToRender = filteredContactMessages.length > 0 ? filteredContactMessages : contactMessages;
+      
+      if(messagesToRender.length === 0){
+        listEl.innerHTML = "";
+        if(emptyEl) emptyEl.classList.remove("hidden");
+        return;
+      }
+      
+      if(emptyEl) emptyEl.classList.add("hidden");
+      
+      listEl.innerHTML = messagesToRender.map(msg => {
+        const date = new Date(msg.timestamp);
+        const dateStr = date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+        const timeStr = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+        
+        const subjectLabels = {
+          "booking": "Booking Inquiry",
+          "support": "Support Request",
+          "partnership": "Partnership Opportunity",
+          "media": "Media & Press",
+          "feedback": "Feedback",
+          "other": "Other"
+        };
+        
+        const subjectLabel = subjectLabels[msg.subject] || msg.subject;
+        const isNew = msg.status === "NEW";
+        const statusColors = {
+          "NEW": "var(--bad)",
+          "READ": "var(--warn)",
+          "REPLIED": "var(--ok)"
+        };
+        
+        const statusClass = msg.status.toLowerCase();
+        const statusIcon = {
+          "NEW": "fa-circle",
+          "READ": "fa-check",
+          "REPLIED": "fa-check-double"
+        }[msg.status] || "fa-circle";
+        
+        return `
+          <div class="booking-card ${statusClass}" style="border-left:4px solid ${statusColors[msg.status] || "var(--border)"};">
+            <div class="card-header">
+              <div style="flex:1;">
+                <div class="card-title" style="display:flex;align-items:center;gap:10px;">
+                  ${isNew ? '<span style="display:inline-block;width:10px;height:10px;background:var(--bad);border-radius:50%;animation:pulse 2s ease-in-out infinite;"></span>' : ''}
+                  <i class="fa-solid fa-user" style="color:var(--sub);font-size:14px;"></i>
+                  ${msg.name}
+                </div>
+                <div class="card-meta">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-tag" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Subject:</b> ${subjectLabel}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-envelope" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Email:</b> <a href="mailto:${msg.email}" style="color:var(--accent);text-decoration:none;">${msg.email}</a></span>
+                  </div>
+                  ${msg.phone ? `
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-phone" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Phone:</b> <a href="tel:${msg.phone}" style="color:var(--accent);text-decoration:none;">${msg.phone}</a></span>
+                  </div>
+                  ` : ''}
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-clock" style="color:var(--sub);font-size:12px;"></i>
+                    <span><b>Date:</b> ${dateStr} at ${timeStr}</span>
+                  </div>
+                  <div style="margin-top:14px;padding:16px;background:linear-gradient(135deg, color-mix(in srgb, var(--bg-alt) 80%, transparent), color-mix(in srgb, var(--bg-elev) 90%, transparent));border-radius:14px;border:1px solid var(--border);">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--sub);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">
+                      <i class="fa-solid fa-message"></i>
+                      <span>Message</span>
+                    </div>
+                    <div style="color:var(--text);font-size:14px;line-height:1.7;white-space:pre-wrap;">${msg.message}</div>
+                  </div>
+                </div>
+              </div>
+              <span class="status ${statusClass}" style="background:${statusColors[msg.status] || "var(--sub)"};color:#fff;padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
+                <i class="fa-solid ${statusIcon}"></i>
+                ${msg.status}
+              </span>
+            </div>
+            <div class="card-actions">
+              <a href="mailto:${msg.email}?subject=Re: ${subjectLabel}" class="btn primary" style="flex:1;">
+                <i class="fa-solid fa-reply"></i> Reply Email
+              </a>
+              ${msg.phone ? `
+              <a href="https://wa.me/${msg.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn" style="background:#25D366;color:#fff;border:none;flex:1;">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+              </a>
+              ` : ''}
+              ${msg.status === "NEW" ? `
+              <button onclick="updateContactStatus(${msg.rowIndex}, 'READ')" class="btn" style="flex:1;">
+                <i class="fa-solid fa-check"></i> Mark Read
+              </button>
+              ` : ''}
+              ${msg.status !== "REPLIED" ? `
+              <button onclick="updateContactStatus(${msg.rowIndex}, 'REPLIED')" class="btn" style="background:var(--ok);color:#fff;border:none;flex:1;">
+                <i class="fa-solid fa-check-double"></i> Mark Replied
+              </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+    
+    async function updateContactStatus(rowIndex, status){
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "updateContactStatus",
+            adminPin: ADMIN_PASSWORD,
+            rowIndex: rowIndex,
+            status: status
+          })
+        });
+        
+        const result = await res.json();
+        
+        if(result.success){
+          showToast(`Message marked as ${status}`, "success");
+          loadContactMessages(); // Reload to refresh
+        } else {
+          throw new Error(result.error || "Failed to update status");
+        }
+      } catch(err) {
+        console.error("Update contact status error:", err);
+        showToast(err.message || "Failed to update status", "error");
+      }
+    }
+    
+    function updateContactBadge(){
+      const badge = document.getElementById("contactBadge");
+      if(!badge) return;
+      
+      const newCount = contactMessages.filter(m => m.status === "NEW").length;
+      if(newCount > 0){
+        badge.textContent = newCount;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+    
+    // Contact Messages and FAQ Feedback functions moved to admin-messages.html
+    // These are kept here for backward compatibility but won't be used
+    window.loadContactMessages = function(){};
+    window.updateContactStatus = function(){};
+    window.loadFAQFeedback = function(){};
+    window.filterFAQFeedback = function(){};
+    window.exportFAQFeedback = function(){};
+    let faqFeedbackData = [];
+    
+    async function loadFAQFeedback(){
+      const listEl = document.getElementById("faqFeedbackList");
+      const emptyEl = document.getElementById("faqEmptyState");
+      
+      if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sub);"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;">Loading FAQ feedback...</p></div>';
+      
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getFAQFeedback",
+            adminPin: ADMIN_PASSWORD
+          }),
+          cache: "no-store"
+        });
+        
+        const result = await res.json();
+        
+        if(result.success && result.feedback){
+          faqFeedbackData = result.feedback;
+          filteredFAQFeedback = [];
+          filterFAQFeedback();
+          updateFAQStats();
+        } else {
+          throw new Error(result.error || "Failed to load FAQ feedback");
+        }
+      } catch(err) {
+        console.error("Load FAQ feedback error:", err);
+        if(listEl) listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--bad);"><i class="fa-solid fa-triangle-exclamation"></i><p style="margin-top:12px;">${err.message}</p></div>`;
+        if(emptyEl) emptyEl.classList.add("hidden");
+      }
+    }
+    
+    let filteredFAQFeedback = [];
+    
+    function filterFAQFeedback(){
+      const search = (document.getElementById("faqSearch")?.value || "").toLowerCase();
+      const helpfulFilter = document.getElementById("faqHelpfulFilter")?.value || "";
+      
+      filteredFAQFeedback = faqFeedbackData.filter(fb => {
+        if(helpfulFilter && String(fb.helpful) !== helpfulFilter) return false;
+        if(search && !(fb.question || "").toLowerCase().includes(search)) return false;
+        return true;
+      });
+      
+      renderFAQFeedback();
+    }
+    
+    function renderFAQFeedback(){
+      const listEl = document.getElementById("faqFeedbackList");
+      const emptyEl = document.getElementById("faqEmptyState");
+      
+      if(!listEl) return;
+      
+      if(filteredFAQFeedback.length === 0){
+        listEl.innerHTML = "";
+        if(emptyEl) emptyEl.classList.remove("hidden");
+        return;
+      }
+      
+      if(emptyEl) emptyEl.classList.add("hidden");
+      
+      // Group feedback by question
+      const grouped = {};
+      filteredFAQFeedback.forEach(fb => {
+        const q = fb.question || "Unknown";
+        if(!grouped[q]){
+          grouped[q] = { question: q, helpful: 0, notHelpful: 0, total: 0, latest: fb.timestamp };
+        }
+        if(fb.helpful){
+          grouped[q].helpful++;
+        } else {
+          grouped[q].notHelpful++;
+        }
+        grouped[q].total++;
+        if(fb.timestamp > grouped[q].latest){
+          grouped[q].latest = fb.timestamp;
+        }
+      });
+      
+      const sorted = Object.values(grouped).sort((a, b) => {
+        // Sort by total feedback (most feedback first), then by helpful ratio
+        if(b.total !== a.total) return b.total - a.total;
+        const aRatio = a.helpful / a.total;
+        const bRatio = b.helpful / b.total;
+        return bRatio - aRatio;
+      });
+      
+      listEl.innerHTML = sorted.map(item => {
+        const helpfulPercent = Math.round((item.helpful / item.total) * 100);
+        const notHelpfulPercent = Math.round((item.notHelpful / item.total) * 100);
+        const date = new Date(item.latest);
+        const dateStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        return `
+          <div style="padding:20px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-elev);">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+              <h3 style="font-size:16px;font-weight:700;flex:1;min-width:200px;">${escapeHtml(item.question)}</h3>
+              <div style="font-size:12px;color:var(--sub);white-space:nowrap;">${dateStr}</div>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:120px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <i class="fa-solid fa-thumbs-up" style="color:var(--ok);font-size:14px;"></i>
+                  <span style="font-size:13px;color:var(--sub);">Helpful</span>
+                  <span style="font-weight:700;color:var(--ok);margin-left:auto;">${item.helpful}</span>
+                </div>
+                <div style="height:6px;background:color-mix(in srgb, var(--ok) 20%, transparent);border-radius:3px;overflow:hidden;">
+                  <div style="height:100%;width:${helpfulPercent}%;background:var(--ok);transition:width .3s var(--ease);"></div>
+                </div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">${helpfulPercent}%</div>
+              </div>
+              <div style="flex:1;min-width:120px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <i class="fa-solid fa-thumbs-down" style="color:var(--bad);font-size:14px;"></i>
+                  <span style="font-size:13px;color:var(--sub);">Not Helpful</span>
+                  <span style="font-weight:700;color:var(--bad);margin-left:auto;">${item.notHelpful}</span>
+                </div>
+                <div style="height:6px;background:color-mix(in srgb, var(--bad) 20%, transparent);border-radius:3px;overflow:hidden;">
+                  <div style="height:100%;width:${notHelpfulPercent}%;background:var(--bad);transition:width .3s var(--ease);"></div>
+                </div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">${notHelpfulPercent}%</div>
+              </div>
+              <div style="min-width:80px;text-align:center;padding:8px;background:color-mix(in srgb, var(--accent) 10%, transparent);border-radius:var(--radius);">
+                <div style="font-size:11px;color:var(--sub);margin-bottom:4px;">Total</div>
+                <div style="font-size:20px;font-weight:900;color:var(--accent);">${item.total}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+    
+    function updateFAQStats(){
+      const total = faqFeedbackData.length;
+      const helpful = faqFeedbackData.filter(fb => fb.helpful).length;
+      const notHelpful = faqFeedbackData.filter(fb => !fb.helpful).length;
+      const helpfulPercent = total > 0 ? Math.round((helpful / total) * 100) : 0;
+      const notHelpfulPercent = total > 0 ? Math.round((notHelpful / total) * 100) : 0;
+      
+      document.getElementById("faqHelpfulCount").textContent = helpful;
+      document.getElementById("faqHelpfulPercent").textContent = `${helpfulPercent}% positive`;
+      document.getElementById("faqNotHelpfulCount").textContent = notHelpful;
+      document.getElementById("faqNotHelpfulPercent").textContent = `${notHelpfulPercent}% negative`;
+      document.getElementById("faqTotalCount").textContent = total;
+    }
+    
+    function exportFAQFeedback(){
+      if(filteredFAQFeedback.length === 0){
+        showToast("No FAQ feedback to export", "error");
+        return;
+      }
+      
+      const headers = ["Timestamp", "Question", "Helpful"];
+      const rows = filteredFAQFeedback.map(fb => [
+        fb.timestamp || "",
+        fb.question || "",
+        fb.helpful ? "Yes" : "No"
+      ]);
+      
+      const csv = [headers, ...rows].map(row => 
+        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      ).join("\n");
+      
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `faq-feedback-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showToast("FAQ feedback exported successfully", "success");
+    }
+    
+    function escapeHtml(text){
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    window.loadFAQFeedback = loadFAQFeedback;
+    window.filterFAQFeedback = filterFAQFeedback;
+    window.exportFAQFeedback = exportFAQFeedback;
+
+    function calculateExpectedAmount(booking){
+      if(!booking) return 0;
+      // Amount is calculated automatically in booking.html based on type
+      // For TICKET: quantity * 30000
+      // For TABLE: tier determines amount (700K=700000, 1.2M=1200000, 1.8M=1800000)
+      if(booking.bookingType === "TICKET"){
+        const qty = Number(booking.quantity) || 1;
+        return qty * 30000; // TICKET_PRICE constant
+      }
+      if(booking.tier === "700K") return 700000;
+      if(booking.tier === "1.2M") return 1200000;
+      if(booking.tier === "1.8M") return 1800000;
+      // Fallback to stored amount if calculation fails
+      return Number(booking.amount) || 0;
+    }
+
+    function render(){
+      const q = (document.getElementById("search").value || "").toLowerCase();
+      const status = document.getElementById("statusFilter").value;
+      const dateFrom = document.getElementById("dateFrom").value;
+      const dateTo = document.getElementById("dateTo").value;
+      const amountFilter = document.getElementById("amountFilter").value;
+
+      filteredBookings = bookings.filter(b => {
+        // Filter by event type (All, Groove, Tempo, APT)
+        if(currentEvent){
+          const eventKey = (b.eventKey || "").toLowerCase();
+          if(eventKey !== currentEvent.toLowerCase()) return false;
+        }
+        
+        if(status && b.status !== status) return false;
+        if(q && !(
           (b.name||"").toLowerCase().includes(q) ||
           (b.bookingId||"").toLowerCase().includes(q) ||
-          (b.phone||"").toLowerCase().includes(q)
-        )
-      );
+          (b.phone||"").toLowerCase().includes(q) ||
+          (b.transactionCode||"").toLowerCase().includes(q)
+        )) return false;
+        if(dateFrom || dateTo){
+          const bookingDate = (b.timestamp || b.createdAt || b.date) ? new Date(b.timestamp || b.createdAt || b.date) : null;
+          if(!bookingDate || isNaN(bookingDate.getTime())) return true;
+          if(dateFrom && bookingDate < new Date(dateFrom)) return false;
+          if(dateTo){
+            const toDate = new Date(dateTo);
+            toDate.setHours(23,59,59);
+            if(bookingDate > toDate) return false;
+          }
+        }
+        if(amountFilter){
+          const [min, max] = amountFilter.split("-").map(x => parseInt(x) || 0);
+          const amount = Number(b.amount) || 0;
+          if(amount < min || (max && amount > max)) return false;
+        }
+        return true;
+      });
 
-      const total = filtered.length;
-      const pending = filtered.filter(b => b.status === "PENDING").length;
-      const confirmed = filtered.filter(b => b.status === "CONFIRMED").length;
-      const checkedIn = filtered.reduce((s,b)=> s + (Number(b.checkedInCount)||0), 0);
+      if(sortColumn){
+        filteredBookings.sort((a, b) => {
+          let aVal = a[sortColumn] || "";
+          let bVal = b[sortColumn] || "";
+          if(sortColumn === "amount"){
+            aVal = Number(aVal) || 0;
+            bVal = Number(bVal) || 0;
+          } else {
+            aVal = String(aVal).toLowerCase();
+            bVal = String(bVal).toLowerCase();
+          }
+          if(sortDirection === "asc"){
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      }
 
-      statTotal.textContent = total;
-      statPending.textContent = pending;
-      statConfirmed.textContent = confirmed;
-      statCheckedIn.textContent = checkedIn;
+      const total = filteredBookings.length;
+      const pending = filteredBookings.filter(b => b.status === "PENDING").length;
+      const confirmed = filteredBookings.filter(b => b.status === "CONFIRMED").length;
+      const checkedIn = filteredBookings.reduce((s,b)=> s + (Number(b.checkedInCount)||0), 0);
+      const revenue = filteredBookings
+        .filter(b => b.status === "CONFIRMED")
+        .reduce((s,b) => s + (Number(b.amount)||0), 0);
+      const avgBooking = confirmed > 0 ? Math.round(revenue / confirmed) : 0;
 
-      filtered.forEach(b=>{
-        const tr=document.createElement("tr");
-        tr.innerHTML=`
+      // Stats are now on admin-stats.html page
+
+      const rowsEl = document.getElementById("rows");
+      const cardRowsEl = document.getElementById("cardRows");
+      const emptyState = document.getElementById("emptyState");
+
+      rowsEl.innerHTML = "";
+      cardRowsEl.innerHTML = "";
+
+      if(filteredBookings.length === 0){
+        emptyState.classList.remove("hidden");
+        return;
+      }
+      emptyState.classList.add("hidden");
+
+      // Get pending bookings for navigation
+      const pendingBookings = filteredBookings.filter(b => b.status === "PENDING" && b.transactionCode && String(b.transactionCode).trim());
+      
+      filteredBookings.forEach((b, idx) => {
+        const expectedAmount = calculateExpectedAmount(b);
+        const enteredAmount = Number(b.amount) || 0;
+        const amountMatch = expectedAmount === enteredAmount;
+        const hasTransactionCode = b.transactionCode && String(b.transactionCode).trim();
+        
+        // Smart suggestions detection
+        const suggestions = [];
+        if(b.status === "PENDING" && enteredAmount > 0 && expectedAmount > 0 && !amountMatch){
+          suggestions.push({type: "amount-mismatch", label: "Amount Mismatch", icon: "fa-exclamation-triangle"});
+        }
+        
+        // Check for duplicate transaction codes
+        if(hasTransactionCode && b.status === "PENDING"){
+          const duplicateCount = filteredBookings.filter(bb => 
+            bb.transactionCode && 
+            String(bb.transactionCode).trim() === String(b.transactionCode).trim() &&
+            bb.bookingId !== b.bookingId
+          ).length;
+          if(duplicateCount > 0){
+            suggestions.push({type: "duplicate-txn", label: "Duplicate Txn", icon: "fa-copy"});
+          }
+        }
+        
+        // Check for old pending bookings (older than 24 hours)
+        if(b.status === "PENDING"){
+          const bookingDate = b.timestamp ? new Date(b.timestamp) : null;
+          if(bookingDate && !isNaN(bookingDate.getTime())){
+            const hoursOld = (Date.now() - bookingDate.getTime()) / (1000 * 60 * 60);
+            if(hoursOld > 24){
+              suggestions.push({type: "old-pending", label: "Old Pending", icon: "fa-clock"});
+            }
+          }
+        }
+        
+        const suggestionFlags = suggestions.length > 0 ? suggestions.map(s => 
+          `<span class="suggestion-flag ${s.type}" title="${s.label}">
+            <i class="fa-solid ${s.icon}"></i> ${s.label}
+          </span>`
+        ).join(" ") : "";
+
+        const tr = document.createElement("tr");
+        tr.dataset.bookingId = b.bookingId;
+        tr.dataset.bookingIndex = idx;
+        tr.innerHTML = `
           <td>${(b.eventKey||"").toUpperCase()}</td>
-          <td>${b.bookingId}</td>
+          <td>
+            ${b.bookingId}
+            ${suggestionFlags ? `<div style="margin-top:4px;">${suggestionFlags}</div>` : ""}
+          </td>
           <td>${b.bookingType}</td>
           <td>${b.description}</td>
           <td>${b.name}</td>
           <td>${b.phone}</td>
-          <td>${b.amount || "-"}</td>
+          <td>
+            ${b.amount ? (Number(b.amount).toLocaleString() + " TZS") : "-"}
+          </td>
           <td class="status ${b.status}">${b.status}</td>
           <td>
             ${b.status==="PENDING"
-              ? `<button class="approve" onclick="approve('${b.bookingId}','${b.eventKey}')">Approve</button>
-                 <button class="reject" onclick="rejectBooking('${b.bookingId}','${b.eventKey}')">Reject</button>`
-              : `<button onclick="resend('${b.bookingId}','${b.eventKey}')">Resend</button>`
+              ? `<button class="approve" onclick="showApproveModal('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-check"></i> Approve
+                 </button>
+                 <button class="reject" onclick="showRejectModal('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-xmark"></i> Reject
+                 </button>
+                 ${hasTransactionCode ? `<button onclick="showVerifyPanel('${b.bookingId}', event)" style="margin-top:6px;width:100%;font-size:12px;padding:8px;">
+                   <i class="fa-solid fa-shield-halved"></i> Verify
+                 </button>` : ""}`
+              : `<button onclick="resend('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-paper-plane"></i> Resend
+                 </button>`
             }
           </td>
         `;
-        rows.appendChild(tr);
+        rowsEl.appendChild(tr);
+
+        const card = document.createElement("div");
+        card.className = "booking-card";
+        card.dataset.bookingId = b.bookingId;
+        card.dataset.bookingIndex = idx;
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">
+              ${b.bookingId}
+              ${suggestionFlags ? `<div style="margin-top:4px;">${suggestionFlags}</div>` : ""}
+            </div>
+            <span class="status ${b.status}">${b.status}</span>
+          </div>
+          <div class="card-meta">
+            <div><b>Name:</b> ${b.name}</div>
+            <div><b>Phone:</b> ${b.phone}</div>
+            <div><b>Event:</b> ${(b.eventKey||"").toUpperCase()}</div>
+            <div><b>Type:</b> ${b.bookingType}</div>
+            <div><b>Description:</b> ${b.description}</div>
+            <div><b>Amount:</b> ${b.amount ? (Number(b.amount).toLocaleString() + " TZS") : "-"}</div>
+            ${hasTransactionCode ? `<div><b>Transaction:</b> ${String(b.transactionCode)}</div>` : ""}
+          </div>
+          <div class="card-actions">
+            ${b.status==="PENDING"
+              ? `<button class="approve" onclick="showApproveModal('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-check"></i> Approve
+                 </button>
+                 <button class="reject" onclick="showRejectModal('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-xmark"></i> Reject
+                 </button>
+                 ${hasTransactionCode ? `<button onclick="showVerifyPanel('${b.bookingId}', event)" style="margin-top:6px;width:100%;font-size:12px;padding:8px;">
+                   <i class="fa-solid fa-shield-halved"></i> Verify
+                 </button>` : ""}`
+              : `<button onclick="resend('${b.bookingId}','${b.eventKey}')">
+                   <i class="fa-solid fa-paper-plane"></i> Resend
+                 </button>`
+            }
+          </div>
+        `;
+        cardRowsEl.appendChild(card);
+      });
+
+      updateSortIndicators();
+    }
+
+    function updateSortIndicators(){
+      document.querySelectorAll("thead th").forEach(th => {
+        th.classList.remove("sort-asc", "sort-desc");
+        if(th.dataset.sort === sortColumn){
+          th.classList.add(sortDirection === "asc" ? "sort-asc" : "sort-desc");
+        }
       });
     }
 
+    document.querySelectorAll("thead th.sortable").forEach(th => {
+      th.addEventListener("click", () => {
+        const col = th.dataset.sort;
+        if(sortColumn === col){
+          sortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+          sortColumn = col;
+          sortDirection = "asc";
+        }
+        render();
+      });
+    });
+
+    function showVerifyPanel(bookingId, event){
+      const booking = bookings.find(b => b.bookingId === bookingId);
+      if(!booking) return;
+
+      // Get all pending bookings with transaction codes for navigation
+      pendingBookingsForVerify = filteredBookings.filter(b => 
+        b.status === "PENDING" && 
+        b.transactionCode && 
+        String(b.transactionCode).trim()
+      );
+      
+      // Find current index
+      currentVerifyIndex = pendingBookingsForVerify.findIndex(b => b.bookingId === bookingId);
+      if(currentVerifyIndex === -1) currentVerifyIndex = 0;
+      
+      currentVerifyBooking = booking;
+      const expectedAmount = calculateExpectedAmount(booking);
+      const storedAmount = Number(booking.amount) || 0;
+      const enteredAmount = storedAmount;
+      const amountMatch = expectedAmount === enteredAmount && enteredAmount > 0 && expectedAmount > 0;
+      
+      // Add glow effect to the row/card
+      document.querySelectorAll("tr.verify-active, .booking-card.verify-active").forEach(el => {
+        el.classList.remove("verify-active");
+      });
+      const row = document.querySelector(`tr[data-booking-id="${bookingId}"]`);
+      const card = document.querySelector(`.booking-card[data-booking-id="${bookingId}"]`);
+      if(row) row.classList.add("verify-active");
+      if(card) card.classList.add("verify-active");
+      
+      // Get the button position for animation
+      let buttonRect = null;
+      let centerX = window.innerWidth / 2;
+      let centerY = window.innerHeight / 2;
+      
+      if(event && event.target){
+        const button = event.target.closest('button');
+        if(button){
+          buttonRect = button.getBoundingClientRect();
+          centerX = buttonRect.left + buttonRect.width / 2;
+          centerY = buttonRect.top + buttonRect.height / 2;
+        }
+      }
+      
+      // Amount is calculated automatically in booking.html (not entered by user)
+      // Admin workflow: Use transaction code to look up M-Pesa transaction on BYZ phone
+      // Verify the M-Pesa transaction amount matches the expected amount
+
+      // Show modal instead of inline panel
+      document.getElementById("verifyModalGrid").innerHTML = `
+        <div class="verify-item" style="grid-column: 1 / -1;">
+          <div class="verify-label">Transaction Code (Look up in M-Pesa)</div>
+          <div class="verify-value" style="font-size:24px;font-weight:900;word-break:break-all;letter-spacing:.15em;margin-top:12px;padding:16px;background:color-mix(in srgb, var(--primary) 8%, transparent);border-radius:12px;border:2px solid color-mix(in srgb, var(--primary) 20%, transparent);">
+            ${booking.transactionCode ? String(booking.transactionCode) : "Not provided"}
+          </div>
+          ${booking.transactionCode ? `
+            <div style="display:flex;gap:8px;margin-top:16px;">
+              <button onclick="copyToClipboard('${String(booking.transactionCode)}')" style="flex:1;font-size:14px;padding:12px;font-weight:600;">
+                <i class="fa-solid fa-copy"></i> Copy Code
+              </button>
+            </div>
+          ` : ""}
+        </div>
+        <div class="verify-item" style="grid-column: 1 / -1;">
+          <div class="verify-label">Expected Amount (Verify this matches M-Pesa)</div>
+          <div class="verify-value match" style="font-size:22px;font-weight:700;margin-top:8px;">
+            ${expectedAmount.toLocaleString()} TZS
+          </div>
+          <div style="font-size:12px;color:var(--sub);margin-top:8px;padding:10px;background:color-mix(in srgb, var(--bg2) 50%, transparent);border-radius:8px;">
+            <div><b>Calculation:</b></div>
+            ${booking.bookingType === "TICKET" 
+              ? `<div>${booking.quantity || 1} ticket(s) × 30,000 TZS = ${expectedAmount.toLocaleString()} TZS</div>`
+              : booking.tier 
+                ? `<div>VIP Table ${booking.tier} = ${expectedAmount.toLocaleString()} TZS</div>`
+                : `<div>Amount: ${expectedAmount.toLocaleString()} TZS</div>`}
+          </div>
+        </div>
+        <div class="verify-item" style="grid-column: 1 / -1;">
+          <div class="verify-label">Booking Details</div>
+          <div style="font-size:13px;margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:10px;">
+            <div><b>Name:</b> ${booking.name}</div>
+            <div><b>Phone:</b> ${booking.phone}</div>
+            <div><b>Type:</b> ${booking.bookingType}</div>
+            <div><b>Quantity:</b> ${booking.quantity || 1}</div>
+            ${booking.tier ? `<div><b>Tier:</b> ${booking.tier}</div>` : ""}
+            <div><b>Event:</b> ${(booking.eventKey || "").toUpperCase()}</div>
+          </div>
+        </div>
+      `;
+
+      // Only show warning if there's a data inconsistency (stored vs calculated)
+      // This shouldn't happen normally, but could indicate a bug
+      const hasDataMismatch = storedAmount !== expectedAmount && storedAmount > 0 && expectedAmount > 0;
+      const warningEl = document.getElementById("verifyModalWarning");
+      warningEl.classList.toggle("hidden", !hasDataMismatch);
+      if(hasDataMismatch){
+        warningEl.innerHTML = `
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Data inconsistency: Stored amount (${storedAmount.toLocaleString()}) doesn't match calculated amount (${expectedAmount.toLocaleString()}). Please verify against M-Pesa.</span>
+        `;
+      }
+      
+      // Smart suggestions
+      const suggestions = [];
+      if(enteredAmount > 0 && expectedAmount > 0 && !amountMatch){
+        suggestions.push({type: "amount-mismatch", label: "Amount Mismatch", icon: "fa-exclamation-triangle", message: `Expected ${expectedAmount.toLocaleString()} TZS but stored ${storedAmount.toLocaleString()} TZS`});
+      }
+      
+      // Check for duplicate transaction codes
+      if(booking.transactionCode){
+        const duplicateCount = filteredBookings.filter(bb => 
+          bb.transactionCode && 
+          String(bb.transactionCode).trim() === String(booking.transactionCode).trim() &&
+          bb.bookingId !== booking.bookingId &&
+          bb.status === "PENDING"
+        ).length;
+        if(duplicateCount > 0){
+          suggestions.push({type: "duplicate-txn", label: "Duplicate Transaction", icon: "fa-copy", message: `This transaction code is used by ${duplicateCount} other pending booking(s)`});
+        }
+      }
+      
+      // Check for old pending bookings
+      const bookingDate = booking.timestamp ? new Date(booking.timestamp) : null;
+      if(bookingDate && !isNaN(bookingDate.getTime())){
+        const hoursOld = (Date.now() - bookingDate.getTime()) / (1000 * 60 * 60);
+        if(hoursOld > 24){
+          suggestions.push({type: "old-pending", label: "Old Pending", icon: "fa-clock", message: `This booking has been pending for ${Math.round(hoursOld)} hours`});
+        }
+      }
+      
+      const suggestionsEl = document.getElementById("verifyModalSuggestions");
+      if(suggestions.length > 0){
+        suggestionsEl.innerHTML = suggestions.map(s => `
+          <div class="suggestion-flag ${s.type}" style="margin-bottom:8px;padding:10px;display:flex;align-items:center;gap:8px;">
+            <i class="fa-solid ${s.icon}"></i>
+            <span style="flex:1;">${s.message}</span>
+          </div>
+        `).join("");
+        suggestionsEl.style.display = "block";
+      } else {
+        suggestionsEl.style.display = "none";
+        suggestionsEl.innerHTML = "";
+      }
+      
+      // Update badge with position info
+      const badgeEl = document.getElementById("verifyModalBadge");
+      if(pendingBookingsForVerify.length > 1){
+        badgeEl.textContent = `${currentVerifyIndex + 1} of ${pendingBookingsForVerify.length}`;
+        badgeEl.style.display = "inline-block";
+      } else {
+        badgeEl.style.display = "none";
+      }
+      
+      // Hide navigation arrows initially (will show after approve/reject)
+      document.getElementById("verifyNavArrows").classList.remove("show");
+      
+      // Show approve/reject buttons
+      const actionsEl = document.getElementById("verifyModalActions");
+      if(actionsEl){
+        actionsEl.style.display = "flex";
+        const approveBtn = document.getElementById("verifyModalApprove");
+        const rejectBtn = document.getElementById("verifyModalReject");
+        if(approveBtn) approveBtn.disabled = false;
+        if(rejectBtn) rejectBtn.disabled = false;
+      }
+
+      // Show the modal with animation from button position
+      const modal = document.getElementById("verifyModal");
+      const modalContent = modal.querySelector(".modal");
+      
+      // Set initial position to button location
+      modalContent.style.transformOrigin = `${centerX}px ${centerY}px`;
+      modalContent.style.transform = `scale(0) translate(${centerX - window.innerWidth/2}px, ${centerY - window.innerHeight/2}px)`;
+      modalContent.style.opacity = "0";
+      
+      // Ensure modal backdrop is visible
+      modal.classList.remove("hidden");
+      modal.style.display = "grid";
+      modal.style.background = "rgba(0,0,0,.65)";
+      modal.style.backdropFilter = "blur(10px)";
+      
+      // Animate in - modal appears to come out of the button
+      requestAnimationFrame(() => {
+        modalContent.style.transition = "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease";
+        modalContent.style.transform = "scale(1) translate(0, 0)";
+        modalContent.style.opacity = "1";
+        modalContent.style.transformOrigin = "center center";
+      });
+      
+      // Store button position for close animation
+      modal.dataset.buttonX = centerX;
+      modal.dataset.buttonY = centerY;
+    }
+
+    function closeVerifyModal(event){
+      const modal = document.getElementById("verifyModal");
+      const modalContent = modal.querySelector(".modal");
+      
+      // Get stored button position
+      const buttonX = parseFloat(modal.dataset.buttonX) || window.innerWidth / 2;
+      const buttonY = parseFloat(modal.dataset.buttonY) || window.innerHeight / 2;
+      
+      // Animate out - modal gets sucked back into button
+      modalContent.style.transition = "transform 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 0.3s ease";
+      modalContent.style.transformOrigin = `${buttonX}px ${buttonY}px`;
+      modalContent.style.transform = `scale(0) translate(${buttonX - window.innerWidth/2}px, ${buttonY - window.innerHeight/2}px)`;
+      modalContent.style.opacity = "0";
+      
+      setTimeout(() => {
+        modal.classList.add("hidden");
+        modal.style.display = "none";
+        modalContent.style.transform = "";
+        modalContent.style.transformOrigin = "";
+        modalContent.style.transition = "";
+        currentVerifyBooking = null;
+        currentVerifyIndex = -1;
+        // Remove glow effect
+        document.querySelectorAll("tr.verify-active, .booking-card.verify-active").forEach(el => {
+          el.classList.remove("verify-active");
+        });
+      }, 300);
+    }
+    
+    function navigateVerifyModal(direction){
+      if(pendingBookingsForVerify.length === 0) return;
+      
+      const newIndex = currentVerifyIndex + direction;
+      if(newIndex < 0 || newIndex >= pendingBookingsForVerify.length) return;
+      
+      const nextBooking = pendingBookingsForVerify[newIndex];
+      if(!nextBooking) return;
+      
+      // Find the verify button for this booking to get position
+      const row = document.querySelector(`tr[data-booking-id="${nextBooking.bookingId}"]`);
+      const card = document.querySelector(`.booking-card[data-booking-id="${nextBooking.bookingId}"]`);
+      const verifyButton = row?.querySelector('button[onclick*="showVerifyPanel"]') || 
+                          card?.querySelector('button[onclick*="showVerifyPanel"]');
+      
+      let centerX = window.innerWidth / 2;
+      let centerY = window.innerHeight / 2;
+      if(verifyButton){
+        const rect = verifyButton.getBoundingClientRect();
+        centerX = rect.left + rect.width / 2;
+        centerY = rect.top + rect.height / 2;
+      }
+      
+      // Update modal position for animation
+      const modal = document.getElementById("verifyModal");
+      const modalContent = modal.querySelector(".modal");
+      modal.dataset.buttonX = centerX;
+      modal.dataset.buttonY = centerY;
+      
+      // Update current index before showing panel
+      currentVerifyIndex = newIndex;
+      
+      // Show verify panel for next booking (without event, so it uses center)
+      showVerifyPanel(nextBooking.bookingId, null);
+      
+      // Update navigation arrow states
+      const prevBtn = document.getElementById("verifyNavPrev");
+      const nextBtn = document.getElementById("verifyNavNext");
+      if(prevBtn) prevBtn.disabled = newIndex === 0;
+      if(nextBtn) nextBtn.disabled = newIndex >= pendingBookingsForVerify.length - 1;
+    }
+    
+    async function approveFromVerifyModal(){
+      if(!currentVerifyBooking) return;
+      const bookingId = currentVerifyBooking.bookingId;
+      const eventKey = currentVerifyBooking.eventKey;
+      
+      // Disable buttons during processing
+      const approveBtn = document.getElementById("verifyModalApprove");
+      const rejectBtn = document.getElementById("verifyModalReject");
+      if(approveBtn) approveBtn.disabled = true;
+      if(rejectBtn) rejectBtn.disabled = true;
+      
+      // Call approve (it will handle showing navigation)
+      await approve(bookingId, eventKey);
+    }
+    
+    function showRejectModalFromVerify(){
+      if(!currentVerifyBooking) return;
+      const bookingId = currentVerifyBooking.bookingId;
+      const eventKey = currentVerifyBooking.eventKey;
+      
+      // Close verify modal and show reject modal
+      closeVerifyModal();
+      setTimeout(() => {
+        showRejectModal(bookingId, eventKey);
+      }, 100);
+    }
+    
+    // Make functions globally accessible for onclick handlers - MUST be after function definitions
+    async function showVerifyNavigationAfterAction(){
+      // Store the old booking ID before reload
+      const oldBookingId = currentVerifyBooking ? currentVerifyBooking.bookingId : null;
+      
+      // Reload bookings to get updated status
+      await load();
+      
+      // Rebuild pending bookings list
+      pendingBookingsForVerify = filteredBookings.filter(b => 
+        b.status === "PENDING" && 
+        b.transactionCode && 
+        String(b.transactionCode).trim()
+      );
+      
+      // Remove current booking from list (it's no longer pending)
+      if(oldBookingId){
+        pendingBookingsForVerify = pendingBookingsForVerify.filter(b => 
+          b.bookingId !== oldBookingId
+        );
+      }
+      
+      if(pendingBookingsForVerify.length === 0){
+        // No more pending bookings, close modal
+        closeVerifyModal();
+        return;
+      }
+      
+      // Find next booking (same index or next available)
+      let nextIndex = currentVerifyIndex;
+      if(nextIndex >= pendingBookingsForVerify.length){
+        nextIndex = pendingBookingsForVerify.length - 1;
+      }
+      if(nextIndex < 0) nextIndex = 0;
+      
+      const nextBooking = pendingBookingsForVerify[nextIndex];
+      if(!nextBooking){
+        closeVerifyModal();
+        return;
+      }
+      
+      // Show navigation arrows BEFORE showing next booking
+      const navArrows = document.getElementById("verifyNavArrows");
+      const prevBtn = document.getElementById("verifyNavPrev");
+      const nextBtn = document.getElementById("verifyNavNext");
+      
+      if(navArrows){
+        navArrows.classList.add("show");
+        if(prevBtn) prevBtn.disabled = nextIndex === 0;
+        if(nextBtn) nextBtn.disabled = nextIndex >= pendingBookingsForVerify.length - 1;
+      }
+      
+      // Update current index
+      currentVerifyIndex = nextIndex;
+      
+      // Show next booking in verify modal (this will update the content but keep modal open)
+      showVerifyPanel(nextBooking.bookingId, null);
+    }
+
+    function copyToClipboard(text){
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Copied to clipboard", "success");
+      });
+    }
+    
+    // Verify modal functions will be made globally accessible at the end of script
+
+    function showApproveModal(id, eventKey){
+      const booking = bookings.find(b => b.bookingId === id);
+      if(!booking) return;
+
+      const expectedAmount = calculateExpectedAmount(booking);
+      const storedAmount = Number(booking.amount) || 0;
+      // Amount is calculated automatically, not entered by user
+      // Admin must verify against M-Pesa using transaction code
+      const hasDataMismatch = storedAmount !== expectedAmount && storedAmount > 0 && expectedAmount > 0;
+
+      pendingConfirm = { action: "approve", id, eventKey };
+      document.getElementById("confirmTitle").textContent = "Approve Payment";
+      document.getElementById("confirmBody").innerHTML = `
+        <div style="margin-bottom:12px;"><b>Booking ID:</b> ${booking.bookingId}</div>
+        <div style="margin-bottom:12px;"><b>Name:</b> ${booking.name}</div>
+        <div style="margin-bottom:12px;"><b>Expected Amount:</b> ${expectedAmount.toLocaleString()} TZS</div>
+        ${booking.transactionCode ? `
+          <div style="margin-bottom:12px;">
+            <b>Transaction Code:</b> 
+            <div style="font-family:monospace;font-size:14px;margin-top:4px;padding:8px;background:color-mix(in srgb, var(--bg2) 50%, transparent);border-radius:8px;word-break:break-all;">
+              ${String(booking.transactionCode || "")}
+            </div>
+          </div>
+        ` : ""}
+        ${hasDataMismatch ? `
+          <div style="margin-top:12px;padding:10px;border-radius:12px;background:color-mix(in srgb, var(--bad) 15%, transparent);border:1px solid color-mix(in srgb, var(--bad) 30%, var(--border));color:var(--bad);font-size:12px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Data inconsistency: Stored amount (${storedAmount.toLocaleString()}) doesn't match calculated (${expectedAmount.toLocaleString()}). Verify against M-Pesa.
+          </div>
+        ` : ""}
+        <div style="margin-top:16px;padding:12px;border-radius:12px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));color:var(--text);font-size:12px;">
+          <i class="fa-solid fa-shield-halved"></i> <b>Before approving:</b> Verify the M-Pesa transaction amount matches ${expectedAmount.toLocaleString()} TZS using the transaction code above.
+        </div>
+      `;
+      document.getElementById("confirmActionBtn").className = "primary approve";
+      document.getElementById("confirmActionBtn").innerHTML = '<i class="fa-solid fa-check"></i> Approve';
+      document.getElementById("confirmActionBtn").onclick = confirmAction;
+      document.getElementById("confirmModal").classList.remove("hidden");
+    }
+
+    function showRejectModal(id, eventKey){
+      const booking = bookings.find(b => b.bookingId === id);
+      if(!booking) return;
+
+      const expectedAmount = calculateExpectedAmount(booking);
+      const bookingDate = booking.timestamp || booking.createdAt || booking.date;
+      const formattedDate = bookingDate ? new Date(bookingDate).toLocaleDateString() : "N/A";
+
+      pendingConfirm = { action: "reject", id, eventKey };
+      document.getElementById("confirmTitle").textContent = "Reject Booking";
+      document.getElementById("confirmBody").innerHTML = `
+        <div style="margin-bottom:16px;padding:16px;background:color-mix(in srgb, var(--bg-alt) 60%, transparent);border-radius:16px;border:1px solid var(--border);">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;margin-bottom:12px;">
+            <div><b>Booking ID:</b><br><span style="font-family:monospace;font-size:13px;">${booking.bookingId}</span></div>
+            <div><b>Name:</b><br>${booking.name}</div>
+            <div><b>Phone:</b><br>${booking.phone || "N/A"}</div>
+            <div><b>Event:</b><br>${(booking.eventKey || "").toUpperCase()}</div>
+            <div><b>Type:</b><br>${booking.bookingType}</div>
+            <div><b>Amount:</b><br>${expectedAmount.toLocaleString()} TZS</div>
+            <div><b>Transaction Code:</b><br><span style="font-family:monospace;font-size:12px;word-break:break-all;">${booking.transactionCode || "N/A"}</span></div>
+            <div><b>Date:</b><br>${formattedDate}</div>
+          </div>
+        </div>
+        
+        <div style="margin-top:20px;margin-bottom:16px;">
+          <label style="display:block;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);">
+            Reason for Rejection <span style="color:var(--bad);">*</span>
+          </label>
+          <select id="rejectionReason" required style="width:100%;margin-bottom:12px;" onchange="toggleRejectionNotes()">
+            <option value="">-- Select a reason --</option>
+            <option value="transaction_amount_mismatch">Transaction Amount Mismatch</option>
+            <option value="invalid_transaction_code">Invalid Transaction Code</option>
+            <option value="duplicate_booking">Duplicate Booking</option>
+            <option value="fraudulent_activity">Fraudulent Activity</option>
+            <option value="other">Other</option>
+          </select>
+          <div id="rejectionNotesWrapper" style="display:none;margin-top:12px;">
+            <label style="display:block;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);">
+              Additional Notes
+            </label>
+            <textarea id="rejectionNotes" placeholder="Please provide additional details..." style="width:100%;min-height:80px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--bg-elev);color:var(--text);font-size:13px;font-family:inherit;resize:vertical;" maxlength="500"></textarea>
+            <div style="font-size:11px;color:var(--sub);margin-top:4px;">Optional: Provide more context about the rejection</div>
+          </div>
+        </div>
+        
+        <div style="margin-top:16px;padding:12px;border-radius:12px;background:color-mix(in srgb, var(--warn) 10%, transparent);border:1px solid color-mix(in srgb, var(--warn) 30%, var(--border));color:var(--text);font-size:12px;">
+          <i class="fa-solid fa-circle-info"></i> <b>Note:</b> The customer will be notified via email (if provided). You can undo this action within 5 minutes.
+        </div>
+      `;
+      document.getElementById("confirmActionBtn").className = "primary reject";
+      document.getElementById("confirmActionBtn").innerHTML = '<i class="fa-solid fa-xmark"></i> Reject';
+      document.getElementById("confirmActionBtn").onclick = validateAndReject;
+      document.getElementById("confirmModal").classList.remove("hidden");
+      
+      // Focus on reason dropdown
+      setTimeout(() => {
+        const reasonSelect = document.getElementById("rejectionReason");
+        if(reasonSelect) reasonSelect.focus();
+      }, 100);
+    }
+
+    function toggleRejectionNotes(){
+      const reason = document.getElementById("rejectionReason").value;
+      const notesWrapper = document.getElementById("rejectionNotesWrapper");
+      const notesField = document.getElementById("rejectionNotes");
+      if(reason === "other"){
+        notesWrapper.style.display = "block";
+        setTimeout(() => notesField?.focus(), 100);
+      } else {
+        notesWrapper.style.display = "none";
+        if(notesField) notesField.value = "";
+      }
+    }
+
+    function validateAndReject(){
+      const reason = document.getElementById("rejectionReason")?.value;
+      if(!reason){
+        showToast("Please select a reason for rejection", "error");
+        document.getElementById("rejectionReason")?.focus();
+        return;
+      }
+      const notes = reason === "other" ? (document.getElementById("rejectionNotes")?.value || "").trim() : "";
+      if(reason === "other" && !notes){
+        showToast("Please provide additional notes when selecting 'Other'", "error");
+        document.getElementById("rejectionNotes")?.focus();
+        return;
+      }
+      confirmAction();
+    }
+
+    function closeConfirmModal(){
+      document.getElementById("confirmModal").classList.add("hidden");
+      pendingConfirm = null;
+      // Clear rejection form fields
+      const reasonSelect = document.getElementById("rejectionReason");
+      const notesField = document.getElementById("rejectionNotes");
+      const notesWrapper = document.getElementById("rejectionNotesWrapper");
+      if(reasonSelect) reasonSelect.value = "";
+      if(notesField) notesField.value = "";
+      if(notesWrapper) notesWrapper.style.display = "none";
+    }
+
+    function confirmAction(){
+      if(!pendingConfirm) return;
+      const { action, id, eventKey } = pendingConfirm;
+      if(action === "approve"){
+        closeConfirmModal();
+        approve(id, eventKey);
+      } else {
+        // Rejection validation is handled in validateAndReject
+        // This function is only called after validation passes
+        const reason = document.getElementById("rejectionReason")?.value;
+        const notes = reason === "other" ? (document.getElementById("rejectionNotes")?.value || "").trim() : "";
+        closeConfirmModal();
+        rejectBooking(id, eventKey, reason, notes);
+      }
+    }
+
+    function addActivity(action, bookingId, details){
+      activityLog.unshift({
+        action, bookingId, details,
+        time: new Date().toLocaleTimeString()
+      });
+      activityLog = activityLog.slice(0, 20);
+      localStorage.setItem("byz_activity", JSON.stringify(activityLog));
+      updateActivityLog();
+    }
+
+    function updateActivityLog(){
+      const container = document.getElementById("activityItems");
+      if(activityLog.length === 0){
+        document.getElementById("activityLog").classList.add("hidden");
+        return;
+      }
+      document.getElementById("activityLog").classList.remove("hidden");
+      container.innerHTML = activityLog.slice(0, 5).map(item => `
+        <div class="activity-item">
+          <div>
+            <span class="activity-action">${item.action}</span>
+            <span style="color:var(--sub);">${item.bookingId}</span>
+          </div>
+          <span class="activity-time">${item.time}</span>
+        </div>
+      `).join("");
+    }
+
     async function approve(id, eventKey){
-      if(!confirm("Approve this payment?")) return;
+      // Find button by booking ID if event is not available
+      let btn = null;
+      let originalHTML = "";
+      if(event && event.target){
+        btn = event.target.closest("button");
+      } else {
+        // Find button in the row for this booking
+        const row = document.querySelector(`tr[data-booking-id="${id}"]`) || 
+                    document.querySelector(`.booking-card[data-booking-id="${id}"]`);
+        if(row){
+          btn = row.querySelector('button.approve');
+        }
+      }
+      originalHTML = btn ? btn.innerHTML : "";
+      if(btn){
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Processing...';
+      }
+
       try{
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
@@ -601,37 +2627,254 @@
         }).then(r=>r.json());
 
         if(!res.success){
-          return alert("Approve failed:\n" + (res.error || "Unknown"));
+          showToast("Approve failed: " + (res.error || "Unknown"), "error");
+          if(btn){
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+          }
+          return;
         }
-        alert("Approved ✅");
-        load();
+
+        addActivity("Approved", id, "Payment approved");
+        showToast("Payment approved successfully", "success");
+        
+        // If we were in verify modal, show navigation arrows
+        const wasInVerifyModal = currentVerifyBooking && currentVerifyBooking.bookingId === id;
+        if(wasInVerifyModal){
+          // Keep modal open and show navigation
+          await showVerifyNavigationAfterAction();
+        } else {
+          await load();
+          highlightRow(id);
+          autoAdvanceToNextPending();
+        }
+        
+        // Re-enable buttons if modal is still open
+        if(wasInVerifyModal){
+          const approveBtn = document.getElementById("verifyModalApprove");
+          const rejectBtn = document.getElementById("verifyModalReject");
+          if(approveBtn) approveBtn.disabled = false;
+          if(rejectBtn) rejectBtn.disabled = false;
+        }
       }catch(err){
         console.error(err);
-        alert("Approve failed.");
+        showToast("Approve failed. Check connection.", "error");
+        if(btn){
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
       }
     }
 
-    async function rejectBooking(id, eventKey){
-      if(!confirm("Reject this booking?")) return;
+    async function rejectBooking(id, eventKey, rejectionReason, rejectionNotes = ""){
+      // Find button by booking ID if event is not available
+      let btn = null;
+      let originalHTML = "";
+      if(event && event.target){
+        btn = event.target.closest("button");
+      } else {
+        // Find button in the row for this booking
+        const row = document.querySelector(`tr[data-booking-id="${id}"]`) || 
+                    document.querySelector(`.booking-card[data-booking-id="${id}"]`);
+        if(row){
+          btn = row.querySelector('button.reject');
+        }
+      }
+      originalHTML = btn ? btn.innerHTML : "";
+      if(btn){
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Processing...';
+      }
+
+      try{
+        const payload = {
+          action: "rejectBooking",
+          bookingId: id,
+          pin: ADMIN_PASSWORD,
+          eventKey: eventKey,
+          rejectionReason: rejectionReason
+        };
+        
+        if(rejectionNotes){
+          payload.rejectionNotes = rejectionNotes;
+        }
+
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        }).then(r=>r.json());
+
+        if(!res.success){
+          showToast("Reject failed: " + (res.error || "Unknown"), "error");
+          if(btn){
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+          }
+          return;
+        }
+
+        // Store rejection info for undo (5 minute window)
+        const rejectionKey = `${id}_${Date.now()}`;
+        recentRejections[rejectionKey] = {
+          bookingId: id,
+          eventKey: eventKey,
+          rejectionReason: rejectionReason,
+          rejectionNotes: rejectionNotes,
+          timestamp: Date.now(),
+          expiresAt: Date.now() + (5 * 60 * 1000) // 5 minutes
+        };
+        localStorage.setItem("byz_recent_rejections", JSON.stringify(recentRejections));
+
+        // Clean up expired rejections
+        cleanupExpiredRejections();
+
+        const reasonText = getRejectionReasonText(rejectionReason);
+        const activityDetails = rejectionNotes ? `${reasonText} - ${rejectionNotes}` : reasonText;
+        addActivity("Rejected", id, activityDetails);
+        
+        // Show toast with undo option
+        showRejectionToast(id, eventKey, rejectionKey);
+        
+        // If we were in verify modal, show navigation arrows
+        const wasInVerifyModal = currentVerifyBooking && currentVerifyBooking.bookingId === id;
+        if(wasInVerifyModal){
+          // Keep modal open and show navigation
+          await showVerifyNavigationAfterAction();
+        } else {
+          await load();
+          highlightRow(id);
+        }
+      }catch(err){
+        console.error(err);
+        showToast("Reject failed. Check connection.", "error");
+        if(btn){
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
+      }
+    }
+
+    function getRejectionReasonText(reason){
+      const reasons = {
+        "transaction_amount_mismatch": "Transaction amount mismatch",
+        "invalid_transaction_code": "Invalid transaction code",
+        "duplicate_booking": "Duplicate booking",
+        "fraudulent_activity": "Fraudulent activity",
+        "other": "Other reason"
+      };
+      return reasons[reason] || reason;
+    }
+
+    function cleanupExpiredRejections(){
+      const now = Date.now();
+      Object.keys(recentRejections).forEach(key => {
+        if(recentRejections[key].expiresAt < now){
+          delete recentRejections[key];
+        }
+      });
+      localStorage.setItem("byz_recent_rejections", JSON.stringify(recentRejections));
+    }
+
+    function showRejectionToast(bookingId, eventKey, rejectionKey){
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast-item success";
+      toast.id = `rejection-toast-${rejectionKey}`;
+      
+      const canUndo = recentRejections[rejectionKey] && recentRejections[rejectionKey].expiresAt > Date.now();
+      const timeLeft = canUndo ? Math.ceil((recentRejections[rejectionKey].expiresAt - Date.now()) / 1000) : 0;
+      
+      toast.innerHTML = `
+        <i class="fa-solid fa-circle-check toast-icon success"></i>
+        <div class="toast-content">
+          <div class="toast-title">Booking Rejected</div>
+          <div class="toast-message">Booking ${bookingId} has been rejected${canUndo ? `. You can undo within ${timeLeft}s.` : "."}</div>
+        </div>
+        ${canUndo ? `<button class="toast-undo" onclick="undoRejection('${rejectionKey}')" style="margin-left:8px;padding:6px 12px;border-radius:8px;background:var(--bg-elev);border:1px solid var(--border);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">
+          <i class="fa-solid fa-rotate-left"></i> Undo
+        </button>` : ""}
+        <button class="toast-close" onclick="this.closest('.toast-item').remove()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+      container.appendChild(toast);
+      
+      // Update countdown if undo is available
+      if(canUndo){
+        const updateCountdown = setInterval(() => {
+          const remaining = Math.ceil((recentRejections[rejectionKey].expiresAt - Date.now()) / 1000);
+          const messageEl = toast.querySelector(".toast-message");
+          if(remaining > 0 && messageEl){
+            messageEl.textContent = `Booking ${bookingId} has been rejected. You can undo within ${remaining}s.`;
+          } else {
+            clearInterval(updateCountdown);
+            const undoBtn = toast.querySelector(".toast-undo");
+            if(undoBtn) undoBtn.remove();
+            if(messageEl) messageEl.textContent = `Booking ${bookingId} has been rejected.`;
+          }
+        }, 1000);
+      }
+      
+      // Auto-remove after 10 seconds (or when undo expires)
+      setTimeout(() => {
+        if(toast.parentElement){
+          toast.style.animation = "toastSlideIn .3s var(--ease) reverse";
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, Math.max(10000, timeLeft * 1000));
+    }
+
+    async function undoRejection(rejectionKey){
+      const rejection = recentRejections[rejectionKey];
+      if(!rejection || rejection.expiresAt < Date.now()){
+        showToast("Undo window has expired", "error");
+        return;
+      }
+
       try{
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action:"rejectBooking", bookingId:id, pin: ADMIN_PASSWORD, eventKey })
+          body: JSON.stringify({
+            action: "undoRejection",
+            bookingId: rejection.bookingId,
+            pin: ADMIN_PASSWORD,
+            eventKey: rejection.eventKey
+          })
         }).then(r=>r.json());
 
         if(!res.success){
-          return alert("Reject failed:\n" + (res.error || "Unknown"));
+          showToast("Undo failed: " + (res.error || "Unknown"), "error");
+          return;
         }
-        alert("Rejected ✅");
-        load();
+
+        // Remove from recent rejections
+        delete recentRejections[rejectionKey];
+        localStorage.setItem("byz_recent_rejections", JSON.stringify(recentRejections));
+
+        // Remove toast
+        const toast = document.getElementById(`rejection-toast-${rejectionKey}`);
+        if(toast) toast.remove();
+
+        addActivity("Undone", rejection.bookingId, "Rejection undone");
+        showToast("Rejection undone - booking restored to pending", "success");
+        await load();
+        highlightRow(rejection.bookingId);
       }catch(err){
         console.error(err);
-        alert("Reject failed.");
+        showToast("Undo failed. Check connection.", "error");
       }
     }
 
     async function resend(id, eventKey){
+      const btn = event.target.closest("button");
+      const originalHTML = btn ? btn.innerHTML : "";
+      if(btn){
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Sending...';
+      }
+
       try{
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
@@ -640,263 +2883,388 @@
         }).then(r=>r.json());
 
         if(!res.success){
-          return alert("Resend failed:\n" + (res.error || "Unknown"));
+          showToast("Resend failed: " + (res.error || "Unknown"), "error");
+          if(btn){
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+          }
+          return;
         }
-        alert("Resent ✅");
+
+        showToast("Confirmation email resent", "success");
       }catch(err){
         console.error(err);
-        alert("Resend failed.");
+        showToast("Resend failed. Check connection.", "error");
+      }finally{
+        if(btn){
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }
       }
     }
 
+    function highlightRow(bookingId){
+      const row = document.querySelector(`tr[data-booking-id="${bookingId}"]`) || document.querySelector(`.booking-card[data-booking-id="${bookingId}"]`);
+      if(row){
+        row.classList.add("recent-action");
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => row.classList.remove("recent-action"), 2000);
+      }
+    }
+
+    function autoAdvanceToNextPending(){
+      setTimeout(() => {
+        const nextPending = filteredBookings.find(b => b.status === "PENDING");
+        if(nextPending){
+          const row = document.querySelector(`tr[data-booking-id="${nextPending.bookingId}"]`) || document.querySelector(`.booking-card[data-booking-id="${nextPending.bookingId}"]`);
+          if(row){
+            row.scrollIntoView({ behavior: "smooth", block: "center" });
+            row.style.outline = `2px solid ${getComputedStyle(document.documentElement).getPropertyValue("--accent")}`;
+            setTimeout(() => row.style.outline = "", 3000);
+          }
+        }
+      }, 500);
+    }
+
     function exportCsv(){
-      const rows = [["Event","Booking ID","Type","Description","Name","Phone","Amount","Status"]];
-      bookings.forEach(b=>{
-        rows.push([b.eventKey, b.bookingId, b.bookingType, b.description, b.name, b.phone, b.amount, b.status]);
+      const rows = [["Event","Booking ID","Type","Tier","Description","Quantity","Name","Phone","Email","Amount","Transaction Code","Status","Checked In","Timestamp"]];
+      filteredBookings.forEach(b=>{
+        rows.push([
+          b.eventKey || "",
+          b.bookingId || "",
+          b.bookingType || "",
+          b.tier || "",
+          b.description || "",
+          b.quantity || "",
+          b.name || "",
+          b.phone || "",
+          b.email || "",
+          b.amount || "",
+          b.transactionCode || "",
+          b.status || "",
+          b.checkedInCount || 0,
+          b.timestamp || ""
+        ]);
       });
       const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `byz-${currentEvent || "all"}-export.csv`;
+      const filterInfo = currentEvent ? currentEvent : "all";
+      a.download = `byz-${filterInfo}-bookings-${new Date().toISOString().split("T")[0]}.csv`;
       a.click();
       URL.revokeObjectURL(a.href);
+      showToast("Bookings exported successfully", "success");
     }
-
-    // Tabs
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentEvent = btn.dataset.event || "";
-        load();
+    
+    function exportContactMessages(){
+      const rows = [["Timestamp","Name","Email","Phone","Subject","Message","Status"]];
+      contactMessages.forEach(msg => {
+        rows.push([
+          msg.timestamp || "",
+          msg.name || "",
+          msg.email || "",
+          msg.phone || "",
+          msg.subject || "",
+          msg.message || "",
+          msg.status || ""
+        ]);
       });
-    });
-
-    /* ===================== SCAN MODE LOGIC ===================== */
-    let scanOpen = false;
-    let camStream = null;
-    let scanLoopRunning = false;
-    let lastSeen = "";
-    let currentBooking = null;
-    let currentScanEvent = "groove";
-
-    function openScan(){
-      document.getElementById("scanPanel").classList.remove("hidden");
-      scanOpen = true;
+      const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `byz-contact-messages-${new Date().toISOString().split("T")[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast("Contact messages exported successfully", "success");
     }
-    function closeScan(){
-      stopScan();
-      document.getElementById("scanPanel").classList.add("hidden");
-      scanOpen = false;
+    
+    // Global export function that handles current view
+    function exportData(){
+      exportCsv();
     }
-    function startScan(){
-      if(!scanOpen) openScan();
-      startCamera();
-    }
-    function stopScan(){
-      scanLoopRunning = false;
-      lastSeen = "";
-      currentBooking = null;
-      setScanResult("Ready", "Scan a QR or search a Booking ID.", null, false);
-      if(camStream){
-        camStream.getTracks().forEach(t => t.stop());
-        camStream = null;
-      }
-      const v = document.getElementById("cam");
-      if(v) v.srcObject = null;
-    }
+    
+    window.exportData = exportData;
 
-    async function startCamera(){
-      try{
-        const v = document.getElementById("cam");
-        const canvas = document.getElementById("scanCanvas");
-        const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-        camStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" } },
-          audio: false
-        });
-
-        v.srcObject = camStream;
-        await v.play();
-
-        scanLoopRunning = true;
-        document.getElementById("scanHint").textContent = "Scanning…";
-
-        if("BarcodeDetector" in window){
-          const detector = new BarcodeDetector({ formats: ["qr_code"] });
-
-          (async function scanLoop(){
-            while(scanLoopRunning){
-              try{
-                const codes = await detector.detect(v);
-                if(codes && codes.length){
-                  const raw = (codes[0].rawValue || "").trim();
-                  if(raw && raw !== lastSeen){
-                    lastSeen = raw;
-                    const parsed = parseQr_(raw);
-                    if(parsed.bid) await verifyById(parsed.bid, parsed.event || currentScanEvent);
-                  }
-                }
-              }catch(e){}
-              await new Promise(r => setTimeout(r, 150));
-            }
-          })();
-          return;
-        }
-
-        if(typeof jsQR !== "function"){
-          document.getElementById("scanHint").textContent =
-            "Camera on, but QR library missing — use Manual Booking ID.";
-          return;
-        }
-
-        document.getElementById("scanHint").textContent = "Scanning… (Safari mode)";
-
-        (async function scanLoop(){
-          while(scanLoopRunning){
-            try{
-              const w = v.videoWidth;
-              const h = v.videoHeight;
-              if(!w || !h){ await new Promise(r => setTimeout(r, 120)); continue; }
-
-              canvas.width = w; canvas.height = h;
-              ctx.drawImage(v, 0, 0, w, h);
-              const img = ctx.getImageData(0, 0, w, h);
-
-              const code = jsQR(img.data, w, h, { inversionAttempts: "dontInvert" });
-              if(code && code.data){
-                const raw = String(code.data || "").trim();
-                if(raw && raw !== lastSeen){
-                  lastSeen = raw;
-                  const parsed = parseQr_(raw);
-                  if(parsed.bid) await verifyById(parsed.bid, parsed.event || currentScanEvent);
-                }
-              }
-            }catch(e){}
-            await new Promise(r => setTimeout(r, 220));
-          }
-        })();
-
-      }catch(err){
-        console.error(err);
-        alert("Camera blocked. Allow camera permission then try again.");
-      }
-    }
-
-    function parseQr_(raw){
-      try{
-        if(raw.includes("bid=")){
-          const u = new URL(raw);
-          return { bid: u.searchParams.get("bid"), event: u.searchParams.get("event") };
-        }
-      }catch(e){}
-      return { bid: raw, event: "" };
-    }
-
-    async function verifyById(bid, eventKey){
-      bid = (bid || "").trim();
-      if(!bid) return;
-
-      currentScanEvent = eventKey || document.getElementById("scanEvent").value;
-
-      setScanResult("Checking…", "Verifying booking…", null, false);
-
-      try{
-        const url = `${SCRIPT_URL}?event=${encodeURIComponent(currentScanEvent)}&bid=${encodeURIComponent(bid)}`;
-        const res = await fetch(url).then(r=>r.json());
-
-        if(!res.found){
-          setScanResult("❌ Not found", "This booking ID does not exist.", null, false);
-          return;
-        }
-
-        currentBooking = res.booking;
-        const ok = !!res.validForEntry;
-        const title = ok ? "✅ Valid for entry" : "❌ Not valid";
-        const sub = ok
-          ? `Remaining wristbands: ${res.remaining}`
-          : (currentBooking.status !== "CONFIRMED" ? "Status is not confirmed." : "No remaining entries.");
-
-        setScanResult(title, sub, res, ok);
-
-      }catch(err){
-        console.error(err);
-        setScanResult("⚠️ Error", "Could not reach server. Check internet.", null, false);
-      }
-    }
-
-    function setScanResult(title, subtitle, res, enableButtons){
-      const box = document.getElementById("scanResult");
-      box.innerHTML = `
-        <div class="big">${title}</div>
-        <div class="sub">${subtitle}</div>
-        ${res ? `
-          <div class="meta">
-            <div><b>ID:</b> ${res.booking.bookingId}</div>
-            <div><b>Name:</b> ${res.booking.name}</div>
-            <div><b>Description:</b> ${res.booking.description}</div>
-            <div><b>Qty:</b> ${res.booking.quantity} • <b>Checked in:</b> ${res.booking.checkedInCount} • <b>Remaining:</b> ${res.remaining}</div>
-            <div><b>Last:</b> ${res.booking.lastCheckInTime || "—"}</div>
-            <div><b>Status:</b> <span class="status ${res.booking.status}">${res.booking.status}</span></div>
-          </div>
-        ` : ``}
+    function showToast(message, type = "success"){
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast-item ${type}`;
+      toast.innerHTML = `
+        <i class="fa-solid ${type === "success" ? "fa-circle-check" : "fa-circle-xmark"} toast-icon ${type}"></i>
+        <div class="toast-content">
+          <div class="toast-title">${type === "success" ? "Success" : "Error"}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       `;
-
-      document.getElementById("btnOne").disabled = !enableButtons;
-      document.getElementById("btnAll").disabled = !enableButtons;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = "toastSlideIn .3s var(--ease) reverse";
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
     }
 
-    async function checkIn(count){
-      if(!currentBooking) return;
-
-      try{
-        const payload = {
-          action: "checkin",
-          bookingId: currentBooking.bookingId,
-          count: count,
-          pin: ADMIN_PASSWORD,
-          eventKey: currentScanEvent
-        };
-
-        const res = await fetch(SCRIPT_URL, {
-          method:"POST",
-          headers:{ "Content-Type":"text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        }).then(r=>r.json());
-
-        if(!res.ok){
-          setScanResult("❌ Check-in blocked", res.error || "Not allowed.", null, false);
-          return;
+    function toggleAutoRefresh(){
+      const checked = document.getElementById("autoRefreshCheck").checked;
+      const toggle = document.getElementById("autoRefreshToggle");
+      if(checked){
+        toggle.classList.add("active");
+        autoRefreshInterval = setInterval(() => {
+          if(document.visibilityState === "visible" && navigator.onLine){
+            load();
+          }
+        }, 30000);
+      } else {
+        toggle.classList.remove("active");
+        if(autoRefreshInterval){
+          clearInterval(autoRefreshInterval);
+          autoRefreshInterval = null;
         }
-
-        const added = (res.added ?? "");
-        setScanResult(
-          "✅ Check-in complete",
-          `Entry recorded${added !== "" ? " (+" + added + ")" : ""}. Ready for next scan.`,
-          null,
-          false
-        );
-
-        currentBooking = null;
-        manualBid.value = "";
-
-        setTimeout(() => {
-          setScanResult("Ready", "Scan a QR or search a Booking ID.", null, false);
-        }, 1200);
-
-        load();
-
-      }catch(err){
-        console.error(err);
-        setScanResult("⚠️ Error", "Check-in failed. Try again.", null, false);
       }
     }
 
-    document.getElementById("scanEvent").addEventListener("change", (e)=> {
-      currentScanEvent = e.target.value;
+    // Setup tab button event listeners
+    function setupTabButtons(){
+      const tabButtons = document.querySelectorAll(".tab-btn");
+      if(tabButtons.length === 0){
+        console.log("Tab buttons not found yet, will retry after login");
+        return; // Buttons don't exist yet (dashboard is hidden)
+      }
+      
+      tabButtons.forEach(btn => {
+        // Remove existing listeners by cloning
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add fresh event listener
+        newBtn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          newBtn.classList.add("active");
+          currentEvent = newBtn.dataset.event || "";
+          
+          console.log("Tab clicked:", currentEvent); // Debug log
+          
+          // Load bookings for selected event
+          load();
+        });
+      });
+      console.log("Tab buttons setup complete:", tabButtons.length, "buttons");
+    }
+    
+    // Don't setup tabs immediately - they're inside hidden dashboard
+    // Will be setup after login when dashboard is shown
+
+    document.getElementById("confirmModal").addEventListener("click", (e) => {
+      if(e.target.id === "confirmModal"){
+        closeConfirmModal();
+      }
     });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        if(!document.getElementById("confirmModal").classList.contains("hidden")){
+          closeConfirmModal();
+        }
+        if(!document.getElementById("verifyModal").classList.contains("hidden")){
+          closeVerifyModal();
+        }
+      }
+    });
+
+    // Close verify modal when clicking backdrop
+    document.getElementById("verifyModal")?.addEventListener("click", (e) => {
+      if(e.target.id === "verifyModal"){
+        closeVerifyModal();
+      }
+    });
+
+    updateActivityLog();
+    
+    // Clean up expired rejections on load
+    cleanupExpiredRejections();
+    
+    // PWA Install Functionality - Only show after successful login
+    // Variables (deferredPrompt, installPromptShown) are declared at top of script
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+    
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      closeInstallModal();
+      showToast("BYZ Admin app installed! 🎉", "success");
+    });
+    
+    function showInstallPrompt() {
+      // Don't show if already installed
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        console.log('Already installed, skipping prompt');
+        return;
+      }
+      
+      // Don't show if already shown in this session
+      if (installPromptShown) {
+        console.log('Prompt already shown this session');
+        return;
+      }
+      
+      // Check if deferredPrompt is available
+      if (!deferredPrompt) {
+        console.log('No install prompt available (deferredPrompt is null)');
+        // For iOS, show manual instructions
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+          installPromptShown = true;
+          showInstallModal(true); // Pass true for iOS
+        }
+        return;
+      }
+      
+      console.log('Showing install prompt');
+      installPromptShown = true;
+      showInstallModal(false); // Pass false for Android/other
+    }
+    
+    function showInstallModal(isIOS = false) {
+      const modal = document.createElement('div');
+      modal.id = 'installModal';
+      modal.className = 'modal-backdrop';
+      
+      const installButton = isIOS 
+        ? `<button class="primary" onclick="closeInstallModal()" style="min-width: 140px;">
+             <i class="fa-solid fa-check"></i>
+             Got It
+           </button>`
+        : `<button class="primary" onclick="installPWA()" style="min-width: 140px;">
+             <i class="fa-solid fa-plus"></i>
+             Add to Home Screen
+           </button>`;
+      
+      const iosInstructions = isIOS ? `
+        <div style="margin-top: 16px; padding: 16px; background: var(--bg-alt); border-radius: 16px; border: 1px solid var(--border); text-align: left;">
+          <div style="font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--text);">How to add:</div>
+          <ol style="margin: 0; padding-left: 20px; font-size: 12px; color: var(--sub); line-height: 1.8;">
+            <li>Tap the <strong>Share</strong> button <i class="fa-solid fa-share"></i> at the bottom</li>
+            <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+            <li>Tap <strong>"Add"</strong> to confirm</li>
+          </ol>
+        </div>
+      ` : '';
+      
+      modal.innerHTML = `
+        <div class="modal" style="max-width: 400px; text-align: center;">
+          <div class="modal-header" style="justify-content: center;">
+            <div class="modal-title" style="font-size: 20px;">
+              <i class="fa-solid fa-mobile-screen-button" style="margin-right: 8px; color: var(--accent);"></i>
+              Quick Access
+            </div>
+          </div>
+          <div class="modal-body" style="padding: 20px 0;">
+            <div style="font-size: 15px; line-height: 1.6; color: var(--text);">
+              Want faster access to your admin dashboard?<br>
+              <span style="color: var(--sub); font-size: 13px; margin-top: 8px; display: block;">
+                Add BYZ Admin to your home screen for one-tap login
+              </span>
+            </div>
+            ${iosInstructions}
+          </div>
+          <div class="modal-actions" style="justify-content: center; gap: 12px;">
+            <button onclick="closeInstallModal()" style="background: var(--bg-elev); border: 1px solid var(--border);">
+              Maybe Later
+            </button>
+            ${installButton}
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      
+      // Close on backdrop click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeInstallModal();
+        }
+      });
+    }
+    
+    function closeInstallModal() {
+      const modal = document.getElementById('installModal');
+      if (modal) {
+        modal.remove();
+      }
+    }
+    
+    function installPWA() {
+      if (!deferredPrompt) {
+        // Fallback for iOS
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+          closeInstallModal();
+          showToast("Tap the share button (📤) and select 'Add to Home Screen'", "success");
+        } else {
+          closeInstallModal();
+          showToast("Install option not available", "error");
+        }
+        return;
+      }
+      
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+        closeInstallModal();
+      });
+    }
+    
+    // Make ALL verify modal functions globally accessible for onclick handlers
+    // Assign immediately and also on DOMContentLoaded to ensure they're available
+    function assignVerifyModalFunctions(){
+      window.navigateVerifyModal = navigateVerifyModal;
+      window.approveFromVerifyModal = approveFromVerifyModal;
+      window.showRejectModalFromVerify = showRejectModalFromVerify;
+      window.showVerifyPanel = showVerifyPanel;
+      window.closeVerifyModal = closeVerifyModal;
+      window.copyToClipboard = copyToClipboard;
+    }
+    
+    // Assign immediately
+    assignVerifyModalFunctions();
+    
+    // Also assign on DOMContentLoaded as backup
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', assignVerifyModalFunctions);
+    } else {
+      // DOM already loaded, assign immediately
+      assignVerifyModalFunctions();
+    }
+    
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          // Unregister all existing service workers first to clear old cache
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (let registration of registrations) {
+            await registration.unregister();
+            console.log('Unregistered old service worker');
+          }
+          
+          // Register new service worker
+          const registration = await navigator.serviceWorker.register('./admin-sw.js');
+          console.log('Service Worker registered:', registration);
+        } catch (error) {
+          console.log('Service Worker registration failed:', error);
+        }
+      });
+    }
   </script>
 </body>
 </html>
+
