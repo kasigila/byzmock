@@ -109,7 +109,7 @@ Implemented 4 major UX enhancements across the codebase while preserving all exi
 
 ---
 
-## 4. GALLERY.HTML - Liked Photos State Management Fix ✅ IMPLEMENTED
+## 4. gallery-new.html - Liked Photos State Management Fix ✅ IMPLEMENTED
 
 ### **FIXED:** Comprehensive state management overhaul
 
@@ -319,7 +319,7 @@ gap: 12px;
 3. **booking-tempo.html**
    - Lines 1650-1757: Receipt centering fixes
 
-4. **gallery.html**
+4. **gallery-new.html**
    - Lines 3571-3681: State synchronization
    - Lines 3777-3846: Double-tap detection
    - Lines 4429-4475: Clear likes function

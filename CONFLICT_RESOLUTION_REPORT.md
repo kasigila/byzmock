@@ -164,13 +164,13 @@ Functions are scoped to individual pages (no shared global scope conflicts):
 - ✅ `booking-tempo.html` - **WORKING** (used as reference)
 - ⏳ `index.html` - Needs review (large file, 10K+ lines)
 - ⏳ `admin.html` - Needs review
-- ⏳ `gallery.html` - Needs review
+- ⏳ `gallery-new.html` - Needs review
 
 ### Recommended Next Steps
 1. Test `booking.html` click functionality in browser
 2. Audit `index.html` for similar event binding issues
 3. Check `admin.html` for form submission conflicts
-4. Verify `gallery.html` image loading and interactions
+4. Verify `gallery-new.html` image loading and interactions
 
 ---
 
