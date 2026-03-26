@@ -8,7 +8,7 @@
   
   <!-- SEO & Social Sharing -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://byzentertainment.com/gallery.html" />
+  <meta property="og:url" content="https://byzentertainment.com/gallery-new.html" />
   <meta property="og:title" content="Memory Gallery - All Albums | BYZ Entertainment" />
   <meta property="og:description" content="Browse all photo albums from BYZ events. Download your memories from Groove, Tempo, and more." />
   <meta property="og:image" content="https://byzentertainment.com/assets/byz-logo-white.png" />
@@ -1370,7 +1370,7 @@ header{
   <main class="container" style="padding-top:32px;padding-bottom:80px">
     <!-- Breadcrumb -->
     <nav class="breadcrumb" id="breadcrumb">
-      <a href="gallery.html">Gallery</a>
+      <a href="gallery-new.html">Gallery</a>
     </nav>
 
     <!-- Search Bar -->
@@ -1815,12 +1815,12 @@ function updateBreadcrumb(albumKey = null) {
   
   if (albumKey) {
     breadcrumb.innerHTML = `
-      <a href="gallery.html" onclick="backToBoards();return false">Gallery</a>
+      <a href="gallery-new.html" onclick="backToBoards();return false">Gallery</a>
       <span class="breadcrumb-sep">/</span>
       <span>${titleizeAlbum(albumKey)}</span>
     `;
   } else {
-    breadcrumb.innerHTML = '<a href="gallery.html">Gallery</a>';
+    breadcrumb.innerHTML = '<a href="gallery-new.html">Gallery</a>';
   }
 }
 

@@ -2,7 +2,7 @@
   "name": "BYZ Memory Gallery",
   "short_name": "BYZ Gallery",
   "description": "Photo albums from BYZ events in Dar es Salaam",
-  "start_url": "/gallery.html",
+  "start_url": "/gallery-new.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",

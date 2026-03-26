@@ -4842,7 +4842,7 @@ body.bulkbar-active .social-dock{
         <li><a href="#dj">Lineup</a></li>
         <li><a href="#youtube">YouTube</a></li>
         <li><a href="#team">Meet the Team</a></li>
-        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="gallery-new.html">Gallery</a></li>
         <li><a href="admin.html">Admin Log In</a></li>
         <li><a href="#connect">Connect</a></li>
       </ul>
@@ -4867,7 +4867,7 @@ body.bulkbar-active .social-dock{
     <a href="#dj">Lineup</a>
     <a href="#youtube">YouTube</a>
     <a href="#team">Meet the Team</a>
-    <a href="gallery.html">Gallery</a>
+    <a href="gallery-new.html">Gallery</a>
     <a href="rate.html">Rate Experience</a>
     <a href="admin.html">Admin Log In</a>
     <a href="#connect">Connect</a>
@@ -5703,7 +5703,7 @@ body.bulkbar-active .social-dock{
           <p><a href="#events">We Host</a></p>
           <p><a href="#dj">Lineup</a></p>
           <p><a href="#youtube">YouTube</a></p>
-          <p><a href="gallery.html">Memory Gallery</a></p>
+          <p><a href="gallery-new.html">Memory Gallery</a></p>
           <p><a href="rate.html">Rate Your Experience</a></p>
           <p><a href="/booking.html">Book Now</a></p>
         </div>
@@ -6757,8 +6757,8 @@ boardGrid.innerHTML = boardItems.map(item => {
     btn.addEventListener("click", () => {
       const albumKey = btn.dataset.album;
       const event = currentEvent || 'groove';
-      // Navigate to gallery.html with album parameter
-      window.location.href = `gallery.html?event=${event}&album=${albumKey}`;
+      // Navigate to gallery-new.html with album parameter
+      window.location.href = `gallery-new.html?event=${event}&album=${albumKey}`;
     });
   });
 
@@ -8170,399 +8170,672 @@ document.addEventListener('keydown', (e) => {
 })();
 
 /* =========================================================
-   BYZBOT - AI-POWERED CHAT (Hugging Face Integration)
+   BYZBOT — Premium concierge (local / no paid AI APIs)
+   Knowledge base + intent scoring + guided flows + fallbacks
 ========================================================= */
 (function() {
-  // Conversation history for context
-  let conversationHistory = [];
-  
-  // BYZ Information Context for AI
-  const byzContext = `You are ByzBot, the AI assistant for BYZ Entertainment (BYZ in the Hood), a nightlife and entertainment company in Dar es Salaam, Tanzania.
+  'use strict';
 
-You have access to all information about BYZ and the website. You can answer questions about:
-- Services and offerings (events, parties, bookings)
-- Contact information and business details
-- Social media links (Instagram, TikTok, Facebook)
-- Website navigation and features
-- Business hours, location, and venue information
-- Event schedules (Groove and Tempo series)
-- Booking procedures and pricing
-- Memory galleries and photo albums
-- Any other BYZ-related topics
-
-When providing information, include tappable links/icons where appropriate (e.g., social media icons that link to pages). Be accurate, helpful, and enthusiastic about BYZ events.
-
-COMPANY INFORMATION:
-- BYZ Entertainment creates legendary nightlife experiences in Dar es Salaam
-- Location: Dar es Salaam, Tanzania
-- Email: byzinthehoodz@gmail.com
-- WhatsApp: +255 768 464 367
-- Website: https://kasigila.github.io/byzmock/
-
-EVENTS:
-1. Groove Series - Weekly Afro-house nights. Happens every week. Features different groove types: Caribbean Groove, RnB Groove, Afrobeats Groove. Venue: Tips Coco.
-2. Tempo - Seasonal event with evolving themes. Check schedule for dates.
-3. APT Sessions - Invite-only apartment sessions with premium vibes. Users must request an invite.
-
-TEAM MEMBERS:
-- Frank - Founder & CEO. Instagram: @jrmgoyo. WhatsApp: +255 755 790 033
-- Sameera - Brand Partnerships & Creative Lead. Instagram: @sams__cam
-- Edson - Finance & Payments Lead. Instagram: @edsont.11
-- Tuari - Logistics & Venue Management. Instagram: @tuariotk
-- Abd - Operations & Event Coordination. Instagram: @abd.raww
-
-ARTISTS/DJs:
-- DJ Sammy - Specializes in Afrobeats, House, Hip-Hop, Dancehall, Amapiano, R&B. Instagram: @djsammyofficial_
-- Apuki - DJ and performer. Dynamic sets blending Afrobeats, Dancehall, Hip-Hop. Available for local and international bookings. Instagram: @apukiofficial. TikTok: @apukioffical. Spotify available. Booking email: Apuki.Bookings@gmail.com
-- Renee - Artist specializing in Hip-Hop, Rap, R&B. Instagram: @renesw0rld777. TikTok: @ren55974. YouTube: @renesa777
-
-SOCIAL MEDIA:
-- Instagram: @byzinthehood
-- TikTok: @byzinthehood
-- Facebook: byzinthehood
-
-WEBSITE FEATURES:
-- Booking pages: booking.html (Groove Series), booking-tempo.html (Tempo), apt-request.html (APT invite request)
-- Gallery: gallery.html (Memory Gallery with photos from events)
-- Rate page: rate.html (Feedback/rating)
-- Groove Series page: groove-series.html
-- Admin: admin.html (for BYZ admins)
-
-IMPORTANT:
-- Be friendly, helpful, and concise
-- Always provide relevant links when mentioning booking, gallery, or other pages
-- For booking questions, direct users to the appropriate booking page
-- For artist/DJ questions, mention they can view profiles in the "Book Our Artists & DJs" section
-- For team questions, mention the "Meet the Team" section
-- Keep responses conversational and natural
-- If asked about something not in this context, politely say you don't have that information but can help with BYZ-related questions`;
-
-  // Hugging Face API Configuration
-  const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
-  // Alternative free models if Mistral has rate limits:
-  // 'HuggingFaceH4/zephyr-7b-beta'
-  // 'meta-llama/Llama-2-7b-chat-hf'
-  
-  // AI Response function
-  async function getAIResponse(userMessage) {
-    try {
-      // Build conversation context
-      const recentHistory = conversationHistory.slice(-4); // Last 4 messages for context
-      const historyText = recentHistory.map(m => 
-        `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`
-      ).join('\n');
-      
-      // Format for Mistral instruct model
-      const prompt = `<s>[INST] ${byzContext}\n\nPrevious conversation:\n${historyText || 'None'}\n\nUser: ${userMessage}\nAssistant: [/INST]`;
-      
-      const response = await fetch(HF_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          inputs: prompt,
-          parameters: {
-            max_new_tokens: 200,
-            temperature: 0.7,
-            top_p: 0.9,
-            return_full_text: false
-          }
-        })
-      });
-      
-      if (!response.ok) {
-        // If model is loading, wait and retry
-        if (response.status === 503) {
-          const data = await response.json();
-          if (data.estimated_time) {
-            await new Promise(resolve => setTimeout(resolve, data.estimated_time * 1000));
-            return getAIResponse(userMessage); // Retry
-          }
-        }
-        throw new Error(`API error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Extract response text
-      let aiResponse = '';
-      if (Array.isArray(data) && data[0]?.generated_text) {
-        aiResponse = data[0].generated_text.trim();
-      } else if (data.generated_text) {
-        aiResponse = data.generated_text.trim();
-      } else if (typeof data === 'string') {
-        aiResponse = data.trim();
-      }
-      
-      // Clean up response (remove any model artifacts)
-      aiResponse = aiResponse.replace(/\[INST\].*?\[\/INST\]/g, '').trim();
-      aiResponse = aiResponse.split('\n')[0]; // Take first line if multiple
-      aiResponse = aiResponse.replace(/^Assistant:\s*/i, '').trim();
-      
-      if (!aiResponse || aiResponse.length < 5) {
-        throw new Error('Empty or invalid response from AI');
-      }
-      
-      return aiResponse;
-    } catch (error) {
-      console.error('AI Error:', error);
-      throw error; // Let caller handle fallback
-    }
-  }
-  
-  // Enhanced response parser to extract links and actions
-  function parseAIResponse(aiText, userMessage) {
-    const lower = userMessage.toLowerCase();
-    const response = { 
-      response: aiText, 
-      suggestions: [],
-      actionButton: null,
-      link: null,
-      linkType: null
-    };
-    
-    // Detect booking intent
-    if (lower.includes('book') || lower.includes('ticket') || lower.includes('reserve')) {
-      if (lower.includes('groove')) {
-        response.actionButton = { text: 'Book Groove Series', href: 'booking.html', type: 'link' };
-        response.suggestions = ['View lineup', 'More info'];
-      } else if (lower.includes('tempo')) {
-        response.actionButton = { text: 'Book Tempo', href: 'booking-tempo.html', type: 'link' };
-        response.suggestions = ['View schedule', 'More info'];
-      } else if (lower.includes('apt')) {
-        response.actionButton = { text: 'Request Invite', href: 'apt-request.html', type: 'link' };
-        response.suggestions = ['More info'];
-      } else {
-        response.suggestions = ['Groove Series', 'Tempo', 'APT Session'];
-      }
-    }
-    
-    // Detect social media mentions
-    if (aiText.includes('Instagram') || lower.includes('instagram')) {
-      response.link = 'https://www.instagram.com/byzinthehood';
-      response.linkType = 'instagram';
-    }
-    if (aiText.includes('Facebook') || lower.includes('facebook')) {
-      response.link = 'https://www.facebook.com/byzinthehood';
-      response.linkType = 'facebook';
-    }
-    if (aiText.includes('TikTok') || lower.includes('tiktok')) {
-      response.link = 'https://www.tiktok.com/@byzinthehood';
-      response.linkType = 'tiktok';
-    }
-    if (aiText.includes('WhatsApp') || lower.includes('whatsapp')) {
-      response.link = 'https://wa.me/255768464367';
-      response.linkType = 'whatsapp';
-    }
-    
-    // Default suggestions if none provided
-    if (response.suggestions.length === 0) {
-      response.suggestions = ['Book tickets', 'Event info', 'Contact'];
-    }
-    
-    return response;
-  }
-  
-  // Fallback response using keyword matching
-  function getFallbackResponse(text) {
-    const lower = text.toLowerCase().trim();
-    
-    // Check quick actions first
-    for (const [key, data] of Object.entries(quickActions)) {
-      if (lower.includes(key)) {
-        return data;
-      }
-    }
-    
-    // Default helpful response
-    return {
-      response: "I'm here to help! I can assist with booking tickets, event information, team details, artist bookings, or anything about BYZ Entertainment. What would you like to know?",
-      suggestions: ['Book tickets', 'Event info', 'Contact']
-    };
-  }
-  
-  // Quick action responses (for instant responses to common actions - fallback only)
-  const quickActions = {
-    'hi': { response: "Hey! 👋 Welcome to BYZ. I'm ByzBot, your support assistant. How can I help you today?", suggestions: ['Book tickets', 'Event info', 'Contact', 'View schedule'] },
-    'hello': { response: "Hello! 👋 I'm ByzBot, your support assistant. What can I help you with?", suggestions: ['Book tickets', 'Event info', 'Contact'] },
-    'book': { response: "Great! You can book tables or tickets for our events. Which event are you interested in?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
-    'booking': { response: "To book, visit our booking page or tap 'Reserve' on the homepage. Which event would you like to book?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
-    'ticket': { response: "Perfect! You can book tickets for any of our events. Which event are you interested in?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
-    'tickets': { response: "Great! You can book tickets for our events. Which event would you like tickets for?", suggestions: ['Groove Series', 'Tempo', 'APT Session'] },
-    'groove': { 
-      response: "Groove Series is our weekly Afro-house night! It happens every week. Want to book a table or tickets?", 
-      suggestions: ['Book Groove', 'View lineup', 'More info'],
-      context: 'groove'
-    },
-    'tempo': { 
-      response: "Tempo is our seasonal event with evolving themes. Check the schedule to see upcoming dates! Want to view the schedule or book?", 
-      suggestions: ['View schedule', 'Book Tempo', 'More info'],
-      context: 'tempo'
-    },
-    'apt': { 
-      response: "APT Sessions are invite-only apartment sessions with premium vibes. Request an invite to join!", 
-      suggestions: ['Request invite', 'More info'],
-      context: 'apt',
-      actionButton: { text: 'Request Invite', href: 'apt-request.html', type: 'link' }
-    },
-    'schedule': { 
-      response: "Which event's schedule would you like to see?",
-      suggestions: ['Tempo schedule', 'Groove lineup'],
-      isSchedule: true
-    },
-    'view schedule': {
-      response: "Which event schedule would you like to view?",
-      suggestions: ['Tempo', 'Groove'],
-      isSchedule: true
-    },
-    'frank': { 
-      response: "Frank is the Founder & CEO of BYZ Entertainment. You can reach him directly!", 
-      suggestions: ['Contact Frank', 'Instagram', 'WhatsApp'],
-      link: 'https://www.instagram.com/jrmgoyo',
-      linkType: 'instagram',
-      actionButton: { text: 'Contact Frank', href: 'https://wa.me/255755790033', type: 'whatsapp' }
-    },
-    'ceo': { 
-      response: "Frank is the Founder & CEO of BYZ Entertainment. He leads our team in creating legendary nightlife experiences in Dar es Salaam.", 
-      suggestions: ['Contact Frank', 'Instagram', 'WhatsApp'],
-      link: 'https://www.instagram.com/jrmgoyo',
-      linkType: 'instagram',
-      actionButton: { text: 'Contact Frank', href: 'https://wa.me/255755790033', type: 'whatsapp' }
-    },
-    'owner': { 
-      response: "Frank is the Founder & CEO of BYZ Entertainment. He leads our team in creating legendary nightlife experiences in Dar es Salaam.", 
-      suggestions: ['Contact Frank', 'Instagram', 'WhatsApp'],
-      link: 'https://www.instagram.com/jrmgoyo',
-      linkType: 'instagram',
-      actionButton: { text: 'Contact Frank', href: 'https://wa.me/255755790033', type: 'whatsapp' }
-    },
-    'who': { response: "BYZ Entertainment creates legendary nightlife experiences in Dar es Salaam. We host Groove Series (weekly), Tempo (seasonal), and APT Sessions (invite-only).", suggestions: ['Book tickets', 'Event info'] },
-    'sammy': {
-      response: "DJ Sammy is one of our featured artists! He specializes in Afrobeats, House, Hip-Hop, Dancehall, Amapiano, and R&B. Check out his profile and book him for your event!",
-      suggestions: ['Book DJ Sammy', 'View Artists', 'Contact'],
-      scrollTo: '#artists',
-      actionButton: { text: 'View DJ Sammy', href: '#artists', type: 'link' }
-    },
-    'dj sammy': {
-      response: "DJ Sammy is one of our featured artists! He specializes in Afrobeats, House, Hip-Hop, Dancehall, Amapiano, and R&B. Check out his profile and book him for your event!",
-      suggestions: ['Book DJ Sammy', 'View Artists', 'Contact'],
-      scrollTo: '#artists',
-      actionButton: { text: 'View DJ Sammy', href: '#artists', type: 'link' }
-    },
-    'apuki': {
-      response: "Apuki is one of our featured DJs and performers! Known for dynamic sets blending Afrobeats, Dancehall, and Hip-Hop. Available for local and international bookings. Check out his music on Spotify!",
-      suggestions: ['Book Apuki', 'Listen on Spotify', 'View Artists'],
-      scrollTo: '#artists',
-      actionButton: { text: 'View Apuki', href: '#artists', type: 'link' }
-    },
-    'renee': {
-      response: "Renee is one of our featured artists! Specializing in Hip-Hop, Rap, and R&B. Available for performances, collaborations, and live shows. Check out her profile!",
-      suggestions: ['Book Renee', 'View Artists', 'Contact'],
-      scrollTo: '#artists',
-      actionButton: { text: 'View Renee', href: '#artists', type: 'link' }
-    },
-    'sameera': {
-      response: "Sameera is our Brand Partnerships & Creative Lead at BYZ Entertainment. Check out the Meet the Team section to learn more!",
-      suggestions: ['Meet the Team', 'Contact', 'About BYZ'],
-      scrollTo: '#team',
-      link: 'https://www.instagram.com/sams__cam',
-      linkType: 'instagram'
-    },
-    'edson': {
-      response: "Edson is our Finance & Payments Lead at BYZ Entertainment. Check out the Meet the Team section to learn more!",
-      suggestions: ['Meet the Team', 'Contact', 'About BYZ'],
-      scrollTo: '#team',
-      link: 'https://www.instagram.com/edsont.11',
-      linkType: 'instagram'
-    },
-    'tuari': {
-      response: "Tuari handles Logistics & Venue Management at BYZ Entertainment. Check out the Meet the Team section to learn more!",
-      suggestions: ['Meet the Team', 'Contact', 'About BYZ'],
-      scrollTo: '#team',
-      link: 'https://www.instagram.com/tuariotk',
-      linkType: 'instagram'
-    },
-    'abd': {
-      response: "Abd is our Operations & Event Coordination lead at BYZ Entertainment. Check out the Meet the Team section to learn more!",
-      suggestions: ['Meet the Team', 'Contact', 'About BYZ'],
-      scrollTo: '#team',
-      link: 'https://www.instagram.com/abd.raww',
-      linkType: 'instagram'
-    },
-    'team': {
-      response: "Meet the BYZ Team! We have Frank (Founder & CEO), Sameera (Brand Partnerships), Edson (Finance), Tuari (Logistics), and Abd (Operations). Scroll to see them!",
-      suggestions: ['View Team', 'Contact', 'About BYZ'],
-      scrollTo: '#team',
-      actionButton: { text: 'Meet the Team', href: '#team', type: 'link' }
-    },
-    'artists': {
-      response: "Check out our featured artists and DJs! We have DJ Sammy, Apuki, and Renee. You can book them for events or view their profiles!",
-      suggestions: ['Book an Artist', 'View Lineup', 'Contact'],
-      scrollTo: '#artists',
-      actionButton: { text: 'View Artists', href: '#artists', type: 'link' }
-    },
-    'djs': {
-      response: "We have amazing DJs! DJ Sammy and Apuki are available for bookings. Check out their profiles and book them for your event!",
-      suggestions: ['Book a DJ', 'View Artists', 'Lineup'],
-      scrollTo: '#artists',
-      actionButton: { text: 'View DJs', href: '#artists', type: 'link' }
-    },
-    'lineup': {
-      response: "Check out our DJ Timings, Lineups & Announcements section! You'll find set times, event schedules, and artist announcements.",
-      suggestions: ['View Lineup', 'Book Now', 'Event Info'],
-      scrollTo: '#dj',
-      actionButton: { text: 'View Lineup', href: '#dj', type: 'link' }
-    },
-    'gallery': {
-      response: "Check out our Memory Gallery! Browse photos from Groove Series, Tempo, and APT Sessions. You can like photos, download them, and share your favorites!",
-      suggestions: ['View Gallery', 'Browse Photos', 'Share'],
-      scrollTo: '#gallery',
-      actionButton: { text: 'View Gallery', href: 'gallery.html', type: 'link' }
-    },
-    'photos': {
-      response: "Browse our Memory Gallery! See photos from all our events. You can filter by event type (Groove, Tempo) and like your favorites!",
-      suggestions: ['View Gallery', 'Browse Photos', 'Events'],
-      scrollTo: '#gallery',
-      actionButton: { text: 'View Gallery', href: 'gallery.html', type: 'link' }
-    },
-    'rate': {
-      response: "We'd love to hear your feedback! Rate your experience with BYZ Entertainment and help us improve.",
-      suggestions: ['Rate Experience', 'Contact', 'Book Again'],
-      actionButton: { text: 'Rate Experience', href: 'rate.html', type: 'link' }
-    },
-    'feedback': {
-      response: "Share your feedback with us! Rate your experience and let us know how we can improve.",
-      suggestions: ['Rate Experience', 'Contact', 'Book Again'],
-      actionButton: { text: 'Rate Experience', href: 'rate.html', type: 'link' }
-    },
-    'youtube': {
-      response: "Check out our YouTube channel! Watch event highlights, DJ sets, and behind-the-scenes content from BYZ Entertainment.",
-      suggestions: ['View YouTube', 'Watch Videos', 'Events'],
-      scrollTo: '#youtube',
-      actionButton: { text: 'View YouTube', href: '#youtube', type: 'link' }
-    },
-    'videos': {
-      response: "Watch our videos on YouTube! See event highlights, performances, and exclusive content from BYZ Entertainment.",
-      suggestions: ['View YouTube', 'Watch Videos', 'Events'],
-      scrollTo: '#youtube',
-      actionButton: { text: 'View YouTube', href: '#youtube', type: 'link' }
-    },
-    'price': { response: "Pricing varies by event and table type. Check our booking pages for current rates. Which event are you interested in?", suggestions: ['Groove prices', 'Tempo prices', 'Contact us'] },
-    'cost': { response: "Prices depend on the event and what you're booking (tables vs tickets). Visit the booking page for details! Which event?", suggestions: ['Groove', 'Tempo', 'APT'] },
-    'when': { response: "Event dates vary! Groove is weekly, Tempo is seasonal. Check our schedule or booking pages for dates. Which event?", suggestions: ['Groove dates', 'Tempo schedule', 'Book now'] },
-    'time': { response: "Event times are usually late night! Groove starts around 10 PM. Check the lineup section for set times.", suggestions: ['View lineup', 'Book now'] },
-    'location': { response: "We're in Dar es Salaam! Specific venue details are shared when you book. Want to book?", suggestions: ['Yes, book now', 'Contact'] },
-    'where': { response: "BYZ events are in Dar es Salaam. Exact locations are provided when you complete your booking!", suggestions: ['Book now', 'Contact'] },
-    'contact': { response: "You can reach us via WhatsApp or email. Tap the links below!", suggestions: ['WhatsApp', 'Email', 'Book now'] },
-    'facebook': { response: "Follow us on Facebook! Visit our page for updates, event announcements, and more.", suggestions: ['Instagram', 'TikTok', 'Book now'], link: 'https://www.facebook.com/byzinthehood', linkType: 'facebook' },
-    'fb': { response: "Our Facebook page - follow us for event updates!", suggestions: ['Instagram', 'TikTok', 'Book now'], link: 'https://www.facebook.com/byzinthehood', linkType: 'facebook' },
-    'social': { response: "Find us on Instagram, TikTok, and Facebook!", suggestions: ['Instagram', 'TikTok', 'Facebook'] },
-    'instagram': { response: "Follow us on Instagram for the latest updates, behind-the-scenes, and event announcements!", suggestions: ['TikTok', 'Facebook', 'Book now'], link: 'https://www.instagram.com/byzinthehood', linkType: 'instagram' },
-    'tiktok': { response: "Check us out on TikTok for event highlights and fun content!", suggestions: ['Instagram', 'Facebook', 'Book now'], link: 'https://www.tiktok.com/@byzinthehood', linkType: 'tiktok' },
-    'help': { response: "I'm ByzBot, your support assistant! I can help with booking, event info, schedules, pricing, or anything BYZ-related. What do you need?", suggestions: ['Book tickets', 'Event info', 'View schedule'] }
+  /* ---------- [EDIT BRAND FACTS — keep URLs accurate] ---------- */
+  const BYZ = {
+    brand: 'BYZ Entertainment',
+    tagline: 'BYZ in the Hood',
+    city: 'Dar es Salaam, Tanzania',
+    email: 'byzinthehoodz@gmail.com',
+    whatsappDisplay: '+255 768 464 367',
+    whatsappUrl: 'https://wa.me/255768464367',
+    instagramUrl: 'https://www.instagram.com/byzinthehood',
+    tiktokUrl: 'https://www.tiktok.com/@byzinthehood',
+    facebookUrl: 'https://www.facebook.com/byzinthehood',
+    grooveUsualStart: 'around 10:00 PM',
+    grooveVenue: 'Tips Coco',
+    /* [PLACEHOLDER: confirm dress code with ops] */
+    dressCode: 'Smart / elevated nightlife attire. Avoid sportswear or overly casual looks unless an event post says otherwise — the vibe is premium.',
+    /* [PLACEHOLDER: confirm minimum age with venue/legal] */
+    agePolicy: 'Age requirements follow venue and event rules in Tanzania. [PLACEHOLDER: e.g. 18+ or 21+ — confirm and replace this sentence.]',
+    /* [PLACEHOLDER: paste your cancellation/refund paragraph from T&Cs] */
+    cancellations: '[PLACEHOLDER: Cancellation & refund policy — until filled in, our team confirms case-by-case on WhatsApp.]',
+    payments: 'Secure your spot through our online booking flows. Payment steps are shown on each booking page; you\'ll receive confirmation details by email or WhatsApp once complete.',
+    privateHosting: 'For private hosting, corporate buyouts, or bespoke experiences, message our team on WhatsApp and we\'ll route you to the right host.',
+    birthday: 'Celebrating with us? Mention it when you book or on WhatsApp — we can note birthdays and special occasions for VIP touches where available.',
+    confirmation: 'After booking, keep your confirmation handy. If anything looks off, WhatsApp us with your name and booking reference.',
+    websiteNote: 'This site holds the latest links; booking pages always show current packages.'
   };
-  
+
+  const LINKS = {
+    bookGroove: 'booking.html',
+    bookTempo: 'booking-tempo.html',
+    aptRequest: 'apt-request.html',
+    grooveSeries: 'groove-series.html',
+    gallery: 'gallery-new.html',
+    rate: 'rate.html',
+    about: 'about.html'
+  };
+
+  const session = {
+    flow: null,
+    step: 0,
+    eventKey: null,
+    lastIntent: null,
+    lastSuggestions: []
+  };
+
+  function clearConciergeSession() {
+    session.flow = null;
+    session.step = 0;
+    session.eventKey = null;
+    session.lastIntent = null;
+    session.lastSuggestions = [];
+  }
+
+  function pickRandom(arr) {
+    if (!arr || !arr.length) return '';
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function normalizeUserText(s) {
+    return String(s || '')
+      .toLowerCase()
+      .replace(/[\u2019']/g, "'")
+      .replace(/[^a-z0-9\s'-]/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function escapeRegex(t) {
+    return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function wordBoundaryMatch(haystack, word) {
+    if (!word || !haystack || word.length < 4) return false;
+    return new RegExp('\\b' + escapeRegex(word) + '\\b', 'i').test(haystack);
+  }
+
+  function shortTokenExact(wordsArr, tok) {
+    return tok.length > 0 && tok.length < 4 && wordsArr.includes(tok);
+  }
+
+  function scoreEntry(textNorm, wordsArr, entry) {
+    let score = 0;
+    const phrases = entry.phrases || [];
+    const boost = entry.boost || 1;
+    for (const ph of phrases) {
+      const p = ph.toLowerCase().trim();
+      if (!p) continue;
+      if (p.indexOf(' ') !== -1) {
+        if (textNorm.indexOf(p) !== -1) score += p.length * 3;
+      } else if (p.length < 4) {
+        if (shortTokenExact(wordsArr, p)) score += 12;
+      } else if (wordBoundaryMatch(textNorm, p)) {
+        score += p.length * 2;
+      }
+    }
+    return score * boost;
+  }
+
+  function replyFromEntry(entry) {
+    const text = pickRandom(entry.responses);
+    return {
+      response: text || '',
+      suggestions: entry.suggestions ? entry.suggestions.slice() : [],
+      actionButton: entry.actionButton || null,
+      link: entry.link || null,
+      linkType: entry.linkType || null,
+      scrollTo: entry.scrollTo || null
+    };
+  }
+
+  const INTENTS = [
+    {
+      id: 'greeting_exact',
+      boost: 10,
+      phrases: [],
+      matchExact: ['hi', 'hey', 'hello', 'yo', 'sup', 'hiya'],
+      responses: [
+        'Evening — welcome to BYZ. I\'m your concierge: booking, lineup, packages, or a direct line to the team — what should we handle first?',
+        'Good to have you here. Say if you\'re locking a table, grabbing tickets, or learning about Groove, Tempo, or APT.',
+        'Hi. I can route you fast — booking, schedules, pricing basics, or WhatsApp with the host desk.'
+      ],
+      suggestions: ['I want to book', 'Lineups & DJs', 'Prices & packages', 'WhatsApp concierge']
+    },
+    {
+      id: 'what_is_byz',
+      boost: 1.4,
+      phrases: ['what is byz', 'who is byz', 'tell me about byz', 'about byz', 'whats byz', "what's byz"],
+      responses: [
+        BYZ.brand + ' is a premium nightlife & events brand in ' + BYZ.city + ' — Groove Series (weekly), Tempo (seasonal chapters), and APT (invite-only). Nights are intentional, not random.',
+        'We curate ' + BYZ.brand + ' for people who expect more than a typical night out — sound, hospitality, and a polished room in ' + BYZ.city + '.'
+      ],
+      suggestions: ['Book a table', 'Groove vs Tempo', 'Gallery', 'Contact']
+    },
+    {
+      id: 'booking_general',
+      boost: 1.35,
+      phrases: ['book', 'booking', 'reserve', 'reservation', 'rsvp', 'table', 'vip table', 'bottle service', 'guest list', 'guestlist', 'tickets', 'ticket', 'buy ticket', 'get tickets'],
+      responses: ['_flow_booking_'],
+      suggestions: [],
+      startsFlow: 'booking'
+    },
+    {
+      id: 'pricing',
+      boost: 1.25,
+      phrases: ['price', 'pricing', 'cost', 'how much', 'packages', 'package', 'minimum spend', 'minimum', 'bottle prices', 'table prices', 'expensive', 'cheap'],
+      responses: ['_flow_pricing_'],
+      suggestions: [],
+      startsFlow: 'pricing'
+    },
+    {
+      id: 'event_which',
+      boost: 1.15,
+      phrases: ['event info', 'events', 'whats on', 'what is on', 'which event', 'compare events', 'what should i go to'],
+      responses: ['_flow_event_'],
+      suggestions: [],
+      startsFlow: 'event_pick'
+    },
+    {
+      id: 'groove',
+      boost: 1.2,
+      phrases: ['groove', 'groove series', 'afrobeats groove', 'weekly groove', 'groove night'],
+      responses: [
+        'Groove Series is our weekly headline — Afro-house energy, rotating themes, polished room. Usually at ' + BYZ.grooveVenue + ', ' + BYZ.city + ', with doors flowing from ' + BYZ.grooveUsualStart + '.',
+        'Groove is the standing date on the calendar: consistent production, elevated crowd, tables or tickets on the booking page.'
+      ],
+      suggestions: ['Book Groove', 'Lineup section', 'Dress code', 'WhatsApp'],
+      actionButton: { text: 'Book Groove Series', href: LINKS.bookGroove, type: 'link' }
+    },
+    {
+      id: 'tempo',
+      boost: 1.2,
+      phrases: ['tempo', 'tempo series', 'seasonal tempo'],
+      responses: [
+        'Tempo is seasonal — bigger creative chapters, curated dates, evolving themes. Check the on-page Tempo schedule or go straight to booking when dates are live.',
+        'If you want the larger \"moment\" night, Tempo is the lane — dates and inventory update on the Tempo booking flow.'
+      ],
+      suggestions: ['Tempo schedule', 'Book Tempo', 'Prices', 'WhatsApp'],
+      actionButton: { text: 'Book Tempo', href: LINKS.bookTempo, type: 'link' }
+    },
+    {
+      id: 'apt',
+      boost: 1.25,
+      phrases: ['apt', 'apt session', 'apartment session', 'invite only', 'invite-only', 'apartment party'],
+      responses: [
+        'APT Sessions are intimate, invite-only experiences — capacity-controlled and curated. Request an invite first; our team follows up personally.',
+        'APT isn\'t open-floor club night — it\'s controlled access. Request below and we\'ll handle you properly.'
+      ],
+      suggestions: ['Request APT invite', 'WhatsApp', 'What is Groove?'],
+      actionButton: { text: 'Request APT invite', href: LINKS.aptRequest, type: 'link' }
+    },
+    {
+      id: 'lineup_schedule',
+      boost: 1.15,
+      phrases: ['lineup', 'line up', 'dj set', 'set times', 'schedule', 'who is playing', 'whos playing', 'playing tonight', 'set time'],
+      responses: [
+        'Lineups and DJ timings sit in the lineup section on this page — I can scroll you there, or we book once you pick Groove vs Tempo.',
+        'For Tempo-specific dates, use the Tempo schedule; for Groove weeklies, the lineup block is your friend.'
+      ],
+      suggestions: ['Jump to lineup', 'Groove info', 'Tempo schedule', 'Book'],
+      scrollTo: '#dj',
+      actionButton: { text: 'Jump to lineup', href: '#dj', type: 'link' }
+    },
+    {
+      id: 'artists_djs',
+      boost: 1.1,
+      phrases: ['dj sammy', 'sammy', 'apuki', 'renee', 'book a dj', 'book an artist', 'artist booking', 'resident dj'],
+      responses: [
+        'Talent like DJ Sammy, Apuki, and Renee is highlighted under artists on this page. For commercial bookings, WhatsApp with date, city, and budget band.',
+        'Head to the artists section for profiles — say if you want that scroll or a direct WhatsApp intro.'
+      ],
+      suggestions: ['View artists', 'Book Groove', 'WhatsApp', 'Lineup'],
+      scrollTo: '#artists',
+      actionButton: { text: 'View artists', href: '#artists', type: 'link' }
+    },
+    {
+      id: 'djs_plural',
+      boost: 1.05,
+      phrases: ['djs', 'disk jockey', 'disc jockey'],
+      responses: [
+        'Our decks are stacked — resident-level talent and guests. Browse the artists block or lineup for who\'s on which night.',
+        'DJs rotate by series and date — pick Groove or Tempo and I\'ll keep suggestions tight.'
+      ],
+      suggestions: ['View lineup', 'View artists', 'Book'],
+      scrollTo: '#dj'
+    },
+    {
+      id: 'venue_location',
+      boost: 1.05,
+      phrases: ['where', 'location', 'venue', 'address', 'map', 'directions', 'getting there'],
+      responses: [
+        'We work from vetted venues in ' + BYZ.city + '. Groove Series is currently centered at ' + BYZ.grooveVenue + '. Exact pins arrive with your booking or host thread.',
+        'For security and flow, detailed arrival notes go out after you reserve. Booking first unlocks the logistics.'
+      ],
+      suggestions: ['Book a table', 'WhatsApp', 'Dress code']
+    },
+    {
+      id: 'dress_code',
+      boost: 1.1,
+      phrases: ['dress code', 'dresscode', 'what to wear', 'outfit', 'heels', 'sneakers', 'trainers', 'can i wear'],
+      responses: [BYZ.dressCode],
+      suggestions: ['Book Groove', 'WhatsApp', 'VIP table']
+    },
+    {
+      id: 'age',
+      boost: 1.1,
+      phrases: ['age', 'minimum age', 'how old', 'minor', 'under 18', 'under 21', 'id required'],
+      responses: [BYZ.agePolicy],
+      suggestions: ['Book tickets', 'Contact', 'Dress code']
+    },
+    {
+      id: 'payments',
+      boost: 1.05,
+      phrases: ['payment', 'pay', 'card', 'mpesa', 'm-pesa', 'invoice', 'deposit', 'balance', 'how do i pay'],
+      responses: [BYZ.payments],
+      suggestions: ['Book Groove', 'Book Tempo', 'WhatsApp']
+    },
+    {
+      id: 'confirmation',
+      boost: 1.02,
+      phrases: ['confirmation', 'confirm', 'reference', 'booking email', 'did it go through', 'ticket email'],
+      responses: [BYZ.confirmation],
+      suggestions: ['WhatsApp', 'Book again', 'Rate your night']
+    },
+    {
+      id: 'cancel_refund',
+      boost: 1.05,
+      phrases: ['cancel', 'cancellation', 'refund', 'change date', 'reschedule', 'money back'],
+      responses: [BYZ.cancellations],
+      suggestions: ['WhatsApp', 'Book again', 'Contact']
+    },
+    {
+      id: 'birthday',
+      boost: 1.03,
+      phrases: ['birthday', 'celebration', 'bachelorette', 'bachelor', 'proposal', 'special occasion', 'anniversary'],
+      responses: [BYZ.birthday],
+      suggestions: ['Book a table', 'WhatsApp', 'Private hosting']
+    },
+    {
+      id: 'private_host',
+      boost: 1.12,
+      phrases: ['private', 'buyout', 'corporate', 'brand activation', 'host a party', 'rent', 'exclusive hire'],
+      responses: [BYZ.privateHosting],
+      suggestions: ['WhatsApp concierge', 'About BYZ', 'Book standard table'],
+      actionButton: { text: 'WhatsApp concierge', href: BYZ.whatsappUrl, type: 'whatsapp' }
+    },
+    {
+      id: 'gallery',
+      boost: 1.05,
+      phrases: ['gallery', 'photos', 'pictures', 'memories', 'aftermovie', 'recap'],
+      responses: [
+        'Memory Gallery holds the visual receipts — Groove, Tempo, APT energy framed for sharing.',
+        'Browse photos before you commit — it\'s the fastest way to feel the room.'
+      ],
+      suggestions: ['Open gallery', 'Book Groove', 'Instagram'],
+      actionButton: { text: 'Memory gallery', href: LINKS.gallery, type: 'link' }
+    },
+    {
+      id: 'rate',
+      boost: 1,
+      phrases: ['rate', 'feedback', 'review', 'how was', 'complaint'],
+      responses: [
+        'Ratings sharpen everything we do on production and hospitality — takes a minute, moves us a mile.',
+        'Honest feedback goes through the rate page; urgent night-of issues, WhatsApp wins.'
+      ],
+      suggestions: ['Rate BYZ', 'WhatsApp', 'Book again'],
+      actionButton: { text: 'Rate experience', href: LINKS.rate, type: 'link' }
+    },
+    {
+      id: 'youtube',
+      boost: 1,
+      phrases: ['youtube', 'video', 'videos', 'watch'],
+      responses: [
+        'Video drops and recap energy also live on our YouTube — check the YouTube block on this page if embedded.',
+        'For visuals beyond the gallery, YouTube is where longer cuts land — then come back to book the next date.'
+      ],
+      suggestions: ['Gallery', 'Instagram', 'Book'],
+      scrollTo: '#youtube',
+      actionButton: { text: 'Jump to YouTube', href: '#youtube', type: 'link' }
+    },
+    {
+      id: 'team_frank',
+      boost: 1.02,
+      phrases: ['frank', 'ceo', 'founder', 'owner', 'jrmgoyo'],
+      responses: [
+        'Frank is Founder & CEO of ' + BYZ.brand + ' — vision, partnerships, and the standard on the floor.',
+        'Founder conversations (non-urgent) often start on Instagram @jrmgoyo; night-of routing goes through WhatsApp.'
+      ],
+      suggestions: ['Meet the team', 'WhatsApp', 'Book'],
+      link: 'https://www.instagram.com/jrmgoyo',
+      linkType: 'instagram',
+      actionButton: { text: 'WhatsApp BYZ', href: BYZ.whatsappUrl, type: 'whatsapp' },
+      scrollTo: '#team'
+    },
+    {
+      id: 'team_other',
+      boost: 1,
+      phrases: ['sameera', 'edson', 'tuari', 'abd', 'the team', 'meet the team', 'crew', 'staff'],
+      responses: [
+        'Ops span Sameera, Edson, Tuari, and Abd — partnerships, finance, logistics, night-of execution. Scroll to Meet the Team.',
+        'Need a human beyond this chat? WhatsApp is fastest; we route internally from there.'
+      ],
+      suggestions: ['Meet the team', 'WhatsApp', 'Book'],
+      scrollTo: '#team',
+      actionButton: { text: 'Jump to team', href: '#team', type: 'link' }
+    },
+    {
+      id: 'contact',
+      boost: 1.15,
+      phrases: ['contact', 'support', 'help me', 'speak to someone', 'talk to human', 'customer service'],
+      responses: [
+        'WhatsApp ' + BYZ.whatsappDisplay + ' is the concierge lane. Email ' + BYZ.email + ' for longer briefs.',
+        'Say booking-urgent vs partnership vs general — either way WhatsApp gets a human on it fastest.'
+      ],
+      suggestions: ['WhatsApp', 'Email', 'Book now'],
+      link: BYZ.instagramUrl,
+      linkType: 'instagram',
+      actionButton: { text: 'WhatsApp', href: BYZ.whatsappUrl, type: 'whatsapp' }
+    },
+    {
+      id: 'whatsapp',
+      boost: 1.2,
+      phrases: ['whatsapp', 'on whatsapp', 'message on whatsapp'],
+      responses: [
+        'WhatsApp us on ' + BYZ.whatsappDisplay + ' — lead with Groove / Tempo / APT and table vs ticket.',
+        'One message with date + headcount accelerates everything.'
+      ],
+      suggestions: ['Book Groove', 'Book Tempo', 'APT invite'],
+      actionButton: { text: 'Open WhatsApp', href: BYZ.whatsappUrl, type: 'whatsapp' }
+    },
+    {
+      id: 'instagram',
+      boost: 1.05,
+      phrases: ['instagram', 'on instagram', 'insta profile'],
+      responses: [
+        'Daily pulse is @byzinthehood — lineups, looks, last-minute drops.',
+        'Instagram for energy; this site for booking spine.'
+      ],
+      suggestions: ['Book', 'Gallery', 'Tempo'],
+      link: BYZ.instagramUrl,
+      linkType: 'instagram'
+    },
+    {
+      id: 'tiktok',
+      boost: 1.02,
+      phrases: ['tiktok', 'tik tok'],
+      responses: ['Clips and trends: @byzinthehood on TikTok.'],
+      suggestions: ['Instagram', 'Book', 'Gallery'],
+      link: BYZ.tiktokUrl,
+      linkType: 'tiktok'
+    },
+    {
+      id: 'facebook',
+      boost: 1.02,
+      phrases: ['facebook', 'fb page', 'on facebook'],
+      responses: ['Updates also on Facebook — facebook.com/byzinthehood.'],
+      suggestions: ['Instagram', 'Book', 'WhatsApp'],
+      link: BYZ.facebookUrl,
+      linkType: 'facebook'
+    },
+    {
+      id: 'email_intent',
+      boost: 1.05,
+      phrases: ['email', 'e-mail', 'mail you', 'inbox'],
+      responses: [
+        'Reach us at ' + BYZ.email + ' — for urgent tables tonight, WhatsApp still wins on speed.',
+        'Email works for press, partnerships, and detailed briefs; include your timeline and city.'
+      ],
+      suggestions: ['WhatsApp', 'Book', 'Instagram'],
+      actionButton: { text: 'Email BYZ', href: 'mailto:' + BYZ.email, type: 'email' }
+    },
+    {
+      id: 'help_intent',
+      boost: 0.85,
+      phrases: ['help', 'what can you do', 'capabilities', 'how does this work'],
+      responses: [
+        'I route bookings, explain Groove / Tempo / APT, cover dress code and logistics, and hand off to WhatsApp when you want a person.',
+        'Ask plainly — I score intent and keep you moving toward a table, ticket, or real conversation.'
+      ],
+      suggestions: ['Book', 'Prices', 'Lineup', 'WhatsApp']
+    }
+  ];
+
+  function matchExactGreeting(textNorm) {
+    const g = INTENTS.filter(function(x) { return x.id === 'greeting_exact'; })[0];
+    if (!g) return null;
+    const set = new Set(g.matchExact || []);
+    const toks = textNorm.split(' ').filter(Boolean);
+    if (toks.length === 1 && set.has(toks[0])) return g;
+    if (textNorm === 'hi there' || textNorm === 'hey there') return g;
+    return null;
+  }
+
+  function buildFlowWelcome(flowType) {
+    session.flow = flowType;
+    session.step = 0;
+    session.lastIntent = flowType;
+    if (flowType === 'booking') {
+      return {
+        response: pickRandom([
+          'Booking — perfect. Are you after a hosted table / VIP, general tickets, or APT / something private?',
+          'Let me route you: tables & bottles, tickets, or invite-only APT / private — which one?'
+        ]),
+        suggestions: ['VIP / table', 'Tickets', 'APT / private', 'WhatsApp instead'],
+        actionButton: { text: 'WhatsApp', href: BYZ.whatsappUrl, type: 'whatsapp' }
+      };
+    }
+    if (flowType === 'pricing') {
+      return {
+        response: pickRandom([
+          'Pricing is inventory-driven — which lane: Groove, Tempo, APT, or private buyout?',
+          'Before numbers: Groove weekly, Tempo seasonal, APT invite-only, or private — what are we quoting?'
+        ]),
+        suggestions: ['Groove', 'Tempo', 'APT', 'Private / corporate'],
+        actionButton: null
+      };
+    }
+    if (flowType === 'event_pick') {
+      return {
+        response: pickRandom([
+          'Three doors — Groove (weekly power nights), Tempo (seasonal chapters), APT (intimate invite-only). Which energy fits you?',
+          'Pick your universe: Groove for rhythm every week, Tempo for bigger seasonal moments, APT for controlled intimacy.'
+        ]),
+        suggestions: ['Groove', 'Tempo', 'APT', 'WhatsApp to decide'],
+        actionButton: { text: 'WhatsApp', href: BYZ.whatsappUrl, type: 'whatsapp' }
+      };
+    }
+    return universalFallback('');
+  }
+
+  function universalFallback(preview) {
+    var hint = '';
+    if (preview) {
+      hint = ' I caught \"' + preview.slice(0, 72) + (preview.length > 72 ? '…' : '') + '\" — ';
+    }
+    return {
+      response: 'Got you.' + hint + 'I can steer this like a concierge: tables or tickets, Groove vs Tempo vs APT, dress code and logistics, or WhatsApp with a human. What should we do first?',
+      suggestions: ['I want to book', 'Prices & packages', 'Lineup & DJs', 'WhatsApp human'],
+      actionButton: { text: 'WhatsApp BYZ', href: BYZ.whatsappUrl, type: 'whatsapp' },
+      link: BYZ.instagramUrl,
+      linkType: 'instagram'
+    };
+  }
+
+  function tryGuidedFlow(raw) {
+    var n = normalizeUserText(raw);
+    if (!session.flow) return null;
+
+    if (session.flow === 'booking') {
+      if (/apt|invite|private|buyout|corporate/.test(n)) {
+        session.flow = null;
+        return replyFromEntry(INTENTS.filter(function(x) { return x.id === 'apt'; })[0]);
+      }
+      if (/ticket|tickets|entry|general admission|ga\b|standing/.test(n)) {
+        session.flow = null;
+        return {
+          response: 'Tickets route through the same booking engines — Groove is weekly; Tempo is date-specific; APT stays invite-only.',
+          suggestions: ['Book Groove', 'Book Tempo', 'APT invite'],
+          actionButton: { text: 'Book Groove', href: LINKS.bookGroove, type: 'link' }
+        };
+      }
+      if (/table|vip|booth|bottle|section|hosted/.test(n)) {
+        session.flow = null;
+        return {
+          response: 'Tables and bottles dial the experience up — is this for Groove or Tempo?',
+          suggestions: ['Groove tables', 'Tempo tables', 'WhatsApp VIP'],
+          actionButton: null
+        };
+      }
+      if (/groove/.test(n)) {
+        session.flow = null;
+        return replyFromEntry(INTENTS.filter(function(x) { return x.id === 'groove'; })[0]);
+      }
+      if (/tempo/.test(n)) {
+        session.flow = null;
+        return replyFromEntry(INTENTS.filter(function(x) { return x.id === 'tempo'; })[0]);
+      }
+      session.flow = null;
+      return null;
+    }
+
+    if (session.flow === 'pricing') {
+      if (/groove/.test(n)) {
+        session.flow = null;
+        session.eventKey = 'groove';
+        return {
+          response: 'Groove packages move with night and inventory. [PLACEHOLDER: add \"from\" prices when ops confirms]. Live SKUs are always on the Groove booking page.',
+          suggestions: ['Open Groove booking', 'WhatsApp quote', 'Dress code'],
+          actionButton: { text: 'Groove booking', href: LINKS.bookGroove, type: 'link' }
+        };
+      }
+      if (/tempo/.test(n)) {
+        session.flow = null;
+        session.eventKey = 'tempo';
+        return {
+          response: 'Tempo pricing tracks each chapter\'s production level. [PLACEHOLDER: add typical tiers when marketing locks them]. Dates and packages update on the Tempo booking page.',
+          suggestions: ['Tempo booking', 'Tempo schedule', 'WhatsApp'],
+          actionButton: { text: 'Tempo booking', href: LINKS.bookTempo, type: 'link' }
+        };
+      }
+      if (/apt|invite/.test(n)) {
+        session.flow = null;
+        return replyFromEntry(INTENTS.filter(function(x) { return x.id === 'apt'; })[0]);
+      }
+      if (/private|buyout|corporate/.test(n)) {
+        session.flow = null;
+        return replyFromEntry(INTENTS.filter(function(x) { return x.id === 'private_host'; })[0]);
+      }
+      session.flow = null;
+      return null;
+    }
+
+    if (session.flow === 'event_pick') {
+      if (/groove/.test(n)) {
+        session.flow = null;
+        return replyFromEntry(INTENTS.filter(function(x) { return x.id === 'groove'; })[0]);
+      }
+      if (/tempo/.test(n)) {
+        session.flow = null;
+        return replyFromEntry(INTENTS.filter(function(x) { return x.id === 'tempo'; })[0]);
+      }
+      if (/apt/.test(n)) {
+        session.flow = null;
+        return replyFromEntry(INTENTS.filter(function(x) { return x.id === 'apt'; })[0]);
+      }
+      session.flow = null;
+      return null;
+    }
+    return null;
+  }
+
+  function scoreAndPickIntent(textNorm, wordsArr) {
+    var exactG = matchExactGreeting(textNorm);
+    if (exactG) return exactG;
+
+    var best = null;
+    var bestScore = 0.5;
+    for (var i = 0; i < INTENTS.length; i++) {
+      var entry = INTENTS[i];
+      if (entry.id === 'greeting_exact') continue;
+      if (!entry.phrases || !entry.phrases.length) continue;
+      var s = scoreEntry(textNorm, wordsArr, entry);
+      if (s > bestScore) {
+        bestScore = s;
+        best = entry;
+      }
+    }
+    return best;
+  }
+
+  function conciergeReply(rawUserText) {
+    var raw = String(rawUserText || '').trim();
+    var textNorm = normalizeUserText(raw);
+    var wordsArr = textNorm.split(' ').filter(Boolean);
+
+    var flowHit = tryGuidedFlow(raw);
+    if (flowHit && flowHit.response) {
+      session.lastSuggestions = flowHit.suggestions || [];
+      return flowHit;
+    }
+
+    if (textNorm.indexOf('schedule') !== -1 && textNorm.indexOf('tempo') !== -1) {
+      var scheduleBtn = document.getElementById('tempoScheduleBtn');
+      if (scheduleBtn) {
+        setTimeout(function() { scheduleBtn.click(); }, 900);
+        return {
+          response: 'Pulling up the Tempo schedule on this page — dates should highlight for you. Want to book next?',
+          suggestions: ['Book Tempo', 'WhatsApp', 'Groove instead']
+        };
+      }
+    }
+
+    var winner = scoreAndPickIntent(textNorm, wordsArr);
+    if (!winner) {
+      var fb = universalFallback(raw);
+      session.lastSuggestions = fb.suggestions;
+      return fb;
+    }
+
+    if (winner.startsFlow) {
+      var flowPack = buildFlowWelcome(winner.startsFlow);
+      session.lastSuggestions = flowPack.suggestions || [];
+      return flowPack;
+    }
+
+    var pack = replyFromEntry(winner);
+    if (!pack.response) {
+      var fb2 = universalFallback(raw);
+      session.lastSuggestions = fb2.suggestions;
+      return fb2;
+    }
+    session.lastIntent = winner.id;
+    session.lastSuggestions = pack.suggestions;
+
+    if (pack.scrollTo) {
+      var el = document.querySelector(pack.scrollTo);
+      if (el) setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
+    }
+
+    return pack;
+  }
+
+  const INITIAL_CHIPS = ['I want to book', 'Lineups & DJs', 'Prices & packages', 'WhatsApp concierge'];
+
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function formatUserMessagePlain(text) {
+    return escapeHtml(text).replace(/\n/g, '<br>');
+  }
+
+  function formatBotMessagePlain(text) {
+    var t = text && String(text).trim() ? text : 'Here\'s the move — WhatsApp us and we\'ll take it from there.';
+    return escapeHtml(t).replace(/\n/g, '<br>');
+  }
+
   // Create chat widget HTML
   const chatWidget = document.createElement('div');
   chatWidget.id = 'byzChatWidget';
@@ -8601,7 +8874,7 @@ IMPORTANT:
             <img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />
           </div>
           <div class="message-content">
-            <div class="message-text">Hi! 👋 I'm ByzBot, your support assistant. How can I help you today?</div>
+            <div class="message-text">Evening — I'm your BYZ concierge. Tables, tickets, lineups, packages, or WhatsApp — where should we start?</div>
             <div class="message-time">Just now</div>
           </div>
         </div>
@@ -9334,6 +9607,11 @@ IMPORTANT:
       background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
       border-color: color-mix(in srgb, var(--border) 70%, transparent);
     }
+
+    .suggestion-btn.suggestion-btn--secondary {
+      opacity: 0.88;
+      font-weight: 600;
+    }
     
     /* ========== CHAT INPUT ========== */
     .chat-input-wrapper {
@@ -9995,6 +10273,7 @@ IMPORTANT:
   
   // Update send button visibility based on input content
   function updateSendButton() {
+    if (!input || !send) return;
     if (input.value.trim().length > 0) {
       send.classList.add('visible');
     } else {
@@ -10002,8 +10281,10 @@ IMPORTANT:
     }
   }
   
-  input.addEventListener('input', updateSendButton);
-  input.addEventListener('keyup', updateSendButton);
+  if (input) {
+    input.addEventListener('input', updateSendButton);
+    input.addEventListener('keyup', updateSendButton);
+  }
   
   // ========== CUSTOM MOBILE KEYBOARD IMPLEMENTATION (Mobile Only) ==========
   const customKeyboard = document.getElementById('customKeyboard');
@@ -10104,16 +10385,14 @@ IMPORTANT:
     });
   }
   
-  // Allow system keyboard to work naturally on all devices
-  // Scroll messages to bottom when input is focused
-  input.addEventListener('focus', function() {
-    setTimeout(() => {
-      const messagesEl = document.getElementById('chatMessages');
-      if (messagesEl) {
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-      }
-    }, 300);
-  });
+  if (input) {
+    input.addEventListener('focus', function() {
+      setTimeout(function() {
+        var messagesEl = document.getElementById('chatMessages');
+        if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
+      }, 300);
+    });
+  }
   
   // Clean up when closing chat (keyboard handling cleanup is in closeChat function)
   
@@ -10161,235 +10440,152 @@ IMPORTANT:
   
   // Removed blur handler - input should retain focus after send (iMessage-style)
   
-  // Main response function - uses AI with fallback
-  async function findResponse(text) {
-    const lower = text.toLowerCase().trim();
-    
-    // Quick responses for greetings (instant, no API call)
-    if (lower === 'hi' || lower === 'hello' || lower === 'hey') {
-      return {
-        response: "Hey! 👋 Welcome to BYZ. I'm ByzBot, your AI assistant. How can I help you today?",
-        suggestions: ['Book tickets', 'Event info', 'Contact', 'View schedule']
-      };
-    }
-    
-    // Special handling for schedule requests (instant action)
-    if (lower.includes('schedule') && lower.includes('tempo')) {
-      const scheduleBtn = document.getElementById('tempoScheduleBtn');
-      if (scheduleBtn) {
-        setTimeout(() => scheduleBtn.click(), 1000);
-        return {
-          response: "Opening the Tempo schedule for you! You'll see all upcoming dates marked in red.",
-          suggestions: ['Book Tempo', 'More info']
-        };
-      }
-    }
-    
-    // Use AI for all other queries
-    try {
-      const aiText = await getAIResponse(text);
-      const parsed = parseAIResponse(aiText, text);
-      
-      // Update conversation history
-      conversationHistory.push({ role: 'user', content: text });
-      conversationHistory.push({ role: 'assistant', content: aiText });
-      
-      // Keep history manageable (last 10 messages)
-      if (conversationHistory.length > 10) {
-        conversationHistory = conversationHistory.slice(-10);
-      }
-      
-      return parsed;
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      // Fallback to keyword matching
-      return getFallbackResponse(text);
-    }
-  }
-  
-  function addMessage(text, isUser = false) {
-    const message = document.createElement('div');
-    message.className = `chat-message ${isUser ? 'user' : 'bot'}`;
-    
-    const time = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    
-    // Process text for links and icons
-    let processedText = text;
-    
-    // Add clickable links for social media
-    if (text.includes('facebook.com') || (text.includes('Facebook') && !text.includes('chat-link'))) {
-      processedText = text.replace(/https:\/\/www\.facebook\.com\/byzinthehood/g, 
-        '<a href="https://www.facebook.com/byzinthehood" target="_blank" class="chat-link"><i class="fa-brands fa-facebook"></i> Facebook</a>');
-    }
-    if (text.includes('Instagram') && !text.includes('chat-link')) {
-      processedText = processedText.replace(/Instagram @byzinthehood/g, 
-        '<a href="https://www.instagram.com/byzinthehood" target="_blank" class="chat-link"><i class="fa-brands fa-instagram"></i> Instagram</a>');
-    }
-    if (text.includes('TikTok') && !text.includes('chat-link')) {
-      processedText = processedText.replace(/TikTok @byzinthehood/g, 
-        '<a href="https://www.tiktok.com/@byzinthehood" target="_blank" class="chat-link"><i class="fa-brands fa-tiktok"></i> TikTok</a>');
-    }
-    if (text.includes('WhatsApp') && !text.includes('chat-link')) {
-      processedText = processedText.replace(/\+255 768 464 367/g, 
-        '<a href="https://wa.me/255768464367" target="_blank" class="chat-link"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>');
-    }
-    if ((text.includes('email') || text.includes('byzinthehoodz@gmail.com')) && !text.includes('chat-link')) {
-      processedText = processedText.replace(/byzinthehoodz@gmail\.com/g, 
-        '<a href="mailto:byzinthehoodz@gmail.com" class="chat-link"><i class="fa-solid fa-envelope"></i> Email</a>');
-    }
-    
-    message.innerHTML = `
-      <div class="message-avatar">
-        ${isUser ? '<i class="fa-solid fa-user"></i>' : '<img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />'}
-      </div>
-      <div class="message-content">
-        <div class="message-text">${processedText}</div>
-        <div class="message-time">${time}</div>
-      </div>
-    `;
-    
+  function addMessage(text, isUser, trustedHtmlSuffix) {
+    if (!messages) return;
+    var message = document.createElement('div');
+    message.className = 'chat-message ' + (isUser ? 'user' : 'bot');
+    var time = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    var bodyHtml = isUser ? formatUserMessagePlain(text) : formatBotMessagePlain(text);
+    var suffix = (!isUser && trustedHtmlSuffix) ? trustedHtmlSuffix : '';
+    message.innerHTML =
+      '<div class="message-avatar">' +
+        (isUser ? '<i class="fa-solid fa-user"></i>' : '<img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />') +
+      '</div>' +
+      '<div class="message-content">' +
+        '<div class="message-text">' + bodyHtml + suffix + '</div>' +
+        '<div class="message-time">' + escapeHtml(time) + '</div>' +
+      '</div>';
     messages.appendChild(message);
-    
-    // On mobile, when keyboard opens, ensure first message and header are visible
-    if (globalThis.innerWidth <= 640) {
-      // If input is focused (keyboard open), scroll to show first message
-      if (document.activeElement === input) {
-        // Small delay to let keyboard animation complete
-        setTimeout(() => {
-          messages.scrollTop = 0; // Scroll to top to show first message
-        }, 100);
-      } else {
-        // Normal behavior: scroll to bottom for new messages
-        messages.scrollTop = messages.scrollHeight;
-      }
+    if (globalThis.innerWidth <= 640 && document.activeElement === input) {
+      setTimeout(function() { messages.scrollTop = 0; }, 100);
     } else {
-      // Desktop: always scroll to bottom for new messages
       messages.scrollTop = messages.scrollHeight;
     }
   }
   
   function updateSuggestions(suggestionsList) {
-    suggestions.innerHTML = suggestionsList.map(s => 
-      `<button class="suggestion-btn">${s}</button>`
-    ).join('');
-    
-    suggestions.querySelectorAll('.suggestion-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        input.value = btn.textContent;
+    if (!suggestions || !input) return;
+    suggestions.textContent = '';
+    var list = suggestionsList && suggestionsList.length ? suggestionsList : INITIAL_CHIPS;
+    list = list.filter(function(label) { return label !== 'Start over'; });
+    list.forEach(function(label) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'suggestion-btn';
+      btn.textContent = label;
+      btn.addEventListener('click', function() {
+        input.value = label;
         sendMessage();
       });
+      suggestions.appendChild(btn);
     });
+    var startOver = document.createElement('button');
+    startOver.type = 'button';
+    startOver.className = 'suggestion-btn suggestion-btn--secondary';
+    startOver.textContent = 'Start over';
+    startOver.addEventListener('click', function() {
+      clearConciergeSession();
+      addMessage('Fresh start — tell me what you need.', false);
+      updateSuggestions(INITIAL_CHIPS);
+    });
+    suggestions.appendChild(startOver);
   }
   
+  function buildTrustedSuffix(response) {
+    if (!response || typeof response !== 'object') return '';
+    var html = '';
+    if (response.link && response.linkType) {
+      var icons = {
+        facebook: 'fa-brands fa-facebook',
+        instagram: 'fa-brands fa-instagram',
+        tiktok: 'fa-brands fa-tiktok',
+        whatsapp: 'fa-brands fa-whatsapp',
+        email: 'fa-solid fa-envelope'
+      };
+      var labels = {
+        facebook: 'Facebook',
+        instagram: 'Instagram',
+        tiktok: 'TikTok',
+        whatsapp: 'WhatsApp',
+        email: 'Email'
+      };
+      var linkUrl = response.link;
+      if (response.linkType === 'whatsapp') linkUrl = BYZ.whatsappUrl;
+      if (response.linkType === 'email') linkUrl = 'mailto:' + BYZ.email;
+      var icon = icons[response.linkType] || 'fa-solid fa-link';
+      var lab = labels[response.linkType] || 'Link';
+      html += ' <a href="' + escapeHtml(linkUrl) + '" target="_blank" rel="noopener noreferrer" class="chat-link"><i class="' + icon + '"></i> ' + lab + '</a>';
+    }
+    if (response.actionButton && response.actionButton.href && response.actionButton.text) {
+      var btnIcons = {
+        link: 'fa-solid fa-arrow-right',
+        whatsapp: 'fa-brands fa-whatsapp',
+        email: 'fa-solid fa-envelope'
+      };
+      var bIcon = btnIcons[response.actionButton.type] || 'fa-solid fa-arrow-right';
+      var ext = String(response.actionButton.href).indexOf('http') === 0 ? ' target="_blank" rel="noopener noreferrer"' : '';
+      html += '<a href="' + escapeHtml(response.actionButton.href) + '" class="chat-action-btn"' + ext +
+        '><i class="' + bIcon + '"></i> ' + escapeHtml(response.actionButton.text) + '</a>';
+    }
+    return html;
+  }
+  
+  var sendInFlight = false;
   async function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
-    
+    if (!input || !messages) return;
+    var text = input.value.trim();
+    if (!text || sendInFlight) return;
+    sendInFlight = true;
     addMessage(text, true);
     input.value = '';
     updateSendButton();
-    
-    // IMPORTANT: Do NOT blur input - keep keyboard open (iMessage-style)
-    // Input will retain focus automatically
-    
-    // Show typing indicator
-    const typingIndicator = document.createElement('div');
+    var typingIndicator = document.createElement('div');
     typingIndicator.className = 'chat-message bot';
     typingIndicator.id = 'typingIndicator';
-    typingIndicator.innerHTML = `
-      <div class="message-avatar">
-        <img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />
-      </div>
-      <div class="message-content">
-        <div class="message-text" style="padding: 10px 14px;">
-          <span class="typing-dots">
-            <span>.</span><span>.</span><span>.</span>
-          </span>
-        </div>
-      </div>
-    `;
+    typingIndicator.innerHTML =
+      '<div class="message-avatar">' +
+        '<img src="assets/byz-logo-white.png" alt="BYZ" style="width:100%; height:100%; object-fit:contain; padding:4px;" />' +
+      '</div>' +
+      '<div class="message-content">' +
+        '<div class="message-text" style="padding: 10px 14px;">' +
+          '<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>' +
+        '</div>' +
+      '</div>';
     messages.appendChild(typingIndicator);
-    
-    // Scroll to bottom to show latest messages
-    setTimeout(() => {
-      messages.scrollTop = messages.scrollHeight;
-    }, 100);
-    
+    setTimeout(function() { messages.scrollTop = messages.scrollHeight; }, 80);
     try {
-      // Get AI response
-      const response = await findResponse(text);
-      let responseText = response.response || response;
-      let actionButtonHtml = '';
-      
-      // Handle both string and object responses
-      if (typeof response === 'string') {
-        responseText = response;
-      } else if (response.response) {
-        responseText = response.response;
+      var thinkMs = 360 + Math.random() * 480;
+      await new Promise(function(r) { setTimeout(r, thinkMs); });
+      var response = conciergeReply(text);
+      if (!response || typeof response !== 'object') {
+        response = universalFallback(text);
       }
-      
-      // Add clickable links if provided
-      if (response.link && response.linkType) {
-        const icons = {
-          'facebook': 'fa-brands fa-facebook',
-          'instagram': 'fa-brands fa-instagram',
-          'tiktok': 'fa-brands fa-tiktok',
-          'whatsapp': 'fa-brands fa-whatsapp',
-          'email': 'fa-solid fa-envelope'
-        };
-        const labels = {
-          'facebook': 'Facebook',
-          'instagram': 'Instagram',
-          'tiktok': 'TikTok',
-          'whatsapp': 'WhatsApp',
-          'email': 'Email'
-        };
-        const linkUrl = response.linkType === 'whatsapp' ? 'https://wa.me/255768464367' : 
-                       response.linkType === 'email' ? 'mailto:byzinthehoodz@gmail.com' : 
-                       response.link;
-        
-        responseText += ` <a href="${linkUrl}" target="_blank" class="chat-link"><i class="${icons[response.linkType]}"></i> ${labels[response.linkType]}</a>`;
-      }
-      
-      // Add action button if provided (e.g., "Request Invite")
-      if (response.actionButton) {
-        const btnIcons = {
-          'link': 'fa-solid fa-arrow-right',
-          'whatsapp': 'fa-brands fa-whatsapp',
-          'email': 'fa-solid fa-envelope'
-        };
-        const btnIcon = btnIcons[response.actionButton.type] || 'fa-solid fa-arrow-right';
-        actionButtonHtml = `<a href="${response.actionButton.href}" class="chat-action-btn"><i class="${btnIcon}"></i> ${response.actionButton.text}</a>`;
-      }
-      
-      // Remove typing indicator
+      var responseText = typeof response.response === 'string' && response.response.trim()
+        ? response.response.trim()
+        : universalFallback(text).response;
+      var suffix = buildTrustedSuffix(response);
       typingIndicator.remove();
-      
-      // Add AI response
-      addMessage(responseText + actionButtonHtml, false);
-      updateSuggestions(response.suggestions || ['Book tickets', 'Event info', 'Contact']);
-    } catch (error) {
-      // Remove typing indicator
+      addMessage(responseText, false, suffix);
+      updateSuggestions(response.suggestions && response.suggestions.length ? response.suggestions : INITIAL_CHIPS);
+    } catch (err) {
       typingIndicator.remove();
-      
-      // Show error message
-      addMessage("Sorry, I'm having trouble connecting right now. Please try again or contact us directly!", false);
-      updateSuggestions(['Contact', 'Book tickets', 'Event info']);
+      var fb = universalFallback(text);
+      addMessage(fb.response, false, buildTrustedSuffix(fb));
+      updateSuggestions(fb.suggestions);
+    } finally {
+      sendInFlight = false;
     }
   }
   
-  send.addEventListener('click', sendMessage);
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
-  });
+  if (send) send.addEventListener('click', sendMessage);
+  if (input) {
+    input.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') sendMessage();
+    });
+  }
   
-  // Duplicate handler removed - using the one above with visualViewport API
-  
-  // Initialize send button state
   updateSendButton();
-  
-  // Initial suggestions
-  updateSuggestions(faqDatabase.hi.suggestions);
+  updateSuggestions(INITIAL_CHIPS);
   
   if (toggle && badge) {
     toggle.addEventListener('click', () => {
